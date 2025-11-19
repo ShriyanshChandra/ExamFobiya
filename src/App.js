@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import { useState } from "react";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
@@ -8,7 +8,6 @@ import Papers from "./pages/Papers";
 import AboutUs from "./pages/About_us";
 import "@fontsource/nunito"; 
 
-// --- MISSING IMPORT ADDED HERE ---
 import './App.css'; 
 
 function App() {
