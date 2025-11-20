@@ -2,7 +2,7 @@
   font-family: 'Nunito', sans-serif;
 }
 
-/* Hero Section */
+/* Hero Section - Now styled as a Rounded Box */
 .hero-section {
   position: relative;
   height: 50vh; /* Adjust height as needed */
@@ -12,8 +12,17 @@
   align-items: center;
   text-align: center;
   color: white;
-  overflow: hidden;
-  background-color: black; /* 👈 Black background */
+  
+  /* Box Styling to match New Arrivals */
+  background-color: black;
+  border-radius: 25px;        /* Rounded corners */
+  overflow: hidden;           /* Ensures Aurora doesn't spill out of corners */
+  margin: 40px auto;          /* Center the box with spacing */
+  max-width: 1650px;          /* Limit width to match New Arrivals */
+  
+  /* Border and Shadow */
+  border: 2px solid #333;     /* Subtle dark border */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 .aurora-wrapper {
@@ -22,43 +31,58 @@
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1; /* Keep Aurora behind the content */
+  z-index: 1; 
 }
 
+/* Hero Content - Simplified (Text floating over Aurora) */
 .hero-content {
   position: relative;
-  z-index: 2; /* Keep text above Aurora */
+  z-index: 2;
+  max-width: 900px;
+  padding: 0 20px;
 }
-
 
 .hero-content h1 {
   font-size: 2.5rem;
   margin-bottom: 15px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5); /* Improves readability on Aurora */
 }
 
-.new-arrivals {
-  padding: 60px 40px;
-  background-color: #f9f9f9;
-  text-align: center;
+.hero-section .brand-name {
+  font-family: "Henny Penny", cursive !important;
+  color: #ffd700;
+  font-size: 3rem;
+  font-weight: normal !important;
+  display: inline-block;
+  margin: 0 10px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
-.new-arrivals {
+/* Shared Styles for Content Sections (New Arrivals & Best Sellers) */
+.new-arrivals, 
+.best-sellers {
   padding: 40px;
   background-color: #f9f9f9;
   text-align: center;
 
-  border-radius: 25px;       /* Rounded corners for the whole section */
-  border: 2px solid #e0e0e0; /* Optional subtle border */
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* Light shadow */
-  margin: 40px auto;         /* Center the box with spacing around */
-  max-width: 1650px;         /* Optional: limit the width */
+  border-radius: 25px;       
+  border: 2px solid #e0e0e0; 
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); 
+  margin: 40px auto;         
+  max-width: 1650px;         
+}
+
+.best-sellers h2 {
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: #222;
 }
 
 .book-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* responsive columns */
-  gap: 30px; /* space between cards */
-  justify-items: center; /* center each card in its grid cell */
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 30px;
+  justify-items: center;
   margin-top: 20px;
 }
 
@@ -96,13 +120,4 @@
 
 .view-btn:hover {
   background-color: #1a5fd0;
-}
-
-.hero-section .brand-name {
-  font-family: "Henny Penny", cursive !important;
-  color: #ffd700;
-  font-size: 3rem;
-  font-weight: normal !important;
-  display: inline-block;
-  margin: 0 10px;
 }

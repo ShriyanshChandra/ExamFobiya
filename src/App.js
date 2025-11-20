@@ -14,7 +14,7 @@ function App() {
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
-    <Router>
+    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Navbar setSearchQuery={setSearchQuery} />
       {/* Ensure this div is transparent so the background shows through */}
       <div className="p-6">
