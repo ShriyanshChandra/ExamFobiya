@@ -1,28 +1,24 @@
 .home-container {
   font-family: 'Nunito', sans-serif;
+  padding-bottom: 60px;
 }
 
-/* Hero Section - Now styled as a Rounded Box */
+/* Hero Section */
 .hero-section {
   position: relative;
-  height: 50vh; /* Adjust height as needed */
+  height: 85vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
   color: white;
-  
-  /* Box Styling to match New Arrivals */
-  background-color: black;
-  border-radius: 25px;        /* Rounded corners */
-  overflow: hidden;           /* Ensures Aurora doesn't spill out of corners */
-  margin: 40px auto;          /* Center the box with spacing */
-  max-width: 1650px;          /* Limit width to match New Arrivals */
-  
-  /* Border and Shadow */
-  border: 2px solid #333;     /* Subtle dark border */
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  background-color: #182848;
+  /* Dark Navy */
+  border-radius: 0 0 50px 50px;
+  overflow: hidden;
+  margin-bottom: 60px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .aurora-wrapper {
@@ -31,93 +27,187 @@
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1; 
+  z-index: 1;
+  opacity: 0.6;
+  /* Slightly lower opacity to let the dark blue show */
 }
 
-/* Hero Content - Simplified (Text floating over Aurora) */
+/* Hero Content */
 .hero-content {
   position: relative;
   z-index: 2;
-  max-width: 900px;
+  max-width: 800px;
   padding: 0 20px;
+  animation: fadeInUp 1s ease-out;
 }
 
 .hero-content h1 {
-  font-size: 2.5rem;
-  margin-bottom: 15px;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.5); /* Improves readability on Aurora */
+  font-size: 4rem;
+  margin-bottom: 20px;
+  font-weight: 800;
+  line-height: 1.2;
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .hero-section .brand-name {
   font-family: "Henny Penny", cursive !important;
   color: #ffd700;
-  font-size: 3rem;
+  /* Yellow */
+  background: none;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: initial;
+  font-size: 4.5rem;
   font-weight: normal !important;
   display: inline-block;
   margin: 0 10px;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
 }
 
-/* Shared Styles for Content Sections (New Arrivals & Best Sellers) */
-.new-arrivals, 
+.hero-content p {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  margin-bottom: 40px;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.primary-btn,
+.secondary-btn {
+  padding: 14px 32px;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.primary-btn {
+  background: white;
+  color: black;
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+}
+
+.primary-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.4);
+}
+
+.secondary-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.secondary-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px);
+}
+
+/* Shared Styles for Content Sections */
+.new-arrivals,
 .best-sellers {
-  padding: 40px;
-  background-color: #f9f9f9;
+  padding: 60px 40px;
+  background-color: white;
   text-align: center;
-
-  border-radius: 25px;       
-  border: 2px solid #e0e0e0; 
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); 
-  margin: 40px auto;         
-  max-width: 1650px;         
+  border-radius: 30px;
+  box-shadow: var(--shadow-md);
+  margin: 60px auto;
+  max-width: 1400px;
+  position: relative;
+  overflow: hidden;
 }
 
+.new-arrivals h2,
 .best-sellers h2 {
-  font-size: 2rem;
-  margin-bottom: 30px;
-  color: #222;
+  font-size: 2.5rem;
+  margin-bottom: 50px;
+  color: var(--text-color);
+  font-weight: 800;
+  position: relative;
+  display: inline-block;
+}
+
+.new-arrivals h2::after,
+.best-sellers h2::after {
+  content: '';
+  position: absolute;
+  width: 60%;
+  height: 4px;
+  bottom: -15px;
+  left: 20%;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  border-radius: 2px;
 }
 
 .book-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
   justify-items: center;
-  margin-top: 20px;
+  margin-top: 30px;
 }
 
 .book-card {
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  padding: 15px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 20px;
+  box-shadow: var(--shadow-sm);
+  padding: 20px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  width: 100%;
+  max-width: 300px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .book-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  transform: translateY(-15px);
+  box-shadow: var(--shadow-lg);
 }
 
 .book-img {
   width: 100%;
-  height: 250px;
+  height: 320px;
   object-fit: cover;
-  border-radius: 10px;
-  margin-bottom: 15px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .view-btn {
-  margin-top: 10px;
-  background-color: #2575fc;
+  margin-top: 15px;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   color: white;
   border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
+  padding: 12px 24px;
+  border-radius: 50px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 1rem;
+  font-weight: 600;
+  width: 100%;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(37, 117, 252, 0.3);
 }
 
 .view-btn:hover {
-  background-color: #1a5fd0;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(37, 117, 252, 0.4);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

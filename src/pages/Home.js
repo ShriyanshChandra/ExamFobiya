@@ -2,7 +2,7 @@ import React from "react";
 import "./Home.css";
 import Aurora from "./Aurora";
 import NewArrivals from "./NewArrivals";
-import BestSeller from "./BestSeller"; // Import new component
+import BestSeller from "./BestSeller";
 
 const Home = () => {
   return (
@@ -11,10 +11,10 @@ const Home = () => {
       <section className="hero-section">
         <div className="aurora-wrapper">
           <Aurora
-            colorStops={['#00ff7b', '#0008ff', '#9500ff']}
-            blend={0.5}
-            amplitude={1.0}
-            speed={0.5}
+            colorStops={['#4b6cb7', '#182848', '#ffd700']}
+            blend={0.6}
+            amplitude={1.2}
+            speed={0.4}
           />
         </div>
 
@@ -26,6 +26,10 @@ const Home = () => {
             Discover new reads, find trusted distributors, and access study
             materials — all in one place!
           </p>
+          <div className="hero-buttons">
+            <button className="primary-btn">Explore Books</button>
+            <button className="secondary-btn">Find Distributors</button>
+          </div>
         </div>
       </section>
 
