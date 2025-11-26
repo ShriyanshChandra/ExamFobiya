@@ -45,48 +45,87 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
 }
 
 /* --- GLOBAL STYLES & BACKGROUND --- */
+html {
+  background-color: #f8f9fa;
+}
+
 body {
   font-family: 'Nunito', sans-serif;
   margin: 0;
   padding: 0;
+  background-color: transparent !important;
+  overflow-x: hidden;
+  position: relative;
+  z-index: 0;
+  min-height: 100vh;
+}
 
-  /* 1. Base Background Color */
-  background-color: #f8f9fa;
-
-  /* 2. BACKGROUND PATTERN (Alternating B1 B2)
-     - B1: Closed Book
-     - B2: Open Book
-     - Pattern repeats every 200px horizontal, 100px vertical.
-  */
-  background-image: 
-    /* Row 1: B1 (Closed) at 0px */
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100' viewBox='-38 -38 200 100' fill='none' stroke='%23d1d5db' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 19.5A2.5 2.5 0 0 1 6.5 17H20'/%3E%3Cpath d='M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z'/%3E%3C/svg%3E"),
-    
-    /* Row 1: B2 (Open) at 100px */
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100' viewBox='-38 -38 200 100' fill='none' stroke='%23d1d5db' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/%3E%3Cpath d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'/%3E%3C/svg%3E"),
-
-    /* Row 2 (Staggered): B2 (Open) at 50px */
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100' viewBox='-38 -38 200 100' fill='none' stroke='%23d1d5db' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/%3E%3Cpath d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'/%3E%3C/svg%3E"),
-
-    /* Row 2 (Staggered): B1 (Closed) at 150px */
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100' viewBox='-38 -38 200 100' fill='none' stroke='%23d1d5db' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 19.5A2.5 2.5 0 0 1 6.5 17H20'/%3E%3Cpath d='M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z'/%3E%3C/svg%3E");
-
-  /* Layout Logic:
-     - Row 1: 0px (B1) and 100px (B2)
-     - Row 2: 50px (B2) and 150px (B1) -> Creating the stagger
-  */
-  background-position: 
-    0 0,          /* Layer 1: B1 */
-    100px 0,      /* Layer 2: B2 */
-    50px 50px,    /* Layer 3: B2 (Shifted Row) */
-    150px 50px;   /* Layer 4: B1 (Shifted Row) */
-
-  /* Tile size is 200px wide (to hold 2 items) and 100px high */
+/* Shared styles for background layers */
+body::before,
+body::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  width: calc(100% + 400px);
+  /* Extra width for movement */
+  height: 100%;
+  z-index: -1;
   background-size: 200px 100px;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* Row 1: Moves Right (All B1 - Closed Books) */
+body::before {
+  left: -200px;
+  background-image:
+    /* B1 (Closed) at 0px */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100' viewBox='-38 -38 200 100' fill='none' stroke='%23d1d5db' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 19.5A2.5 2.5 0 0 1 6.5 17H20'/%3E%3Cpath d='M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z'/%3E%3C/svg%3E"),
+    /* B1 (Closed) at 100px */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100' viewBox='-38 -38 200 100' fill='none' stroke='%23d1d5db' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 19.5A2.5 2.5 0 0 1 6.5 17H20'/%3E%3Cpath d='M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z'/%3E%3C/svg%3E");
+  background-position:
+    0 0,
+    100px 0;
+  animation: slideRight 60s linear infinite;
+}
+
+/* Row 2: Moves Left (All B2 - Open Books) */
+body::after {
+  left: 0;
+  background-image:
+    /* B2 (Open) at 50px */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100' viewBox='-38 -38 200 100' fill='none' stroke='%23d1d5db' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/%3E%3Cpath d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'/%3E%3C/svg%3E"),
+    /* B2 (Open) at 150px */
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100' viewBox='-38 -38 200 100' fill='none' stroke='%23d1d5db' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'/%3E%3Cpath d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'/%3E%3C/svg%3E");
+  background-position:
+    50px 50px,
+    150px 50px;
+  animation: slideLeft 60s linear infinite;
+}
+
+@keyframes slideRight {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(200px);
+  }
+}
+
+@keyframes slideLeft {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-200px);
+  }
 }
