@@ -81,6 +81,22 @@ const booksData = [
     image: "https://m.media-amazon.com/images/I/81xXAyf5TLL.jpg",
     description: "Rules for focused success in a distracted world.",
     contents: "Sections: The Idea, The Rules, Focus Strategies, Implementation."
+  },
+  {
+    id: 9,
+    title: "The Subtle Art of Not Giving a F*ck",
+    author: "Mark Manson",
+    image: "https://m.media-amazon.com/images/I/71QKQ9mwV7L.jpg",
+    description: "A counterintuitive approach to living a good life.",
+    contents: "Chapters: Don't Try, Happiness is a Problem, You Are Not Special."
+  },
+  {
+    id: 10,
+    title: "Thinking, Fast and Slow",
+    author: "Daniel Kahneman",
+    image: "https://m.media-amazon.com/images/I/61fdrEuPJwL.jpg",
+    description: "The two systems that drive the way we think.",
+    contents: "Parts: Two Systems, Heuristics and Biases, Overconfidence, Choices."
   }
 ];
 
@@ -91,31 +107,33 @@ function Books({ searchQuery }) {
   const filteredBooks = booksData.filter(book =>
     searchQuery
       ? book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        book.description.toLowerCase().includes(searchQuery.toLowerCase())
+      book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      book.description.toLowerCase().includes(searchQuery.toLowerCase())
       : true
   );
 
   return (
     <div className="books-page">
-      <h1>Available Books</h1>
-      {searchQuery && (
-        <p className="search-results">
-          Showing results for: "{searchQuery}" ({filteredBooks.length} books found)
-        </p>
-      )}
-      <div className="books-grid">
-        {filteredBooks.map((book) => (
-          <div
-            key={book.id}
-            className="book-card"
-            onClick={() => setSelectedBook(book)}
-          >
-            <img src={book.image} alt={book.title} />
-            <h3>{book.title}</h3>
-            <p>{book.author}</p>
-          </div>
-        ))}
+      <div className="books-content">
+        <h1>Available Books</h1>
+        {searchQuery && (
+          <p className="search-results">
+            Showing results for: "{searchQuery}" ({filteredBooks.length} books found)
+          </p>
+        )}
+        <div className="books-grid">
+          {filteredBooks.map((book) => (
+            <div
+              key={book.id}
+              className="book-card"
+              onClick={() => setSelectedBook(book)}
+            >
+              <img src={book.image} alt={book.title} />
+              <h3>{book.title}</h3>
+              <p>{book.author}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
       {selectedBook && (

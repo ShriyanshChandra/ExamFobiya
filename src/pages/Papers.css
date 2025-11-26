@@ -1,71 +1,105 @@
 .papers-container {
+  min-height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
   font-family: 'Nunito', sans-serif;
-  padding: 40px 20px;
+}
+
+.development-box {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 100px 50px;
+  border-radius: 30px;
   text-align: center;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  max-width: 1000px;
+  width: 100%;
+  animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Hero Section */
-.papers-hero {
-  background: linear-gradient(135deg, #3a29ff, #ff94b4);
-  color: white;
-  padding: 60px 20px;
-  border-radius: 20px;
-  margin-bottom: 40px;
+.lottie-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
 }
 
-.papers-hero h1 {
-  font-size: 2.5rem;
+.development-box h2 {
+  font-size: 2rem;
+  color: #182848;
   margin-bottom: 10px;
 }
 
-.papers-hero p {
-  font-size: 1.1rem;
-  opacity: 0.9;
-}
-
-/* Grid Section */
-.papers-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 25px;
-  justify-items: center;
-}
-
-.paper-card {
-  background: #fff;
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 25px;
-  width: 250px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.paper-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-}
-
-.paper-card h3 {
-  color: #3a29ff;
+.development-box p {
   font-size: 1.2rem;
-  margin-bottom: 8px;
+  color: #4b6cb7;
+  margin-bottom: 30px;
 }
 
-.paper-card p {
-  color: #555;
-  font-size: 1rem;
-  margin-bottom: 12px;
+/* Loading Dots Animation */
+.loading-dots {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
 }
 
-.download-btn {
-  background: linear-gradient(135deg, #3a29ff, #ff94b4);
-  color: white;
-  text-decoration: none;
-  padding: 8px 16px;
-  border-radius: 8px;
-  transition: background 0.3s ease;
+.loading-dots span {
+  width: 12px;
+  height: 12px;
+  background-color: #ffd700;
+  border-radius: 50%;
+  animation: dotPulse 1.4s infinite ease-in-out both;
 }
 
-.download-btn:hover {
-  background: linear-gradient(135deg, #3220e0, #ff7aa1);
+.loading-dots span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-dots span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes bounce {
+
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+
+  40% {
+    transform: translateY(-20px);
+  }
+
+  60% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes dotPulse {
+
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  }
+
+  40% {
+    transform: scale(1);
+  }
 }
