@@ -1,15 +1,38 @@
 :root {
+  /* Default Light Theme */
   --primary-color: #2575fc;
   --secondary-color: #6a11cb;
   --accent-color: #ffd700;
   --background-color: #f4f7f6;
-  --text-color: #333;
+  --text-color: #000000;
   --white: #ffffff;
   --glass-bg: rgba(255, 255, 255, 0.1);
   --glass-border: rgba(255, 255, 255, 0.2);
   --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.1);
   --shadow-md: 0 8px 15px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.15);
+  --navbar-bg: linear-gradient(90deg, #4b6cb7, #182848);
+  --card-bg: #ffffff;
+  --input-bg: rgba(255, 255, 255, 0.1);
+  --input-text: #333;
+}
+
+[data-theme='dark'] {
+  --primary-color: #4b6cb7;
+  --secondary-color: #182848;
+  --accent-color: #ffd700;
+  --background-color: #121212;
+  --text-color: #e0e0e0;
+  --white: #1e1e1e;
+  --glass-bg: rgba(0, 0, 0, 0.3);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 15px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.4);
+  --navbar-bg: linear-gradient(90deg, #1f2937, #111827);
+  --card-bg: #1e1e1e;
+  --input-bg: rgba(255, 255, 255, 0.05);
+  --input-text: #e0e0e0;
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Henny+Penny&family=Nunito:wght@300;400;500;600;700&display=swap');

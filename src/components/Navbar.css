@@ -4,11 +4,30 @@
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: linear-gradient(90deg, #4b6cb7, #182848);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--navbar-bg);
+  border-bottom: 1px solid var(--glass-border);
   padding: 15px 0;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-toggle {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin-left: 15px;
+}
+
+.theme-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--accent-color);
 }
 
 .navbar-container {
@@ -37,6 +56,7 @@
   /* Yellow */
   background: none;
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: initial;
   letter-spacing: 1px;
   text-decoration: none;
@@ -162,7 +182,7 @@
   /* Position right below the parent */
   left: 50%;
   transform: translateX(-50%);
-  background: white;
+  background: var(--card-bg);
   min-width: 220px;
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
@@ -193,15 +213,17 @@
   padding: 0;
 }
 
-.dropdown-menu li a {
+/* Increased specificity to override parent styles */
+.nav-menu .dropdown-menu li a {
   display: block;
   padding: 10px 20px;
-  color: #333;
+  color: var(--text-color);
   font-size: 0.95rem;
+  font-weight: 600;
   transition: background 0.2s ease;
 }
 
-.dropdown-menu li a:hover {
+.nav-menu .dropdown-menu li a:hover {
   background: rgba(75, 108, 183, 0.1);
   color: #4b6cb7;
 }
@@ -271,6 +293,11 @@
     box-shadow: none;
   }
 
+  .theme-toggle {
+    order: 4;
+    margin-left: 0;
+  }
+
   .nav-menu {
     position: absolute;
     top: 70px;
@@ -293,14 +320,15 @@
     left: 0;
   }
 
-  .nav-menu li a {
+  .nav-menu li a,
+  .dropdown span {
     font-size: 1.5rem;
   }
 
   .dropdown-menu {
     position: static;
     transform: none;
-    background: transparent;
+    background: var(--card-bg);
     box-shadow: none;
     text-align: center;
     padding: 10px 0;
@@ -308,9 +336,11 @@
     /* Always show in mobile menu if parent is there, or handle click */
   }
 
-  .dropdown-menu li a {
-    color: rgba(255, 255, 255, 0.8);
+  .nav-menu .dropdown-menu li a {
+    color: var(--text-color);
     font-size: 1.2rem;
+    display: block;
+    /* Ensure it takes space */
   }
 
   .dropdown:hover .dropdown-menu {

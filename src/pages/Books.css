@@ -21,7 +21,7 @@
 .books-page h1 {
   font-size: 2rem;
   margin-bottom: 30px;
-  color: #222;
+  color: var(--text-color);
 }
 
 .books-grid {
