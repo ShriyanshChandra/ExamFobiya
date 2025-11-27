@@ -232,6 +232,21 @@
   display: none;
 }
 
+/* Dark Mode Specific Fixes for Dropdown */
+[data-theme='dark'] .dropdown-menu {
+  background: #1e1e1e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .nav-menu .dropdown-menu li a {
+  color: #ffffff !important;
+}
+
+[data-theme='dark'] .nav-menu .dropdown-menu li a:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffd700 !important;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
