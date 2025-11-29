@@ -2,6 +2,7 @@
 
 /* Apply Nunito font globally */
 * {
+  box-sizing: border-box;
   font-family: 'Nunito', sans-serif;
 }
 
@@ -54,6 +55,8 @@
 /* --- GLOBAL STYLES & BACKGROUND --- */
 html {
   background-color: var(--background-color);
+  overflow-x: hidden;
+  width: 100%;
 }
 
 body {
