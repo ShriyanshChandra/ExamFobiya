@@ -22,7 +22,8 @@
   margin-bottom: 40px;
 }
 
-/* Book Grid */
+/* Book Grid - Commented out to use Home.css styles */
+/*
 .book-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -64,3 +65,4 @@
 .view-btn:hover {
   background-color: #1a5fd0;
 }
+*/

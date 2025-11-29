@@ -162,7 +162,7 @@
 
 .book-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
   gap: 40px;
   justify-items: center;
   margin-top: 30px;
@@ -186,7 +186,7 @@
 
 .book-img {
   width: 100%;
-  height: 320px;
+  height: 275px;
   object-fit: cover;
   border-radius: 15px;
   margin-bottom: 20px;
@@ -260,6 +260,7 @@
     padding: 40px 20px;
     width: calc(100% - 20px);
     margin: 40px auto;
+    overflow: visible;
   }
 
   .new-arrivals h2,
@@ -268,7 +269,29 @@
   }
 
   .book-grid {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
     gap: 20px;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    padding-bottom: 20px;
+    /* Space for scrollbar if visible */
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* Hide scrollbar for cleaner look */
+  }
+
+  .book-grid::-webkit-scrollbar {
+    display: none;
+    /* Hide scrollbar for Chrome/Safari */
+  }
+
+  .book-card {
+    min-width: calc(50% - 10px);
+    /* 2 items per row with gap */
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    margin: 0;
+    /* Reset margins if any */
   }
 }
