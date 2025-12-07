@@ -55,6 +55,7 @@
   color: #ffd700;
   /* Yellow */
   background: none;
+  background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: initial;
   font-size: 4.5rem;

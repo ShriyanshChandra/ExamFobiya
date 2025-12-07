@@ -122,8 +122,8 @@ function Books({ searchQuery }) {
                       position: 'absolute',
                       top: '10px',
                       right: '90px', // Spaced from Remove button
-                      background: '#007bff',
-                      color: 'white',
+                      background: '#ffd700',
+                      color: '#182848',
                       border: 'none',
                       borderRadius: '4px',
                       padding: '5px 10px',

@@ -91,14 +91,16 @@
 .submit-btn {
     flex: 1;
     padding: 1rem;
-    background-color: #28a745;
-    color: white;
+    background-color: #ffd700;
+    /* Theme Yellow */
+    color: #182848;
+    /* Theme Dark Blue */
     border: none;
     border-radius: 6px;
     font-size: 1.1rem;
     cursor: pointer;
     font-weight: bold;
-    transition: background-color 0.2s;
+    transition: all 0.2s ease;
     margin-top: 0;
     /* Handled by flex parent */
 }
@@ -153,7 +155,9 @@
 }
 
 .submit-btn:hover {
-    background-color: #218838;
+    background-color: #ffed4a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(255, 215, 0, 0.3);
 }
 
 .submit-btn:disabled {
