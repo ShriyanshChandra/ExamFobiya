@@ -1,0 +1,126 @@
+.login-container {
+    display: flex;
+    flex-direction: column;
+    /* Stack error message and boxes vertically */
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    padding: 2rem;
+    background-color: transparent;
+}
+
+.login-boxes-wrapper {
+    display: flex;
+    gap: 5rem;
+    flex-wrap: wrap;
+    /* Stack on smaller screens */
+    justify-content: center;
+    width: 100%;
+}
+
+.login-card {
+    background: rgba(255, 255, 255, 0.65);
+    /* Increased transparency for frosted feel */
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    width: 100%;
+    max-width: 450px;
+    /* Widened for better visibility */
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    width: 100%;
+    max-width: 450px;
+    /* Widened for better visibility */
+    text-align: center;
+    color: #333;
+}
+
+/* Global error message above the boxes */
+.global-error-message {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode support if applicable, relying on parent theme or specific classes */
+/* Assuming .app-container might handle general dark mode, but overriding here for card */
+
+.login-card h2 {
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 1rem;
+}
+
+.login-btn:hover {
+    background-color: #0056b3;
+}
+
+.error-message {
+    color: #dc3545;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+}
+
+.mock-credentials {
+    margin-top: 2rem;
+    text-align: left;
+    font-size: 0.85rem;
+    color: #666;
+    border-top: 1px solid #eee;
+    padding-top: 1rem;
+}
+
+.mock-credentials ul {
+    list-style: none;
+    padding: 0;
+}
+
+.mock-credentials li {
+    margin-bottom: 0.25rem;
+}

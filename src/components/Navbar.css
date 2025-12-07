@@ -26,7 +26,8 @@
   align-items: center;
   justify-content: center;
   transition: background-color 0.3s ease, color 0.3s ease;
-  margin-left: 15px;
+  margin-left: 0;
+  /* Removing margin-left as we use gap in container now */
 }
 
 .theme-toggle:hover {
@@ -35,9 +36,10 @@
 }
 
 .navbar-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 30px;
+  width: 100%;
+  margin: 0;
+  padding: 0 20px;
+  /* Reduced from 30px */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -49,8 +51,8 @@
   text-decoration: none;
   display: flex;
   align-items: center;
-  margin-right: auto;
-  /* Pushes everything else to the right if needed, but flex justify-between handles it */
+  margin-right: 20px;
+  /* Small gap between logo and nav */
 }
 
 .navbar .brand-name {
@@ -130,14 +132,55 @@
   background-color: #ffed4a;
 }
 
-/* Navigation Menu - Centered */
+/* Navbar Actions Group */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-left: auto;
+  /* Push to the right */
+}
+
+/* Auth Buttons */
+.auth-btn,
+.auth-btn-link {
+  background-color: #ffd700;
+  /* Match brand yellow */
+  color: #182848;
+  /* Match dark blue */
+  padding: 8px 20px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: inline-block;
+}
+
+.auth-btn:hover,
+.auth-btn-link:hover {
+  transform: scale(1.05);
+  background-color: #ffed4a;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+}
+
+.desktop-auth {
+  display: block;
+}
+
+.mobile-only-auth {
+  display: none;
+}
+
+/* Navigation Menu - Left Aligned next to Logo */
 .nav-menu {
   display: flex;
   align-items: center;
   list-style: none;
   gap: 30px;
-  margin: 0 40px;
-  /* Spacing from logo and search */
+  margin: 0;
   padding: 0;
 }
 
@@ -364,5 +407,61 @@
 
   .dropdown:hover .dropdown-menu {
     display: block;
+  }
+
+  .desktop-auth {
+    display: none;
+  }
+
+  .mobile-only-auth {
+    display: block;
+    margin-top: 10px;
+  }
+
+  .mobile-only-auth a,
+  .mobile-only-auth span {
+    font-size: 1.5rem;
+    color: #ffd700;
+    cursor: pointer;
+    font-weight: bold;
+    text-decoration: none;
+  }
+}
+
+.nav-link-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-weight: 600;
+  font-size: 1.05rem;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  transition: color 0.3s ease;
+  position: relative;
+}
+
+.nav-link-btn:hover {
+  color: #ffd700;
+}
+
+.nav-link-btn::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background-color: #ffd700;
+  transition: width 0.3s ease;
+}
+
+.nav-link-btn:hover::after {
+  width: 100%;
+}
+
+@media screen and (max-width: 768px) {
+  .nav-link-btn {
+    font-size: 1.5rem;
   }
 }

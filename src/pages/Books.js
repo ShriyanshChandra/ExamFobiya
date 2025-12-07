@@ -1,4 +1,8 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { useBooks } from "../context/BookContext";
+import { useAuth } from "../context/AuthContext";
+import RemoveBookModal from "../components/RemoveBookModal";
 import "./Books.css";
 
 // Search results styling
@@ -10,6 +14,26 @@ const searchResultsStyle = `
   border-radius: 4px;
   color: #6c757d;
 }
+.add-book-action {
+    margin-bottom: 20px;
+    text-align: right;
+}
+.add-book-btn {
+    background-color: #ffd700;
+    color: #182848;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    display: inline-block;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.add-book-btn:hover {
+    background-color: #ffed4a;
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+    color: #182848;
+}
 `;
 
 // Add styles to head
@@ -17,105 +41,61 @@ const styleSheet = document.createElement("style");
 styleSheet.innerText = searchResultsStyle;
 document.head.appendChild(styleSheet);
 
-const booksData = [
-  {
-    id: 1,
-    title: "The Great Gatsby",
-    author: "F. Scott Fitzgerald",
-    image: "https://m.media-amazon.com/images/I/81af+MCATTL.jpg",
-    description: "A classic novel set in the Jazz Age exploring themes of wealth and identity.",
-    contents: "Chapters include: The Party, Gatsby’s Dream, The Fall, The Green Light, and more."
-  },
-  {
-    id: 2,
-    title: "Atomic Habits",
-    author: "James Clear",
-    image: "https://m.media-amazon.com/images/I/91bYsX41DVL.jpg",
-    description: "A practical guide on how to form good habits, break bad ones, and master tiny behaviors.",
-    contents: "Chapters: The Fundamentals, 1st Law, 2nd Law, 3rd Law, 4th Law."
-  },
-  {
-    id: 3,
-    title: "Sapiens",
-    author: "Yuval Noah Harari",
-    image: "https://m.media-amazon.com/images/I/713jIoMO3UL.jpg",
-    description: "A brief history of humankind, exploring evolution, culture, and society.",
-    contents: "Sections: Cognitive Revolution, Agricultural Revolution, Scientific Revolution."
-  },
-  {
-    id: 4,
-    title: "Rich Dad Poor Dad",
-    author: "Robert T. Kiyosaki",
-    image: "https://m.media-amazon.com/images/I/81bsw6fnUiL.jpg",
-    description: "A personal finance classic teaching financial independence and investing.",
-    contents: "Chapters: The Rich Don’t Work for Money, Mind Your Own Business, Work to Learn."
-  },
-  {
-    id: 5,
-    title: "Ikigai",
-    author: "Héctor García & Francesc Miralles",
-    image: "https://m.media-amazon.com/images/I/81l3rZK4lnL.jpg",
-    description: "The Japanese secret to a long and happy life.",
-    contents: "Topics: The Power of Purpose, Flow, Resilience, Finding Your Ikigai."
-  },
-  {
-    id: 6,
-    title: "The Psychology of Money",
-    author: "Morgan Housel",
-    image: "https://m.media-amazon.com/images/I/71aG+xDKSYL.jpg",
-    description: "Timeless lessons on wealth, greed, and happiness.",
-    contents: "Stories about behavior, risk, luck, and compounding."
-  },
-  {
-    id: 7,
-    title: "The Alchemist",
-    author: "Paulo Coelho",
-    image: "https://m.media-amazon.com/images/I/71aFt4+OTOL.jpg",
-    description: "A story about following one’s dreams and listening to one’s heart.",
-    contents: "Journey of Santiago, The Desert, The Alchemy, The Treasure."
-  },
-  {
-    id: 8,
-    title: "Deep Work",
-    author: "Cal Newport",
-    image: "https://images-na.ssl-images-amazon.com/images/I/81q6ECxcifL.jpg",
-    description: "Rules for focused success in a distracted world.",
-    contents: "Sections: The Idea, The Rules, Focus Strategies, Implementation."
-  },
-  {
-    id: 9,
-    title: "The Subtle Art of Not Giving a F*ck",
-    author: "Mark Manson",
-    image: "https://m.media-amazon.com/images/I/71QKQ9mwV7L.jpg",
-    description: "A counterintuitive approach to living a good life.",
-    contents: "Chapters: Don't Try, Happiness is a Problem, You Are Not Special."
-  },
-  {
-    id: 10,
-    title: "Thinking, Fast and Slow",
-    author: "Daniel Kahneman",
-    image: "https://m.media-amazon.com/images/I/61fdrEuPJwL.jpg",
-    description: "The two systems that drive the way we think.",
-    contents: "Parts: Two Systems, Heuristics and Biases, Overconfidence, Choices."
-  }
-];
+
 
 function Books({ searchQuery }) {
+  const { books, removeBook, updateBook } = useBooks(); // Added updateBook
+  const { user } = useAuth();
   const [selectedBook, setSelectedBook] = useState(null);
 
+  // Modal state
+  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+  const [bookToRemove, setBookToRemove] = useState(null);
+
   // Filter books based on search query
-  const filteredBooks = booksData.filter(book =>
+  const filteredBooks = books.filter(book =>
     searchQuery
       ? book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      book.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
       book.description.toLowerCase().includes(searchQuery.toLowerCase())
       : true
   );
 
+  const canAddBook = user && (user.role === 'admin' || user.role === 'developer');
+
+  const handleRemoveClick = (e, book) => {
+    e.stopPropagation();
+    setBookToRemove(book);
+    setIsRemoveModalOpen(true);
+  };
+
+  const handleConfirmRemove = ({ bookId, sectionsToRemove, removeFromAll }) => {
+    if (removeFromAll) {
+      removeBook(bookId);
+    } else if (sectionsToRemove && sectionsToRemove.length > 0) {
+      // Find the book to get its current sections
+      const book = books.find(b => b.id === bookId);
+      if (book) {
+        const currentSections = book.sections || [];
+        const updatedSections = currentSections.filter(s => !sectionsToRemove.includes(s));
+        updateBook(bookId, { sections: updatedSections });
+      }
+    }
+    setIsRemoveModalOpen(false);
+    setBookToRemove(null);
+  };
+
   return (
     <div className="books-page">
       <div className="books-content">
-        <h1>Available Books</h1>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h1>Available Books</h1>
+          {canAddBook && (
+            <div className="add-book-action">
+              <Link to="/add-book" className="add-book-btn">Add New Book</Link>
+            </div>
+          )}
+        </div>
+
         {searchQuery && (
           <p className="search-results">
             Showing results for: "{searchQuery}" ({filteredBooks.length} books found)
@@ -127,10 +107,59 @@ function Books({ searchQuery }) {
               key={book.id}
               className="book-card"
               onClick={() => setSelectedBook(book)}
+              style={{ position: 'relative' }}
             >
               <img src={book.image} alt={book.title} />
               <h3>{book.title}</h3>
-              <p>{book.author}</p>
+              {/* <p>{book.author}</p> REMOVED AUTHOR */}
+
+              {canAddBook && (
+                <>
+                  <Link
+                    to={`/edit-book/${book.id}`}
+                    onClick={(e) => e.stopPropagation()}
+                    style={{
+                      position: 'absolute',
+                      top: '10px',
+                      right: '90px', // Spaced from Remove button
+                      background: '#007bff',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      padding: '5px 10px',
+                      cursor: 'pointer',
+                      fontWeight: 'bold',
+                      zIndex: 10,
+                      textDecoration: 'none',
+                      fontSize: '14px',
+                      lineHeight: '1.5'
+                    }}
+                  >
+                    Edit
+                  </Link>
+
+                  <button
+                    onClick={(e) => handleRemoveClick(e, book)}
+                    style={{
+                      position: 'absolute',
+                      top: '10px',
+                      right: '10px',
+                      background: '#dc3545',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '4px',
+                      padding: '5px 10px',
+                      cursor: 'pointer',
+                      fontWeight: 'bold',
+                      zIndex: 10,
+                      fontSize: '14px',
+                      lineHeight: '1.5'
+                    }}
+                  >
+                    Remove
+                  </button>
+                </>
+              )}
             </div>
           ))}
         </div>
@@ -143,11 +172,19 @@ function Books({ searchQuery }) {
               &times;
             </span>
             <h2>{selectedBook.title}</h2>
-            <p><strong>Author:</strong> {selectedBook.author}</p>
+            {/* <p><strong>Author:</strong> {selectedBook.author}</p> REMOVED */}
             <p><strong>Description:</strong> {selectedBook.description}</p>
             <p><strong>Contents:</strong> {selectedBook.contents}</p>
           </div>
         </div>
+      )}
+
+      {isRemoveModalOpen && (
+        <RemoveBookModal
+          book={bookToRemove}
+          onClose={() => setIsRemoveModalOpen(false)}
+          onConfirm={handleConfirmRemove}
+        />
       )}
     </div>
   );

@@ -1,0 +1,166 @@
+.add-book-container {
+    display: flex;
+    justify-content: center;
+    padding: 2rem;
+    min-height: 80vh;
+}
+
+.add-book-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
+}
+
+.add-book-card h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #444;
+}
+
+.form-group input[type="text"],
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.form-group input[type="file"] {
+    display: block;
+    width: 100%;
+    padding: 5px;
+}
+
+.img-preview {
+    display: block;
+    margin-top: 10px;
+    max-width: 150px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+/* Entry Mode Toggle */
+.entry-mode-toggle {
+    display: flex;
+    gap: 10px;
+    background: #f1f3f5;
+    padding: 5px;
+    border-radius: 8px;
+}
+
+.toggle-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #666;
+    transition: all 0.2s ease;
+}
+
+.toggle-btn.active {
+    background: white;
+    color: #007bff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 2rem;
+}
+
+.submit-btn {
+    flex: 1;
+    padding: 1rem;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s;
+    margin-top: 0;
+    /* Handled by flex parent */
+}
+
+.cancel-btn {
+    flex: 1;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    /* Increased gap for better spacing */
+    cursor: pointer;
+    font-size: 1rem;
+    color: #333;
+    padding: 2px 0;
+    /* Slight visual breathing room */
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin: 0;
+    /* Remove default margins */
+    flex-shrink: 0;
+    /* Prevent shrinking */
+    accent-color: #007bff;
+    /* Use theme color */
+}
+
+.cancel-btn:hover {
+    background-color: #e2e6ea;
+    border-color: #ccc;
+}
+
+.submit-btn:hover {
+    background-color: #218838;
+}
+
+.submit-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+textarea {
+    resize: vertical;
+}
