@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Login.css';
 
@@ -43,8 +43,8 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true }) => {
             </form>
 
             {allowRegister && (
-                <p className="toggle-auth" onClick={() => setIsRegistering(!isRegistering)}>
-                    {isRegistering ? 'Already have an account? Login' : 'Need an account? Register'}
+                <p className="toggle-auth">
+                    Need an account? <Link to="/register" style={{ color: '#007bff' }}>Register</Link>
                 </p>
             )}
         </div>

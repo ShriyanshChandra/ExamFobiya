@@ -47,8 +47,20 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit }) => {
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.3 }}
                     >
-                        <p className="book-desc"><strong>Description:</strong> {book.description}</p>
-                        <p className="book-contents"><strong>Contents:</strong> {book.contents}</p>
+                        <div className="book-topics">
+                            <strong>Topics Covered:</strong>
+                            <ol style={{ paddingLeft: '20px', marginTop: '5px' }}>
+                                {book.contents ? (
+                                    Array.isArray(book.contents)
+                                        ? book.contents.map((topic, i) => <li key={i}>{topic}</li>)
+                                        : book.contents.split('\n').filter(line => line.trim() !== '').map((topic, i) => (
+                                            <li key={i}>{topic.replace(/^\d+\.\s*/, '')}</li> /* Remove existing numbering if present */
+                                        ))
+                                ) : (
+                                    <li>No specific topics listed.</li>
+                                )}
+                            </ol>
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>
