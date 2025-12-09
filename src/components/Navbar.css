@@ -318,33 +318,55 @@
     padding: 0 20px;
   }
 
-  .menu-icon {
-    display: block;
-    order: 1;
-    /* Left side */
+  .navbar-actions {
+    display: contents;
+    /* Allows children to participate in the main grid/flex container */
   }
 
   .logo-link {
     order: 2;
-    /* Center */
-    margin-right: 0;
+    margin-right: auto;
+    /* Push others to right */
+    margin-left: 10px;
+  }
+
+  .theme-toggle {
+    order: 3;
+    margin-left: 0;
   }
 
   .search-container {
-    order: 3;
-    /* Right side (or below) */
+    order: 4;
+    margin: 0 0 0 10px;
     width: 40px;
-    /* Collapsed search for now, or keep it full width below */
+    /* Collapsed search width */
     padding: 5px;
     justify-content: center;
     background: transparent;
     border: none;
     box-shadow: none;
+    transition: all 0.3s ease;
+  }
+
+  /* Expanded Search State */
+  .search-container.active {
+    width: 180px;
+    /* Expanded width */
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 25px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    justify-content: space-between;
   }
 
   .search-input {
     display: none;
-    /* Hide input on mobile initially to save space */
+  }
+
+  .search-container.active .search-input {
+    display: block;
+    width: 100%;
+    margin-right: 5px;
   }
 
   .search-btn {
@@ -355,9 +377,10 @@
     box-shadow: none;
   }
 
-  .theme-toggle {
-    order: 4;
-    margin-left: 0;
+  .menu-icon {
+    display: block;
+    order: 1;
+    margin-right: 0;
   }
 
   .nav-menu {
@@ -366,15 +389,18 @@
     left: -100%;
     width: 100%;
     height: calc(100vh - 70px);
-    background: rgba(24, 40, 72, 0.95);
-    backdrop-filter: blur(10px);
+    background: rgba(24, 40, 72, 0.98);
+    /* Slightly more opaque */
+    backdrop-filter: blur(15px);
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    transition: all 0.4s ease;
+    justify-content: flex-start;
+    /* Start from top */
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     margin: 0;
-    padding: 40px 0;
-    gap: 40px;
+    padding: 60px 20px;
+    gap: 25px;
+    /* Reduced gap */
     z-index: 999;
   }
 
@@ -382,31 +408,56 @@
     left: 0;
   }
 
+  /* Mobile Menu items styling fix */
+  .nav-menu li {
+    width: 100%;
+    text-align: center;
+  }
+
   .nav-menu li a,
   .dropdown span {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
+    /* Slightly smaller for better fit */
+    padding: 12px 20px;
+    display: block;
+    border-radius: 12px;
+    transition: background 0.2s;
+  }
+
+  .nav-menu li a:active,
+  .dropdown span:active {
+    background: rgba(255, 255, 255, 0.05);
   }
 
   .dropdown-menu {
     position: static;
     transform: none;
-    background: var(--card-bg);
+    background: transparent;
     box-shadow: none;
     text-align: center;
-    padding: 10px 0;
+    padding: 10px 0 0 0;
+    display: none;
+    /* Hidden by default in mobile too */
+    border: none;
+    margin-top: 5px;
+  }
+
+  /* Show dropdown on click/hover in mobile implicitly via state or hover if supported */
+  .dropdown:hover .dropdown-menu,
+  .dropdown:focus-within .dropdown-menu {
     display: block;
-    /* Always show in mobile menu if parent is there, or handle click */
+    animation: fadeIn 0.3s;
   }
 
   .nav-menu .dropdown-menu li a {
-    color: var(--text-color);
-    font-size: 1.2rem;
-    display: block;
-    /* Ensure it takes space */
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
+    padding: 8px 0;
   }
 
-  .dropdown:hover .dropdown-menu {
-    display: block;
+  .nav-menu .dropdown-menu li a:hover {
+    color: #ffd700;
+    background: transparent;
   }
 
   .desktop-auth {
@@ -415,16 +466,23 @@
 
   .mobile-only-auth {
     display: block;
-    margin-top: 10px;
+    margin-top: 20px;
+    width: 100%;
+    text-align: center;
   }
 
   .mobile-only-auth a,
   .mobile-only-auth span {
-    font-size: 1.5rem;
-    color: #ffd700;
-    cursor: pointer;
+    font-size: 1.3rem;
+    color: #182848;
+    background: #ffd700;
+    padding: 12px 40px;
+    border-radius: 30px;
     font-weight: bold;
     text-decoration: none;
+    display: inline-block;
+    /* Make it a button look */
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
   }
 }
 
@@ -462,6 +520,6 @@
 
 @media screen and (max-width: 768px) {
   .nav-link-btn {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
   }
 }

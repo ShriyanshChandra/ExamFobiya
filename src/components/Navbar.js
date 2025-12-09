@@ -7,6 +7,7 @@ import "./Navbar.css";
 const Navbar = ({ setSearchQuery }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [localSearch, setLocalSearch] = useState("");
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const navigate = useNavigate();
@@ -37,19 +38,33 @@ const Navbar = ({ setSearchQuery }) => {
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
+    setShowMobileSearch(false); // Close search when menu opens
   };
 
-  const handleSearch = () => {
+  const handleSearchSubmit = () => {
     if (setSearchQuery) {
       setSearchQuery(localSearch);
     }
     navigate("/books");
-    setIsOpen(false); // Close menu on search
+    setIsOpen(false);
+    setShowMobileSearch(false);
+  };
+
+  const handleSearchClick = () => {
+    // Mobile logic
+    if (window.innerWidth <= 768) {
+      if (!showMobileSearch) {
+        setShowMobileSearch(true);
+        return; // Open search, don't submit yet
+      }
+      // If already open, submit search
+    }
+    handleSearchSubmit();
   };
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
-      handleSearch();
+      handleSearchSubmit();
     }
   };
 
@@ -152,7 +167,7 @@ const Navbar = ({ setSearchQuery }) => {
           </button>
 
           {/* Search Bar */}
-          <div className="search-container">
+          <div className={`search-container ${showMobileSearch ? "active" : ""}`}>
             <input
               type="text"
               placeholder="Search..."
@@ -161,7 +176,7 @@ const Navbar = ({ setSearchQuery }) => {
               onChange={(e) => setLocalSearch(e.target.value)}
               onKeyDown={handleKeyDown}
             />
-            <button className="search-btn" onClick={handleSearch}>
+            <button className="search-btn" onClick={handleSearchClick}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>

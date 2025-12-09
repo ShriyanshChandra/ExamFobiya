@@ -1,8 +1,9 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { useBooks } from "../context/BookContext";
 import { useAuth } from "../context/AuthContext";
 import RemoveBookModal from "../components/RemoveBookModal";
+import BookCard from "../components/BookCard";
 import "./Books.css";
 
 // Search results styling
@@ -44,9 +45,9 @@ document.head.appendChild(styleSheet);
 
 
 function Books({ searchQuery }) {
-  const { books, removeBook, updateBook } = useBooks(); // Added updateBook
+  const { books, removeBook, updateBook, loading } = useBooks(); // Added updateBook, loading
   const { user } = useAuth();
-  const [selectedBook, setSelectedBook] = useState(null);
+  // removed local selectedBook and location logic as we use global state now
 
   // Modal state
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
@@ -55,15 +56,14 @@ function Books({ searchQuery }) {
   // Filter books based on search query
   const filteredBooks = books.filter(book =>
     searchQuery
-      ? book.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      book.description.toLowerCase().includes(searchQuery.toLowerCase())
+      ? (book.title && book.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (book.description && book.description.toLowerCase().includes(searchQuery.toLowerCase()))
       : true
   );
 
   const canAddBook = user && (user.role === 'admin' || user.role === 'developer');
 
-  const handleRemoveClick = (e, book) => {
-    e.stopPropagation();
+  const handleRemoveClick = (book) => {
     setBookToRemove(book);
     setIsRemoveModalOpen(true);
   };
@@ -87,6 +87,7 @@ function Books({ searchQuery }) {
   return (
     <div className="books-page">
       <div className="books-content">
+        {loading && <p style={{ textAlign: "center", padding: "2rem" }}>Loading library...</p>}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h1>Available Books</h1>
           {canAddBook && (
@@ -102,82 +103,18 @@ function Books({ searchQuery }) {
           </p>
         )}
         <div className="books-grid">
-          {filteredBooks.map((book) => (
-            <div
+          {filteredBooks.map((book, index) => (
+            <BookCard
               key={book.id}
-              className="book-card"
-              onClick={() => setSelectedBook(book)}
-              style={{ position: 'relative' }}
-            >
-              <img src={book.image} alt={book.title} />
-              <h3>{book.title}</h3>
-              {/* <p>{book.author}</p> REMOVED AUTHOR */}
-
-              {canAddBook && (
-                <>
-                  <Link
-                    to={`/edit-book/${book.id}`}
-                    onClick={(e) => e.stopPropagation()}
-                    style={{
-                      position: 'absolute',
-                      top: '10px',
-                      right: '90px', // Spaced from Remove button
-                      background: '#ffd700',
-                      color: '#182848',
-                      border: 'none',
-                      borderRadius: '4px',
-                      padding: '5px 10px',
-                      cursor: 'pointer',
-                      fontWeight: 'bold',
-                      zIndex: 10,
-                      textDecoration: 'none',
-                      fontSize: '14px',
-                      lineHeight: '1.5'
-                    }}
-                  >
-                    Edit
-                  </Link>
-
-                  <button
-                    onClick={(e) => handleRemoveClick(e, book)}
-                    style={{
-                      position: 'absolute',
-                      top: '10px',
-                      right: '10px',
-                      background: '#dc3545',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '4px',
-                      padding: '5px 10px',
-                      cursor: 'pointer',
-                      fontWeight: 'bold',
-                      zIndex: 10,
-                      fontSize: '14px',
-                      lineHeight: '1.5'
-                    }}
-                  >
-                    Remove
-                  </button>
-                </>
-              )}
-            </div>
+              book={book}
+              index={index}
+              canEdit={canAddBook}
+              onRemove={(b) => handleRemoveClick(b)} // Wrap to avoid event object issue if any
+              onEdit={() => { }} // Link is handled inside BookCard if canEdit is true
+            />
           ))}
         </div>
       </div>
-
-      {selectedBook && (
-        <div className="book-modal">
-          <div className="book-modal-content">
-            <span className="close-btn" onClick={() => setSelectedBook(null)}>
-              &times;
-            </span>
-            <h2>{selectedBook.title}</h2>
-            {/* <p><strong>Author:</strong> {selectedBook.author}</p> REMOVED */}
-            <p><strong>Description:</strong> {selectedBook.description}</p>
-            <p><strong>Contents:</strong> {selectedBook.contents}</p>
-          </div>
-        </div>
-      )}
 
       {isRemoveModalOpen && (
         <RemoveBookModal

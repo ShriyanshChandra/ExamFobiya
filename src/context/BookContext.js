@@ -1,11 +1,12 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { db } from '../firebase';
+import { collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc, writeBatch } from 'firebase/firestore';
 
 const BookContext = createContext();
 
-// Initial data from Books.js to bootstrap the app
+// Initial data to see the database if empty
 const initialBooks = [
     {
-        id: 1,
         title: "The Great Gatsby",
         author: "F. Scott Fitzgerald",
         image: "https://m.media-amazon.com/images/I/81af+MCATTL.jpg",
@@ -14,7 +15,6 @@ const initialBooks = [
         sections: ["Best Seller"]
     },
     {
-        id: 2,
         title: "Atomic Habits",
         author: "James Clear",
         image: "https://m.media-amazon.com/images/I/91bYsX41DVL.jpg",
@@ -23,7 +23,6 @@ const initialBooks = [
         sections: ["Best Seller"]
     },
     {
-        id: 3,
         title: "Sapiens",
         author: "Yuval Noah Harari",
         image: "https://m.media-amazon.com/images/I/713jIoMO3UL.jpg",
@@ -32,7 +31,6 @@ const initialBooks = [
         sections: ["Best Seller"]
     },
     {
-        id: 4,
         title: "Rich Dad Poor Dad",
         author: "Robert T. Kiyosaki",
         image: "https://m.media-amazon.com/images/I/81bsw6fnUiL.jpg",
@@ -41,7 +39,6 @@ const initialBooks = [
         sections: ["Best Seller"]
     },
     {
-        id: 5,
         title: "Ikigai",
         author: "Héctor García & Francesc Miralles",
         image: "https://m.media-amazon.com/images/I/81l3rZK4lnL.jpg",
@@ -50,7 +47,6 @@ const initialBooks = [
         sections: ["New Arrivals"]
     },
     {
-        id: 6,
         title: "The Psychology of Money",
         author: "Morgan Housel",
         image: "https://m.media-amazon.com/images/I/71aG+xDKSYL.jpg",
@@ -59,7 +55,6 @@ const initialBooks = [
         sections: ["Best Seller"]
     },
     {
-        id: 7,
         title: "The Alchemist",
         author: "Paulo Coelho",
         image: "https://m.media-amazon.com/images/I/71aFt4+OTOL.jpg",
@@ -68,7 +63,6 @@ const initialBooks = [
         sections: ["Best Seller"]
     },
     {
-        id: 8,
         title: "Deep Work",
         author: "Cal Newport",
         image: "https://images-na.ssl-images-amazon.com/images/I/81q6ECxcifL.jpg",
@@ -77,7 +71,6 @@ const initialBooks = [
         sections: ["New Arrivals"]
     },
     {
-        id: 9,
         title: "The Subtle Art of Not Giving a F*ck",
         author: "Mark Manson",
         image: "https://m.media-amazon.com/images/I/71QKQ9mwV7L.jpg",
@@ -86,7 +79,6 @@ const initialBooks = [
         sections: ["New Arrivals"]
     },
     {
-        id: 10,
         title: "Thinking, Fast and Slow",
         author: "Daniel Kahneman",
         image: "https://m.media-amazon.com/images/I/61fdrEuPJwL.jpg",
@@ -97,51 +89,81 @@ const initialBooks = [
 ];
 
 export const BookProvider = ({ children }) => {
-    const [books, setBooks] = useState(() => {
-        // Try to load from local storage first
-        const savedBooks = localStorage.getItem('books');
-        let parsedBooks = savedBooks ? JSON.parse(savedBooks) : initialBooks;
+    const [books, setBooks] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-        // Data Migration: Ensure 'sections' array exists if only 'section' string is present
-        parsedBooks = parsedBooks.map(book => {
-            if (book.section && !book.sections) {
-                return { ...book, sections: [book.section] };
-            }
-            return book;
-        });
-
-        return parsedBooks;
-    });
-
+    // Fetch Books from Firestore
     useEffect(() => {
-        localStorage.setItem('books', JSON.stringify(books));
-    }, [books]);
+        const unsubscribe = onSnapshot(collection(db, 'books'), (snapshot) => {
+            const booksData = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
 
-    const addBook = (newBook) => {
-        setBooks(prevBooks => {
-            const bookWithId = { ...newBook, id: Date.now() }; // Simple ID generation
-            return [...prevBooks, bookWithId];
+            // Auto-Seed if empty
+            if (booksData.length === 0) { // Removed localStorage check
+                seedDatabase();
+            } else {
+                setBooks(booksData);
+                setLoading(false);
+            }
+        }, (error) => {
+            console.error("Error fetching books:", error);
+            setLoading(false);
         });
+
+        return () => unsubscribe();
+    }, []);
+
+    const seedDatabase = async () => {
+        console.log("Seeding Database...");
+        const batch = writeBatch(db);
+        initialBooks.forEach(book => {
+            const docRef = doc(collection(db, "books"));
+            batch.set(docRef, book);
+        });
+
+        try {
+            await batch.commit();
+            console.log("Database seeded successfully!");
+            // Removed localStorage.setItem('booksSeeded', 'true');
+        } catch (error) {
+            console.error("Error seeding database:", error);
+        }
     };
 
-    const removeBook = (id) => {
-        setBooks(prevBooks => prevBooks.filter(book => book.id !== id));
+    const addBook = async (newBook) => {
+        try {
+            await addDoc(collection(db, 'books'), newBook);
+        } catch (error) {
+            console.error("Error adding book:", error);
+            alert("Failed to add book. check console.");
+        }
     };
 
-    const updateBook = (id, updates) => {
-        setBooks(prevBooks => prevBooks.map(book =>
-            book.id === id ? { ...book, ...updates } : book
-        ));
+    const removeBook = async (id) => {
+        try {
+            await deleteDoc(doc(db, 'books', id));
+        } catch (error) {
+            console.error("Error deleting book:", error);
+        }
+    };
+
+    const updateBook = async (id, updates) => {
+        try {
+            await updateDoc(doc(db, 'books', id), updates);
+        } catch (error) {
+            console.error("Error updating book:", error);
+        }
     };
 
     const getBooksBySection = (sectionName) => {
-        // Return hooks belonging to a specific section (Best Seller, New Arrival, etc.)
         if (!sectionName) return books;
         return books.filter(book => book.sections && book.sections.includes(sectionName));
     };
 
     return (
-        <BookContext.Provider value={{ books, addBook, removeBook, updateBook, getBooksBySection }}>
+        <BookContext.Provider value={{ books, addBook, removeBook, updateBook, getBooksBySection, loading }}>
             {children}
         </BookContext.Provider>
     );

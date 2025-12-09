@@ -1,7 +1,6 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { useRef } from 'react';
 import { useBooks } from "../context/BookContext";
+import BookCard from '../components/BookCard';
 import "./NewArrivals.css";
 
 const NewArrivals = () => {
@@ -17,19 +16,7 @@ const NewArrivals = () => {
       ) : (
         <div className="book-grid">
           {newArrivals.map((book, index) => (
-            <motion.div
-              key={book.id}
-              className="book-card"
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
-            >
-              <img src={book.image} alt={book.title} className="book-img" />
-              <h3>{book.title}</h3>
-              {/* <p>by {book.author}</p> REMOVED AUTHOR */}
-              <Link to="/books" className="view-btn">View Details</Link>
-            </motion.div>
+            <BookCard key={book.id} book={book} index={index} />
           ))}
         </div>
       )}

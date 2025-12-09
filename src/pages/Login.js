@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Login.css';
 
-const LoginBox = ({ role, title, onLogin }) => {
-    const [username, setUsername] = useState('');
+const LoginBox = ({ role, title, onAuth, allowRegister = true }) => {
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [isRegistering, setIsRegistering] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onLogin(role, username, password);
+        onAuth(role, email, password, isRegistering);
     };
 
     return (
@@ -17,12 +18,12 @@ const LoginBox = ({ role, title, onLogin }) => {
             <h2>{title}</h2>
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                    <label>Username:</label>
+                    <label>Email:</label>
                     <input
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        placeholder="Enter username"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="Enter email"
                         required
                     />
                 </div>
@@ -36,40 +37,46 @@ const LoginBox = ({ role, title, onLogin }) => {
                         required
                     />
                 </div>
-                <button type="submit" className="login-btn">Login as {role === 'admin' ? 'Admin' : 'User'}</button>
+                <button type="submit" className="login-btn">
+                    {isRegistering ? 'Create Account' : 'Login'}
+                </button>
             </form>
+
+            {allowRegister && (
+                <p className="toggle-auth" onClick={() => setIsRegistering(!isRegistering)}>
+                    {isRegistering ? 'Already have an account? Login' : 'Need an account? Register'}
+                </p>
+            )}
         </div>
     );
 };
 
 const Login = () => {
     const [error, setError] = useState('');
-    const { login } = useAuth();
+    const { login, register } = useAuth();
     const navigate = useNavigate();
 
-    const handleLogin = (role, username, password) => {
+    const handleAuth = async (role, email, password, isRegistering) => {
         setError('');
-        let isValid = false;
-
-        const adminUser = process.env.REACT_APP_ADMIN_USERNAME;
-        const adminPass = process.env.REACT_APP_ADMIN_PASSWORD;
-        const userUser = process.env.REACT_APP_USER_USERNAME;
-        const userPass = process.env.REACT_APP_USER_PASSWORD;
-
-        // Validation Logic using Environment Variables
-        if (role === 'admin' && username === adminUser && password === adminPass) {
-            isValid = true;
-        } else if (role === 'user' && username === userUser && password === userPass) {
-            isValid = true;
-        }
-
-        if (isValid) {
-            login(role);
-            // Redirect based on role
-            if (role === 'admin') navigate('/admin');
-            else navigate('/');
-        } else {
-            setError(`Invalid ${role} credentials`);
+        try {
+            if (isRegistering) {
+                // Register
+                const username = email.split('@')[0];
+                await register(email, password, role, username);
+                // Redirect after registration
+                if (role === 'admin') navigate('/admin');
+                else navigate('/');
+            } else {
+                // Login
+                await login(email, password);
+                // Redirect logic could be improved by checking actual user role, 
+                // but for now we trust the user's flow or let the protected route handle it.
+                if (role === 'admin') navigate('/admin');
+                else navigate('/');
+            }
+        } catch (err) {
+            console.error(err);
+            setError(err.message.replace('Firebase: ', ''));
         }
     };
 
@@ -77,8 +84,8 @@ const Login = () => {
         <div className="login-container">
             {error && <div className="global-error-message">{error}</div>}
             <div className="login-boxes-wrapper">
-                <LoginBox role="admin" title="Admin Login" onLogin={handleLogin} />
-                <LoginBox role="user" title="User Login" onLogin={handleLogin} />
+                <LoginBox role="admin" title="Admin Portal" onAuth={handleAuth} allowRegister={false} />
+                <LoginBox role="user" title="User Portal" onAuth={handleAuth} allowRegister={true} />
             </div>
         </div>
     );

@@ -1,46 +1,68 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { auth, db } from '../firebase';
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Check local storage for existing session
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        }
+        const unsubscribe = onAuthStateChanged(auth, async (item) => {
+            if (item) {
+                // User is signed in, fetch additional data (role) from Firestore
+                try {
+                    const userDoc = await getDoc(doc(db, "users", item.uid));
+                    if (userDoc.exists()) {
+                        setUser({ ...item, ...userDoc.data() });
+                    } else {
+                        // User exists in Auth but not Firestore (e.g. created in Console)
+                        // Create default user doc
+                        await setDoc(doc(db, "users", item.uid), {
+                            email: item.email,
+                            role: 'user',
+                            username: item.email.split('@')[0],
+                            createdAt: new Date()
+                        });
+                        setUser({ ...item, role: 'user' });
+                    }
+                } catch (error) {
+                    console.error("Error fetching/creating user data:", error);
+                    setUser(item);
+                }
+            } else {
+                setUser(null);
+            }
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
     }, []);
 
-    const login = (role) => {
-        // Mock user object based on role
-        // In a real app, this would come from a backend response
-        let userData = null;
+    const login = (email, password) => {
+        return signInWithEmailAndPassword(auth, email, password);
+    };
 
-        if (role === 'developer') {
-            userData = { username: 'dev_user', role: 'developer', name: 'Developer Account' };
-        } else if (role === 'admin') {
-            userData = { username: 'admin_user', role: 'admin', name: 'Admin Account' };
-        } else if (role === 'user') {
-            userData = { username: 'standard_user', role: 'user', name: 'Standard User' };
-        } else {
-            console.error("Invalid role attempted");
-            return false;
-        }
-
-        setUser(userData);
-        localStorage.setItem('user', JSON.stringify(userData));
-        return true;
+    const register = async (email, password, role, username) => {
+        const result = await createUserWithEmailAndPassword(auth, email, password);
+        // Create user document with role
+        await setDoc(doc(db, "users", result.user.uid), {
+            email,
+            role,
+            username,
+            createdAt: new Date()
+        });
+        return result;
     };
 
     const logout = () => {
-        setUser(null);
-        localStorage.removeItem('user');
+        return signOut(auth);
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout }}>
+        <AuthContext.Provider value={{ user, login, register, logout, loading }}>
             {children}
         </AuthContext.Provider>
     );

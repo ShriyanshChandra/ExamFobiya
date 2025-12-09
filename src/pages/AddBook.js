@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useBooks } from '../context/BookContext';
 import { extractTextFromPdf, formatToTopics } from '../utils/pdfUtils';
+import { storage } from '../firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import './AddBook.css';
 
 const AddBook = () => {
@@ -43,15 +45,40 @@ const AddBook = () => {
         }
     }, [id, books, isEditMode, navigate]);
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImage(reader.result);
-            };
-            reader.readAsDataURL(file);
+    const [imageUrlInput, setImageUrlInput] = useState('');
+
+    // Helper to convert Drive links to direct view links
+    const convertToDirectLink = (url) => {
+        if (!url) return '';
+
+        // Extract ID from various Google Drive URL formats
+        // 1. /file/d/ID/view
+        // 2. /open?id=ID
+        // 3. /uc?id=ID (Previously converted links)
+        const idRegex = /([-a-zA-Z0-9_]+)(?:\/view|&export=view)?/;
+
+        let id = null;
+        if (url.includes('drive.google.com/file/d/')) {
+            const match = url.match(/file\/d\/([-a-zA-Z0-9_]+)/);
+            if (match) id = match[1];
+        } else if (url.includes('id=')) {
+            const match = url.match(/id=([-a-zA-Z0-9_]+)/);
+            if (match) id = match[1];
         }
+
+        if (id) {
+            // Use the 'thumbnail' endpoint which is more reliable for images than 'uc'
+            // sz=w800 requests a width of 800px (high quality cover)
+            return `https://drive.google.com/thumbnail?id=${id}&sz=w800`;
+        }
+        return url; // Return original if not a Drive link
+    };
+
+    const handleUrlChange = (e) => {
+        const val = e.target.value;
+        setImageUrlInput(val);
+        const directUrl = convertToDirectLink(val);
+        setImage(directUrl); // Update preview immediately
     };
 
     const handlePdfChange = async (e) => {
@@ -82,26 +109,36 @@ const AddBook = () => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
 
-        const bookData = {
-            title,
-            author: "Smart Publications",
-            sections, // Send array
-            image: image || 'https://via.placeholder.com/150', // Fallback image
-            contents: contents || 'No contents available.'
-        };
+        // No more Firebase Storage upload logic needed for cover
+        const finalImage = image || 'https://via.placeholder.com/150';
 
-        if (isEditMode) {
-            updateBook(parseInt(id), bookData); // Ensure ID is number if your IDs are numbers
-            alert('Book updated successfully!');
-        } else {
-            addBook(bookData);
-            alert('Book added successfully!');
+        try {
+            const bookData = {
+                title,
+                author: "Smart Publications",
+                sections,
+                image: finalImage,
+                contents: contents || 'No contents available.'
+            };
+
+            if (isEditMode) {
+                await updateBook(id, bookData);
+                alert('Book updated successfully!');
+            } else {
+                await addBook(bookData);
+                alert('Book added successfully!');
+            }
+            navigate('/books');
+        } catch (error) {
+            console.error("Error saving book:", error);
+            alert(`Operation failed: ${error.message}`);
+        } finally {
+            setLoading(false);
         }
-
-        navigate('/books');
     };
 
     return (
@@ -149,9 +186,28 @@ const AddBook = () => {
                     </div>
 
                     <div className="form-group">
-                        <label>Cover Image:</label>
-                        <input type="file" accept="image/*" onChange={handleImageChange} required={!isEditMode} /> {/* Not required on edit if keeping existing */}
-                        {image && <img src={image} alt="Preview" className="img-preview" />}
+                        <label>Cover Image URL (Paste Drive Link):</label>
+                        <input
+                            type="text"
+                            className="url-input"
+                            placeholder="https://drive.google.com/file/d/..."
+                            value={imageUrlInput}
+                            onChange={handleUrlChange}
+                            required={!isEditMode && !image}
+                        />
+                        <small style={{ display: 'block', color: '#666', marginTop: '5px' }}>
+                            Supports JPEG, PNG, direct links, and Google Drive sharing links.
+                        </small>
+                        {image && (
+                            <div className="image-preview-wrapper" style={{ marginTop: '10px' }}>
+                                <img
+                                    src={image}
+                                    alt="Preview"
+                                    className="img-preview"
+                                    referrerPolicy="no-referrer"
+                                />
+                            </div>
+                        )}
                     </div>
 
                     <div className="form-group">
