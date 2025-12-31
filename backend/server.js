@@ -21,13 +21,11 @@ app.post('/send-otp', async (req, res) => {
     try {
         const transporter = nodemailer.createTransport({
             host: 'smtp.gmail.com',
-            port: 587,
-            secure: false,
+            port: 465,
+            secure: true,
             logger: true,
             debug: true,
-            connectionTimeout: 10000, // 10 seconds
-            greetingTimeout: 10000,   // 10 seconds
-            socketTimeout: 10000,     // 10 seconds
+            connectionTimeout: 10000,
             tls: {
                 rejectUnauthorized: false
             },
