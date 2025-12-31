@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useBooks } from '../context/BookContext';
 import { extractTextFromPdf, formatToTopics } from '../utils/pdfUtils';
-import { storage } from '../firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import './AddBook.css';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 const AddBook = () => {
     const { addBook, updateBook, books } = useBooks(); // Added updateBook, books
@@ -19,6 +18,8 @@ const AddBook = () => {
     const [contents, setContents] = useState('');
     const [loading, setLoading] = useState(false);
     const [entryMode, setEntryMode] = useState('pdf'); // 'pdf' or 'manual'
+
+    const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
 
     // Load book data if editing
     useEffect(() => {
@@ -55,8 +56,6 @@ const AddBook = () => {
         // 1. /file/d/ID/view
         // 2. /open?id=ID
         // 3. /uc?id=ID (Previously converted links)
-        const idRegex = /([-a-zA-Z0-9_]+)(?:\/view|&export=view)?/;
-
         let id = null;
         if (url.includes('drive.google.com/file/d/')) {
             const match = url.match(/file\/d\/([-a-zA-Z0-9_]+)/);
@@ -111,8 +110,29 @@ const AddBook = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
 
+        // Normalize title for comparison
+        const normalizedTitle = title.trim().toLowerCase();
+
+        // Check for duplicates
+        const isDuplicate = books.some(book => {
+            const bookTitle = book.title ? book.title.trim().toLowerCase() : "";
+
+            // In edit mode, ignore the current book being edited
+            if (isEditMode && book.id.toString() === id) return false;
+            return bookTitle === normalizedTitle;
+        });
+
+        if (isDuplicate) {
+            setShowDuplicateWarning(true);
+            return;
+        }
+
+        await saveBook();
+    };
+
+    const saveBook = async () => {
+        setLoading(true);
         // No more Firebase Storage upload logic needed for cover
         const finalImage = image || 'https://via.placeholder.com/150';
 
@@ -266,6 +286,17 @@ const AddBook = () => {
                     </div>
                 </form>
             </div>
+
+            <ConfirmationModal
+                isOpen={showDuplicateWarning}
+                onClose={() => setShowDuplicateWarning(false)}
+                onConfirm={() => {
+                    setShowDuplicateWarning(false);
+                    saveBook();
+                }}
+                title="Duplicate Book Warning"
+                message="WARNING: A book with the same name exists! Do you still want to add this book?"
+            />
         </div>
     );
 };

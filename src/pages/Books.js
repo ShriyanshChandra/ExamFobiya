@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { useBooks } from "../context/BookContext";
 import { useAuth } from "../context/AuthContext";
 import RemoveBookModal from "../components/RemoveBookModal";
@@ -64,8 +64,14 @@ function Books({ searchQuery }) {
   const canAddBook = user && (user.role === 'admin' || user.role === 'developer');
 
   const handleRemoveClick = (book) => {
+    console.log("Removing book:", book?.title);
     setBookToRemove(book);
     setIsRemoveModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    console.log("Closing modal (handleCloseModal called)");
+    setIsRemoveModalOpen(false);
   };
 
   const handleConfirmRemove = ({ bookId, sectionsToRemove, removeFromAll }) => {
@@ -83,6 +89,8 @@ function Books({ searchQuery }) {
     setIsRemoveModalOpen(false);
     setBookToRemove(null);
   };
+
+  console.log("Books render. Modal open:", isRemoveModalOpen);
 
   return (
     <div className="books-page">
@@ -119,7 +127,7 @@ function Books({ searchQuery }) {
       {isRemoveModalOpen && (
         <RemoveBookModal
           book={bookToRemove}
-          onClose={() => setIsRemoveModalOpen(false)}
+          onClose={handleCloseModal}
           onConfirm={handleConfirmRemove}
         />
       )}

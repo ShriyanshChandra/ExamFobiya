@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import React from "react";
 import { useBooks } from "../context/BookContext";
 import BookCard from '../components/BookCard';
 import "./NewArrivals.css";

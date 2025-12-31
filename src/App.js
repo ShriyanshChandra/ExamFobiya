@@ -1,5 +1,6 @@
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
-import { useState, useEffect } from "react";
+import React from 'react';
+import { useState } from "react";
 import { DotLottiePlayer } from '@dotlottie/react-player';
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";

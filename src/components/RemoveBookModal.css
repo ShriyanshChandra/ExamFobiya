@@ -120,3 +120,17 @@
         transform: translateY(0);
     }
 }
+
+/* Confirmation View */
+.confirmation-view {
+    text-align: center;
+    padding: 10px 0;
+}
+
+.confirmation-message {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    color: #182848;
+    /* Dark Blue */
+    line-height: 1.5;
+}

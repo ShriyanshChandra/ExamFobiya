@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import './BookCard.css';
 
 const BookCard = ({ book, index, canEdit, onRemove, onEdit }) => {
     const [isExpanded, setIsExpanded] = useState(false);
-    const { user } = useAuth();
 
     // Determine authorization if not passed as prop, though typically passed from parent (Books.js)
     // For consistency with existing pages:

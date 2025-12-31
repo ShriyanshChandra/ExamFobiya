@@ -6,11 +6,10 @@ import './Login.css';
 const LoginBox = ({ role, title, onAuth, allowRegister = true }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [isRegistering, setIsRegistering] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onAuth(role, email, password, isRegistering);
+        onAuth(role, email, password, false);
     };
 
     return (
@@ -38,7 +37,7 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true }) => {
                     />
                 </div>
                 <button type="submit" className="login-btn">
-                    {isRegistering ? 'Create Account' : 'Login'}
+                    Login
                 </button>
             </form>
 
