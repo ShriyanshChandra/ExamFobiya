@@ -20,9 +20,15 @@ import { AuthProvider } from "./context/AuthContext";
 import { BookProvider } from "./context/BookContext";
 import "@fontsource/nunito";
 import './App.css';
+import { trackVisit } from "./services/TrackingService";
+import { useEffect } from "react";
 
 function App() {
   const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    trackVisit();
+  }, []);
 
 
 
