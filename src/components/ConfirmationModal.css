@@ -4,84 +4,137 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 2000;
 }
 
 .confirmation-modal {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
     width: 90%;
-    max-width: 400px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    animation: slideIn 0.3s ease-out;
+    max-width: 500px;
+    color: #fff;
+    animation: fadeIn 0.3s ease;
 }
 
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 10px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    padding-bottom: 15px;
 }
 
 .modal-header h3 {
     margin: 0;
-    color: #e74c3c;
-    /* Warning red */
-}
-
-.modal-body p {
-    font-size: 1.1rem;
-    color: #333;
-    margin-bottom: 20px;
-}
-
-.modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
-
-.modal-actions button {
-    padding: 8px 16px;
-    border-radius: 4px;
-    border: none;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.modal-actions .cancel-btn {
-    background-color: #f0f0f0;
-    color: #333;
-}
-
-.modal-actions .confirm-btn {
-    background-color: #e74c3c;
-    color: white;
+    color: #182848;
+    /* Dark Blue from theme */
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    font-size: 1.5rem;
 }
 
 .close-btn {
     background: none;
     border: none;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     cursor: pointer;
-    color: #666;
+    color: #182848;
+    transition: transform 0.2s;
 }
 
-@keyframes slideIn {
+.close-btn:hover {
+    transform: scale(1.1);
+}
+
+.modal-body p {
+    font-size: 1.2rem;
+    color: #182848;
+    /* Dark Blue */
+    margin-bottom: 30px;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.modal-actions button {
+    padding: 10px 25px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.modal-actions .cancel-btn {
+    background: transparent;
+    border: 1px solid #182848;
+    color: #182848;
+}
+
+.modal-actions .cancel-btn:hover {
+    background: rgba(24, 40, 72, 0.1);
+}
+
+.modal-actions .confirm-btn {
+    background: #dc3545;
+    /* Default warning red */
+    color: white;
+    box-shadow: 0 4px 6px rgba(220, 53, 69, 0.3);
+}
+
+.modal-actions .confirm-btn:hover {
+    background: #c82333;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(220, 53, 69, 0.4);
+}
+
+.modal-actions .confirm-btn.yellow {
+    background: #ffd700;
+    color: #182848;
+    box-shadow: 0 4px 6px rgba(255, 215, 0, 0.3);
+}
+
+.modal-actions .confirm-btn.yellow:hover {
+    background: #ffcc00;
+    box-shadow: 0 6px 8px rgba(255, 215, 0, 0.4);
+}
+
+/* Optional: Different colors for different actions if needed, 
+   but for now we default to the red style or override in JS/inline styles if we want yellow/green */
+.modal-actions .confirm-btn.approve {
+    background: #28a745;
+    /* Green for positive actions */
+    box-shadow: 0 4px 6px rgba(40, 167, 69, 0.3);
+}
+
+.modal-actions .confirm-btn.approve:hover {
+    background: #218838;
+    box-shadow: 0 6px 8px rgba(40, 167, 69, 0.4);
+}
+
+@keyframes fadeIn {
     from {
-        transform: translateY(-20px);
         opacity: 0;
+        transform: translateY(-20px);
     }
 
     to {
-        transform: translateY(0);
         opacity: 1;
+        transform: translateY(0);
     }
 }

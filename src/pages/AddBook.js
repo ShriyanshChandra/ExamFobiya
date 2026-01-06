@@ -110,6 +110,8 @@ const AddBook = () => {
         });
     };
 
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -130,7 +132,8 @@ const AddBook = () => {
             return;
         }
 
-        await saveBook();
+        // If not duplicate, show confirmation modal
+        setShowConfirmModal(true);
     };
 
     const saveBook = async () => {
@@ -305,15 +308,38 @@ const AddBook = () => {
                 </form>
             </div>
 
+            {/* Warning for Duplicate */}
             <ConfirmationModal
                 isOpen={showDuplicateWarning}
                 onClose={() => setShowDuplicateWarning(false)}
                 onConfirm={() => {
                     setShowDuplicateWarning(false);
+                    // For duplicate, we still want to confirm before saving? 
+                    // The previous logic was: if duplicate, warn. If confirmed, save. 
+                    // Now we might want to chain them, but let's keep it simple: if duplicate confirmed, just save.
+                    // Or maybe duplicate confirmation *is* the confirmation.
+                    // But to be safe, let's just duplicate warning -> saveBook directly as before.
                     saveBook();
                 }}
                 title="Duplicate Book Warning"
                 message="WARNING: A book with the same name exists! Do you still want to add this book?"
+                variant="yellow"
+            />
+
+            {/* General Confirmation for Add/Update */}
+            <ConfirmationModal
+                isOpen={showConfirmModal}
+                onClose={() => setShowConfirmModal(false)}
+                onConfirm={() => {
+                    setShowConfirmModal(false);
+                    saveBook();
+                }}
+                title={isEditMode ? "Confirm Update" : "Confirm Addition"}
+                message={isEditMode
+                    ? `Are you sure you want to update "${title}"?`
+                    : `Are you sure you want to add the book "${title}" to the library?`
+                }
+                variant="yellow"
             />
         </div>
     );
