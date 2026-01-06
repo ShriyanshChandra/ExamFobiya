@@ -53,13 +53,20 @@ function Books({ searchQuery }) {
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const [bookToRemove, setBookToRemove] = useState(null);
 
-  // Filter books based on search query
-  const filteredBooks = books.filter(book =>
-    searchQuery
+  // Category Filter State
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const categories = ["All", "BCA", "DCA", "PGDCA"];
+
+  // Filter books based on search query and category
+  const filteredBooks = books.filter(book => {
+    const matchesSearch = searchQuery
       ? (book.title && book.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
       (book.description && book.description.toLowerCase().includes(searchQuery.toLowerCase()))
-      : true
-  );
+      : true;
+    const matchesCategory = selectedCategory === "All" || book.category === selectedCategory;
+
+    return matchesSearch && matchesCategory;
+  });
 
   const canAddBook = user && (user.role === 'admin' || user.role === 'developer');
 
@@ -96,7 +103,8 @@ function Books({ searchQuery }) {
     <div className="books-page">
       <div className="books-content">
         {loading && <p style={{ textAlign: "center", padding: "2rem" }}>Loading library...</p>}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h1>Available Books</h1>
           {canAddBook && (
             <div className="add-book-action">
@@ -105,11 +113,35 @@ function Books({ searchQuery }) {
           )}
         </div>
 
+        {/* Category Filter UI */}
+        <div className="category-filter-container" style={{ marginBottom: '20px' }}>
+          {categories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              style={{
+                padding: '8px 16px',
+                marginRight: '10px',
+                backgroundColor: selectedCategory === cat ? '#ffd700' : '#f0f0f0',
+                color: selectedCategory === cat ? '#333' : '#666',
+                border: 'none',
+                borderRadius: '20px',
+                cursor: 'pointer',
+                fontWeight: selectedCategory === cat ? 'bold' : 'normal',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
         {searchQuery && (
           <p className="search-results">
             Showing results for: "{searchQuery}" ({filteredBooks.length} books found)
           </p>
         )}
+
         <div className="books-grid">
           {filteredBooks.map((book, index) => (
             <BookCard
@@ -117,8 +149,8 @@ function Books({ searchQuery }) {
               book={book}
               index={index}
               canEdit={canAddBook}
-              onRemove={(b) => handleRemoveClick(b)} // Wrap to avoid event object issue if any
-              onEdit={() => { }} // Link is handled inside BookCard if canEdit is true
+              onRemove={(b) => handleRemoveClick(b)}
+              onEdit={() => { }}
             />
           ))}
         </div>

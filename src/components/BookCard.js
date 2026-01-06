@@ -35,6 +35,9 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit }) => {
                     e.target.src = 'https://via.placeholder.com/150?text=Load+Error';
                 }}
             />
+            {book.category && (
+                <span className="book-category-badge">{book.category}</span>
+            )}
             <h3>{book.title}</h3>
             <AnimatePresence>
                 {isExpanded && (

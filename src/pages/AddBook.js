@@ -13,6 +13,7 @@ const AddBook = () => {
     const isEditMode = !!id;
 
     const [title, setTitle] = useState('');
+    const [category, setCategory] = useState(''); // Added category state
     const [sections, setSections] = useState([]); // Changed to array
     const [image, setImage] = useState(null);
     const [contents, setContents] = useState('');
@@ -27,6 +28,7 @@ const AddBook = () => {
             const bookToEdit = books.find(b => b.id.toString() === id);
             if (bookToEdit) {
                 setTitle(bookToEdit.title);
+                setCategory(bookToEdit.category || ''); // Load category
                 // Handle legacy 'section' or new 'sections'
                 if (bookToEdit.sections) {
                     setSections(bookToEdit.sections);
@@ -139,6 +141,7 @@ const AddBook = () => {
         try {
             const bookData = {
                 title,
+                category, // Save category
                 author: "Smart Publications",
                 sections,
                 image: finalImage,
@@ -169,6 +172,21 @@ const AddBook = () => {
                     <div className="form-group">
                         <label>Title:</label>
                         <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Course Category:</label>
+                        <select
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value)}
+                            className="category-select"
+                            required
+                        >
+                            <option value="">Select Category</option>
+                            <option value="BCA">BCA</option>
+                            <option value="DCA">DCA</option>
+                            <option value="PGDCA">PGDCA</option>
+                        </select>
                     </div>
 
                     {/* Author removed - defaulted to Smart Publications */}

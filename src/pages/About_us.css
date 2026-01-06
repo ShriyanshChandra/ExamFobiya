@@ -1,74 +1,218 @@
 /* About_us.css */
 
 .about-us-container {
-  position: relative;
-  min-height: calc(100vh - 140px);
   width: 100%;
-  overflow: hidden;
-  padding: 0;
-  margin: 0;
-
-  /* REMOVED background properties here because they are now in body */
+  min-height: 100vh;
+  /* background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); */
+  /* Using transparent background to let the main app background show through or handle it globally */
   background: transparent;
-}
-
-.about-us-content {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  min-height: calc(100vh - 140px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.about-us-text {
-  position: relative;
   color: var(--text-color);
-  text-align: center;
-  padding: 2rem;
-  max-width: 800px;
-  width: 90%;
-  z-index: 10;
+  padding-bottom: 4rem;
+}
 
-  /* Frosted Glass Effect */
-  background: var(--glass-bg);
+/* Hero Section */
+.about-hero-section {
+  text-align: center;
+  padding: 4rem 1rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid var(--glass-border);
-  border-radius: 15px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid var(--glass-border);
+  margin-bottom: 3rem;
 }
 
-.about-us-text h2 {
-  font-size: 2.5rem;
-  margin-bottom: 1.5rem;
-  font-weight: 700;
+.about-hero-title {
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  background: linear-gradient(to right, #d97706, #f59e0b);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.about-hero-subtitle {
+  font-size: 1.25rem;
   color: var(--text-color);
+  opacity: 0.9;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-.about-us-text p {
+/* Content Wrapper */
+.about-content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Section Common Styles */
+.about-section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--text-color);
+  position: relative;
+  display: inline-block;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.about-section-title::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 4px;
+  background: #d97706;
+  margin: 0.5rem auto 0;
+  border-radius: 2px;
+}
+
+/* Mission Section */
+.about-mission-section {
+  text-align: center;
+  margin-bottom: 4rem;
+  padding: 3rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.about-mission-text {
   font-size: 1.1rem;
   line-height: 1.8;
-  margin-bottom: 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
   color: var(--text-color);
-}
-
-.about-us-text strong {
-  color: #d97706;
-  font-weight: 600;
 }
 
 .brand-name {
   font-family: 'Henny Penny', cursive;
   color: #d97706;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
 }
 
+/* Courses Section */
+.about-courses-section {
+  margin-bottom: 4rem;
+}
+
+.about-course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 1rem 0;
+}
+
+.about-course-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 2rem;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.about-course-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  border-color: #d97706;
+}
+
+.about-card-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.about-course-card h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}
+
+.about-course-card p {
+  color: var(--text-color);
+  opacity: 0.8;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.about-course-features {
+  list-style: none;
+  padding: 0;
+  text-align: left;
+}
+
+.about-course-features li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+}
+
+.about-course-features li::before {
+  content: '✓';
+  color: #d97706;
+  margin-right: 0.5rem;
+  font-weight: bold;
+}
+
+/* Why Choose Us Section */
+.about-why-us-section {
+  margin-bottom: 2rem;
+}
+
+.about-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.about-feature-item {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1.5rem;
+  border-radius: 15px;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.about-feature-item:hover {
+  background: rgba(217, 119, 6, 0.1);
+  border-color: rgba(217, 119, 6, 0.3);
+}
+
+.about-feature-item h4 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}
+
+.about-feature-item p {
+  color: var(--text-color);
+  opacity: 0.8;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-  .about-us-text {
-    width: 95%;
-    padding: 1.5rem;
-    margin: 1rem 0;
+  .about-hero-title {
+    font-size: 2rem;
+  }
+
+  .about-content-wrapper {
+    padding: 0 1rem;
+  }
+
+  .about-mission-section {
+    padding: 2rem 1.5rem;
   }
 }
