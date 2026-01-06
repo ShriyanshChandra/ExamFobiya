@@ -22,7 +22,7 @@ export default function AboutUs() {
           <h2 className="about-section-title">Courses We Cover</h2>
           <div className="about-course-grid">
             <div className="about-course-card">
-              <div className="about-card-icon">🎓</div>
+              <div className="about-card-icon"></div>
               <h3>PGDCA</h3>
               <p>Post Graduate Diploma in Computer Applications</p>
               <ul className="about-course-features">
@@ -33,7 +33,7 @@ export default function AboutUs() {
             </div>
 
             <div className="about-course-card">
-              <div className="about-card-icon">💻</div>
+              <div className="about-card-icon"></div>
               <h3>DCA</h3>
               <p>Diploma in Computer Applications</p>
               <ul className="about-course-features">
@@ -44,7 +44,7 @@ export default function AboutUs() {
             </div>
 
             <div className="about-course-card">
-              <div className="about-card-icon">🚀</div>
+              <div className="about-card-icon"></div>
               <h3>BCA</h3>
               <p>Bachelor of Computer Applications</p>
               <ul className="about-course-features">
@@ -60,15 +60,15 @@ export default function AboutUs() {
           <h2 className="about-section-title">Why Choose ExamFobiya?</h2>
           <div className="about-features-grid">
             <div className="about-feature-item">
-              <h4>📚 Extensive Library</h4>
+              <h4>Extensive Library</h4>
               <p>A wide range of books tailored specifically for your course curriculum.</p>
             </div>
             <div className="about-feature-item">
-              <h4>🔍 Detailed Indexes</h4>
+              <h4>Detailed Indexes</h4>
               <p>Preview book contents before you buy to ensure it fits your needs.</p>
             </div>
             <div className="about-feature-item">
-              <h4>⚡ Offline Availability</h4>
+              <h4>Offline Availability</h4>
               <p>We prioritize knowing exactly where to find physical copies for your convenience.</p>
             </div>
           </div>

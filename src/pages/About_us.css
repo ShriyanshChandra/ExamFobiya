@@ -55,9 +55,10 @@
   margin-bottom: 2rem;
   color: var(--text-color);
   position: relative;
-  display: inline-block;
-  left: 50%;
-  transform: translateX(-50%);
+  display: block;
+  /* Changed from inline-block + transform hack */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .about-section-title::after {
@@ -176,11 +177,17 @@
 }
 
 .about-feature-item {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  /* Increased opacity */
   padding: 1.5rem;
   border-radius: 15px;
-  border: 1px solid transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  /* Made border visible */
   transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  /* Added slight shadow */
 }
 
 .about-feature-item:hover {
