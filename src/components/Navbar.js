@@ -26,6 +26,11 @@ const Navbar = ({ setSearchQuery }) => {
         setIsVisible(true);
       }
 
+      // Close mobile search on scroll
+      if (showMobileSearch) {
+        setShowMobileSearch(false);
+      }
+
       setLastScrollY(currentScrollY);
     };
 
@@ -34,7 +39,24 @@ const Navbar = ({ setSearchQuery }) => {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [lastScrollY]);
+  }, [lastScrollY, showMobileSearch]);
+
+  // Click outside listener for mobile search
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showMobileSearch && !event.target.closest('.search-container')) {
+        setShowMobileSearch(false);
+      }
+    };
+
+    if (showMobileSearch) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showMobileSearch]);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
@@ -50,12 +72,13 @@ const Navbar = ({ setSearchQuery }) => {
     setShowMobileSearch(false);
   };
 
-  const handleSearchClick = () => {
+  const handleSearchClick = (e) => {
     // Mobile logic
     if (window.innerWidth <= 768) {
       if (!showMobileSearch) {
         setShowMobileSearch(true);
-        return; // Open search, don't submit yet
+        e.preventDefault(); // Prevent submit if just opening
+        return;
       }
       // If already open, submit search
     }

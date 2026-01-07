@@ -315,7 +315,14 @@
 /* Mobile Responsive Styles */
 @media screen and (max-width: 768px) {
   .navbar-container {
-    padding: 0 20px;
+    padding: 0 15px;
+    gap: 10px;
+    /* Reduced gap */
+  }
+
+  .navbar .brand-name {
+    font-size: 1.5rem;
+    /* Smaller logo for mobile */
   }
 
   .navbar-actions {
@@ -350,13 +357,46 @@
 
   /* Expanded Search State */
   .search-container.active {
-    width: 180px;
-    /* Expanded width */
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 25px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    left: 5%;
+    right: 5%;
+    width: 90%;
+    /* Full width overlay */
+    top: 50%;
+    transform: translateY(-50%);
+    background: #ffffff;
+    /* Opaque white to cover other elements */
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     justify-content: space-between;
+    z-index: 1002;
+    /* Above menu icon and logo */
+    padding: 5px 15px;
+    height: 50px;
+    /* Fixed height */
+    margin: 0;
+  }
+
+  .search-container.active .search-input {
+    display: block;
+    width: 100%;
+    margin-right: 10px;
+    color: #333;
+    /* Dark text on white bg */
+    font-size: 1rem;
+  }
+
+  .search-container.active .search-input::placeholder {
+    color: #888;
+  }
+
+  .search-container.active .search-btn {
+    background: #ffd700;
+    color: #182848;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
   }
 
   .search-input {
