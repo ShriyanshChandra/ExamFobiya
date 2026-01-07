@@ -32,15 +32,27 @@ export const fetchAnalyticsData = async () => {
         }));
 
         // 5. Generate Mock Traffic Data (Last 7 Days)
-        const trafficData = [
-            { name: 'Mon', visits: totalVisits - 45 > 0 ? totalVisits - 45 : 10 },
-            { name: 'Tue', visits: totalVisits - 38 > 0 ? totalVisits - 38 : 22 },
-            { name: 'Wed', visits: totalVisits - 25 > 0 ? totalVisits - 25 : 35 },
-            { name: 'Thu', visits: totalVisits - 15 > 0 ? totalVisits - 15 : 48 },
-            { name: 'Fri', visits: totalVisits - 8 > 0 ? totalVisits - 8 : 55 },
-            { name: 'Sat', visits: totalVisits - 2 > 0 ? totalVisits - 2 : 62 },
-            { name: 'Sun', visits: totalVisits } // Current
-        ];
+        // 5. Generate Dynamic Traffic Data (Last 7 Days)
+        const trafficData = [];
+        const today = new Date();
+
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date(today);
+            date.setDate(today.getDate() - i);
+
+            // Format: "Jan 7"
+            const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+            // Mock random distribution based on total visits to make it look realistic
+            // This ensures the graph trends upwards to the current total
+            const randomDrop = Math.floor(Math.random() * 10) + (i * 5);
+            const visits = Math.max(0, totalVisits - randomDrop);
+
+            trafficData.push({
+                name: dateStr,
+                visits: i === 0 ? totalVisits : visits // Ensure today matches total
+            });
+        }
 
         return {
             totalBooks,
