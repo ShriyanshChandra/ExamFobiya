@@ -100,13 +100,13 @@ const AdminDashboard = () => {
                 {/* Main Content Area (Charts) */}
                 <div className="col-md-8">
                     {/* Traffic Chart */}
-                    <div className="chart-container" style={{ height: '100%' }}>
+                    <div className="chart-container">
                         <div className="chart-header">
                             <h4 className="chart-title">Website Traffic</h4>
                             <span className="chart-subtitle">Last 7 Days</span>
                         </div>
-                        <div style={{ width: '100%', height: 300 }}>
-                            <ResponsiveContainer>
+                        <div style={{ width: '100%', height: 300, minWidth: 200, position: 'relative' }}>
+                            <ResponsiveContainer width="100%" height="100%" debounce={200}>
                                 <AreaChart data={stats.trafficData}>
                                     <defs>
                                         <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
@@ -129,12 +129,12 @@ const AdminDashboard = () => {
 
                 {/* Categories Chart */}
                 <div className="col-md-4">
-                    <div className="chart-container" style={{ height: '100%' }}>
+                    <div className="chart-container">
                         <div className="chart-header">
                             <h4 className="chart-title">Books per Category</h4>
                         </div>
-                        <div style={{ width: '100%', height: 300 }}>
-                            <ResponsiveContainer>
+                        <div style={{ width: '100%', height: 300, minWidth: 200, position: 'relative' }}>
+                            <ResponsiveContainer width="100%" height="100%" debounce={200}>
                                 <PieChart>
                                     <Pie
                                         data={stats.genreData}

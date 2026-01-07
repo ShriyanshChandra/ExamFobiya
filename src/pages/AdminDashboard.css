@@ -180,6 +180,14 @@
     .dashboard-title {
         font-size: 2rem;
         text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .chart-container {
+        padding: 1rem;
+        min-height: 350px;
+        /* Ensure charts have space */
+        overflow-x: auto;
     }
 
     .admin-dashboard-container .col-6,

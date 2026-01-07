@@ -121,13 +121,20 @@
 }
 
 .action-btn {
-    padding: 6px 12px;
+    padding: 10px 16px;
+    /* Increased for better touch target */
     border-radius: 4px;
     text-decoration: none;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
+    /* Slightly increased font size */
     cursor: pointer;
     border: none;
     transition: background-color 0.2s;
+    min-width: 44px;
+    /* ensure minimum touch width */
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .edit-btn {

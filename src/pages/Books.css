@@ -162,8 +162,9 @@
   }
 
   .books-grid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    /* Increased min-width to force single column on small phones */
+    gap: 25px;
   }
 
   .book-card img {

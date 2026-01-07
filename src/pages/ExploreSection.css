@@ -115,7 +115,25 @@
     }
 
     .book-grid {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        /* Prevent vertical scroll */
+        scroll-snap-type: x mandatory;
         gap: 20px;
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        padding-bottom: 20px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        grid-template-columns: none;
+        /* Reset grid */
     }
+
+    .book-grid::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Ensure cards inside ExploreSection respond to these constraints if needed, 
+       though .book-card style often comes from global or Home.css. 
+       We rely on Home.css .book-card styles for width, but let's ensure it works. */
 }

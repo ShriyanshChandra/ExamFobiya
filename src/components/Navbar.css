@@ -417,8 +417,9 @@
   .nav-menu li a,
   .dropdown span {
     font-size: 1.3rem;
-    /* Slightly smaller for better fit */
-    padding: 12px 20px;
+    /* Larger for better touch targets */
+    padding: 16px 20px;
+    /* Increased padding for 44px+ touch target */
     display: block;
     border-radius: 12px;
     transition: background 0.2s;
@@ -452,7 +453,8 @@
   .nav-menu .dropdown-menu li a {
     color: rgba(255, 255, 255, 0.7);
     font-size: 1.1rem;
-    padding: 8px 0;
+    padding: 12px 0;
+    /* Increased padding for sub-items */
   }
 
   .nav-menu .dropdown-menu li a:hover {
