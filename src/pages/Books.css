@@ -168,30 +168,22 @@
   }
 
   .books-grid {
-    display: flex;
-    /* Changed to flex for horizontal scroll */
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    overflow-y: hidden;
-    scroll-snap-type: x mandatory;
+    display: grid;
+    /* Grid layout instead of flex scroll */
+    grid-template-columns: repeat(2, 1fr);
+    /* 2 columns */
     gap: 12px;
     /* Tighter gap */
     padding-bottom: 15px;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-
-  .books-grid::-webkit-scrollbar {
-    display: none;
   }
 
   .book-card {
-    min-width: 170px !important;
-    width: 170px !important;
-    max-width: 170px !important;
-    flex: 0 0 auto;
-    scroll-snap-align: start;
-    margin: 0;
+    width: 100%;
+    /* Full width of grid cell */
+    max-width: 170px;
+    /* Maintain max width */
+    margin: 0 auto;
+    /* Center in grid cell */
     padding: 0;
     /* Match global style */
     border-radius: 12px;
