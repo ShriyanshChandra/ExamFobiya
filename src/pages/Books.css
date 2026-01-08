@@ -154,20 +154,51 @@
 /* Mobile Styles */
 @media screen and (max-width: 768px) {
   .books-page {
-    padding: 20px 0;
+    padding: 15px 0;
+    /* Reduced */
   }
 
   .books-content {
-    padding: 30px 20px;
+    padding: 20px 5px;
+    /* Reduced padding like Home */
+    width: 98%;
+    /* Increased width */
+    margin: 15px auto;
+    /* Reduced margin */
   }
 
   .books-grid {
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    /* Increased min-width to force single column on small phones */
-    gap: 25px;
+    display: flex;
+    /* Changed to flex for horizontal scroll */
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    gap: 12px;
+    /* Tighter gap */
+    padding-bottom: 15px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .books-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .book-card {
+    min-width: 190px !important;
+    width: 190px !important;
+    max-width: 190px !important;
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    margin: 0;
+    padding: 0;
+    /* Match global style */
+    border-radius: 12px;
   }
 
   .book-card img {
-    height: 220px;
+    height: auto;
+    /* Let aspect ratio control */
   }
 }
