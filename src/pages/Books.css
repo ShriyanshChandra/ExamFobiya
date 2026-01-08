@@ -186,9 +186,9 @@
   }
 
   .book-card {
-    min-width: 190px !important;
-    width: 190px !important;
-    max-width: 190px !important;
+    min-width: 170px !important;
+    width: 170px !important;
+    max-width: 170px !important;
     flex: 0 0 auto;
     scroll-snap-align: start;
     margin: 0;

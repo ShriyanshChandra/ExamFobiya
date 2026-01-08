@@ -323,9 +323,9 @@
   }
 
   .book-card {
-    min-width: 190px !important;
-    width: 190px !important;
-    max-width: 190px !important;
+    min-width: 170px !important;
+    width: 170px !important;
+    max-width: 170px !important;
     /* Ensure it doesn't grow */
     flex: 0 0 auto;
     scroll-snap-align: start;
@@ -344,15 +344,24 @@
   }
 
   .book-card h3 {
-    font-size: 0.95rem;
-    /* Compact title but slightly larger than before for readability */
+    font-size: 0.85rem;
+    /* Slightly reduced for better fit */
     margin-bottom: 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal;
+    /* Allow wrapping */
+    overflow: visible;
+    /* Show full text */
+    text-overflow: clip;
+    /* No ellipsis */
     line-height: 1.2;
     padding: 0 10px;
     /* Add padding here since card has 0 padding */
+    display: -webkit-box;
+    /* Limit to 2 lines for consistency */
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    /* Hide overflow beyond 2 lines */
   }
 
   .book-card .book-price {
