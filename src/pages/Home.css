@@ -171,13 +171,17 @@
 
 .book-card {
   background: white;
-  border-radius: 20px;
+  border-radius: 12px;
   box-shadow: var(--shadow-sm);
-  padding: 20px;
+  padding: 0;
+  /* Full bleed */
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   width: 100%;
   max-width: 300px;
+  /* Maintain max width */
   border: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
 }
 
 .book-card:hover {
@@ -188,14 +192,12 @@
 /* Increased specificity to override any other styles */
 .home-container .book-img {
   width: 100%;
-  height: 275px;
-  object-fit: contain !important;
-  /* changed from cover to prevent zoom */
-  border-radius: 15px;
-  margin-bottom: 20px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  height: auto;
+  aspect-ratio: 196 / 300;
+  object-fit: cover !important;
+  margin-bottom: 0;
+  box-shadow: none;
   background-color: #f9f9f9;
-  /* Fallback background for transparent images */
 }
 
 .view-btn {
@@ -234,53 +236,72 @@
 @media screen and (max-width: 768px) {
   .hero-section {
     height: auto;
-    min-height: 80vh;
-    padding: 100px 0 60px;
-    border-radius: 0 0 30px 30px;
+    min-height: 50vh;
+    /* Reduced height */
+    padding: 80px 0 40px;
+    /* Reduced padding */
+    border-radius: 0 0 25px 25px;
   }
 
   .hero-content h1 {
-    font-size: 2.5rem;
-    /* Adjusted for better mobile fit */
+    font-size: 1.8rem;
+    /* Smaller heading */
+    margin-bottom: 10px;
     white-space: normal;
-    /* Allow wrapping */
   }
 
   .hero-section .brand-name {
-    font-size: 3rem;
-    display: block;
-    /* Stack on mobile */
-    margin: 10px 0;
+    font-size: 2.2rem;
+    /* Compact brand name */
+    margin: 5px 0;
+  }
+
+  .hero-content p {
+    font-size: 1rem;
+    margin-bottom: 25px;
   }
 
   .hero-buttons {
-    flex-direction: column;
-    gap: 15px;
-    padding: 0 20px;
-    width: 100%;
-    align-items: center;
+    flex-direction: row;
+    /* Keep side-by-side if possible, or compact stack */
+    gap: 10px;
+    padding: 0 10px;
   }
 
   .primary-btn,
   .secondary-btn {
-    width: 100%;
-    max-width: 300px;
-    /* Prevent full width on larger phones */
-    padding: 14px 20px;
-    /* Better touch */
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    min-width: auto;
+    width: auto;
+    flex: 1;
   }
 
   .new-arrivals,
   .best-sellers {
-    padding: 40px 20px;
-    width: calc(100% - 20px);
-    margin: 40px auto;
-    overflow: visible;
+    padding: 20px 10px;
+    /* Very compact */
+    width: 95%;
+    margin: 20px auto;
+    /* Reduced margin */
+    border-radius: 15px;
   }
 
   .new-arrivals h2,
   .best-sellers h2 {
-    font-size: 2rem;
+    font-size: 1.5rem;
+    text-align: left;
+    /* App-like left align */
+    margin-bottom: 20px;
+    margin-left: 10px;
+  }
+
+  .new-arrivals h2::after,
+  .best-sellers h2::after {
+    left: 0;
+    width: 40px;
+    /* Small accent line */
+    bottom: -8px;
   }
 
   .book-grid {
@@ -288,36 +309,52 @@
     flex-wrap: nowrap;
     overflow-x: auto;
     overflow-y: hidden;
-    /* Prevent vertical scroll */
     scroll-snap-type: x mandatory;
-    gap: 20px;
-    padding-bottom: 20px;
-    /* Space for scrollbar if visible */
+    gap: 12px;
+    /* Tighter gap */
+    padding-bottom: 15px;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    /* Hide scrollbar for cleaner look */
   }
 
   .book-grid::-webkit-scrollbar {
     display: none;
-    /* Hide scrollbar for Chrome/Safari */
   }
 
   .book-card {
-    min-width: calc(50vw - 40px);
-    /* 2 cards - (padding/gap logic) */
-    /* Container padding 20px each side = 40px. Gap 20px. 
-       Available: 100vw - 40. 
-       2 cards + 20 gap = available. 
-       2w = 100vw - 40 - 20 = 100vw - 60. 
-       w = 50vw - 30. 
-       Let's use 50vw - 35px to be safe. */
-    min-width: calc(50vw - 35px);
+    min-width: calc(50vw - 25px);
+    /* Tighter fit with smaller gap */
     max-width: none;
     flex: 0 0 auto;
     scroll-snap-align: start;
     margin: 0;
-    padding: 10px;
-    /* Reduce padding for narrow screens */
+    padding: 0;
+    /* Remove padding to match global style (full bleed) */
+    border-radius: 12px;
+  }
+
+  /* Specific internal overrides for mobile BookCard */
+  .home-container .book-img {
+    height: auto;
+    aspect-ratio: 196 / 300;
+    margin-bottom: 0;
+    object-fit: cover;
+  }
+
+  .book-card h3 {
+    font-size: 0.95rem;
+    /* Compact title but slightly larger than before for readability */
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+    padding: 0 10px;
+    /* Add padding here since card has 0 padding */
+  }
+
+  .book-card .book-price {
+    padding: 0 10px;
+    /* Consistent padding */
   }
 }

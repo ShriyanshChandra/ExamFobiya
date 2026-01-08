@@ -35,39 +35,41 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit }) => {
                     e.target.src = 'https://via.placeholder.com/150?text=Load+Error';
                 }}
             />
-            {book.category && (
-                <span className="book-category-badge">{book.category}</span>
-            )}
-            <h3>{book.title}</h3>
-            <p className="book-price">
-                {book.price !== undefined && book.price !== null ? `₹ ${book.price}` : '₹ 0'}
-            </p>
-            <AnimatePresence>
-                {isExpanded && (
-                    <motion.div
-                        className="book-details-dropdown"
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.3 }}
-                    >
-                        <div className="book-topics">
-                            <strong>Topics Covered:</strong>
-                            <ol style={{ paddingLeft: '20px', marginTop: '5px' }}>
-                                {book.contents ? (
-                                    Array.isArray(book.contents)
-                                        ? book.contents.map((topic, i) => <li key={i}>{topic}</li>)
-                                        : book.contents.split('\n').filter(line => line.trim() !== '').map((topic, i) => (
-                                            <li key={i}>{topic.replace(/^\d+\.\s*/, '')}</li> /* Remove existing numbering if present */
-                                        ))
-                                ) : (
-                                    <li>No specific topics listed.</li>
-                                )}
-                            </ol>
-                        </div>
-                    </motion.div>
+            <div className="book-content">
+                {book.category && (
+                    <span className="book-category-badge">{book.category}</span>
                 )}
-            </AnimatePresence>
+                <h3>{book.title}</h3>
+                <p className="book-price">
+                    {book.price !== undefined && book.price !== null ? `₹ ${book.price}` : '₹ 0'}
+                </p>
+                <AnimatePresence>
+                    {isExpanded && (
+                        <motion.div
+                            className="book-details-dropdown"
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            <div className="book-topics">
+                                <strong>Topics Covered:</strong>
+                                <ol style={{ paddingLeft: '20px', marginTop: '5px' }}>
+                                    {book.contents ? (
+                                        Array.isArray(book.contents)
+                                            ? book.contents.map((topic, i) => <li key={i}>{topic}</li>)
+                                            : book.contents.split('\n').filter(line => line.trim() !== '').map((topic, i) => (
+                                                <li key={i}>{topic.replace(/^\d+\.\s*/, '')}</li> /* Remove existing numbering if present */
+                                            ))
+                                    ) : (
+                                        <li>No specific topics listed.</li>
+                                    )}
+                                </ol>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
 
             {canEdit && (
                 <div className="book-actions" onClick={(e) => e.stopPropagation()}>
