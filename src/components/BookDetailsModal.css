@@ -242,6 +242,12 @@
     .modal-body {
         flex-direction: column;
         padding: 20px;
+        overflow-y: auto !important;
+        /* Allow body to scroll normally on mobile */
+        max-height: calc(90vh - 60px);
+        /* Leave room for close button/padding */
+        padding-right: 20px !important;
+        /* Restore normal padding */
     }
 
     .modal-left-section {
@@ -250,16 +256,33 @@
         padding-right: 0;
         padding-bottom: 20px;
         margin-bottom: 20px;
+        overflow: visible !important;
+        /* Allow content to flow */
+        flex: none;
+        /* Do not flex adjust height */
+        height: auto;
+        /* Natural height */
+    }
+
+    .modal-book-image {
+        max-height: 300px;
+        /* Limit image height on mobile */
     }
 
     .modal-right-section {
         padding-left: 0;
+        padding-right: 0;
+        overflow: visible !important;
+        /* No independent scroll on mobile */
+        height: auto !important;
+        margin-top: 0 !important;
+        /* Reset desktop margin */
     }
 
     .book-details-modal-content {
         height: 90vh;
-        /* Taller on mobile */
         width: 95%;
+        overflow: hidden;
     }
 }
 
