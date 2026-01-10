@@ -265,8 +265,15 @@
     }
 
     .modal-book-image {
-        max-height: 300px;
-        /* Limit image height on mobile */
+        width: 196px;
+        height: 300px;
+        object-fit: cover;
+        max-width: none;
+        /* Override desktop max-width if needed */
+        max-height: none;
+        /* Override desktop max-height */
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .modal-right-section {
