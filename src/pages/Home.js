@@ -4,6 +4,7 @@ import Aurora from "./Aurora";
 import NewArrivals from "./NewArrivals";
 import BestSeller from "./BestSeller";
 import ExploreSection from "./ExploreSection";
+import BookCategorySection from "../components/BookCategorySection";
 
 const Home = () => {
   return (
@@ -39,6 +40,11 @@ const Home = () => {
 
       {/* Best Sellers Section */}
       <BestSeller />
+
+      {/* Course Books Sections */}
+      <BookCategorySection title="BCA Books" section="BCA Books" />
+      <BookCategorySection title="DCA Books" section="DCA Books" />
+      <BookCategorySection title="PGDCA Books" section="PGDCA Books" />
 
       {/* Explore Section */}
       <ExploreSection />

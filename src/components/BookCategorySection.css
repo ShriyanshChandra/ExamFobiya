@@ -1,0 +1,78 @@
+/* Inherit most styles from home/new-arrivals to ensure consistency */
+.book-category-section {
+    padding: 60px 40px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+    border-radius: 30px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    margin: 60px auto;
+    width: 95%;
+    max-width: 1600px;
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme='dark'] .book-category-section {
+    background: rgba(30, 30, 30, 0.6);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.book-category-section h2 {
+    font-size: 2.5rem;
+    margin-bottom: 50px;
+    color: var(--text-color);
+    font-weight: 800;
+    position: relative;
+    display: inline-block;
+}
+
+.book-category-section h2::after {
+    content: '';
+    position: absolute;
+    width: 60%;
+    height: 4px;
+    bottom: -15px;
+    left: 20%;
+    /* Default gradient, can be overridden */
+    background: linear-gradient(90deg, #4b6cb7, #182848);
+    border-radius: 2px;
+}
+
+/* Specific gradients for courses */
+.book-category-section h2[data-section="BCA Books"]::after {
+    background: linear-gradient(90deg, #FF512F, #DD2476);
+}
+
+.book-category-section h2[data-section="DCA Books"]::after {
+    background: linear-gradient(90deg, #0cebeb, #20e3b2, #29ffc6);
+}
+
+.book-category-section h2[data-section="PGDCA Books"]::after {
+    background: linear-gradient(90deg, #f093fb, #f5576c);
+}
+
+/* Mobile Responsive */
+@media screen and (max-width: 768px) {
+    .book-category-section {
+        padding: 15px 5px;
+        width: 98%;
+        margin: 15px auto;
+        border-radius: 15px;
+    }
+
+    .book-category-section h2 {
+        font-size: 1.5rem;
+        text-align: left;
+        margin-bottom: 20px;
+        margin-left: 10px;
+    }
+
+    .book-category-section h2::after {
+        left: 0;
+        width: 40px;
+        bottom: -8px;
+    }
+}

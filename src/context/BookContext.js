@@ -162,8 +162,13 @@ export const BookProvider = ({ children }) => {
         return books.filter(book => book.sections && book.sections.includes(sectionName));
     };
 
+    const getBooksByCategory = (category) => {
+        if (!category) return [];
+        return books.filter(book => book.category === category);
+    };
+
     return (
-        <BookContext.Provider value={{ books, addBook, removeBook, updateBook, getBooksBySection, loading }}>
+        <BookContext.Provider value={{ books, addBook, removeBook, updateBook, getBooksBySection, getBooksByCategory, loading }}>
             {children}
         </BookContext.Provider>
     );

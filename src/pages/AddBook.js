@@ -352,6 +352,39 @@ const AddBook = () => {
                                 />
                                 New Arrivals
                             </label>
+                            {category === 'BCA' && (
+                                <label className="checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        value="BCA Books"
+                                        checked={sections.includes("BCA Books")}
+                                        onChange={handleSectionChange}
+                                    />
+                                    BCA Books
+                                </label>
+                            )}
+                            {category === 'DCA' && (
+                                <label className="checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        value="DCA Books"
+                                        checked={sections.includes("DCA Books")}
+                                        onChange={handleSectionChange}
+                                    />
+                                    DCA Books
+                                </label>
+                            )}
+                            {category === 'PGDCA' && (
+                                <label className="checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        value="PGDCA Books"
+                                        checked={sections.includes("PGDCA Books")}
+                                        onChange={handleSectionChange}
+                                    />
+                                    PGDCA Books
+                                </label>
+                            )}
                             <label className="checkbox-label">
                                 <input
                                     type="checkbox"
