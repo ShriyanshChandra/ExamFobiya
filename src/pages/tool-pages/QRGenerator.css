@@ -1,0 +1,146 @@
+/* QRGenerator.css */
+.qr-generator-page {
+    padding: 40px 0;
+    min-height: 80vh;
+}
+
+.qr-generator-content {
+    padding: 60px 40px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 30px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    max-width: 800px;
+    /* Smaller width for focused tool */
+    width: 95%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.qr-header {
+    margin-bottom: 2.5rem;
+}
+
+.qr-header h1 {
+    font-size: 2.5rem;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.qr-header p {
+    color: #6b7280;
+    font-size: 1.1rem;
+}
+
+.qr-input-section {
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.qr-url-input {
+    width: 100%;
+    padding: 15px 20px;
+    font-size: 1.1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    outline: none;
+    transition: border-color 0.2s;
+    background: white;
+    color: #1f2937;
+}
+
+.qr-url-input:focus {
+    border-color: #ffd700;
+}
+
+.qr-display-area {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    display: inline-block;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2rem;
+    position: relative;
+    border: 1px solid #e5e7eb;
+}
+
+.qr-code-wrapper {
+    margin-bottom: 10px;
+}
+
+.qr-domain-tag {
+    margin-top: 15px;
+    font-weight: 600;
+    color: #4b5563;
+    font-size: 1.1rem;
+    font-family: 'Nunito', sans-serif;
+    word-break: break-all;
+}
+
+.download-btn {
+    background-color: #ffd700;
+    color: #182848;
+    border: none;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.download-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+    background-color: #ffed4a;
+}
+
+.download-btn:disabled {
+    background-color: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Dark Mode */
+body.dark-mode .qr-header h1 {
+    color: #f3f4f6;
+}
+
+body.dark-mode .qr-header p {
+    color: #9ca3af;
+}
+
+body.dark-mode .qr-url-input {
+    background: #1f2937;
+    border-color: #374151;
+    color: #f3f4f6;
+}
+
+body.dark-mode .qr-url-input:focus {
+    border-color: #ffd700;
+}
+
+body.dark-mode .qr-display-area {
+    /* Keep QR area white mostly for contrast, or light gray */
+    background: #ffffff;
+}
+
+/* Adjust mobile layout */
+@media screen and (max-width: 768px) {
+    .qr-generator-content {
+        padding: 30px 15px;
+    }
+
+    .qr-header h1 {
+        font-size: 2rem;
+    }
+}

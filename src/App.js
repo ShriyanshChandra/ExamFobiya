@@ -14,6 +14,8 @@ import Register from "./pages/Register";
 import AdminDashboard from "./pages/AdminDashboard";
 import DevDashboard from "./pages/DevDashboard";
 import AddBook from "./pages/AddBook";
+import Tools from "./pages/Tools";
+import QRGenerator from "./pages/tool-pages/QRGenerator";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -49,6 +51,8 @@ function App() {
                   <Route path="/distributors" element={<Distributors />} />
                   <Route path="/papers" element={<Papers />} />
                   <Route path="/about" element={<AboutUs />} />
+                  <Route path="/tools" element={<Tools />} />
+                  <Route path="/tools/qr-generator" element={<QRGenerator />} />
                   <Route path="/terms" element={<TermsAndConditions />} />
                   <Route path="/privacy" element={<PrivacyPolicy />} />
                   <Route path="/login" element={<Login />} />

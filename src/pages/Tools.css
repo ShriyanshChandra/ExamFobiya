@@ -1,0 +1,148 @@
+/* Tools.css */
+.tools-page {
+    padding: 40px 0;
+    min-height: 80vh;
+}
+
+.tools-content {
+    padding: 60px 40px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 30px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    max-width: 1600px;
+    width: 95%;
+    margin: 0 auto;
+}
+
+.tools-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.tools-header h1 {
+    font-size: 2.5rem;
+    color: #1f2937;
+    margin-bottom: 1rem;
+}
+
+.tools-header p {
+    color: #6b7280;
+    font-size: 1.1rem;
+}
+
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.tool-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid #e5e7eb;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: inherit;
+    position: relative;
+    overflow: hidden;
+}
+
+.tool-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border-color: #ffd700;
+}
+
+.tool-icon {
+    width: 64px;
+    height: 64px;
+    background: #f3f4f6;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    color: #1f2937;
+}
+
+.tool-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: #111827;
+}
+
+.tool-card p {
+    color: #6b7280;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.coming-soon-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: #ffd700;
+    color: #1f2937;
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+}
+
+/* Dark Mode Support */
+body.dark-mode .tools-header h1 {
+    color: #f3f4f6;
+}
+
+body.dark-mode .tools-header p {
+    color: #9ca3af;
+}
+
+body.dark-mode .tool-card {
+    background: #1f2937;
+    border-color: #374151;
+}
+
+body.dark-mode .tool-card:hover {
+    border-color: #ffd700;
+}
+
+body.dark-mode .tool-icon {
+    background: #374151;
+    color: #f3f4f6;
+}
+
+body.dark-mode .tool-card h3 {
+    color: #f3f4f6;
+}
+
+body.dark-mode .tool-card p {
+    color: #d1d5db;
+}
+
+/* Mobile Adjustments */
+@media screen and (max-width: 768px) {
+    .tools-page {
+        padding: 15px 0;
+    }
+
+    .tools-content {
+        padding: 20px 10px;
+        width: 98%;
+        margin: 0 auto;
+    }
+
+    .tools-grid {
+        gap: 1.5rem;
+    }
+}
