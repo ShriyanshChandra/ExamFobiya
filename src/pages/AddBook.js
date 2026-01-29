@@ -529,7 +529,6 @@ const AddBook = () => {
 
                     <div className="form-group">
                         <label>{entryMode === 'pdf' ? 'Extracted Contents (Editable):' : 'Enter Topics:'}</label>
-                        {/* CustomToolbar removed - relying on native module config */}
                         <ReactQuill
                             ref={quillRef}
                             key={entryMode}
@@ -540,8 +539,6 @@ const AddBook = () => {
                             modules={modules}
                         />
                     </div>
-
-                    {/* Description Removed as per request */}
 
                     <div className="form-actions">
                         <button type="button" className="cancel-btn" onClick={() => navigate('/books')}>
