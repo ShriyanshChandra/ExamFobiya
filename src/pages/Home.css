@@ -312,6 +312,7 @@
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
     gap: 12px;
+    align-items: stretch; /* Ensure cards stretch to same height */
     /* Tighter gap */
     padding-bottom: 15px;
     -webkit-overflow-scrolling: touch;
@@ -333,6 +334,9 @@
     padding: 0;
     /* Remove padding to match global style (full bleed) */
     border-radius: 12px;
+    height: auto !important; /* Allow flex stretch to determine height */
+    display: flex;
+    flex-direction: column;
   }
 
   /* Specific internal overrides for mobile BookCard */
@@ -369,5 +373,6 @@
   .book-card .book-price {
     padding: 0 10px;
     /* Consistent padding */
+    margin-top: auto; /* Push to bottom if content is short */
   }
 }

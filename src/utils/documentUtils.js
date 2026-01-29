@@ -23,16 +23,38 @@ export const extractTextFromPdf = async (file) => {
 
             if (items.length === 0) continue;
 
-            // Find min x to normalize indentation
-            const minX = Math.min(...items.map(it => it.x));
+            // Find min x (baseline) using "Smart Baseline" approach
+            // Instead of absolute min, find the left-most "significant" x-coordinate
+            // to ignore outliers like page numbers or artifacts in the margin.
+            const xHistogram = {};
+            const bucketSize = 5;
+            let totalItems = 0;
+
+            items.forEach(it => {
+                if (!it.str.trim()) return;
+                const bucket = Math.floor(it.x / bucketSize) * bucketSize;
+                xHistogram[bucket] = (xHistogram[bucket] || 0) + 1;
+                totalItems++;
+            });
+
+            // Find valid buckets (threshold: >10% of items to ensure we pick main body text)
+            // Increased from 2% to 10% to completely ignore margin notes/numbers.
+            const threshold = Math.max(1, Math.floor(totalItems * 0.10));
+            const validBuckets = Object.keys(xHistogram)
+                .map(Number)
+                .filter(x => xHistogram[x] >= threshold)
+                .sort((a, b) => a - b);
+
+            // Use the left-most significant bucket as minX, or fallback to absolute min if empty
+            const minX = validBuckets.length > 0 ? validBuckets[0] : Math.min(...items.map(it => it.x));
 
             // Process items into lines with indentation
             items.forEach(item => {
                 if (!item.str.trim()) return; // Skip empty/whitespace items
 
-                // Calculate indentation level (approx every 25 units is a tab/level)
-                // We clamp it to reasonable max to avoid crazy indents
-                const indentLevel = Math.max(0, Math.floor((item.x - minX) / 25));
+                // Calculate indentation level (approx every 35 units is a tab/level)
+                // Adjusted to 35 based on user feedback (50 was too large, 25 too small)
+                const indentLevel = Math.max(0, Math.floor((item.x - minX) / 35));
                 pItems.push({
                     text: item.str,
                     indent: indentLevel
@@ -40,38 +62,83 @@ export const extractTextFromPdf = async (file) => {
             });
         }
 
-        // Post-processing: Merge orphan bullets
+        // Normalize indentation: Shift everything left so the minimum indentation is 0
+        // This is a failsafe: if after Per-Page processing, ALL lines are still indented (e.g. indent 1),
+        // we shift them all back to 0.
+        if (pItems.length > 0) {
+            const minGlobalIndent = Math.min(...pItems.map(item => item.indent));
+            if (minGlobalIndent > 0) {
+                pItems.forEach(item => {
+                    item.indent -= minGlobalIndent;
+                });
+            }
+        }
+
+
+        // Post-processing: Merge orphan bullets and detect list items
         const mergedLines = [];
         const isBullet = (str) => {
             const s = str.trim();
-            // Expanded bullet definitions based on user inputs
+            // Expanded bullet definitions
             return ['●', '•', 'o', '*', '-', '·'].includes(s) || (s.length < 2 && /[^a-zA-Z0-9]/.test(s));
         };
 
         for (let i = 0; i < pItems.length; i++) {
             const current = pItems[i];
 
-            // If it's a bullet and not the last item
+            // Case 1: Orphan bullet followed by text
             if (isBullet(current.text) && i + 1 < pItems.length) {
                 const next = pItems[i + 1];
-
-                // Check if they are likely on the same visual line? 
-                // For now, assume if it's a bullet, the very next non-empty structure is its content.
                 mergedLines.push({
-                    text: `${current.text.trim()} ${next.text.trim()}`,
-                    indent: current.indent // Keep bullet's indentation
+                    text: next.text.trim(), // text without bullet
+                    indent: current.indent, // use indent of the bullet
+                    isList: true
                 });
-                i++; // Skip the next item since we merged it
-            } else {
-                mergedLines.push(current);
+                i++;
+            }
+            // Case 2: Line starts with a bullet character natively (e.g. "• Item")
+            else if (isBullet(current.text.charAt(0)) || current.text.trim().match(/^[●•o*\-·]/)) {
+                // Strip the bullet
+                const cleanText = current.text.replace(/^[●•o*\-·]\s*/, '').trim();
+                mergedLines.push({
+                    text: cleanText,
+                    indent: current.indent,
+                    isList: true
+                });
+            }
+            // Case 3: Regular text
+            else {
+                mergedLines.push({
+                    ...current,
+                    isList: false
+                });
             }
         }
 
-        // Convert to HTML with ReactQuill classes
-        const html = mergedLines.map(line => {
+        // Convert to HTML
+        // Quill prefers <ul><li> structure for lists
+        let html = '';
+        let inList = false;
+
+        mergedLines.forEach((line) => {
             const indentClass = line.indent > 0 ? ` class="ql-indent-${line.indent}"` : '';
-            return `<p${indentClass}>${line.text}</p>`;
-        }).join('');
+
+            if (line.isList) {
+                if (!inList) {
+                    html += '<ul>';
+                    inList = true;
+                }
+                html += `<li${indentClass}>${line.text}</li>`;
+            } else {
+                if (inList) {
+                    html += '</ul>';
+                    inList = false;
+                }
+                html += `<p${indentClass}>${line.text}</p>`;
+            }
+        });
+
+        if (inList) html += '</ul>';
 
         return html;
 

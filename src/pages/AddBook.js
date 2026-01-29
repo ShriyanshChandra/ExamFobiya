@@ -2,38 +2,33 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useBooks } from '../context/BookContext';
 import { extractTextFromFile, formatToTopics } from '../utils/documentUtils';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import ReactQuill, { Quill } from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
 import './AddBook.css';
 import ConfirmationModal from '../components/ConfirmationModal';
 
-// Define Quill modules outside component to prevent re-renders
-const QUILL_MODULES = {
-    toolbar: [
-        ['bold', 'italic', 'underline', 'strike'],        // basic formatting
-        [{ 'list': 'ordered' }, { 'list': 'bullet' }],    // lists
-        [{ 'indent': '-1' }, { 'indent': '+1' }],          // outdent/indent
-        ['clean'],                                         // remove formatting button
-        ['link']                                           // link button
-    ]
-};
+// Register custom icon for Find & Replace
+const icons = Quill.import('ui/icons');
+icons['find-replace'] = `<svg viewBox="0 0 18 18" width="18" height="18"><path class="ql-fill" d="M15.5,14h-.79l-.28-.27A6.47,6.47,0,0,0,16,9.5,6.5,6.5,0,1,0,9.5,16c1.61,0,3.09-.59,4.23-1.57l.27.28v.79l5,4.99L20.49,19l-4.99-5Zm-6,0C7.01,14,5,11.99,5,9.5S7.01,5,9.5,5,14,7.01,14,9.5,11.99,14,9.5,14Z"/></svg>`;
+
+
 
 const AddBook = () => {
-    const { addBook, updateBook, books } = useBooks(); // Added updateBook, books
+    const { addBook, updateBook, books } = useBooks();
     const navigate = useNavigate();
-    const { id } = useParams(); // Get ID if in edit mode
+    const { id } = useParams();
 
     const isEditMode = !!id;
 
     const [title, setTitle] = useState('');
-    const [price, setPrice] = useState(''); // Added price state
-    const [category, setCategory] = useState(''); // Added category state
-    const [semester, setSemester] = useState(''); // Added semester state
-    const [sections, setSections] = useState([]); // Changed to array
+    const [price, setPrice] = useState('');
+    const [category, setCategory] = useState('');
+    const [semester, setSemester] = useState('');
+    const [sections, setSections] = useState([]);
     const [image, setImage] = useState(null);
     const [contents, setContents] = useState('');
     const [loading, setLoading] = useState(false);
-    const [entryMode, setEntryMode] = useState('pdf'); // 'pdf' or 'manual'
+    const [entryMode, setEntryMode] = useState('pdf');
 
     const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
 
@@ -45,6 +40,30 @@ const AddBook = () => {
     // Editor Ref and Search State
     const quillRef = useRef(null);
     const [lastSearchIndex, setLastSearchIndex] = useState(0);
+
+    // Stable handler for toggling Find & Replace using Ref for access inside modules
+    const toggleFindRef = useRef(null);
+    toggleFindRef.current = () => setShowFindReplace(prev => !prev);
+
+    const modules = React.useMemo(() => ({
+        toolbar: {
+            container: [
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                [{ 'indent': '-1' }, { 'indent': '+1' }],
+                ['clean', 'link'],
+                ['find-replace'] // Custom button name
+            ],
+            handlers: {
+                'find-replace': () => {
+                    if (toggleFindRef.current) toggleFindRef.current();
+                }
+            }
+        }
+    }), []);
+
+    // Load book data if editing
+
 
     // Load book data if editing
     useEffect(() => {
@@ -442,60 +461,51 @@ const AddBook = () => {
                     </div>
 
                     {/* Find and Replace Logic */}
-                    {entryMode === 'manual' && (
+                    {/* Find and Replace Logic */}
+                    {entryMode === 'manual' && showFindReplace && (
                         <div className="form-group" style={{ marginBottom: '10px' }}>
-                            <button
-                                type="button"
-                                className="toggle-find-btn"
-                                onClick={() => setShowFindReplace(!showFindReplace)}
-                            >
-                                {showFindReplace ? 'Hide Find & Replace' : 'Show Find & Replace'}
-                            </button>
-
-                            {showFindReplace && (
-                                <div className="find-replace-toolbar">
-                                    <input
-                                        type="text"
-                                        placeholder="Find..."
-                                        value={findText}
-                                        onChange={(e) => {
-                                            setFindText(e.target.value);
-                                            setLastSearchIndex(0); // Reset search when text changes
-                                        }}
-                                        className="find-input"
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Replace with..."
-                                        value={replaceText}
-                                        onChange={(e) => setReplaceText(e.target.value)}
-                                        className="find-input"
-                                    />
-                                    <button
-                                        type="button"
-                                        className="action-btn"
-                                        style={{ backgroundColor: '#007bff', color: 'white' }}
-                                        onClick={handleFind}
-                                    >
-                                        Find
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="action-btn"
-                                        style={{ backgroundColor: '#17a2b8', color: 'white' }}
-                                        onClick={handleReplace}
-                                    >
-                                        Replace
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="action-btn replace-btn"
-                                        onClick={handleReplaceAll}
-                                    >
-                                        Replace All
-                                    </button>
-                                </div>
-                            )}
+                            <div className="find-replace-toolbar">
+                                <input
+                                    type="text"
+                                    placeholder="Find..."
+                                    value={findText}
+                                    onChange={(e) => {
+                                        setFindText(e.target.value);
+                                        setLastSearchIndex(0); // Reset search when text changes
+                                    }}
+                                    className="find-input"
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Replace with..."
+                                    value={replaceText}
+                                    onChange={(e) => setReplaceText(e.target.value)}
+                                    className="find-input"
+                                />
+                                <button
+                                    type="button"
+                                    className="action-btn"
+                                    style={{ backgroundColor: '#007bff', color: 'white' }}
+                                    onClick={handleFind}
+                                >
+                                    Find
+                                </button>
+                                <button
+                                    type="button"
+                                    className="action-btn"
+                                    style={{ backgroundColor: '#17a2b8', color: 'white' }}
+                                    onClick={handleReplace}
+                                >
+                                    Replace
+                                </button>
+                                <button
+                                    type="button"
+                                    className="action-btn replace-btn"
+                                    onClick={handleReplaceAll}
+                                >
+                                    Replace All
+                                </button>
+                            </div>
                         </div>
                     )}
 
@@ -519,6 +529,7 @@ const AddBook = () => {
 
                     <div className="form-group">
                         <label>{entryMode === 'pdf' ? 'Extracted Contents (Editable):' : 'Enter Topics:'}</label>
+                        {/* CustomToolbar removed - relying on native module config */}
                         <ReactQuill
                             ref={quillRef}
                             key={entryMode}
@@ -526,7 +537,7 @@ const AddBook = () => {
                             value={contents}
                             onChange={setContents}
                             placeholder={entryMode === 'pdf' ? "Topics will appear here..." : "Paste your topics here (formatting will be preserved)..."}
-                            modules={QUILL_MODULES}
+                            modules={modules}
                         />
                     </div>
 

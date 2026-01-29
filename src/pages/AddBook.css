@@ -142,6 +142,7 @@
     height: 20px;
     cursor: pointer;
     margin: 0;
+    margin-right: 10px;
     /* Remove default margins */
     flex-shrink: 0;
     /* Prevent shrinking */
@@ -208,6 +209,10 @@ body.dark-mode .form-group textarea {
 body.dark-mode .form-group input::placeholder,
 body.dark-mode .form-group textarea::placeholder {
     color: #9ca3af;
+}
+
+body.dark-mode .checkbox-label {
+    color: #d1d5db !important;
 }
 
 /* React Quill Dark Mode Overrides */
@@ -317,4 +322,40 @@ body.dark-mode .find-input {
 /* Level 3 (Indented twice) - Square */
 .ql-editor li.ql-indent-2 {
     list-style-type: square !important;
+}
+
+/* Custom Toolbar Button Styling (Native Quill) */
+/* Custom Toolbar Button Styling (Native Quill) */
+.ql-snow .ql-toolbar button.ql-find-replace {
+    width: 24px !important;
+    height: 24px !important;
+    margin-left: 10px !important;
+    position: relative;
+    display: inline-block;
+    float: left;
+}
+
+/* Add a visual separator using ::before on the custom button */
+.ql-snow .ql-toolbar button.ql-find-replace::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 18px;
+    width: 1px;
+    background-color: #ccc;
+    pointer-events: none;
+}
+
+/* Ensure the SVG inside fills the space correctly */
+.ql-snow .ql-toolbar button.ql-find-replace svg {
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+}
+
+/* Hover effect handled by Quill's native CSS for .ql-fill usually, but we can enforce it */
+.ql-snow .ql-toolbar button.ql-find-replace:hover .ql-fill {
+    fill: #0066cc !important;
 }
