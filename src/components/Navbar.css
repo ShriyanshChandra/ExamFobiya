@@ -565,3 +565,22 @@
     font-size: 1.3rem;
   }
 }
+
+.nav-separator {
+  color: rgba(255, 255, 255, 0.5);
+  cursor: default;
+  font-size: 1.1rem;
+}
+
+@media screen and (max-width: 768px) {
+  .nav-separator {
+    font-size: 0;
+    width: 80px;
+    height: 2px;
+    background-color: rgba(255, 255, 255, 0.2);
+    margin: 5px auto;
+    padding: 0;
+    border-radius: 2px;
+    display: block;
+  }
+}

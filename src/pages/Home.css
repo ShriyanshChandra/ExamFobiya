@@ -299,9 +299,9 @@
 
   .new-arrivals h2::after,
   .best-sellers h2::after {
-    left: 0;
-    width: 40px;
-    /* Small accent line */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
     bottom: -8px;
   }
 
@@ -312,7 +312,8 @@
     overflow-y: hidden;
     scroll-snap-type: x mandatory;
     gap: 12px;
-    align-items: stretch; /* Ensure cards stretch to same height */
+    align-items: stretch;
+    /* Ensure cards stretch to same height */
     /* Tighter gap */
     padding-bottom: 15px;
     -webkit-overflow-scrolling: touch;
@@ -334,7 +335,8 @@
     padding: 0;
     /* Remove padding to match global style (full bleed) */
     border-radius: 12px;
-    height: auto !important; /* Allow flex stretch to determine height */
+    height: auto !important;
+    /* Allow flex stretch to determine height */
     display: flex;
     flex-direction: column;
   }
@@ -373,6 +375,7 @@
   .book-card .book-price {
     padding: 0 10px;
     /* Consistent padding */
-    margin-top: auto; /* Push to bottom if content is short */
+    margin-top: auto;
+    /* Push to bottom if content is short */
   }
 }

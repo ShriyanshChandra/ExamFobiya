@@ -3,11 +3,20 @@ import ReactDOM from 'react-dom';
 import './BookDetailsModal.css';
 
 const BookDetailsModal = ({ book, onClose }) => {
-    // Prevent body scroll when modal is open
+    // Prevent body/html scroll when modal is open
     useEffect(() => {
+        // Save original styles
+        const originalBodyStyle = window.getComputedStyle(document.body).overflow;
+        const originalHtmlStyle = window.getComputedStyle(document.documentElement).overflow;
+
+        // Lock both
         document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflow = 'hidden';
+
         return () => {
-            document.body.style.overflow = 'unset';
+            // Restore both
+            document.body.style.overflow = originalBodyStyle;
+            document.documentElement.style.overflow = originalHtmlStyle;
         };
     }, []);
 

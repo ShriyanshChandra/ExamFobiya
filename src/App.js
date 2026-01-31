@@ -1,7 +1,7 @@
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import React from 'react';
 import { useState } from "react";
-import { DotLottiePlayer } from '@dotlottie/react-player';
+
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
@@ -16,6 +16,7 @@ import DevDashboard from "./pages/DevDashboard";
 import AddBook from "./pages/AddBook";
 import Tools from "./pages/Tools";
 import QRGenerator from "./pages/tool-pages/QRGenerator";
+import SpeedTest from "./pages/tool-pages/SpeedTest";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -53,6 +54,7 @@ function App() {
                   <Route path="/about" element={<AboutUs />} />
                   <Route path="/tools" element={<Tools />} />
                   <Route path="/tools/qr-generator" element={<QRGenerator />} />
+                  <Route path="/tools/speed-test" element={<SpeedTest />} />
                   <Route path="/terms" element={<TermsAndConditions />} />
                   <Route path="/privacy" element={<PrivacyPolicy />} />
                   <Route path="/login" element={<Login />} />
@@ -95,17 +97,7 @@ function App() {
                 </Routes>
               </div>
               <Footer />
-              <div style={{ textAlign: 'center', color: 'red', fontWeight: 'bold', padding: '10px 10px 0 10px', background: 'rgba(255,255,255,0.8)' }}>
-                This website is under development!
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'center', paddingBottom: '20px', background: 'rgba(255,255,255,0.8)' }}>
-                <DotLottiePlayer
-                  src="https://assets-v2.lottiefiles.com/a/7169871e-9f86-11ee-8945-b7fc8fe73392/u7ih0FXafS.lottie"
-                  loop
-                  autoplay
-                  style={{ width: '200px', height: '200px' }}
-                />
-              </div>
+
             </div>
           </Router>
         </ThemeProvider>

@@ -65,14 +65,15 @@
 
     .book-category-section h2 {
         font-size: 1.5rem;
-        text-align: left;
+        text-align: center;
         margin-bottom: 20px;
-        margin-left: 10px;
+        margin-left: 0;
     }
 
     .book-category-section h2::after {
-        left: 0;
-        width: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
         bottom: -8px;
     }
 }

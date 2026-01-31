@@ -1,7 +1,8 @@
+require('dotenv').config(); // MUST BE FIRST - Load env before other modules
 const express = require('express');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
-require('dotenv').config();
+const aiController = require('./routes/ai');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -10,7 +11,6 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Routes
 // Routes
 app.post('/send-otp', async (req, res) => {
     const { email, otp } = req.body;
@@ -77,6 +77,9 @@ app.post('/send-otp', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
+// AI Suggestions Route
+app.post('/api/ai/suggestions', aiController.generateSuggestions);
 
 app.get('/', (req, res) => {
     res.send('ExamFobiya Backend is running');

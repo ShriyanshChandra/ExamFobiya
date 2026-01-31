@@ -87,7 +87,8 @@
     font-weight: 700;
     color: #1976D2;
     /* Standard Material Blue */
-    margin: 5px 0 10px 0;
+    margin: auto 0 10px 0;
+    /* Auto margin-top aligns to bottom */
 }
 
 [data-theme='dark'] .book-price {

@@ -22,7 +22,7 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit }) => {
                 onClick={handleCardClick}
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index ? index * 0.1 : 0 }}
+                transition={{ duration: 0.3, delay: Math.min(index * 0.03, 0.5) }}
                 viewport={{ once: true }}
             >
                 <img
