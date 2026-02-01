@@ -148,6 +148,10 @@ const SpeedTest = () => {
 
         const testDuration = 8000; // Strictly 8 seconds
         let totalBytes = 0;
+        let lastTotalBytes = 0;
+        let lastTime = performance.now();
+        const speedSamples = [];
+
         const startTime = performance.now();
         abortControllerRef.current = new AbortController();
         const signal = abortControllerRef.current.signal;
@@ -161,8 +165,10 @@ const SpeedTest = () => {
         try {
             // Update interval
             const updateInterval = setInterval(() => {
-                const elapsed = performance.now() - startTime;
-                if (elapsed >= testDuration) {
+                const now = performance.now();
+                const totalElapsed = now - startTime;
+
+                if (totalElapsed >= testDuration) {
                     clearInterval(updateInterval);
                     if (abortControllerRef.current) {
                         abortControllerRef.current.abort();
@@ -170,11 +176,20 @@ const SpeedTest = () => {
                     return;
                 }
 
-                const elapsedSeconds = elapsed / 1000;
-                if (elapsedSeconds > 0 && totalBytes > 0) {
-                    const currentSpeedMbps = (totalBytes * 8) / (elapsedSeconds * 1000000);
-                    setCurrentSpeed(Math.round(currentSpeedMbps * 100) / 100);
+                // Calculate instantaneous speed
+                const intervalBytes = totalBytes - lastTotalBytes;
+                const intervalTime = now - lastTime;
+
+                if (intervalTime > 0) {
+                    const currentSpeedMbps = (intervalBytes * 8) / (intervalTime * 1000);
+                    if (currentSpeedMbps > 0) {
+                        speedSamples.push(currentSpeedMbps);
+                        setCurrentSpeed(Math.round(currentSpeedMbps * 100) / 100);
+                    }
                 }
+
+                lastTotalBytes = totalBytes;
+                lastTime = now;
             }, 200);
 
             // Upload loop
@@ -202,11 +217,27 @@ const SpeedTest = () => {
 
             clearInterval(updateInterval);
 
-            const totalSeconds = (performance.now() - startTime) / 1000;
-            const finalSpeedMbps = (totalBytes * 8) / (totalSeconds * 1000000);
-            const finalSpeed = Math.round(finalSpeedMbps * 100) / 100;
+            // Calculate final speed:
+            // Average of top 60% of samples (ignoring slower start)
+            let finalSpeed = 0;
+            if (speedSamples.length > 0) {
+                speedSamples.sort((a, b) => a - b);
+                const startIndex = Math.floor(speedSamples.length * 0.4);
+                const validSamples = speedSamples.slice(startIndex);
 
-            console.log(`Upload Test: ${totalBytes} bytes in ${totalSeconds}s = ${finalSpeedMbps} Mbps`);
+                if (validSamples.length > 0) {
+                    finalSpeed = validSamples.reduce((a, b) => a + b, 0) / validSamples.length;
+                } else {
+                    finalSpeed = speedSamples[speedSamples.length - 1];
+                }
+            } else {
+                const totalSeconds = (performance.now() - startTime) / 1000;
+                finalSpeed = (totalBytes * 8) / (totalSeconds * 1000000);
+            }
+
+            finalSpeed = Math.round(finalSpeed * 100) / 100;
+
+            console.log(`Upload Test: Peak Avg Speed = ${finalSpeed} Mbps`);
 
             setCurrentSpeed(finalSpeed);
             return finalSpeed;
