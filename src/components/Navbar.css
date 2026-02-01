@@ -237,6 +237,8 @@
   z-index: 100;
   animation: fadeIn 0.2s ease-in-out;
   margin-top: 15px;
+  list-style: none;
+  /* Remove bullet points */
   /* Visual gap */
 }
 
@@ -297,12 +299,12 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translate(-50%, 10px);
+    margin-top: 25px;
   }
 
   to {
     opacity: 1;
-    transform: translate(-50%, 0);
+    margin-top: 15px;
   }
 }
 

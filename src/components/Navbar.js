@@ -148,12 +148,7 @@ const Navbar = ({ setSearchQuery }) => {
             </>
           )}
 
-          <li className="dropdown">
-            <span>Downloads</span>
-            <ul className="dropdown-menu">
-              <li><Link to="/papers" onClick={() => setIsOpen(false)}>Previous Year Papers</Link></li>
-            </ul>
-          </li>
+          <li><Link to="/questions" onClick={() => setIsOpen(false)}>Questions</Link></li>
           <li><Link to="/about" onClick={() => setIsOpen(false)}>About Us</Link></li>
           <li className="nav-separator">|</li>
           <li><Link to="/tools" onClick={() => setIsOpen(false)}>Tools</Link></li>

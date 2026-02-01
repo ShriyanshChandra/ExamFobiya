@@ -7,7 +7,7 @@ import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Books from "./pages/Books";
 import Distributors from "./pages/Distributors";
-import Papers from "./pages/Papers";
+import Questions from "./pages/Questions";
 import AboutUs from "./pages/About_us";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -50,7 +50,7 @@ function App() {
                   <Route path="/" element={<Home />} />
                   <Route path="/books" element={<Books searchQuery={searchQuery} />} />
                   <Route path="/distributors" element={<Distributors />} />
-                  <Route path="/papers" element={<Papers />} />
+                  <Route path="/questions" element={<Questions />} />
                   <Route path="/about" element={<AboutUs />} />
                   <Route path="/tools" element={<Tools />} />
                   <Route path="/tools/qr-generator" element={<QRGenerator />} />
