@@ -78,6 +78,13 @@ app.post('/send-otp', async (req, res) => {
     }
 });
 
+// Speed Test Upload Endpoint
+// Accepts large payloads and ignores them to measure upload bandwidth
+app.post('/api/speedtest/upload', (req, res) => {
+    // We don't need to do anything with the data, just acknowledge receipt
+    res.status(200).send('Upload received');
+});
+
 // AI Suggestions Route
 app.post('/api/ai/suggestions', aiController.generateSuggestions);
 

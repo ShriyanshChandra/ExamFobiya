@@ -7,6 +7,7 @@ const SpeedTest = () => {
     const [progress, setProgress] = useState('');
     const [currentSpeed, setCurrentSpeed] = useState(0);
     const [testPhase, setTestPhase] = useState(''); // 'download', 'upload', or 'ping'
+    const abortControllerRef = React.useRef(null);
 
     const [useMBps, setUseMBps] = useState(false); // Toggle between Mbps and MB/s
 
@@ -51,17 +52,26 @@ const SpeedTest = () => {
 
 
 
-    // Test download speed with real-time updates (8 seconds total)
+    // Test download speed with parallel streams for saturation (10-15 seconds)
     const testDownloadSpeed = async () => {
         setProgress('Testing download speed...');
         setTestPhase('download');
         setCurrentSpeed(0);
 
-        const testDuration = 8000; // 8 seconds
-        // Use a reliable, high-bandwidth CDN image (Unsplash) - approx 5MB
-        const testUrl = "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=4000&q=80&" + Math.random();
+        const testDuration = 8000; // Strictly 8 seconds
+        // Multiple high-bandwidth fallback images
+        const imageUrls = [
+            "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=4000&q=80",
+            "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=4000&q=80",
+            "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=4000&q=80",
+            "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=4000&q=80"
+        ];
+
+        const concurrentStreams = 4; // Number of parallel downloads
         let totalBytes = 0;
         const startTime = performance.now();
+        abortControllerRef.current = new AbortController();
+        const signal = abortControllerRef.current.signal;
 
         try {
             // Update interval for real-time speed display
@@ -69,6 +79,9 @@ const SpeedTest = () => {
                 const elapsed = performance.now() - startTime;
                 if (elapsed >= testDuration) {
                     clearInterval(updateInterval);
+                    if (abortControllerRef.current) {
+                        abortControllerRef.current.abort();
+                    }
                     return;
                 }
 
@@ -76,30 +89,47 @@ const SpeedTest = () => {
                 const elapsedSeconds = elapsed / 1000;
                 if (elapsedSeconds > 0 && totalBytes > 0) {
                     const currentSpeedMbps = (totalBytes * 8) / (elapsedSeconds * 1000000);
+                    // Use a moving average or direct calculation? Direct is often spiky, but okay for real-time look
                     setCurrentSpeed(Math.round(currentSpeedMbps * 100) / 100);
                 }
-            }, 100); // Update every 100ms
+            }, 200);
 
-            // Keep downloading until 8 seconds elapsed
-            while (performance.now() - startTime < testDuration) {
-                try {
-                    const response = await fetch(testUrl + '?cache=' + Math.random());
-                    const blob = await response.blob();
-                    totalBytes += blob.size;
-                } catch (error) {
-                    console.warn('Download iteration failed:', error);
+            // Function to handle a single stream of downloads
+            const downloadStream = async (urlIndex) => {
+                while (performance.now() - startTime < testDuration && !signal.aborted) {
+                    try {
+                        const url = imageUrls[urlIndex % imageUrls.length] + "&cache=" + Math.random();
+                        const response = await fetch(url, { signal });
+                        const reader = response.body.getReader();
+
+                        while (true) {
+                            const { done, value } = await reader.read();
+                            if (done || signal.aborted) break;
+                            totalBytes += value.length;
+                        }
+                    } catch (error) {
+                        if (error.name === 'AbortError') return;
+                        // Silently fail stream and retry (mimics TCP retry)
+                        // console.warn('Stream failed', error); 
+                    }
                 }
+            };
 
-                // Very small delay to prevent overwhelming the browser
-                await new Promise(resolve => setTimeout(resolve, 50));
+            // Start parallel streams
+            const promises = [];
+            for (let i = 0; i < concurrentStreams; i++) {
+                promises.push(downloadStream(i));
             }
 
+            await Promise.all(promises);
             clearInterval(updateInterval);
 
             // Calculate final average speed
             const totalSeconds = (performance.now() - startTime) / 1000;
             const finalSpeedMbps = (totalBytes * 8) / (totalSeconds * 1000000);
             const finalSpeed = Math.round(finalSpeedMbps * 100) / 100;
+
+            console.log(`Download Test: ${totalBytes} bytes in ${totalSeconds}s = ${finalSpeedMbps} Mbps`);
 
             setCurrentSpeed(finalSpeed);
             return finalSpeed;
@@ -110,47 +140,73 @@ const SpeedTest = () => {
         }
     };
 
-    // Test upload speed with real-time updates (8 seconds total)
+    // Test upload speed with real backend upload (Strictly 8 seconds)
     const testUploadSpeed = async () => {
         setProgress('Testing upload speed...');
         setTestPhase('upload');
         setCurrentSpeed(0);
 
-        const testDuration = 8000; // 8 seconds
+        const testDuration = 8000; // Strictly 8 seconds
         let totalBytes = 0;
         const startTime = performance.now();
-        const chunkSize = 256 * 1024; // 256KB chunks
+        abortControllerRef.current = new AbortController();
+        const signal = abortControllerRef.current.signal;
+
+        // Create 1MB of random data to upload repeatedly
+        const chunkSize = 1024 * 1024;
+        const randomData = new Uint8Array(chunkSize);
+        for (let i = 0; i < chunkSize; i++) randomData[i] = Math.random() * 255;
+        const blob = new Blob([randomData]);
 
         try {
-            // Simulate upload with interval updates
+            // Update interval
             const updateInterval = setInterval(() => {
                 const elapsed = performance.now() - startTime;
                 if (elapsed >= testDuration) {
                     clearInterval(updateInterval);
+                    if (abortControllerRef.current) {
+                        abortControllerRef.current.abort();
+                    }
                     return;
                 }
 
-                // Simulate bytes being uploaded
-                totalBytes += chunkSize;
-
-                // Calculate and display current speed
                 const elapsedSeconds = elapsed / 1000;
-                if (elapsedSeconds > 0) {
+                if (elapsedSeconds > 0 && totalBytes > 0) {
                     const currentSpeedMbps = (totalBytes * 8) / (elapsedSeconds * 1000000);
-                    // Simulate realistic upload speeds (typically 20-40% of download)
-                    setCurrentSpeed(Math.round(currentSpeedMbps * 0.3 * 100) / 100);
+                    setCurrentSpeed(Math.round(currentSpeedMbps * 100) / 100);
                 }
-            }, 100); // Update every 100ms
+            }, 200);
 
-            // Wait for the full 8 seconds
-            await new Promise(resolve => setTimeout(resolve, testDuration));
+            // Upload loop
+            const API_BASE_URL = process.env.NODE_ENV === 'production'
+                ? ''
+                : 'http://localhost:5000';
+
+            while (performance.now() - startTime < testDuration && !signal.aborted) {
+                try {
+                    // Start a fetch request with the large payload
+                    // We can't really track progress of a single fetch in standard JS fetch API without streams (which are for download)
+                    // So we treat each completed request as a chunk
+                    await fetch(`${API_BASE_URL}/api/speedtest/upload`, {
+                        method: 'POST',
+                        body: blob,
+                        signal,
+                        mode: 'cors'
+                    });
+                    totalBytes += chunkSize;
+                } catch (error) {
+                    if (error.name === 'AbortError') break;
+                    // console.warn('Upload chunk failed', error);
+                }
+            }
 
             clearInterval(updateInterval);
 
-            // Calculate final speed
-            const totalSeconds = testDuration / 1000;
+            const totalSeconds = (performance.now() - startTime) / 1000;
             const finalSpeedMbps = (totalBytes * 8) / (totalSeconds * 1000000);
-            const finalSpeed = Math.round(finalSpeedMbps * 0.3 * 100) / 100;
+            const finalSpeed = Math.round(finalSpeedMbps * 100) / 100;
+
+            console.log(`Upload Test: ${totalBytes} bytes in ${totalSeconds}s = ${finalSpeedMbps} Mbps`);
 
             setCurrentSpeed(finalSpeed);
             return finalSpeed;
