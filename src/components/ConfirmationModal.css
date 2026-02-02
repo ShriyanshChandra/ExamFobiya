@@ -90,14 +90,22 @@
     background: rgba(24, 40, 72, 0.1);
 }
 
-.modal-actions .confirm-btn {
+.modal-actions .confirm-btn.danger {
+    background-color: #ffd700;
+    color: #182848;
+}
+
+.modal-actions .confirm-btn.danger:hover {
+    background-color: #e6c200;
+}
+
+.modal-actions .confirm-btn.danger {
     background: #dc3545;
-    /* Default warning red */
     color: white;
     box-shadow: 0 4px 6px rgba(220, 53, 69, 0.3);
 }
 
-.modal-actions .confirm-btn:hover {
+.modal-actions .confirm-btn.danger:hover {
     background: #c82333;
     transform: translateY(-2px);
     box-shadow: 0 6px 8px rgba(220, 53, 69, 0.4);
@@ -111,6 +119,7 @@
 
 .modal-actions .confirm-btn.yellow:hover {
     background: #ffcc00;
+    transform: translateY(-2px);
     box-shadow: 0 6px 8px rgba(255, 215, 0, 0.4);
 }
 

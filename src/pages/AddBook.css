@@ -33,13 +33,121 @@
 
 .form-group input[type="text"],
 .form-group select,
-.form-group textarea {
+.form-group textarea,
+.custom-dropdown-trigger {
     width: 100%;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 6px;
     font-size: 1rem;
+    box-sizing: border-box;
+    /* Ensure padding doesn't affect width */
 }
+
+/* Hide native select arrow */
+.form-group select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: white;
+    padding-right: 30px;
+    /* Make room for custom arrow */
+}
+
+/* Wrapper for select with custom arrow */
+.select-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.select-wrapper select {
+    width: 100%;
+}
+
+/* Custom arrow for native select */
+.select-wrapper::after {
+    content: '';
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    border-right: 2px solid #6c757d;
+    border-bottom: 2px solid #6c757d;
+    transform: translateY(-50%) rotate(45deg);
+    margin-top: -2px;
+    /* Fine-tune vertical alignment */
+    pointer-events: none;
+}
+
+.custom-dropdown-trigger {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: white;
+    cursor: pointer;
+    position: relative;
+}
+
+.custom-dropdown-trigger.disabled {
+    background-color: #e9ecef;
+    /* Match browser default disabled */
+    cursor: not-allowed;
+    color: #6c757d;
+}
+
+.custom-dropdown-trigger:not(.disabled):hover {
+    border-color: #adb5bd;
+}
+
+/* Dropdown arrow styling - chevron to match native select */
+.custom-dropdown-arrow {
+    width: 7px;
+    height: 7px;
+    border-right: 2px solid #6c757d;
+    border-bottom: 2px solid #6c757d;
+    transform: rotate(45deg);
+    margin-left: 8px;
+    flex-shrink: 0;
+    /* Prevent arrow from shrinking */
+}
+
+.custom-dropdown-trigger.disabled .custom-dropdown-arrow {
+    border-color: #adb5bd;
+}
+
+/* Dropdown menu */
+.custom-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    z-index: 1000;
+    max-height: 250px;
+    overflow-y: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    margin-top: 4px;
+}
+
+.custom-dropdown-option {
+    padding: 10px 15px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.custom-dropdown-option:hover {
+    background-color: #f8f9fa;
+}
+
+.custom-dropdown-option:last-child {
+    border-bottom: none;
+}
+
+/* Ensure darker background in dark mode if needed, inheriting from general inputs */
 
 .form-group input[type="file"] {
     display: block;
@@ -215,6 +323,94 @@ body.dark-mode .checkbox-label {
     color: #d1d5db !important;
 }
 
+/* Custom Dropdown Dark Mode */
+body.dark-mode .custom-dropdown-trigger {
+    background-color: #374151;
+    color: #f9fafb;
+    border-color: #4b5563;
+}
+
+body.dark-mode .custom-dropdown-trigger.disabled {
+    background-color: #1f2937;
+    color: #6b7280;
+    border-color: #374151;
+}
+
+body.dark-mode .custom-dropdown-arrow {
+    border-color: #9ca3af;
+}
+
+body.dark-mode .custom-dropdown-trigger.disabled .custom-dropdown-arrow {
+    border-color: #4b5563;
+}
+
+body.dark-mode .custom-dropdown-menu {
+    background-color: #374151;
+    border-color: #4b5563;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .custom-dropdown-menu>div {
+    color: #f9fafb;
+    border-bottom-color: #4b5563;
+}
+
+body.dark-mode .custom-dropdown-menu>div:hover {
+    background-color: #4b5563 !important;
+}
+
+/* Keep yellow background for "+ Add New Subject" in dark mode */
+body.dark-mode .custom-dropdown-menu>div:first-child {
+    background-color: #fbbf24 !important;
+    color: #1f2937 !important;
+    border-bottom-color: #f59e0b !important;
+}
+
+body.dark-mode .custom-dropdown-menu>div:first-child:hover {
+    background-color: #f59e0b !important;
+}
+
+/* Add New Subject option - Light Mode */
+.add-subject-option {
+    color: #182848;
+    background-color: #fffacd;
+    border-bottom: 1px solid #ffeeba;
+}
+
+.add-subject-option:hover {
+    background-color: #fae6b1;
+}
+
+/* Add New Subject option - Dark Mode */
+body.dark-mode .add-subject-option {
+    background-color: #fbbf24 !important;
+    color: #1f2937 !important;
+    border-bottom-color: #f59e0b !important;
+}
+
+body.dark-mode .add-subject-option:hover {
+    background-color: #f59e0b !important;
+}
+
+/* Regular subject options - Light Mode */
+.subject-option {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.subject-option:hover {
+    background-color: #f9f9f9;
+}
+
+/* Regular subject options - Dark Mode */
+body.dark-mode .subject-option {
+    color: #f9fafb;
+    border-bottom-color: #4b5563;
+}
+
+body.dark-mode .subject-option:hover {
+    background-color: #4b5563;
+}
+
 /* React Quill Dark Mode Overrides */
 body.dark-mode .quill {
     background-color: #374151;
@@ -331,7 +527,6 @@ body.dark-mode .find-input {
     height: 24px !important;
     margin-left: 10px !important;
     position: relative;
-    display: inline-block;
     float: left;
 }
 

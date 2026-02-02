@@ -1,167 +1,41 @@
 import React, { useState, useEffect } from "react";
 import { useBooks } from "../context/BookContext";
+import { useQuestions } from "../context/QuestionContext"; // Import QuestionContext
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import "./Questions.css";
 
-const MOCK_QUESTIONS = [
-  // BCA
-  {
-    id: 1,
-    course: "BCA",
-    semester: 1,
-    subject: "Computer Fundamental and MS-Office",
-    university: "University 1",
-    year: 2023,
-    title: "BCA 1st Sem CF & MS-Office 2023",
-    questions: [
-      "Q1. What is a Computer? Explain its block diagram.",
-      "Q2. Explain valid and invalid variable names in C.",
-      "Q3. What is an Operating System? Explain its types.",
-      "Q4. Explain the difference between Compiler and Interpreter.",
-      "Q5. Write a short note on MS-Word."
-    ]
-  },
-  {
-    id: 2,
-    course: "BCA",
-    semester: 5,
-    subject: "AI and Expert System",
-    university: "University 2",
-    year: 2023,
-    title: "BCA 5th Sem AI 2023",
-    questions: [
-      "Q1. Define Artificial Intelligence.",
-      "Q2. Explain various search techniques.",
-      "Q3. What is an Expert System?",
-      "Q4. Explain Neural Networks.",
-      "Q5. Write a note on Fuzzy Logic."
-    ]
-  },
-  {
-    id: 3,
-    course: "BCA",
-    semester: 6,
-    subject: "Computer Security and Cyber Law",
-    university: "University 1",
-    year: 2022,
-    title: "BCA 6th Sem Cyber Law 2022",
-    questions: [
-      "Q1. What is Cyber Crime?",
-      "Q2. Explain Digital Signature.",
-      "Q3. What is a Virus? Explain its types.",
-      "Q4. Explain IT Act 2000.",
-      "Q5. Write a note on Firewall."
-    ]
-  },
-
-  // DCA
-  {
-    id: 4,
-    course: "DCA",
-    semester: 1,
-    subject: "Programming in C",
-    university: "University 2",
-    year: 2023,
-    title: "DCA 1st Sem C Prog 2023",
-    questions: [
-      "Q1. Explain Data Types in C.",
-      "Q2. Write a program to find the factorial of a number.",
-      "Q3. Explain Loops in C.",
-      "Q4. What is a Pointer?",
-      "Q5. Explain File Handling in C."
-    ]
-  },
-  {
-    id: 5,
-    course: "DCA",
-    semester: 2,
-    subject: "Internet and Web Technology",
-    university: "University 1",
-    year: 2023,
-    title: "DCA 2nd Sem Web Tech 2023",
-    questions: [
-      "Q1. What is HTML? Explain its structure.",
-      "Q2. Explain CSS and its types.",
-      "Q3. What is JavaScript?",
-      "Q4. Explain Forms in HTML.",
-      "Q5. Write a note on Web Hosting."
-    ]
-  },
-  {
-    id: 6,
-    course: "DCA",
-    semester: 2,
-    subject: "Print Technology and Desktop Publishing",
-    university: "University 2",
-    year: 2022,
-    title: "DCA 2nd Sem DTP 2022",
-    questions: [
-      "Q1. What is DTP?",
-      "Q2. Explain Offset Printing.",
-      "Q3. What is PageMaker?",
-      "Q4. Explain CorelDraw tools.",
-      "Q5. Write a note on Photoshop."
-    ]
-  },
-
-  // PGDCA
-  {
-    id: 7,
-    course: "PGDCA",
-    semester: 1,
-    subject: "Fundamental of Computer and Information Technology",
-    university: "University 1",
-    year: 2023,
-    title: "PGDCA 1st Sem FCIT 2023",
-    questions: [
-      "Q1. Explain Generations of Computer.",
-      "Q2. What is Memory? Explain its types.",
-      "Q3. Explain Input and Output Devices.",
-      "Q4. What is Software? Explain its types.",
-      "Q5. Write a note on Internet."
-    ]
-  },
-  {
-    id: 8,
-    course: "PGDCA",
-    semester: 2,
-    subject: "System Analysis and Design",
-    university: "University 2",
-    year: 2023,
-    title: "PGDCA 2nd Sem SAD 2023",
-    questions: [
-      "Q1. What is SDLC?",
-      "Q2. Explain Feasibility Study.",
-      "Q3. What is DFD?",
-      "Q4. Explain Testing.",
-      "Q5. Write a note on Implementation."
-    ]
-  },
-  {
-    id: 9,
-    course: "PGDCA",
-    semester: 2,
-    subject: "Relational Database Management System",
-    university: "University 1",
-    year: 2022,
-    title: "PGDCA 2nd Sem RDBMS 2022",
-    questions: [
-      "Q1. What is DBMS?",
-      "Q2. Explain Normalization.",
-      "Q3. What is SQL?",
-      "Q4. Explain ER Diagram.",
-      "Q5. Write a note on Keys in DBMS."
-    ]
-  }
-];
+import AnswerModal from "../components/AnswerModal"; // Import AnswerModal
 
 const Questions = () => {
   const { books } = useBooks(); // Use BookContext
+  const { questions } = useQuestions(); // Use QuestionContext
+  const navigate = useNavigate(); // Hook for navigation
+
   const [selectedCourse, setSelectedCourse] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
   const [selectedUniversity, setSelectedUniversity] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedId, setExpandedId] = useState(null);
+
+  // AI Answer Modal State
+  const [isAnswerModalOpen, setIsAnswerModalOpen] = useState(false);
+  const [currentQuestion, setCurrentQuestion] = useState("");
+  const [currentAnswer, setCurrentAnswer] = useState("");
+  const [answerLoading, setAnswerLoading] = useState(false);
+
+  const handleGetAnswer = (questionText) => {
+    setCurrentQuestion(questionText);
+    setIsAnswerModalOpen(true);
+    setAnswerLoading(true);
+
+    // Mock AI API Call
+    setTimeout(() => {
+      const mockAnswer = `Here is a sample AI explanation for: "${questionText}"\n\nThis is a generated placeholder answer. In a real implementation, this would call an AI API (like OpenAI or Gemini) to provide a detailed explanation.\n\nKey Concepts:\n1. Concept A\n2. Concept B\n3. Application`;
+      setCurrentAnswer(mockAnswer);
+      setAnswerLoading(false);
+    }, 1500);
+  };
 
   const toggleExpand = (id) => {
     setExpandedId(expandedId === id ? null : id);
@@ -179,17 +53,26 @@ const Questions = () => {
     ? [...new Set(books.filter(book => book.category === selectedCourse).map(book => book.title).filter(Boolean))]
     : [];
 
-  // Filter Logic - Using MOCK_QUESTIONS for now as implementation asks to filter distinct Question items
-  // But logic for filter remains same
-  const filteredQuestions = MOCK_QUESTIONS.filter(question => {
+  // Filter Logic
+  const filteredQuestions = questions.filter(question => {
     if (selectedCourse && question.course !== selectedCourse) return false;
-    // Note: MOCK_QUESTIONS need to match book titles if we want subject filter to work perfectly
+    // Note: questions need to match book titles if we want subject filter to work perfectly
     // For now, if user selects a subject from dropdown (which comes from books), 
     // it will try to match question.subject
     if (selectedSubject && question.subject !== selectedSubject) return false;
     if (selectedUniversity && question.university !== selectedUniversity) return false;
+    if (selectedUniversity && question.university !== selectedUniversity) return false;
     if (selectedYear && question.year.toString() !== selectedYear) return false;
-    if (searchQuery && !question.title.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+
+    // Search in Tags (if available) or Title (fallback)
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      const tagsMatch = question.tags && question.tags.some(tag => tag.toLowerCase().includes(query));
+      const titleMatch = question.title && question.title.toLowerCase().includes(query);
+      const subjectMatch = question.subject && question.subject.toLowerCase().includes(query);
+
+      if (!tagsMatch && !titleMatch && !subjectMatch) return false;
+    }
     return true;
   });
 
@@ -198,8 +81,27 @@ const Questions = () => {
   return (
     <div className="questions-container">
       <div className="questions-content">
-        <h2>Previous Year Questions</h2>
-        <p className="subtitle">Select your course details to find question papers</p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <div>
+            <h2>Previous Year Questions</h2>
+            <p className="subtitle">Select your course details to find question papers</p>
+          </div>
+          <button
+            className="add-question-btn"
+            onClick={() => navigate('/add-question')}
+            style={{
+              backgroundColor: '#ffd700',
+              color: '#182848',
+              padding: '10px 20px',
+              borderRadius: '5px',
+              border: 'none',
+              cursor: 'pointer',
+              fontWeight: 'bold'
+            }}
+          >
+            + Add New Questions
+          </button>
+        </div>
 
         {/* Global Search */}
         <div className="search-section">
@@ -245,7 +147,7 @@ const Questions = () => {
               className="filter-select"
               disabled={!selectedCourse}
             >
-              <option value="">All Subjects</option>
+              <option value="">Select Subject</option>
               {subjects.map(sub => (
                 <option key={sub} value={sub}>{sub}</option>
               ))}
@@ -261,7 +163,7 @@ const Questions = () => {
               onChange={(e) => setSelectedUniversity(e.target.value)}
               className="secondary-select"
             >
-              <option value="">All Universities</option>
+              <option value="">Select University</option>
               <option value="University 1">University 1</option>
               <option value="University 2">University 2</option>
             </select>
@@ -270,7 +172,7 @@ const Questions = () => {
               onChange={(e) => setSelectedYear(e.target.value)}
               className="secondary-select"
             >
-              <option value="">All Years</option>
+              <option value="">Select Year</option>
               <option value="2023">2023</option>
               <option value="2022">2022</option>
               <option value="2021">2021</option>
@@ -288,12 +190,27 @@ const Questions = () => {
                     <div className="question-header">
                       <div className="question-icon">📄</div>
                       <div className="question-info">
-                        <h3>{question.title}</h3>
+                        <h3>{question.subject || question.title}</h3>
                         <div className="question-meta">
                           <span>{question.university}</span>
                           <span>•</span>
                           <span>{question.year}</span>
                         </div>
+                        {question.tags && question.tags.length > 0 && (
+                          <div className="question-tags" style={{ display: 'flex', gap: '5px', marginTop: '5px', flexWrap: 'wrap' }}>
+                            {question.tags.map((tag, idx) => (
+                              <span key={idx} style={{
+                                backgroundColor: '#e0efff',
+                                color: '#007bff',
+                                padding: '2px 8px',
+                                borderRadius: '12px',
+                                fontSize: '0.75rem'
+                              }}>
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       </div>
                       <button
                         className="download-btn"
@@ -307,7 +224,23 @@ const Questions = () => {
                         <h4>Questions:</h4>
                         <ul>
                           {question.questions?.map((q, index) => (
-                            <li key={index}>{q}</li>
+                            <li key={index} style={{ marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <span>{q}</span>
+                              <button
+                                className="download-btn"
+                                style={{
+                                  fontSize: '0.8rem',
+                                  padding: '5px 10px',
+                                  marginLeft: '10px',
+                                  backgroundColor: '#ffd700',
+                                  color: '#182848',
+                                  border: 'none'
+                                }}
+                                onClick={() => handleGetAnswer(q)}
+                              >
+                                Get Answer ✨
+                              </button>
+                            </li>
                           )) || <li>No questions available.</li>}
                         </ul>
                       </div>
@@ -327,6 +260,14 @@ const Questions = () => {
           )}
         </div>
       </div>
+
+      <AnswerModal
+        isOpen={isAnswerModalOpen}
+        onClose={() => setIsAnswerModalOpen(false)}
+        question={currentQuestion}
+        answer={currentAnswer}
+        loading={answerLoading}
+      />
     </div>
   );
 };
