@@ -88,6 +88,9 @@ app.post('/api/speedtest/upload', (req, res) => {
 // AI Suggestions Route
 app.post('/api/ai/suggestions', aiController.generateSuggestions);
 
+// AI Question Parsing Route
+app.post('/api/ai/parse-questions', aiController.parseQuestions);
+
 app.get('/', (req, res) => {
     res.send('ExamFobiya Backend is running');
 });

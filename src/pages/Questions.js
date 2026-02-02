@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useBooks } from "../context/BookContext";
 import { useQuestions } from "../context/QuestionContext"; // Import QuestionContext
+import { useAuth } from "../context/AuthContext"; // Import AuthContext
 import { useNavigate } from "react-router-dom"; // Import useNavigate
+import DeleteQuestionModal from "../components/DeleteQuestionModal"; // Import DeleteQuestionModal
 import "./Questions.css";
 
-import AnswerModal from "../components/AnswerModal"; // Import AnswerModal
 
 const Questions = () => {
   const { books } = useBooks(); // Use BookContext
-  const { questions } = useQuestions(); // Use QuestionContext
+  const { questions, deleteQuestion } = useQuestions(); // Use QuestionContext
+  const { user } = useAuth(); // Get user for role check
   const navigate = useNavigate(); // Hook for navigation
 
   const [selectedCourse, setSelectedCourse] = useState("");
@@ -16,51 +18,42 @@ const Questions = () => {
   const [selectedUniversity, setSelectedUniversity] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [expandedId, setExpandedId] = useState(null);
 
-  // AI Answer Modal State
-  const [isAnswerModalOpen, setIsAnswerModalOpen] = useState(false);
-  const [currentQuestion, setCurrentQuestion] = useState("");
-  const [currentAnswer, setCurrentAnswer] = useState("");
-  const [answerLoading, setAnswerLoading] = useState(false);
+  // Modal state for delete confirmation
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [questionToDelete, setQuestionToDelete] = useState(null);
 
-  const handleGetAnswer = (questionText) => {
-    setCurrentQuestion(questionText);
-    setIsAnswerModalOpen(true);
-    setAnswerLoading(true);
-
-    // Mock AI API Call
-    setTimeout(() => {
-      const mockAnswer = `Here is a sample AI explanation for: "${questionText}"\n\nThis is a generated placeholder answer. In a real implementation, this would call an AI API (like OpenAI or Gemini) to provide a detailed explanation.\n\nKey Concepts:\n1. Concept A\n2. Concept B\n3. Application`;
-      setCurrentAnswer(mockAnswer);
-      setAnswerLoading(false);
-    }, 1500);
-  };
-
-  const toggleExpand = (id) => {
-    setExpandedId(expandedId === id ? null : id);
-  };
+  // Reset dependent filters when parent filter changes
 
   // Reset dependent filters when parent filter changes
   useEffect(() => {
     setSelectedSubject("");
   }, [selectedCourse]);
 
-  // Derived options from Books Data
-  const courses = [...new Set(books.map(book => book.category).filter(Boolean))];
+  // Derived options from Books and Questions Data
+  const courses = [...new Set([
+    ...books.map(book => book.category),
+    ...questions.map(q => q.course)
+  ])].filter(Boolean).sort();
 
   const subjects = selectedCourse
-    ? [...new Set(books.filter(book => book.category === selectedCourse).map(book => book.title).filter(Boolean))]
+    ? [...new Set([
+      ...books.filter(book => book.category === selectedCourse).map(book => book.title),
+      ...questions.filter(q => q.course === selectedCourse).map(q => q.subject)
+    ])].filter(Boolean).sort()
     : [];
 
   // Filter Logic
+  // Helper to remove prefixes
+  const cleanContent = (html) => {
+    if (!html) return "";
+    // Regex to match "Q:", "A:", "Question:", "Answer:" at the start, case-insensitive, optional whitespace/bold tags
+    return html.replace(/^(?:<[^>]+>)*\s*(?:Q|A|Question|Answer)\s*:\s*(?:<\/[^>]+>)*\s*/i, "");
+  };
+
   const filteredQuestions = questions.filter(question => {
     if (selectedCourse && question.course !== selectedCourse) return false;
-    // Note: questions need to match book titles if we want subject filter to work perfectly
-    // For now, if user selects a subject from dropdown (which comes from books), 
-    // it will try to match question.subject
     if (selectedSubject && question.subject !== selectedSubject) return false;
-    if (selectedUniversity && question.university !== selectedUniversity) return false;
     if (selectedUniversity && question.university !== selectedUniversity) return false;
     if (selectedYear && question.year.toString() !== selectedYear) return false;
 
@@ -70,13 +63,17 @@ const Questions = () => {
       const tagsMatch = question.tags && question.tags.some(tag => tag.toLowerCase().includes(query));
       const titleMatch = question.title && question.title.toLowerCase().includes(query);
       const subjectMatch = question.subject && question.subject.toLowerCase().includes(query);
+      // Clean content before search check if needed, but search usually wants raw match. 
+      // Keeping original search logic for now to avoid breaking matching.
+      const qTextMatch = question.question && question.question.toLowerCase().includes(query);
 
-      if (!tagsMatch && !titleMatch && !subjectMatch) return false;
+      if (!tagsMatch && !titleMatch && !subjectMatch && !qTextMatch) return false;
     }
     return true;
   });
 
-  const showResults = !!selectedCourse || !!searchQuery;
+  // Only show results if (Course AND Subject) are selected, OR if there is a search query
+  const showResults = (!!selectedCourse && !!selectedSubject) || !!searchQuery;
 
   return (
     <div className="questions-container">
@@ -86,21 +83,23 @@ const Questions = () => {
             <h2>Previous Year Questions</h2>
             <p className="subtitle">Select your course details to find question papers</p>
           </div>
-          <button
-            className="add-question-btn"
-            onClick={() => navigate('/add-question')}
-            style={{
-              backgroundColor: '#ffd700',
-              color: '#182848',
-              padding: '10px 20px',
-              borderRadius: '5px',
-              border: 'none',
-              cursor: 'pointer',
-              fontWeight: 'bold'
-            }}
-          >
-            + Add New Questions
-          </button>
+          {user?.role === 'admin' && (
+            <button
+              className="add-question-btn"
+              onClick={() => navigate('/add-question')}
+              style={{
+                backgroundColor: '#ffd700',
+                color: '#182848',
+                padding: '10px 20px',
+                borderRadius: '5px',
+                border: 'none',
+                cursor: 'pointer',
+                fontWeight: 'bold'
+              }}
+            >
+              + Add New Questions
+            </button>
+          )}
         </div>
 
         {/* Global Search */}
@@ -184,69 +183,76 @@ const Questions = () => {
         <div className="questions-results">
           {showResults ? (
             filteredQuestions.length > 0 ? (
-              <div className="questions-grid">
-                {filteredQuestions.map(question => (
-                  <div key={question.id} className={`question-card ${expandedId === question.id ? 'expanded' : ''}`}>
-                    <div className="question-header">
-                      <div className="question-icon">📄</div>
-                      <div className="question-info">
-                        <h3>{question.subject || question.title}</h3>
-                        <div className="question-meta">
-                          <span>{question.university}</span>
-                          <span>•</span>
-                          <span>{question.year}</span>
+              <div className="questions-list-container">
+                {filteredQuestions.map(question => {
+                  const hasUni = question.university && question.university !== "Unknown University" && question.university !== "Unknown";
+                  const hasYear = question.year && question.year !== "Unknown";
+                  const hasTags = question.tags && question.tags.length > 0;
+                  const showMeta = hasUni || hasYear || hasTags;
+
+                  return (
+                    <div key={question.id} className="qa-box">
+                      {showMeta && (
+                        <div className="qa-meta">
+                          {hasUni && (
+                            <>
+                              <span className="meta-uni">{question.university}</span>
+                              {hasYear && <span className="meta-separator">•</span>}
+                            </>
+                          )}
+                          {hasYear && <span className="meta-year">{question.year}</span>}
+
+                          {hasTags && (
+                            <div className="qa-tags">
+                              {question.tags.map((tag, idx) => (
+                                <span key={idx} className="qa-tag-badge">
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                        {question.tags && question.tags.length > 0 && (
-                          <div className="question-tags" style={{ display: 'flex', gap: '5px', marginTop: '5px', flexWrap: 'wrap' }}>
-                            {question.tags.map((tag, idx) => (
-                              <span key={idx} style={{
-                                backgroundColor: '#e0efff',
-                                color: '#007bff',
-                                padding: '2px 8px',
-                                borderRadius: '12px',
-                                fontSize: '0.75rem'
-                              }}>
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
-                        )}
+                      )}
+
+                      <div className="qa-content-section">
+                        <div className="qa-question">
+                          <strong>Question:</strong>
+                          <div dangerouslySetInnerHTML={{ __html: cleanContent(question.question) }} />
+                        </div>
+
+                        <div className="qa-divider"></div>
+
+                        <div className="qa-answer">
+                          <strong>Answer:</strong>
+                          <div dangerouslySetInnerHTML={{ __html: cleanContent(question.answer) }} />
+                        </div>
                       </div>
-                      <button
-                        className="download-btn"
-                        onClick={() => toggleExpand(question.id)}
-                      >
-                        {expandedId === question.id ? 'Hide Questions' : 'Show Questions'}
-                      </button>
+
+                      {/* Admin Actions - Bottom Right */}
+                      {user?.role === 'admin' && (
+                        <div className="admin-actions">
+                          <button
+                            onClick={() => navigate(`/edit-question/${question.id}`)}
+                            className="action-btn edit-btn"
+                            title="Edit"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => {
+                              setQuestionToDelete(question);
+                              setShowDeleteModal(true);
+                            }}
+                            className="action-btn remove-btn"
+                            title="Delete"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
                     </div>
-                    {expandedId === question.id && (
-                      <div className="questions-list">
-                        <h4>Questions:</h4>
-                        <ul>
-                          {question.questions?.map((q, index) => (
-                            <li key={index} style={{ marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                              <span>{q}</span>
-                              <button
-                                className="download-btn"
-                                style={{
-                                  fontSize: '0.8rem',
-                                  padding: '5px 10px',
-                                  marginLeft: '10px',
-                                  backgroundColor: '#ffd700',
-                                  color: '#182848',
-                                  border: 'none'
-                                }}
-                                onClick={() => handleGetAnswer(q)}
-                              >
-                                Get Answer ✨
-                              </button>
-                            </li>
-                          )) || <li>No questions available.</li>}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <div className="no-results">
@@ -255,19 +261,31 @@ const Questions = () => {
             )
           ) : (
             <div className="instruction-placeholder">
-              Please select a Course or Search to view questions.
+              Please select a Course and Subject to view questions.
             </div>
           )}
         </div>
-      </div>
 
-      <AnswerModal
-        isOpen={isAnswerModalOpen}
-        onClose={() => setIsAnswerModalOpen(false)}
-        question={currentQuestion}
-        answer={currentAnswer}
-        loading={answerLoading}
-      />
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && questionToDelete && (
+          <DeleteQuestionModal
+            question={questionToDelete}
+            onClose={() => {
+              setShowDeleteModal(false);
+              setQuestionToDelete(null);
+            }}
+            onConfirm={async (questionId) => {
+              try {
+                await deleteQuestion(questionId);
+                setShowDeleteModal(false);
+                setQuestionToDelete(null);
+              } catch (err) {
+                alert("Failed to delete question.");
+              }
+            }}
+          />
+        )}
+      </div>
     </div>
   );
 };

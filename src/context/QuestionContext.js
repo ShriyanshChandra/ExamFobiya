@@ -4,145 +4,82 @@ import { collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc, writeBatch }
 
 const QuestionContext = createContext();
 
-// Mock data to seed if database is empty
+// Mock data to seed if database is empty - Plain text format for space efficiency
 const MOCK_QUESTIONS = [
     // BCA
     {
         course: "BCA",
-        semester: "1",
         subject: "Computer Fundamental and MS-Office",
         university: "University 1",
-        year: "2023",
-        title: "BCA 1st Sem CF & MS-Office 2023",
-        questions: [
-            "Q1. What is a Computer? Explain its block diagram.",
-            "Q2. Explain valid and invalid variable names in C.",
-            "Q3. What is an Operating System? Explain its types.",
-            "Q4. Explain the difference between Compiler and Interpreter.",
-            "Q5. Write a short note on MS-Word."
-        ]
+        year: 2023,
+        tags: ["#ComputerFundamental", "#MSOFFICE"],
+        question: "What is a Computer? Explain its block diagram.",
+        answer: "A computer is an electronic device that processes data according to instructions. Its block diagram includes: Input Unit, CPU (Control Unit + ALU), Memory Unit, and Output Unit."
     },
     {
         course: "BCA",
-        semester: "5",
+        subject: "Computer Fundamental and MS-Office",
+        university: "University 1",
+        year: 2023,
+        tags: ["#ComputerFundamental", "#MSOFFICE"],
+        question: "Explain valid and invalid variable names in C.",
+        answer: "Valid variable names must start with a letter or underscore, can contain letters, digits, and underscores. Invalid names start with digits, contain special characters, or use reserved keywords."
+    },
+    {
+        course: "BCA",
         subject: "AI and Expert System",
         university: "University 2",
-        year: "2023",
-        title: "BCA 5th Sem AI 2023",
-        questions: [
-            "Q1. Define Artificial Intelligence.",
-            "Q2. Explain various search techniques.",
-            "Q3. What is an Expert System?",
-            "Q4. Explain Neural Networks.",
-            "Q5. Write a note on Fuzzy Logic."
-        ]
+        year: 2023,
+        tags: ["#AI", "#ExpertSystem"],
+        question: "Define Artificial Intelligence.",
+        answer: "Artificial Intelligence (AI) is the simulation of human intelligence in machines programmed to think and learn like humans, performing tasks that typically require human intelligence."
     },
     {
         course: "BCA",
-        semester: "6",
-        subject: "Computer Security and Cyber Law",
-        university: "University 1",
-        year: "2022",
-        title: "BCA 6th Sem Cyber Law 2022",
-        questions: [
-            "Q1. What is Cyber Crime?",
-            "Q2. Explain Digital Signature.",
-            "Q3. What is a Virus? Explain its types.",
-            "Q4. Explain IT Act 2000.",
-            "Q5. Write a note on Firewall."
-        ]
+        subject: "AI and Expert System",
+        university: "University 2",
+        year: 2023,
+        tags: ["#AI", "#SearchTechniques"],
+        question: "Explain various search techniques.",
+        answer: "Search techniques in AI include: Breadth-First Search (BFS), Depth-First Search (DFS), Uniform Cost Search, A* Search, and Heuristic Search methods."
     },
     // DCA
     {
         course: "DCA",
-        semester: "1",
         subject: "Programming in C",
         university: "University 2",
-        year: "2023",
-        title: "DCA 1st Sem C Prog 2023",
-        questions: [
-            "Q1. Explain Data Types in C.",
-            "Q2. Write a program to find the factorial of a number.",
-            "Q3. Explain Loops in C.",
-            "Q4. What is a Pointer?",
-            "Q5. Explain File Handling in C."
-        ]
+        year: 2023,
+        tags: ["#C", "#DataTypes"],
+        question: "Explain Data Types in C.",
+        answer: "C data types include: int (integers), float (floating-point), double (double precision), char (characters), and void. Each has different size and range."
     },
     {
         course: "DCA",
-        semester: "2",
         subject: "Internet and Web Technology",
         university: "University 1",
-        year: "2023",
-        title: "DCA 2nd Sem Web Tech 2023",
-        questions: [
-            "Q1. What is HTML? Explain its structure.",
-            "Q2. Explain CSS and its types.",
-            "Q3. What is JavaScript?",
-            "Q4. Explain Forms in HTML.",
-            "Q5. Write a note on Web Hosting."
-        ]
-    },
-    {
-        course: "DCA",
-        semester: "2",
-        subject: "Print Technology and Desktop Publishing",
-        university: "University 2",
-        year: "2022",
-        title: "DCA 2nd Sem DTP 2022",
-        questions: [
-            "Q1. What is DTP?",
-            "Q2. Explain Offset Printing.",
-            "Q3. What is PageMaker?",
-            "Q4. Explain CorelDraw tools.",
-            "Q5. Write a note on Photoshop."
-        ]
+        year: 2023,
+        tags: ["#HTML", "#WebTech"],
+        question: "What is HTML? Explain its structure.",
+        answer: "HTML (HyperText Markup Language) is the standard markup language for web pages. Its structure includes: <!DOCTYPE>, <html>, <head>, and <body> elements."
     },
     // PGDCA
     {
         course: "PGDCA",
-        semester: "1",
         subject: "Fundamental of Computer and Information Technology",
         university: "University 1",
-        year: "2023",
-        title: "PGDCA 1st Sem FCIT 2023",
-        questions: [
-            "Q1. Explain Generations of Computer.",
-            "Q2. What is Memory? Explain its types.",
-            "Q3. Explain Input and Output Devices.",
-            "Q4. What is Software? Explain its types.",
-            "Q5. Write a note on Internet."
-        ]
+        year: 2023,
+        tags: ["#Computer", "#Generations"],
+        question: "Explain Generations of Computer.",
+        answer: "Computer generations: 1st (Vacuum Tubes, 1940-56), 2nd (Transistors, 1956-63), 3rd (ICs, 1964-71), 4th (Microprocessors, 1971-present), 5th (AI, present-future)."
     },
     {
         course: "PGDCA",
-        semester: "2",
-        subject: "System Analysis and Design",
-        university: "University 2",
-        year: "2023",
-        title: "PGDCA 2nd Sem SAD 2023",
-        questions: [
-            "Q1. What is SDLC?",
-            "Q2. Explain Feasibility Study.",
-            "Q3. What is DFD?",
-            "Q4. Explain Testing.",
-            "Q5. Write a note on Implementation."
-        ]
-    },
-    {
-        course: "PGDCA",
-        semester: "2",
         subject: "Relational Database Management System",
         university: "University 1",
-        year: "2022",
-        title: "PGDCA 2nd Sem RDBMS 2022",
-        questions: [
-            "Q1. What is DBMS?",
-            "Q2. Explain Normalization.",
-            "Q3. What is SQL?",
-            "Q4. Explain ER Diagram.",
-            "Q5. Write a note on Keys in DBMS."
-        ]
+        year: 2022,
+        tags: ["#DBMS", "#Database"],
+        question: "What is DBMS?",
+        answer: "DBMS (Database Management System) is software that manages databases. It provides an interface for users to create, read, update, and delete data while ensuring data security and integrity."
     }
 ];
 

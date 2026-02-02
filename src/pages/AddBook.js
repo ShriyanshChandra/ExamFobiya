@@ -6,6 +6,7 @@ import ReactQuill, { Quill } from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import './AddBook.css';
 import ConfirmationModal from '../components/ConfirmationModal';
+import Loader from '../components/Loader';
 
 // Register custom icon for Find & Replace
 const icons = Quill.import('ui/icons');
@@ -92,6 +93,43 @@ const AddBook = () => {
             }
         }
     }, [id, books, isEditMode, navigate]);
+
+    // Load from localStorage on mount (only in add mode, not edit mode)
+    useEffect(() => {
+        if (!isEditMode) {
+            const savedData = localStorage.getItem('addBookFormData');
+            if (savedData) {
+                try {
+                    const parsedData = JSON.parse(savedData);
+                    setTitle(parsedData.title || '');
+                    setPrice(parsedData.price || '');
+                    setCategory(parsedData.category || '');
+                    setSemester(parsedData.semester || '');
+                    setSections(parsedData.sections || []);
+                    setImage(parsedData.image || null);
+                    setContents(parsedData.contents || '');
+                } catch (error) {
+                    console.error('Error loading saved form data:', error);
+                }
+            }
+        }
+    }, [isEditMode]);
+
+    // Save to localStorage whenever form data changes (only in add mode)
+    useEffect(() => {
+        if (!isEditMode) {
+            const formData = {
+                title,
+                price,
+                category,
+                semester,
+                sections,
+                image,
+                contents
+            };
+            localStorage.setItem('addBookFormData', JSON.stringify(formData));
+        }
+    }, [title, price, category, semester, sections, image, contents, isEditMode]);
 
     const [imageUrlInput, setImageUrlInput] = useState('');
 
@@ -182,6 +220,32 @@ const AddBook = () => {
         setShowConfirmModal(true);
     };
 
+    // Reset form to initial state
+    const resetForm = () => {
+        setTitle('');
+        setPrice('');
+        setCategory('');
+        setSemester('');
+        setSections([]);
+        setImage(null);
+        setImageUrlInput('');
+        setContents('');
+        setShowFindReplace(false);
+        setFindText('');
+        setReplaceText('');
+        setLastSearchIndex(0);
+        setEntryMode('pdf');
+
+        // Clear the Quill editor
+        if (quillRef.current) {
+            const editor = quillRef.current.getEditor();
+            editor.setText('');
+        }
+
+        // Clear localStorage
+        localStorage.removeItem('addBookFormData');
+    };
+
     const saveBook = async () => {
         setLoading(true);
         // No more Firebase Storage upload logic needed for cover
@@ -205,6 +269,8 @@ const AddBook = () => {
             } else {
                 await addBook(bookData);
                 alert('Book added successfully!');
+                // Reset form only when adding (not editing)
+                resetForm();
             }
             navigate('/books');
         } catch (error) {
@@ -315,36 +381,40 @@ const AddBook = () => {
 
                     <div className="form-group">
                         <label>Course Category:</label>
-                        <select
-                            value={category}
-                            onChange={(e) => setCategory(e.target.value)}
-                            className="category-select"
-                            required
-                        >
-                            <option value="">Select Category</option>
-                            <option value="BCA">BCA</option>
-                            <option value="DCA">DCA</option>
-                            <option value="PGDCA">PGDCA</option>
-                        </select>
+                        <div className="select-wrapper">
+                            <select
+                                value={category}
+                                onChange={(e) => setCategory(e.target.value)}
+                                className="category-select"
+                                required
+                            >
+                                <option value="">Select Category</option>
+                                <option value="BCA">BCA</option>
+                                <option value="DCA">DCA</option>
+                                <option value="PGDCA">PGDCA</option>
+                            </select>
+                        </div>
                     </div>
 
                     {category === 'BCA' && (
                         <div className="form-group">
                             <label>Semester:</label>
-                            <select
-                                value={semester}
-                                onChange={(e) => setSemester(e.target.value)}
-                                className="category-select"
-                                required
-                            >
-                                <option value="">Select Semester</option>
-                                <option value="BCA 1st Semester">1st Semester</option>
-                                <option value="BCA 2nd Semester">2nd Semester</option>
-                                <option value="BCA 3rd Semester">3rd Semester</option>
-                                <option value="BCA 4th Semester">4th Semester</option>
-                                <option value="BCA 5th Semester">5th Semester</option>
-                                <option value="BCA 6th Semester">6th Semester</option>
-                            </select>
+                            <div className="select-wrapper">
+                                <select
+                                    value={semester}
+                                    onChange={(e) => setSemester(e.target.value)}
+                                    className="category-select"
+                                    required
+                                >
+                                    <option value="">Select Semester</option>
+                                    <option value="BCA 1st Semester">1st Semester</option>
+                                    <option value="BCA 2nd Semester">2nd Semester</option>
+                                    <option value="BCA 3rd Semester">3rd Semester</option>
+                                    <option value="BCA 4th Semester">4th Semester</option>
+                                    <option value="BCA 5th Semester">5th Semester</option>
+                                    <option value="BCA 6th Semester">6th Semester</option>
+                                </select>
+                            </div>
                         </div>
                     )}
 
@@ -518,7 +588,7 @@ const AddBook = () => {
                                 accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                                 onChange={handleFileChange}
                             />
-                            {loading && <p>Extracting text...</p>}
+                            {loading && <Loader text="Extracting text..." size={120} />}
                         </div>
                     ) : (
                         <div className="form-group">

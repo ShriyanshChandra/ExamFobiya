@@ -3,7 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import { useQuestions } from '../context/QuestionContext';
 import { useBooks } from '../context/BookContext'; // Import BookContext
 import ConfirmationModal from '../components/ConfirmationModal';
+import { extractTextFromFile, formatToTopics } from '../utils/documentUtils';
+import ReactQuill, { Quill } from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
+import Loader from '../components/Loader';
 import './AddBook.css'; // Reuse AddBook styles for consistency
+
+// Register custom icon for Find & Replace
+const icons = Quill.import('ui/icons');
+icons['find-replace'] = `<svg viewBox="0 0 18 18" width="18" height="18"><path class="ql-fill" d="M15.5,14h-.79l-.28-.27A6.47,6.47,0,0,0,16,9.5,6.5,6.5,0,1,0,9.5,16c1.61,0,3.09-.59,4.23-1.57l.27.28v.79l5,4.99L20.49,19l-4.99-5Zm-6,0C7.01,14,5,11.99,5,9.5S7.01,5,9.5,5,14,7.01,14,9.5,11.99,14,9.5,14Z"/></svg>`;
+
+// Default university options (constant, defined outside component)
+const DEFAULT_UNIVERSITIES = ['University 1', 'University 2', 'University 3'];
 
 const AddQuestion = () => {
     const { addQuestion, questions } = useQuestions(); // Get questions to derive tags
@@ -42,9 +53,46 @@ const AddQuestion = () => {
     const [year, setYear] = useState('');
     const [currentTagInput, setCurrentTagInput] = useState('');
     const [tags, setTags] = useState([]);
-    const [questionsList, setQuestionsList] = useState(['']);
+
+    // Editor and file upload states
+    const [questionContent, setQuestionContent] = useState(''); // Quill editor content
+    const [entryMode, setEntryMode] = useState('pdf'); // 'pdf' or 'manual'
     const [loading, setLoading] = useState(false);
+    const [aiProcessing, setAiProcessing] = useState(false); // Track AI parsing status
+
+    // Find and Replace States
+    const [showFindReplace, setShowFindReplace] = useState(false);
+    const [findText, setFindText] = useState('');
+    const [replaceText, setReplaceText] = useState('');
+
+    // Editor Ref and Search State
+    const quillRef = useRef(null);
+    const [lastSearchIndex, setLastSearchIndex] = useState(0);
+
+    // Stable handler for toggling Find & Replace using Ref for access inside modules
+    const toggleFindRef = useRef(null);
+    toggleFindRef.current = () => setShowFindReplace(prev => !prev);
+
     const [showSuggestions, setShowSuggestions] = useState(false);
+
+    // React Quill toolbar configuration
+    const modules = React.useMemo(() => ({
+        toolbar: {
+            container: [
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                ['bold', 'italic', 'underline'],
+                ['link'],
+                ['find-replace'] // Custom button for Find & Replace
+            ],
+            handlers: {
+                'find-replace': function () {
+                    if (toggleFindRef.current) {
+                        toggleFindRef.current();
+                    }
+                }
+            }
+        }
+    }), []);
 
     // Derive available subjects based on selected course from Books data
     const availableSubjects = useMemo(() => {
@@ -96,6 +144,39 @@ const AddQuestion = () => {
         }
     }, [isDropdownOpen]);
 
+    // Load form data from localStorage on mount
+    useEffect(() => {
+        const savedFormData = localStorage.getItem('addQuestionFormData');
+        if (savedFormData) {
+            try {
+                const data = JSON.parse(savedFormData);
+                if (data.course) setCourse(data.course);
+                if (data.subject) setSubject(data.subject);
+                if (data.university) setUniversity(data.university);
+                if (data.year) setYear(data.year);
+                if (data.tags) setTags(data.tags);
+                if (data.questionContent) setQuestionContent(data.questionContent);
+                if (data.entryMode) setEntryMode(data.entryMode);
+            } catch (error) {
+                console.error('Error loading saved form data:', error);
+            }
+        }
+    }, []);
+
+    // Save form data to localStorage whenever it changes
+    useEffect(() => {
+        const formData = {
+            course,
+            subject,
+            university,
+            year,
+            tags,
+            questionContent,
+            entryMode
+        };
+        localStorage.setItem('addQuestionFormData', JSON.stringify(formData));
+    }, [course, subject, university, year, tags, questionContent, entryMode]);
+
     // Click outside handler for university dropdown
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -112,14 +193,12 @@ const AddQuestion = () => {
         }
     }, [isUniversityDropdownOpen]);
 
-    // Default university options
-    const defaultUniversities = ['University 1', 'University 2', 'University 3'];
-
     // Available universities (default + custom - hidden)
     const availableUniversities = useMemo(() => {
-        const all = [...new Set([...defaultUniversities, ...customUniversities])];
+        const all = [...new Set([...DEFAULT_UNIVERSITIES, ...customUniversities])];
         return all.filter(uni => !hiddenUniversities.includes(uni));
     }, [customUniversities, hiddenUniversities]);
+
 
 
     // Handle course change - reset subject
@@ -132,21 +211,6 @@ const AddQuestion = () => {
 
     // Handle subject selection from custom dropdown
     // Note: handleSubjectChange for <select> is deprecated/unused now
-
-    const handleQuestionChange = (index, value) => {
-        const newQuestions = [...questionsList];
-        newQuestions[index] = value;
-        setQuestionsList(newQuestions);
-    };
-
-    const addQuestionField = () => {
-        setQuestionsList([...questionsList, '']);
-    };
-
-    const removeQuestionField = (index) => {
-        const newQuestions = questionsList.filter((_, i) => i !== index);
-        setQuestionsList(newQuestions);
-    };
 
     const addTag = (val) => {
         if (val) {
@@ -294,6 +358,127 @@ const AddQuestion = () => {
         }
     };
 
+    // --- File Upload Handler ---
+    const handleFileChange = async (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setLoading(true);
+            try {
+                const text = await extractTextFromFile(file);
+                const formatted = formatToTopics(text);
+                setQuestionContent(formatted);
+            } catch (err) {
+                alert('Failed to extract text from file');
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        }
+    };
+
+    // --- Find and Replace Handlers ---
+
+    // Find Logic
+    const handleFind = () => {
+        if (!findText) return;
+        if (!quillRef.current) return;
+        const quill = quillRef.current.getEditor();
+        const text = quill.getText();
+        const idx = text.toLowerCase().indexOf(findText.toLowerCase(), lastSearchIndex);
+
+        if (idx !== -1) {
+            quill.setSelection(idx, findText.length);
+            setLastSearchIndex(idx + 1);
+        } else {
+            if (lastSearchIndex > 0) {
+                // Loop back to start
+                if (window.confirm('Reached end of document. Search from top?')) {
+                    setLastSearchIndex(0);
+                    const retryIdx = text.toLowerCase().indexOf(findText.toLowerCase(), 0);
+                    if (retryIdx !== -1) {
+                        quill.setSelection(retryIdx, findText.length);
+                        setLastSearchIndex(retryIdx + 1);
+                    } else {
+                        alert('Text not found.');
+                    }
+                }
+            } else {
+                alert('Text not found.');
+            }
+        }
+    };
+
+    // Replace Logic
+    const handleReplace = () => {
+        if (!quillRef.current) return;
+        const quill = quillRef.current.getEditor();
+        const selection = quill.getSelection();
+        if (selection && selection.length > 0) {
+            const selectedText = quill.getText(selection.index, selection.length);
+            if (selectedText.toLowerCase() === findText.toLowerCase()) {
+                quill.deleteText(selection.index, selection.length);
+                quill.insertText(selection.index, replaceText);
+                quill.setSelection(selection.index + replaceText.length, 0);
+            }
+        }
+    };
+
+    // Replace All Logic
+    const handleReplaceAll = () => {
+        if (!findText) {
+            alert('Please enter text to find.');
+            return;
+        }
+        if (!quillRef.current) return;
+        const quill = quillRef.current.getEditor();
+        let text = quill.getText();
+        const searchRegex = new RegExp(findText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+        let count = 0;
+        let match;
+        const replacements = [];
+
+        while ((match = searchRegex.exec(text)) !== null) {
+            replacements.push({ index: match.index, length: match[0].length });
+            count++;
+        }
+
+        // Replace in reverse order to maintain correct indices
+        for (let i = replacements.length - 1; i >= 0; i--) {
+            const { index, length } = replacements[i];
+            quill.deleteText(index, length);
+            quill.insertText(index, replaceText);
+        }
+
+        if (count > 0) {
+            alert(`Replaced ${count} occurrence(s).`);
+        } else {
+            alert('Text not found.');
+        }
+        setLastSearchIndex(0);
+    };
+
+
+    // Reset form to initial state
+    const resetForm = () => {
+        setCourse('');
+        setSubject('');
+        setIsNewSubject(false);
+        setUniversity('');
+        setYear('');
+        setTags([]);
+        setCurrentTagInput('');
+        setQuestionContent('');
+        setShowFindReplace(false);
+        setFindText('');
+        setReplaceText('');
+        setLastSearchIndex(0);
+
+        // Clear the Quill editor
+        if (quillRef.current) {
+            const editor = quillRef.current.getEditor();
+            editor.setText('');
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -304,26 +489,76 @@ const AddQuestion = () => {
             return;
         }
 
+        // Validate that question content is not empty
+        if (!questionContent || questionContent.trim() === '' || questionContent === '<p><br></p>') {
+            alert("Please enter at least some question content.");
+            return;
+        }
+
         setLoading(true);
-
-        const filledQuestions = questionsList.filter(q => q.trim() !== '');
-
-        const newQuestionData = {
-            course,
-            // semester, // Removed
-            subject,
-            university: university || "Unknown University", // Default if null
-            year: year || new Date().getFullYear(), // Default if null
-            tags, // Replaces title
-            questions: filledQuestions
-        };
+        setAiProcessing(true);
 
         try {
-            await addQuestion(newQuestionData);
-            alert('Questions added successfully!');
+            // Step 1: Call AI to parse questions
+            console.log('Sending content to AI for parsing...');
+            const aiResponse = await fetch('http://localhost:5000/api/ai/parse-questions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ content: questionContent })
+            });
+
+            if (!aiResponse.ok) {
+                const errorData = await aiResponse.json();
+                throw new Error(errorData.message || 'AI parsing failed');
+            }
+
+            const { questions: parsedQuestions, count } = await aiResponse.json();
+            console.log(`AI successfully parsed ${count} question(s)`);
+
+            setAiProcessing(false);
+
+            // Step 2: Create question entries for each parsed Q&A
+            const sharedMetadata = {
+                course,
+                subject,
+                university: university, // Defaults removed to allow empty values
+                year: year, // Defaults removed to allow empty values
+                tags
+            };
+
+            // Add all parsed questions with shared metadata
+            for (const parsedQ of parsedQuestions) {
+                const questionEntry = {
+                    ...sharedMetadata,
+                    question: parsedQ.question,
+                    answer: parsedQ.answer
+                };
+
+                await addQuestion(questionEntry);
+            }
+
+            alert(`Successfully added ${count} question(s)!`);
+
+            // Clear local storage on success
+            localStorage.removeItem('addQuestionFormData');
+
+            // Reset the form
+            resetForm();
+
             navigate('/questions');
+
         } catch (error) {
-            alert('Failed to add questions.');
+            console.error('Error processing questions:', error);
+            setAiProcessing(false);
+
+            // Show specific error message
+            if (error.message.includes('AI parsing failed')) {
+                alert(`AI Processing Error: ${error.message}\n\nPlease try again or check your content format.`);
+            } else {
+                alert(`Failed to add questions: ${error.message}`);
+            }
         } finally {
             setLoading(false);
         }
@@ -615,17 +850,18 @@ const AddQuestion = () => {
 
                     <div className="form-group" style={{ position: 'relative' }}>
                         <label>Tags (Press Enter to add):</label>
-                        <div className="tags-input-container" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}>
+                        <div className="tags-input-container" style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', padding: '10px', border: '1px solid #ddd', borderRadius: '6px', backgroundColor: 'white' }}>
                             {tags.map((tag, index) => (
                                 <span key={index} style={{
                                     backgroundColor: '#ffd700',
                                     color: '#182848',
-                                    padding: '4px 8px',
-                                    borderRadius: '16px',
+                                    padding: '8px 14px',
+                                    borderRadius: '20px',
                                     fontSize: '0.9rem',
+                                    fontWeight: '500',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '6px'
+                                    gap: '8px'
                                 }}>
                                     {tag}
                                     <button
@@ -637,10 +873,12 @@ const AddQuestion = () => {
                                             color: '#182848',
                                             cursor: 'pointer',
                                             fontWeight: 'bold',
-                                            lineHeight: 1
+                                            fontSize: '1.1rem',
+                                            lineHeight: 1,
+                                            padding: 0
                                         }}
                                     >
-                                        &times;
+                                        ×
                                     </button>
                                 </span>
                             ))}
@@ -654,12 +892,14 @@ const AddQuestion = () => {
                                 onFocus={() => setShowSuggestions(true)}
                                 onBlur={() => setTimeout(() => setShowSuggestions(false), 200)} // Delay to allow click
                                 onKeyDown={handleTagKeyDown}
-                                placeholder={tags.length === 0 ? "Type and press Enter (e.g. OS)" : ""}
+                                placeholder="Add tag..."
                                 style={{
                                     border: 'none',
                                     outline: 'none',
                                     flexGrow: 1,
-                                    minWidth: '150px'
+                                    minWidth: '150px',
+                                    fontSize: '0.95rem',
+                                    color: '#333'
                                 }}
                             />
                         </div>
@@ -700,31 +940,101 @@ const AddQuestion = () => {
                     </div>
 
                     <div className="form-group">
-                        <label>Questions:</label>
-                        {questionsList.map((q, index) => (
-                            <div key={index} className="question-input-group" style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                        <label>Content Entry Mode:</label>
+                        <div className="entry-mode-toggle">
+                            <button
+                                type="button"
+                                className={`toggle-btn ${entryMode === 'pdf' ? 'active' : ''}`}
+                                onClick={() => setEntryMode('pdf')}
+                            >
+                                Upload PDF / DOCX
+                            </button>
+                            <button
+                                type="button"
+                                className={`toggle-btn ${entryMode === 'manual' ? 'active' : ''}`}
+                                onClick={() => setEntryMode('manual')}
+                            >
+                                Manual Entry
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Find and Replace Toolbar */}
+                    {entryMode === 'manual' && showFindReplace && (
+                        <div className="form-group" style={{ marginBottom: '10px' }}>
+                            <div className="find-replace-toolbar">
                                 <input
                                     type="text"
-                                    value={q}
-                                    onChange={(e) => handleQuestionChange(index, e.target.value)}
-                                    placeholder={`Question ${index + 1} `}
-                                    required
+                                    placeholder="Find..."
+                                    value={findText}
+                                    onChange={(e) => {
+                                        setFindText(e.target.value);
+                                        setLastSearchIndex(0); // Reset search when text changes
+                                    }}
+                                    className="find-input"
                                 />
-                                {questionsList.length > 1 && (
-                                    <button
-                                        type="button"
-                                        onClick={() => removeQuestionField(index)}
-                                        className="cancel-btn"
-                                        style={{ padding: '0 15px', color: 'red', borderColor: 'red' }}
-                                    >
-                                        X
-                                    </button>
-                                )}
+                                <input
+                                    type="text"
+                                    placeholder="Replace with..."
+                                    value={replaceText}
+                                    onChange={(e) => setReplaceText(e.target.value)}
+                                    className="find-input"
+                                />
+                                <button
+                                    type="button"
+                                    className="action-btn"
+                                    style={{ backgroundColor: '#007bff', color: 'white' }}
+                                    onClick={handleFind}
+                                >
+                                    Find
+                                </button>
+                                <button
+                                    type="button"
+                                    className="action-btn"
+                                    style={{ backgroundColor: '#17a2b8', color: 'white' }}
+                                    onClick={handleReplace}
+                                >
+                                    Replace
+                                </button>
+                                <button
+                                    type="button"
+                                    className="action-btn replace-btn"
+                                    onClick={handleReplaceAll}
+                                >
+                                    Replace All
+                                </button>
                             </div>
-                        ))}
-                        <button type="button" onClick={addQuestionField} className="action-btn" style={{ marginTop: '10px' }}>
-                            + Add Another Question
-                        </button>
+                        </div>
+                    )}
+
+                    {entryMode === 'pdf' ? (
+                        <div className="form-group">
+                            <label>Questions (PDF / DOCX):</label>
+                            <small>Upload file to extract questions automatically</small>
+                            <input
+                                type="file"
+                                accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                onChange={handleFileChange}
+                            />
+                            {loading && <Loader text="Extracting text..." size={120} />}
+                        </div>
+                    ) : (
+                        <div className="form-group">
+                            <label>Enter questions in the below section</label>
+                        </div>
+                    )}
+
+                    <div className="form-group">
+                        <label>{entryMode === 'pdf' ? 'Extracted Questions (Editable):' : 'Enter Questions:'}</label>
+                        <ReactQuill
+                            ref={quillRef}
+                            key={entryMode}
+                            theme="snow"
+                            value={questionContent}
+                            onChange={setQuestionContent}
+                            placeholder={entryMode === 'pdf' ? "Questions will appear here..." : "Enter your questions here (formatting will be preserved)..."}
+                            modules={modules}
+                        />
                     </div>
 
                     <div className="form-actions">
@@ -732,7 +1042,7 @@ const AddQuestion = () => {
                             Cancel
                         </button>
                         <button type="submit" className="submit-btn" disabled={loading}>
-                            {loading ? 'Saving...' : 'Save Questions'}
+                            {aiProcessing ? 'Processing with AI...' : (loading ? 'Saving...' : 'Save Questions')}
                         </button>
                     </div>
                 </form>

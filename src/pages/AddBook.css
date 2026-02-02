@@ -71,14 +71,15 @@
     position: absolute;
     right: 15px;
     top: 50%;
-    width: 7px;
-    height: 7px;
+    width: 8px;
+    height: 8px;
     border-right: 2px solid #6c757d;
     border-bottom: 2px solid #6c757d;
     transform: translateY(-50%) rotate(45deg);
-    margin-top: -2px;
+    margin-top: -3px;
     /* Fine-tune vertical alignment */
     pointer-events: none;
+    z-index: 1;
 }
 
 .custom-dropdown-trigger {
@@ -103,8 +104,8 @@
 
 /* Dropdown arrow styling - chevron to match native select */
 .custom-dropdown-arrow {
-    width: 7px;
-    height: 7px;
+    width: 8px;
+    height: 8px;
     border-right: 2px solid #6c757d;
     border-bottom: 2px solid #6c757d;
     transform: rotate(45deg);

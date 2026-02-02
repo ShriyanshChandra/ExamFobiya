@@ -25,6 +25,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { BookProvider } from "./context/BookContext";
 import { QuestionProvider } from "./context/QuestionContext";
 import AddQuestion from "./pages/AddQuestion";
+import EditQuestion from "./pages/EditQuestion";
 import "@fontsource/nunito";
 import './App.css';
 import { trackVisit } from "./services/TrackingService";
@@ -74,8 +75,16 @@ function App() {
                     <Route
                       path="/add-question"
                       element={
-                        <ProtectedRoute>
+                        <ProtectedRoute requiredRole="admin">
                           <AddQuestion />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/edit-question/:id"
+                      element={
+                        <ProtectedRoute requiredRole="admin">
+                          <EditQuestion />
                         </ProtectedRoute>
                       }
                     />
