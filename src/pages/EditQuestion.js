@@ -5,7 +5,6 @@ import { useBooks } from '../context/BookContext';
 import ReactQuill, { Quill } from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import ConfirmationModal from '../components/ConfirmationModal';
-import Loader from '../components/Loader';
 import './AddBook.css'; // Reuse styles
 
 // Register custom icon for Find & Replace
