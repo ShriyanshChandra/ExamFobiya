@@ -21,11 +21,16 @@ const Questions = () => {
   const [selectedYear, setSelectedYear] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Applied filters state (only updated on manual search)
+  const [appliedFilters, setAppliedFilters] = useState(null);
+
+  // Tag Filtering State
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [showTags, setShowTags] = useState(false);
+
   // Modal state for delete confirmation
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [questionToDelete, setQuestionToDelete] = useState(null);
-
-  // Reset dependent filters when parent filter changes
 
   // Reset dependent filters when parent filter changes
   useEffect(() => {
@@ -45,6 +50,12 @@ const Questions = () => {
     ])].filter(Boolean).sort()
     : [];
 
+  // Extract all unique tags
+  const allTags = [...new Set(questions.flatMap(q => q.tags || []))].filter(Boolean).sort();
+
+  // Extract all unique universities
+  const universities = [...new Set(questions.map(q => q.university))].filter(Boolean).sort();
+
   // Filter Logic
   // Helper to remove prefixes
   const cleanContent = (html) => {
@@ -53,19 +64,50 @@ const Questions = () => {
     return html.replace(/^(?:<[^>]+>)*\s*(?:Q|A|Question|Answer)\s*:\s*(?:<\/[^>]+>)*\s*/i, "");
   };
 
+  const handleTagSelect = (tag) => {
+    setSelectedTags(prev =>
+      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+    );
+  };
+
+  const handleSearch = () => {
+    setAppliedFilters({
+      course: selectedCourse,
+      subject: selectedSubject,
+      university: selectedUniversity,
+      year: selectedYear,
+      query: searchQuery,
+      tags: selectedTags
+    });
+    setShowTags(false); // Close tag menu on search
+  };
+
   const filteredQuestions = questions.filter(question => {
-    if (selectedCourse && question.course !== selectedCourse) return false;
-    if (selectedSubject && question.subject !== selectedSubject) return false;
-    if (selectedUniversity && question.university !== selectedUniversity) return false;
-    if (selectedYear && question.year.toString() !== selectedYear) return false;
+    // If no search has been performed yet, show nothing or all?
+    // User requirement: "dont want the question answers to show without clicking the search button"
+    // So if appliedFilters is null, we return nothing.
+    if (!appliedFilters) return false;
+
+    if (appliedFilters.course && question.course !== appliedFilters.course) return false;
+    if (appliedFilters.subject && question.subject !== appliedFilters.subject) return false;
+    if (appliedFilters.university && question.university !== appliedFilters.university) return false;
+    if (appliedFilters.year && question.year.toString() !== appliedFilters.year) return false;
+
+    // Tag Filtering (Must match ALL selected tags)
+    if (appliedFilters.tags && appliedFilters.tags.length > 0) {
+      const hasAllTags = appliedFilters.tags.every(tag =>
+        question.tags && question.tags.includes(tag)
+      );
+      if (!hasAllTags) return false;
+    }
 
     // Search in Tags (if available) or Title (fallback)
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
+    if (appliedFilters.query) {
+      const query = appliedFilters.query.toLowerCase();
       const tagsMatch = question.tags && question.tags.some(tag => tag.toLowerCase().includes(query));
       const titleMatch = question.title && question.title.toLowerCase().includes(query);
       const subjectMatch = question.subject && question.subject.toLowerCase().includes(query);
-      // Clean content before search check if needed, but search usually wants raw match. 
+      // Clean content before search check if needed, but search usually wants raw match.
       // Keeping original search logic for now to avoid breaking matching.
       const qTextMatch = question.question && question.question.toLowerCase().includes(query);
 
@@ -74,8 +116,8 @@ const Questions = () => {
     return true;
   });
 
-  // Only show results if (Course AND Subject) are selected, OR if there is a search query
-  const showResults = (!!selectedCourse && !!selectedSubject) || !!searchQuery;
+  // Only show results if search has been triggered
+  const showResults = !!appliedFilters;
 
   return (
     <div className="questions-container">
@@ -116,8 +158,15 @@ const Questions = () => {
           subjects={subjects}
           selectedUniversity={selectedUniversity}
           setSelectedUniversity={setSelectedUniversity}
+          universities={universities} // Pass dynamic universities
           selectedYear={selectedYear}
           setSelectedYear={setSelectedYear}
+          onSearch={handleSearch}
+          allTags={allTags}
+          selectedTags={selectedTags}
+          handleTagSelect={handleTagSelect}
+          showTags={showTags}
+          setShowTags={setShowTags}
         />
 
         {/* Results Area */}

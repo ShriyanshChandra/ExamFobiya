@@ -91,11 +91,12 @@ const parseQuestions = async (req, res) => {
         const prompt = `You are a question parser. Extract individual question-answer pairs from the provided content and return them with their HTML formatting preserved.
 
 CRITICAL RULES:
-1. DO NOT alter, rephrase, or modify ANY text - preserve it EXACTLY as written.
+1. Preserve the original text content and HTML structure, but clean up structural markers.
 2. PRESERVE all HTML formatting tags. DO NOT convert lists to paragraphs.
 3. SPECIFICALLY KEEP: <ul>, <ol>, <li>, <strong>, <em>, <br>, <p>.
 4. If content contains multiple Q&A pairs, split them into separate entries.
 5. Return ONLY valid JSON array format.
+6. EXPLICITLY REMOVE any "Q:", "A:", "Question:", "Answer:" prefixes (case-insensitive) from the start of the question or answer text.
 
 EXAMPLE:
 Input:

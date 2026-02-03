@@ -28,12 +28,31 @@ const EditQuestion = () => {
         tags: []
     });
 
+    // Custom subjects and universities (must be declared early for use in derivations)
+    const [customSubjects, setCustomSubjects] = useState([]);
+    const [customUniversities, setCustomUniversities] = useState([]);
+
     const [currentTag, setCurrentTag] = useState('');
     const [loading, setLoading] = useState(true);
     const [aiProcessing, setAiProcessing] = useState(false);
     const [isSubjectDropdownOpen, setIsSubjectDropdownOpen] = useState(false);
     const [isUniversityDropdownOpen, setIsUniversityDropdownOpen] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+    // Hidden subjects/universities for deletion
+    const [hiddenSubjects, setHiddenSubjects] = useState([]);
+    const [hiddenUniversities, setHiddenUniversities] = useState([]);
+
+    // Modal configuration for add/delete confirmations
+    const [modalConfig, setModalConfig] = useState({
+        isOpen: false,
+        title: '',
+        message: '',
+        confirmText: '',
+        variant: 'danger',
+        actionType: null,
+        data: null
+    });
 
     // Find and Replace states
     const [showFindReplace, setShowFindReplace] = useState(false);
@@ -89,9 +108,48 @@ const EditQuestion = () => {
 
     // Derived options
     const courses = [...new Set(books.map(b => b.category))].sort();
+
+    // Combine book subjects and any custom subject currently on this question or presumably others
+    // Actually, to fully replicate "dynamic" behavior, we might want to see ALL subjects from ALL questions + Books
+    // But adhering to current pattern: Books trigger subjects. Plus whatever is saved.
     const subjects = formData.course
-        ? [...new Set(books.filter(b => b.category === formData.course).map(b => b.title))].sort()
+        ? [...new Set([
+            ...books.filter(b => b.category === formData.course).map(b => b.title),
+            ...questions.filter(q => q.course === formData.course).map(q => q.subject),
+            ...customSubjects
+        ])].filter(Boolean).filter(sub => !hiddenSubjects.includes(sub)).sort()
         : [];
+
+    // Dynamic Universities
+    const universities = [...new Set([
+        'MDU', 'IGNOU', 'DU', 'Other',
+        ...questions.map(q => q.university),
+        ...customUniversities
+    ])].filter(Boolean).filter(uni => !hiddenUniversities.includes(uni)).sort();
+
+    // Toggle states for adding new sub/uni
+    const [isNewSubject, setIsNewSubject] = useState(false);
+    const [isNewUniversity, setIsNewUniversity] = useState(false);
+
+    // Load custom subjects and universities from localStorage
+    useEffect(() => {
+        try {
+            const storedSubjects = localStorage.getItem('customSubjects');
+            const storedUniversities = localStorage.getItem('customUniversities');
+
+            if (storedSubjects) {
+                const parsed = JSON.parse(storedSubjects);
+                const allSubjects = Object.values(parsed).flat();
+                setCustomSubjects(allSubjects);
+            }
+
+            if (storedUniversities) {
+                setCustomUniversities(JSON.parse(storedUniversities));
+            }
+        } catch (error) {
+            console.error('Error loading custom subjects/universities:', error);
+        }
+    }, []);
 
     // Quill modules configuration
     const modules = React.useMemo(() => ({
@@ -187,7 +245,112 @@ const EditQuestion = () => {
         }
     };
 
-    const universities = ['MDU', 'IGNOU', 'DU', 'Other'];
+    // Handlers for Add New
+    const handleAddSubjectClick = () => {
+        if (formData.subject.trim()) {
+            const newSubject = formData.subject.trim();
+
+            // Update state
+            if (!customSubjects.includes(newSubject)) {
+                setCustomSubjects([...customSubjects, newSubject]);
+            }
+
+            // Save to localStorage
+            try {
+                const storedSubjects = localStorage.getItem('customSubjects');
+                const subjectsObj = storedSubjects ? JSON.parse(storedSubjects) : {};
+
+                if (!subjectsObj[formData.course]) {
+                    subjectsObj[formData.course] = [];
+                }
+
+                if (!subjectsObj[formData.course].includes(newSubject)) {
+                    subjectsObj[formData.course].push(newSubject);
+                }
+
+                localStorage.setItem('customSubjects', JSON.stringify(subjectsObj));
+            } catch (error) {
+                console.error('Error saving custom subject:', error);
+            }
+
+            setIsNewSubject(false);
+        } else {
+            setIsNewSubject(false);
+        }
+    };
+
+    const handleAddUniversityClick = () => {
+        if (formData.university.trim()) {
+            const newUniversity = formData.university.trim();
+
+            // Update state
+            const newCustomUniversities = !customUniversities.includes(newUniversity)
+                ? [...customUniversities, newUniversity]
+                : customUniversities;
+
+            setCustomUniversities(newCustomUniversities);
+
+            // Save to localStorage
+            try {
+                localStorage.setItem('customUniversities', JSON.stringify(newCustomUniversities));
+            } catch (error) {
+                console.error('Error saving custom university:', error);
+            }
+
+            setIsNewUniversity(false);
+        } else {
+            setIsNewUniversity(false);
+        }
+    };
+
+    // Delete Subject Click
+    const handleDeleteSubjectClick = (e, subToDelete) => {
+        e.stopPropagation();
+        e.preventDefault();
+        setModalConfig({
+            isOpen: true,
+            title: 'Delete Subject?',
+            message: `Are you sure you want to delete "${subToDelete}"?`,
+            confirmText: 'Yes, Delete',
+            variant: 'danger',
+            actionType: 'DELETE_SUBJECT',
+            data: subToDelete
+        });
+    };
+
+    // Delete University Click
+    const handleDeleteUniversityClick = (e, uniToDelete) => {
+        e.stopPropagation();
+        e.preventDefault();
+        setModalConfig({
+            isOpen: true,
+            title: 'Delete University?',
+            message: `Are you sure you want to delete "${uniToDelete}"?`,
+            confirmText: 'Yes, Delete',
+            variant: 'danger',
+            actionType: 'DELETE_UNIVERSITY',
+            data: uniToDelete
+        });
+    };
+
+    // Confirm Modal Action
+    const handleConfirmModal = () => {
+        const { actionType, data } = modalConfig;
+
+        if (actionType === 'DELETE_SUBJECT') {
+            setHiddenSubjects([...hiddenSubjects, data]);
+            if (formData.subject === data) {
+                setFormData(prev => ({ ...prev, subject: '' }));
+            }
+        } else if (actionType === 'DELETE_UNIVERSITY') {
+            setHiddenUniversities([...hiddenUniversities, data]);
+            if (formData.university === data) {
+                setFormData(prev => ({ ...prev, university: '' }));
+            }
+        }
+
+        setModalConfig(prev => ({ ...prev, isOpen: false }));
+    };
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -251,10 +414,18 @@ const EditQuestion = () => {
             setAiProcessing(false);
 
             // Use the AI-parsed and normalized content
+            // Helper to clean prefixes from content
+            const cleanPrefix = (html) => {
+                if (!html) return "";
+                // Regex to match "Q:", "A:", "Question:", "Answer:" at the start, case-insensitive, optional whitespace/bold tags
+                // Also handles <p> tags wrapping the prefix
+                return html.replace(/^(?:<[^>]+>)*\s*(?:Q|A|Question|Answer)\s*:\s*(?:<\/[^>]+>)*\s*/i, "");
+            };
+
             const normalizedData = {
                 ...formData,
-                question: parsedQuestions[0].question,
-                answer: parsedQuestions[0].answer
+                question: cleanPrefix(parsedQuestions[0].question),
+                answer: cleanPrefix(parsedQuestions[0].answer)
             };
 
             await updateQuestion(id, normalizedData);
@@ -274,8 +445,6 @@ const EditQuestion = () => {
         }
     };
 
-    if (loading) return <Loader text="Loading question details..." />;
-
     return (
         <div className="add-book-container">
             <div className="add-book-card">
@@ -287,7 +456,10 @@ const EditQuestion = () => {
                             <select
                                 name="course"
                                 value={formData.course}
-                                onChange={handleCourseChange}
+                                onChange={(e) => {
+                                    handleCourseChange(e);
+                                    setIsNewSubject(false); // Reset subject mode on course change
+                                }}
                                 className="category-select"
                                 required
                             >
@@ -297,69 +469,234 @@ const EditQuestion = () => {
                         </div>
                     </div>
 
+                    {/* Subject Field */}
                     <div className="form-group" style={{ position: 'relative' }}>
                         <label>Subject <span style={{ color: 'red' }}>*</span>:</label>
-                        <div className="custom-dropdown-container" style={{ position: 'relative' }} ref={subjectDropdownRef}>
-                            <div
-                                className={`custom-dropdown-trigger ${!formData.course ? 'disabled' : ''}`}
-                                onClick={() => {
-                                    if (formData.course) {
-                                        setIsSubjectDropdownOpen(!isSubjectDropdownOpen);
-                                    }
-                                }}
-                            >
-                                <span>{formData.subject || "Select Subject"}</span>
-                                <div className="custom-dropdown-arrow"></div>
-                            </div>
-                            {isSubjectDropdownOpen && (
-                                <div className="custom-dropdown-menu">
-                                    {subjects.map((sub, idx) => (
+                        {!isNewSubject ? (
+                            <div className="custom-dropdown-container" style={{ position: 'relative' }} ref={subjectDropdownRef}>
+                                <div
+                                    className={`custom-dropdown-trigger ${!formData.course ? 'disabled' : ''}`}
+                                    onClick={() => {
+                                        if (formData.course) {
+                                            setIsSubjectDropdownOpen(!isSubjectDropdownOpen);
+                                        }
+                                    }}
+                                >
+                                    <span>{formData.subject || "Select Subject"}</span>
+                                    <div className="custom-dropdown-arrow"></div>
+                                </div>
+                                {isSubjectDropdownOpen && (
+                                    <div className="custom-dropdown-menu">
                                         <div
-                                            key={idx}
-                                            className="custom-dropdown-option"
+                                            className="add-subject-option"
                                             onClick={() => {
-                                                setFormData(prev => ({ ...prev, subject: sub }));
+                                                setIsNewSubject(true);
+                                                setFormData(prev => ({ ...prev, subject: '' }));
                                                 setIsSubjectDropdownOpen(false);
                                             }}
-                                        >
-                                            {sub}
-                                        </div>
-                                    ))}
-                                    {subjects.length === 0 && (
-                                        <div style={{ padding: '15px', color: '#999', textAlign: 'center' }}>No subjects available</div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className="form-group" style={{ position: 'relative' }}>
-                        <label>University (Optional):</label>
-                        <div className="custom-dropdown-container" style={{ position: 'relative' }} ref={universityDropdownRef}>
-                            <div
-                                className="custom-dropdown-trigger"
-                                onClick={() => setIsUniversityDropdownOpen(!isUniversityDropdownOpen)}
-                            >
-                                <span>{formData.university || "Select University"}</span>
-                                <div className="custom-dropdown-arrow"></div>
-                            </div>
-                            {isUniversityDropdownOpen && (
-                                <div className="custom-dropdown-menu">
-                                    {universities.map((uni, idx) => (
-                                        <div
-                                            key={idx}
-                                            className="custom-dropdown-option"
-                                            onClick={() => {
-                                                setFormData(prev => ({ ...prev, university: uni }));
-                                                setIsUniversityDropdownOpen(false);
+                                            style={{
+                                                padding: '10px 15px',
+                                                cursor: 'pointer',
+                                                fontWeight: 'bold'
                                             }}
                                         >
-                                            {uni}
+                                            + Add New Subject
                                         </div>
-                                    ))}
+                                        {subjects.map((sub, idx) => (
+                                            <div
+                                                key={idx}
+                                                className="custom-dropdown-option"
+                                                onClick={() => {
+                                                    setFormData(prev => ({ ...prev, subject: sub }));
+                                                    setIsSubjectDropdownOpen(false);
+                                                }}
+                                                style={{
+                                                    padding: '10px 15px',
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'center'
+                                                }}
+                                            >
+                                                <span>{sub}</span>
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => handleDeleteSubjectClick(e, sub)}
+                                                    style={{
+                                                        backgroundColor: '#dc3545',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        borderRadius: '4px',
+                                                        padding: '4px',
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center'
+                                                    }}
+                                                    title="Delete"
+                                                >
+                                                    <img
+                                                        src="https://img.icons8.com/ios-glyphs/30/trash--v1.png"
+                                                        alt="Delete"
+                                                        style={{ width: '16px', height: '16px', filter: 'invert(1)' }}
+                                                    />
+                                                </button>
+                                            </div>
+                                        ))}
+                                        {subjects.length === 0 && (
+                                            <div style={{ padding: '15px', color: '#999', textAlign: 'center' }}>No subjects available</div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div style={{ display: 'flex', gap: '10px' }}>
+                                <input
+                                    name="subject"
+                                    type="text"
+                                    value={formData.subject}
+                                    onChange={handleChange}
+                                    placeholder="Enter new subject name"
+                                    required
+                                    autoFocus
+                                    style={{ flexGrow: 1 }}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleAddSubjectClick}
+                                    style={{
+                                        backgroundColor: '#ffd700',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        padding: '8px 20px',
+                                        fontWeight: 'bold',
+                                        cursor: 'pointer',
+                                        color: '#182848'
+                                    }}
+                                >
+                                    Add
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => { setIsNewSubject(false); setFormData(prev => ({ ...prev, subject: '' })); }}
+                                    className="cancel-btn"
+                                    style={{ padding: '8px 20px' }}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* University Field */}
+                    <div className="form-group" style={{ position: 'relative' }}>
+                        <label>University (Optional):</label>
+                        {!isNewUniversity ? (
+                            <div className="custom-dropdown-container" style={{ position: 'relative' }} ref={universityDropdownRef}>
+                                <div
+                                    className="custom-dropdown-trigger"
+                                    onClick={() => setIsUniversityDropdownOpen(!isUniversityDropdownOpen)}
+                                >
+                                    <span>{formData.university || "Select University"}</span>
+                                    <div className="custom-dropdown-arrow"></div>
                                 </div>
-                            )}
-                        </div>
+                                {isUniversityDropdownOpen && (
+                                    <div className="custom-dropdown-menu">
+                                        <div
+                                            className="add-subject-option"
+                                            onClick={() => {
+                                                setIsNewUniversity(true);
+                                                setFormData(prev => ({ ...prev, university: '' }));
+                                                setIsUniversityDropdownOpen(false);
+                                            }}
+                                            style={{
+                                                padding: '10px 15px',
+                                                cursor: 'pointer',
+                                                fontWeight: 'bold'
+                                            }}
+                                        >
+                                            + Add New University
+                                        </div>
+                                        {universities.map((uni, idx) => (
+                                            <div
+                                                key={idx}
+                                                className="custom-dropdown-option"
+                                                onClick={() => {
+                                                    setFormData(prev => ({ ...prev, university: uni }));
+                                                    setIsUniversityDropdownOpen(false);
+                                                }}
+                                                style={{
+                                                    padding: '10px 15px',
+                                                    cursor: 'pointer',
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    alignItems: 'center'
+                                                }}
+                                            >
+                                                <span>{uni}</span>
+                                                <button
+                                                    type="button"
+                                                    onClick={(e) => handleDeleteUniversityClick(e, uni)}
+                                                    style={{
+                                                        backgroundColor: '#dc3545',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        borderRadius: '4px',
+                                                        padding: '4px',
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center'
+                                                    }}
+                                                    title="Delete"
+                                                >
+                                                    <img
+                                                        src="https://img.icons8.com/ios-glyphs/30/trash--v1.png"
+                                                        alt="Delete"
+                                                        style={{ width: '16px', height: '16px', filter: 'invert(1)' }}
+                                                    />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div style={{ display: 'flex', gap: '10px' }}>
+                                <input
+                                    name="university"
+                                    type="text"
+                                    value={formData.university}
+                                    onChange={handleChange}
+                                    placeholder="Enter new university name"
+                                    autoFocus
+                                    style={{ flexGrow: 1 }}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleAddUniversityClick}
+                                    style={{
+                                        backgroundColor: '#ffd700',
+                                        border: 'none',
+                                        borderRadius: '4px',
+                                        padding: '8px 20px',
+                                        fontWeight: 'bold',
+                                        cursor: 'pointer',
+                                        color: '#182848'
+                                    }}
+                                >
+                                    Add
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => { setIsNewUniversity(false); setFormData(prev => ({ ...prev, university: '' })); }}
+                                    className="cancel-btn"
+                                    style={{ padding: '8px 20px' }}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     <div className="form-group">
@@ -537,6 +874,18 @@ const EditQuestion = () => {
                 title="Confirm Update"
                 message={`Are you sure you want to update this question?`}
                 variant="yellow"
+            />
+
+            {/* Delete Confirmation Modal */}
+            <ConfirmationModal
+                isOpen={modalConfig.isOpen}
+                onClose={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
+                onConfirm={handleConfirmModal}
+                title={modalConfig.title}
+                message={modalConfig.message}
+                confirmText={modalConfig.confirmText}
+                variant={modalConfig.variant}
+                cancelText="Cancel"
             />
         </div>
     );

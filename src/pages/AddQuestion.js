@@ -95,6 +95,7 @@ const AddQuestion = () => {
     }), []);
 
     // Derive available subjects based on selected course from Books data
+    // Derive available subjects based on selected course from Books data AND existing Questions
     const availableSubjects = useMemo(() => {
         if (!course) return [];
         const bookSubjects = books
@@ -102,10 +103,16 @@ const AddQuestion = () => {
             .map(book => book.title)
             .filter(Boolean);
 
+        // Also get subjects from existing questions for this course
+        const questionSubjects = questions
+            .filter(q => q.course === course)
+            .map(q => q.subject)
+            .filter(Boolean);
+
         // Merge with custom added subjects, ensure uniqueness, and filter hidden
-        const all = [...new Set([...bookSubjects, ...customSubjects])];
+        const all = [...new Set([...bookSubjects, ...questionSubjects, ...customSubjects])];
         return all.filter(sub => !hiddenSubjects.includes(sub));
-    }, [books, course, customSubjects, hiddenSubjects]);
+    }, [books, questions, course, customSubjects, hiddenSubjects]);
 
     // Derive unique existing tags from all questions
     const existingTags = useMemo(() => {
@@ -143,6 +150,27 @@ const AddQuestion = () => {
             };
         }
     }, [isDropdownOpen]);
+
+    // Load custom subjects and universities from localStorage on mount
+    useEffect(() => {
+        try {
+            const storedSubjects = localStorage.getItem('customSubjects');
+            const storedUniversities = localStorage.getItem('customUniversities');
+
+            if (storedSubjects) {
+                const parsed = JSON.parse(storedSubjects);
+                // It's stored as an object with course keys, flatten all values
+                const allSubjects = Object.values(parsed).flat();
+                setCustomSubjects(allSubjects);
+            }
+
+            if (storedUniversities) {
+                setCustomUniversities(JSON.parse(storedUniversities));
+            }
+        } catch (error) {
+            console.error('Error loading custom subjects/universities:', error);
+        }
+    }, []);
 
     // Load form data from localStorage on mount
     useEffect(() => {
@@ -193,11 +221,12 @@ const AddQuestion = () => {
         }
     }, [isUniversityDropdownOpen]);
 
-    // Available universities (default + custom - hidden)
+    // Available universities (default + custom + existing questions - hidden)
     const availableUniversities = useMemo(() => {
-        const all = [...new Set([...DEFAULT_UNIVERSITIES, ...customUniversities])];
+        const questionUniversities = questions.map(q => q.university).filter(Boolean);
+        const all = [...new Set([...DEFAULT_UNIVERSITIES, ...questionUniversities, ...customUniversities])];
         return all.filter(uni => !hiddenUniversities.includes(uni));
-    }, [customUniversities, hiddenUniversities]);
+    }, [questions, customUniversities, hiddenUniversities]);
 
 
 
@@ -276,20 +305,49 @@ const AddQuestion = () => {
         const { actionType, data } = modalConfig;
 
         if (actionType === 'ADD_SUBJECT') {
-            if (!customSubjects.includes(data)) {
-                setCustomSubjects([...customSubjects, data]);
-            }
+            const newCustomSubjects = !customSubjects.includes(data)
+                ? [...customSubjects, data]
+                : customSubjects;
+
+            setCustomSubjects(newCustomSubjects);
             setSubject(data);
             setIsNewSubject(false);
+
+            // Save to localStorage grouped by course
+            try {
+                const storedSubjects = localStorage.getItem('customSubjects');
+                const subjectsObj = storedSubjects ? JSON.parse(storedSubjects) : {};
+
+                if (!subjectsObj[course]) {
+                    subjectsObj[course] = [];
+                }
+
+                if (!subjectsObj[course].includes(data)) {
+                    subjectsObj[course].push(data);
+                }
+
+                localStorage.setItem('customSubjects', JSON.stringify(subjectsObj));
+            } catch (error) {
+                console.error('Error saving custom subject:', error);
+            }
         } else if (actionType === 'DELETE_SUBJECT') {
             setHiddenSubjects([...hiddenSubjects, data]);
             if (subject === data) setSubject('');
         } else if (actionType === 'ADD_UNIVERSITY') {
-            if (!customUniversities.includes(data)) {
-                setCustomUniversities([...customUniversities, data]);
-            }
+            const newCustomUniversities = !customUniversities.includes(data)
+                ? [...customUniversities, data]
+                : customUniversities;
+
+            setCustomUniversities(newCustomUniversities);
             setUniversity(data);
             setIsNewUniversity(false);
+
+            // Save to localStorage
+            try {
+                localStorage.setItem('customUniversities', JSON.stringify(newCustomUniversities));
+            } catch (error) {
+                console.error('Error saving custom university:', error);
+            }
         } else if (actionType === 'DELETE_UNIVERSITY') {
             setHiddenUniversities([...hiddenUniversities, data]);
             if (university === data) setUniversity('');
@@ -519,6 +577,13 @@ const AddQuestion = () => {
 
             setAiProcessing(false);
 
+            // Helper to clean prefixes from AI-generated content
+            const cleanPrefix = (html) => {
+                if (!html) return "";
+                // Remove "Q:", "A:", "Question:", "Answer:" prefixes at the start
+                return html.replace(/^(?:<[^>]+>)*\s*(?:Q|A|Question|Answer)\s*:\s*(?:<\/[^>]+>)*\s*/i, "");
+            };
+
             // Step 2: Create question entries for each parsed Q&A
             const sharedMetadata = {
                 course,
@@ -532,8 +597,8 @@ const AddQuestion = () => {
             for (const parsedQ of parsedQuestions) {
                 const questionEntry = {
                     ...sharedMetadata,
-                    question: parsedQ.question,
-                    answer: parsedQ.answer
+                    question: cleanPrefix(parsedQ.question),
+                    answer: cleanPrefix(parsedQ.answer)
                 };
 
                 await addQuestion(questionEntry);
