@@ -31,194 +31,9 @@
   font-size: 1.1rem;
 }
 
-/* Filters Grid */
-.filters-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 20px;
-  margin-bottom: 30px;
-  text-align: left;
-}
+/* Filters Grid moved to QueSearch.css */
 
-.filter-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.filter-group label {
-  font-size: 0.9rem;
-  color: var(--text-color);
-  opacity: 0.8;
-  font-weight: 500;
-  /* margin-left: 4px; */
-}
-
-.filter-select {
-  padding: 12px 16px;
-  background: var(--input-bg);
-  /* Glass effect base */
-  border: 1px solid var(--glass-border);
-  border-radius: 12px;
-  color: var(--text-color);
-  font-size: 1rem;
-  outline: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%232575fc%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-  background-repeat: no-repeat;
-  background-position: right 1rem center;
-  background-size: 0.65em auto;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  /* Added shadow for visibility */
-}
-
-.filter-select:hover:not(:disabled) {
-  background-color: rgba(255, 255, 255, 0.2);
-  border-color: var(--primary-color);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.filter-select:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(37, 117, 252, 0.2);
-}
-
-.filter-select:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-/* Secondary Filters */
-.search-section {
-  max-width: 800px;
-  margin: 0 auto 30px;
-}
-
-.search-input-wrapper {
-  display: flex;
-  align-items: center;
-  background: var(--input-bg);
-  border-radius: 50px;
-  padding: 5px 5px 5px 20px;
-  /* Stronger shadow for visibility in light mode */
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1), inset 0 2px 4px rgba(0, 0, 0, 0.05);
-  /* Darker border for better definition */
-  border: 1px solid rgba(100, 100, 100, 0.2);
-  width: 100%;
-  transition: all 0.3s ease;
-  height: 50px;
-}
-
-.search-input-wrapper:focus-within {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: var(--primary-color);
-  box-shadow: 0 0 10px rgba(37, 117, 252, 0.3);
-}
-
-.secondary-filters {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  margin-bottom: 30px;
-  max-width: 800px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.questions-search-input {
-  width: 100%;
-  border: none;
-  outline: none;
-  background: transparent;
-  color: var(--text-color);
-  font-size: 1rem;
-  /* Back to original size */
-  padding: 0;
-  margin-right: 10px;
-  box-shadow: none;
-}
-
-.questions-search-input::placeholder {
-  color: var(--text-color);
-  opacity: 0.6;
-}
-
-.questions-search-input:focus {
-  outline: none;
-  background: transparent;
-  box-shadow: none;
-  border-color: transparent;
-}
-
-.questions-search-btn {
-  background-color: #ffd700;
-  color: #182848;
-  border: none;
-  width: 40px;
-  /* Reduced size */
-  height: 40px;
-  /* Reduced size */
-  border-radius: 50%;
-  /* Circle shape like navbar */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  flex-shrink: 0;
-}
-
-.questions-search-btn svg {
-  width: 20px;
-  /* Reduced icon size */
-  height: 20px;
-  stroke-width: 2px;
-}
-
-.questions-search-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
-  background-color: #ffed4a;
-}
-
-.dropdown-filters {
-  display: flex;
-  gap: 15px;
-  justify-content: center;
-}
-
-.secondary-input,
-.secondary-select {
-  padding: 10px 20px;
-  background: var(--input-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: 25px;
-  color: var(--text-color);
-  font-size: 0.95rem;
-  outline: none;
-  min-width: 200px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  /* Added shadow for visibility */
-}
-
-.secondary-select {
-  flex: 1;
-  padding: 12px 16px;
-  background: var(--input-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: 12px;
-  color: var(--text-color);
-  font-size: 1rem;
-  cursor: pointer;
-  outline: none;
-  transition: all 0.3s ease;
-  box-shadow: var(--shadow-sm);
-}
+/* Secondary Filters moved to QueSearch.css */
 
 /* Results List */
 .questions-list-container {
@@ -226,7 +41,6 @@
   flex-direction: column;
   gap: 30px;
   width: 100%;
-  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -442,10 +256,7 @@
     font-size: 2rem;
   }
 
-  .filters-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-  }
+
 
   .qa-box {
     padding: 20px;
@@ -512,56 +323,7 @@
   }
 
   /* Single column filters on mobile */
-  .filters-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    margin-bottom: 20px;
-  }
 
-  .filter-select {
-    padding: 12px 14px;
-    font-size: 0.95rem;
-  }
-
-  /* Search section */
-  .search-section {
-    margin-bottom: 20px;
-  }
-
-  .search-input-wrapper {
-    padding: 5px 5px 5px 15px;
-    height: 46px;
-  }
-
-  .questions-search-input {
-    font-size: 0.9rem;
-  }
-
-  .questions-search-btn {
-    width: 36px;
-    height: 36px;
-  }
-
-  .questions-search-btn svg {
-    width: 18px;
-    height: 18px;
-  }
-
-  .secondary-filters {
-    gap: 12px;
-    margin-bottom: 20px;
-  }
-
-  /* Stack University and Year filters vertically on mobile */
-  .dropdown-filters {
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .secondary-select {
-    width: 100%;
-    min-width: unset;
-  }
 
   /* Question cards */
   .questions-list-container {
@@ -687,28 +449,7 @@
     font-size: 0.9rem;
   }
 
-  .filter-group label {
-    font-size: 0.85rem;
-  }
 
-  .filter-select {
-    padding: 10px 12px;
-    font-size: 0.9rem;
-  }
-
-  .search-input-wrapper {
-    padding: 4px 4px 4px 12px;
-    height: 44px;
-  }
-
-  .questions-search-input {
-    font-size: 0.85rem;
-  }
-
-  .questions-search-btn {
-    width: 34px;
-    height: 34px;
-  }
 
   .qa-box {
     padding: 16px;
