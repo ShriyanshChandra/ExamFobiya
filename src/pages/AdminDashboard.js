@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { fetchAnalyticsData } from '../services/AnalyticsService';
 import {
     PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend,
@@ -15,6 +15,10 @@ const AdminDashboard = () => {
         trafficData: []
     });
     const [loading, setLoading] = useState(true);
+    const [chartDimensions, setChartDimensions] = useState({ width: 0, height: 300 });
+    const [isMobile, setIsMobile] = useState(false);
+
+    const chartContainerRef = useRef(null);
 
     useEffect(() => {
         const loadStats = async () => {
@@ -24,6 +28,31 @@ const AdminDashboard = () => {
         };
         loadStats();
     }, []);
+
+    // Measure chart container dimensions
+    useEffect(() => {
+        const updateDimensions = () => {
+            if (chartContainerRef.current) {
+                const width = chartContainerRef.current.offsetWidth;
+                setChartDimensions({ width: width > 0 ? width : 300, height: 300 });
+            }
+            setIsMobile(window.innerWidth <= 768);
+        };
+
+        updateDimensions();
+        window.addEventListener('resize', updateDimensions);
+
+        // Use ResizeObserver for more reliable tracking
+        const resizeObserver = new ResizeObserver(updateDimensions);
+        if (chartContainerRef.current) {
+            resizeObserver.observe(chartContainerRef.current);
+        }
+
+        return () => {
+            window.removeEventListener('resize', updateDimensions);
+            resizeObserver.disconnect();
+        };
+    }, [loading]); // Re-measure after data loads
 
     const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF', '#FF1919'];
 
@@ -49,7 +78,10 @@ const AdminDashboard = () => {
                         </div>
                         <div className="stats-label">Total Users</div>
                         <div className="stats-value">{stats.totalUsers}</div>
-                        <div className="stats-trend"><span>↗ 12%</span> <span className="text-muted small">vs last week</span></div>
+                        <div className="stats-trend">
+                            <span>{stats.userGrowthPercentage > 0 ? '↗' : '↘'} {stats.userGrowthPercentage}%</span>
+                            <span className="text-muted small"> vs last week</span>
+                        </div>
                     </div>
                 </div>
 
@@ -63,7 +95,10 @@ const AdminDashboard = () => {
                         </div>
                         <div className="stats-label">Total Books</div>
                         <div className="stats-value">{stats.totalBooks}</div>
-                        <div className="stats-trend"><span>+ {stats.totalBooks}</span> <span className="text-muted small">New added</span></div>
+                        <div className="stats-trend">
+                            <span>+ {stats.newBooksCount}</span>
+                            <span className="text-muted small"> New added</span>
+                        </div>
                     </div>
                 </div>
 
@@ -77,7 +112,10 @@ const AdminDashboard = () => {
                         </div>
                         <div className="stats-label">Total Visits</div>
                         <div className="stats-value">{stats.totalVisits}</div>
-                        <div className="stats-trend"><span>↗ 5.3%</span> <span className="text-muted small">vs last week</span></div>
+                        <div className="stats-trend">
+                            <span>{stats.visitGrowthPercentage > 0 ? '↗' : '↘'} {stats.visitGrowthPercentage}%</span>
+                            <span className="text-muted small"> vs last week</span>
+                        </div>
                     </div>
                 </div>
 
@@ -98,60 +136,71 @@ const AdminDashboard = () => {
 
             <div className="row">
                 {/* Main Content Area (Charts) */}
-                <div className="col-md-8">
+                <div className="col-md-12" ref={chartContainerRef}>
                     {/* Traffic Chart */}
                     <div className="chart-container">
                         <div className="chart-header">
                             <h4 className="chart-title">Website Traffic</h4>
                             <span className="chart-subtitle">Last 7 Days</span>
                         </div>
-                        <div style={{ width: '100%', height: 300, minWidth: 200, position: 'relative' }}>
-                            <ResponsiveContainer width="100%" height="100%" debounce={200}>
-                                <AreaChart data={stats.trafficData}>
-                                    <defs>
-                                        <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
-                                            <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
-                                        </linearGradient>
-                                    </defs>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#9CA3AF' }} dy={10} />
-                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9CA3AF' }} />
-                                    <Tooltip
-                                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                                    />
-                                    <Area type="monotone" dataKey="visits" stroke="#8884d8" fillOpacity={1} fill="url(#colorVisits)" strokeWidth={3} />
-                                </AreaChart>
-                            </ResponsiveContainer>
-                        </div>
+                        {chartDimensions.width > 0 && (
+                            <div style={{ width: '100%', height: 300 }}>
+                                <ResponsiveContainer width="100%" height={300}>
+                                    <AreaChart data={stats.trafficData}>
+                                        <defs>
+                                            <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
+                                                <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#9CA3AF' }} dy={10} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9CA3AF' }} />
+                                        <Tooltip
+                                            contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                                        />
+                                        <Area type="monotone" dataKey="visits" stroke="#8884d8" fillOpacity={1} fill="url(#colorVisits)" strokeWidth={3} />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 {/* Categories Chart */}
-                <div className="col-md-4">
+                <div className="col-md-12">
                     <div className="chart-container">
                         <div className="chart-header">
                             <h4 className="chart-title">Books per Category</h4>
                         </div>
-                        <div style={{ width: '100%', height: 300, minWidth: 200, position: 'relative' }}>
-                            <ResponsiveContainer width="100%" height="100%" debounce={200}>
-                                <PieChart>
-                                    <Pie
-                                        data={stats.genreData}
-                                        innerRadius={80}
-                                        outerRadius={120}
-                                        paddingAngle={5}
-                                        dataKey="value"
-                                    >
-                                        {stats.genreData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                        ))}
-                                    </Pie>
-                                    <Tooltip />
-                                    <Legend verticalAlign="middle" align="right" layout="vertical" iconType="circle" />
-                                </PieChart>
-                            </ResponsiveContainer>
-                        </div>
+                        {chartDimensions.width > 0 && (
+                            <div style={{ width: '100%', height: 400 }}>
+                                <ResponsiveContainer width="100%" height={400}>
+                                    <PieChart>
+                                        <Pie
+                                            data={stats.genreData}
+                                            innerRadius={isMobile ? 50 : 100}
+                                            outerRadius={isMobile ? 80 : 140}
+                                            paddingAngle={5}
+                                            dataKey="value"
+                                            cx="50%"
+                                            cy="50%"
+                                        >
+                                            {stats.genreData.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip />
+                                        <Legend
+                                            verticalAlign="bottom"
+                                            align="center"
+                                            layout="horizontal"
+                                            iconType="circle"
+                                        />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

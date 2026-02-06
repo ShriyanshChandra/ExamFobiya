@@ -63,15 +63,15 @@ const Login = () => {
                 const username = email.split('@')[0];
                 await register(email, password, role, username);
                 // Redirect after registration
-                if (role === 'admin') navigate('/admin');
-                else navigate('/');
+                if (role === 'admin') navigate('/welcome');
+                else navigate('/welcome');
             } else {
                 // Login
                 await login(email, password);
                 // Redirect logic could be improved by checking actual user role, 
                 // but for now we trust the user's flow or let the protected route handle it.
-                if (role === 'admin') navigate('/admin');
-                else navigate('/');
+                if (role === 'admin') navigate('/welcome');
+                else navigate('/welcome');
             }
         } catch (err) {
             console.error(err);

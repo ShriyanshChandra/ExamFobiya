@@ -56,6 +56,14 @@
     box-sizing: border-box;
 }
 
+.admin-dashboard-container .col-md-12 {
+    flex: 0 0 100%;
+    max-width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+    box-sizing: border-box;
+}
+
 .admin-dashboard-container .col-md-3 {
     flex: 0 0 25%;
     max-width: 25%;
@@ -157,6 +165,7 @@
     min-height: 400px;
     /* Ensure container has minimum height for charts */
     height: auto;
+    overflow: hidden;
 }
 
 .chart-header {
@@ -178,6 +187,19 @@
     font-size: 0.9rem;
 }
 
+/* Remove focus/active outline from chart elements */
+.chart-container svg,
+.chart-container svg *,
+.recharts-wrapper,
+.recharts-surface {
+    outline: none !important;
+}
+
+.chart-container svg:focus,
+.chart-container svg *:focus {
+    outline: none !important;
+}
+
 /* Responsive Grid Overrides */
 @media (max-width: 768px) {
     .dashboard-title {
@@ -190,7 +212,10 @@
         padding: 1rem;
         min-height: 350px;
         /* Ensure charts have space */
-        overflow-x: auto;
+        overflow: hidden;
+        /* Changed from overflow-x: auto */
+        width: 100%;
+        /* Ensure full width containment */
     }
 
     .admin-dashboard-container .col-6,
@@ -200,5 +225,7 @@
     .admin-dashboard-container .col-md-3 {
         flex: 0 0 100%;
         max-width: 100%;
+        min-width: 0;
+        /* Allow flex items to shrink */
     }
 }

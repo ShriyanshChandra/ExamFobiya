@@ -11,6 +11,7 @@ import Questions from "./pages/Questions";
 import AboutUs from "./pages/About_us";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Welcome from "./pages/Welcome";
 import AdminDashboard from "./pages/AdminDashboard";
 import DevDashboard from "./pages/DevDashboard";
 import AddBook from "./pages/AddBook";
@@ -63,6 +64,7 @@ function App() {
                     <Route path="/privacy" element={<PrivacyPolicy />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="/welcome" element={<Welcome />} />
 
                     <Route
                       path="/add-book"

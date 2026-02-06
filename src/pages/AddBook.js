@@ -260,7 +260,8 @@ const AddBook = () => {
                 author: "Smart Publications",
                 sections,
                 image: finalImage,
-                contents: contents || 'No contents available.'
+                contents: contents || 'No contents available.',
+                createdAt: new Date().toISOString() // Add timestamp for stats
             };
 
             if (isEditMode) {
