@@ -1,38 +1,45 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuestions } from '../context/QuestionContext';
-import { useBooks } from '../context/BookContext'; // Import BookContext
+// import { useBooks } from '../context/BookContext'; // Unused
 import ConfirmationModal from '../components/ConfirmationModal';
 import { extractTextFromFile, formatToTopics } from '../utils/documentUtils';
 import ReactQuill, { Quill } from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import Loader from '../components/Loader';
+import { onSnapshot } from 'firebase/firestore'; // Import onSnapshot for local listener
 import './AddBook.css'; // Reuse AddBook styles for consistency
 
 // Register custom icon for Find & Replace
 const icons = Quill.import('ui/icons');
 icons['find-replace'] = `<svg viewBox="0 0 18 18" width="18" height="18"><path class="ql-fill" d="M15.5,14h-.79l-.28-.27A6.47,6.47,0,0,0,16,9.5,6.5,6.5,0,1,0,9.5,16c1.61,0,3.09-.59,4.23-1.57l.27.28v.79l5,4.99L20.49,19l-4.99-5Zm-6,0C7.01,14,5,11.99,5,9.5S7.01,5,9.5,5,14,7.01,14,9.5,11.99,14,9.5,14Z"/></svg>`;
 
-// Default university options (constant, defined outside component)
-const DEFAULT_UNIVERSITIES = ['University 1', 'University 2', 'University 3'];
+// Default universities removed - now purely dynamic from DB
 
 const AddQuestion = () => {
-    const { addQuestion, questions } = useQuestions(); // Get questions to derive tags
-    const { books } = useBooks(); // Get books to derive subjects
+    const {
+        addQuestion,
+        questions,
+        universities: dbUniversities,
+        addSubject: addSubjectToDb,
+        deleteSubject: deleteSubjectFromDb,
+        addUniversity: addUniversityToDb,
+        deleteUniversity: deleteUniversityFromDb,
+        getSubjects // Get helper to fetch nested subjects
+    } = useQuestions(); // Get questions and new DB collections
+    // const { books } = useBooks(); // Removed unused import
     const navigate = useNavigate();
 
     const [course, setCourse] = useState('');
     // const [semester, setSemester] = useState(''); // Removed implementation
     const [subject, setSubject] = useState('');
     const [isNewSubject, setIsNewSubject] = useState(false); // Track if user wants to add new subject
-    const [customSubjects, setCustomSubjects] = useState([]); // Track user-added subjects locally
+    const [nestedSubjects, setNestedSubjects] = useState([]); // Store subjects for selected course
 
     // University dropdown state
     const [isNewUniversity, setIsNewUniversity] = useState(false);
-    const [customUniversities, setCustomUniversities] = useState([]);
     const [isUniversityDropdownOpen, setIsUniversityDropdownOpen] = useState(false);
     const universityDropdownRef = useRef(null);
-    const [hiddenUniversities, setHiddenUniversities] = useState([]);
 
     // Modal & Dropdown State
     const [modalConfig, setModalConfig] = useState({
@@ -47,12 +54,15 @@ const AddQuestion = () => {
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
-    const [hiddenSubjects, setHiddenSubjects] = useState([]); // Track deleted subjects this session
 
     const [university, setUniversity] = useState('');
     const [year, setYear] = useState('');
     const [currentTagInput, setCurrentTagInput] = useState('');
     const [tags, setTags] = useState([]);
+
+    // Track temporarily added items for cleanup on Cancel
+    const [tempAddedSubject, setTempAddedSubject] = useState(null);
+    const [tempAddedUniversity, setTempAddedUniversity] = useState(null);
 
     // Editor and file upload states
     const [questionContent, setQuestionContent] = useState(''); // Quill editor content
@@ -94,25 +104,42 @@ const AddQuestion = () => {
         }
     }), []);
 
-    // Derive available subjects based on selected course from Books data
-    // Derive available subjects based on selected course from Books data AND existing Questions
+    // Effect: Fetch subjects when course changes
+    useEffect(() => {
+        if (!course) {
+            setNestedSubjects([]);
+            return;
+        }
+
+        const unsubscribe = onSnapshot(getSubjects(course), (snapshot) => {
+            const data = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            setNestedSubjects(data);
+        }, (error) => {
+            console.error("Error fetching nested subjects:", error);
+        });
+
+        return () => unsubscribe();
+    }, [course, getSubjects]);
+
+    // Derive available subjects from Nested DB and existing questions
     const availableSubjects = useMemo(() => {
         if (!course) return [];
-        const bookSubjects = books
-            .filter(book => book.category === course)
-            .map(book => book.title)
-            .filter(Boolean);
 
-        // Also get subjects from existing questions for this course
+        // Subjects from DB collection
+        const dbOptions = nestedSubjects.map(doc => doc.name);
+
+        // Also get subjects from existing questions for this course (legacy support)
         const questionSubjects = questions
             .filter(q => q.course === course)
             .map(q => q.subject)
             .filter(Boolean);
 
-        // Merge with custom added subjects, ensure uniqueness, and filter hidden
-        const all = [...new Set([...bookSubjects, ...questionSubjects, ...customSubjects])];
-        return all.filter(sub => !hiddenSubjects.includes(sub));
-    }, [books, questions, course, customSubjects, hiddenSubjects]);
+        // Merge and unique
+        return [...new Set([...dbOptions, ...questionSubjects])].sort();
+    }, [course, nestedSubjects, questions]);
 
     // Derive unique existing tags from all questions
     const existingTags = useMemo(() => {
@@ -151,59 +178,9 @@ const AddQuestion = () => {
         }
     }, [isDropdownOpen]);
 
-    // Load custom subjects and universities from localStorage on mount
-    useEffect(() => {
-        try {
-            const storedSubjects = localStorage.getItem('customSubjects');
-            const storedUniversities = localStorage.getItem('customUniversities');
+    // Removed localStorage effect for custom subjects/universities
 
-            if (storedSubjects) {
-                const parsed = JSON.parse(storedSubjects);
-                // It's stored as an object with course keys, flatten all values
-                const allSubjects = Object.values(parsed).flat();
-                setCustomSubjects(allSubjects);
-            }
-
-            if (storedUniversities) {
-                setCustomUniversities(JSON.parse(storedUniversities));
-            }
-        } catch (error) {
-            console.error('Error loading custom subjects/universities:', error);
-        }
-    }, []);
-
-    // Load form data from localStorage on mount
-    useEffect(() => {
-        const savedFormData = localStorage.getItem('addQuestionFormData');
-        if (savedFormData) {
-            try {
-                const data = JSON.parse(savedFormData);
-                if (data.course) setCourse(data.course);
-                if (data.subject) setSubject(data.subject);
-                if (data.university) setUniversity(data.university);
-                if (data.year) setYear(data.year);
-                if (data.tags) setTags(data.tags);
-                if (data.questionContent) setQuestionContent(data.questionContent);
-                if (data.entryMode) setEntryMode(data.entryMode);
-            } catch (error) {
-                console.error('Error loading saved form data:', error);
-            }
-        }
-    }, []);
-
-    // Save form data to localStorage whenever it changes
-    useEffect(() => {
-        const formData = {
-            course,
-            subject,
-            university,
-            year,
-            tags,
-            questionContent,
-            entryMode
-        };
-        localStorage.setItem('addQuestionFormData', JSON.stringify(formData));
-    }, [course, subject, university, year, tags, questionContent, entryMode]);
+    // Removed localStorage effects as requested
 
     // Click outside handler for university dropdown
     useEffect(() => {
@@ -221,12 +198,13 @@ const AddQuestion = () => {
         }
     }, [isUniversityDropdownOpen]);
 
-    // Available universities (default + custom + existing questions - hidden)
+    // Available universities from DB and existing questions
     const availableUniversities = useMemo(() => {
+        const dbUniNames = dbUniversities.map(u => u.name);
+        // We can still optionally include unis from existing questions if we want to support legacy data visibility
         const questionUniversities = questions.map(q => q.university).filter(Boolean);
-        const all = [...new Set([...DEFAULT_UNIVERSITIES, ...questionUniversities, ...customUniversities])];
-        return all.filter(uni => !hiddenUniversities.includes(uni));
-    }, [questions, customUniversities, hiddenUniversities]);
+        return [...new Set([...dbUniNames, ...questionUniversities])].sort();
+    }, [dbUniversities, questions]);
 
 
 
@@ -301,56 +279,48 @@ const AddQuestion = () => {
     };
 
     // 3. Confirm Action
-    const handleConfirmModal = () => {
+    // 3. Confirm Action
+    const handleConfirmModal = async () => {
         const { actionType, data } = modalConfig;
 
-        if (actionType === 'ADD_SUBJECT') {
-            const newCustomSubjects = !customSubjects.includes(data)
-                ? [...customSubjects, data]
-                : customSubjects;
-
-            setCustomSubjects(newCustomSubjects);
-            setSubject(data);
-            setIsNewSubject(false);
-
-            // Save to localStorage grouped by course
-            try {
-                const storedSubjects = localStorage.getItem('customSubjects');
-                const subjectsObj = storedSubjects ? JSON.parse(storedSubjects) : {};
-
-                if (!subjectsObj[course]) {
-                    subjectsObj[course] = [];
+        try {
+            if (actionType === 'ADD_SUBJECT') {
+                // Check if already exists in DB to prevent duplicates
+                const exists = nestedSubjects.some(s => s.name === data);
+                if (!exists) {
+                    await addSubjectToDb({ name: data, course });
+                    setSubject(data);
+                    setTempAddedSubject(data); // Track for potential rollback
+                } else {
+                    setSubject(data); // Just select it if exists
                 }
+                setIsNewSubject(false);
 
-                if (!subjectsObj[course].includes(data)) {
-                    subjectsObj[course].push(data);
+            } else if (actionType === 'DELETE_SUBJECT') {
+                // Cascading delete using the logic from context
+                await deleteSubjectFromDb(course, data);
+                if (subject === data) setSubject('');
+            } else if (actionType === 'ADD_UNIVERSITY') {
+                const exists = dbUniversities.some(u => u.name === data);
+                if (!exists) {
+                    await addUniversityToDb({ name: data });
+                    setUniversity(data);
+                    setTempAddedUniversity(data); // Track for potential rollback
+                } else {
+                    setUniversity(data);
                 }
+                setIsNewUniversity(false);
 
-                localStorage.setItem('customSubjects', JSON.stringify(subjectsObj));
-            } catch (error) {
-                console.error('Error saving custom subject:', error);
+            } else if (actionType === 'DELETE_UNIVERSITY') {
+                const uniDoc = dbUniversities.find(u => u.name === data);
+                if (uniDoc) {
+                    await deleteUniversityFromDb(uniDoc.id);
+                    if (university === data) setUniversity('');
+                }
             }
-        } else if (actionType === 'DELETE_SUBJECT') {
-            setHiddenSubjects([...hiddenSubjects, data]);
-            if (subject === data) setSubject('');
-        } else if (actionType === 'ADD_UNIVERSITY') {
-            const newCustomUniversities = !customUniversities.includes(data)
-                ? [...customUniversities, data]
-                : customUniversities;
-
-            setCustomUniversities(newCustomUniversities);
-            setUniversity(data);
-            setIsNewUniversity(false);
-
-            // Save to localStorage
-            try {
-                localStorage.setItem('customUniversities', JSON.stringify(newCustomUniversities));
-            } catch (error) {
-                console.error('Error saving custom university:', error);
-            }
-        } else if (actionType === 'DELETE_UNIVERSITY') {
-            setHiddenUniversities([...hiddenUniversities, data]);
-            if (university === data) setUniversity('');
+        } catch (error) {
+            console.error("Error performing action:", error);
+            alert("Failed to perform action. Check console.");
         }
 
         setModalConfig(prev => ({ ...prev, isOpen: false }));
@@ -389,16 +359,18 @@ const AddQuestion = () => {
     };
 
     // 2. Delete University Click
-    const handleDeleteUniversityClick = (e, uniToDelete) => {
+    const handleDeleteUniversityClick = async (e, uniName) => {
         e.stopPropagation();
+        e.preventDefault(); // Stop form submission just in case
+
         setModalConfig({
             isOpen: true,
-            title: 'Delete University?',
-            message: `Are you sure you want to delete "${uniToDelete}"?`,
-            confirmText: 'Yes, Delete',
+            title: 'Delete University',
+            message: `Are you sure you want to delete university "${uniName}"? This cannot be undone.`,
+            confirmText: 'Delete',
             variant: 'danger',
             actionType: 'DELETE_UNIVERSITY',
-            data: uniToDelete
+            data: uniName
         });
     };
 
@@ -517,7 +489,30 @@ const AddQuestion = () => {
 
 
     // Reset form to initial state
-    const resetForm = () => {
+    const resetForm = async () => {
+        // Cleanup temporarily added items if they weren't used
+        if (tempAddedSubject && course) {
+            console.log("Rolling back unused subject:", tempAddedSubject);
+            try {
+                await deleteSubjectFromDb(course, tempAddedSubject);
+            } catch (e) {
+                console.error("Failed to rollback subject:", e);
+            }
+        }
+        if (tempAddedUniversity) {
+            console.log("Rolling back unused university:", tempAddedUniversity);
+            try {
+                const uniDoc = dbUniversities.find(u => u.name === tempAddedUniversity);
+                if (uniDoc) {
+                    await deleteUniversityFromDb(uniDoc.id);
+                }
+            } catch (e) {
+                console.error("Failed to rollback university:", e);
+            }
+        }
+
+        setTempAddedSubject(null);
+        setTempAddedUniversity(null);
         setCourse('');
         setSubject('');
         setIsNewSubject(false);
@@ -530,6 +525,8 @@ const AddQuestion = () => {
         setFindText('');
         setReplaceText('');
         setLastSearchIndex(0);
+
+        // localStorage persistence removed
 
         // Clear the Quill editor
         if (quillRef.current) {
@@ -607,7 +604,7 @@ const AddQuestion = () => {
             alert(`Successfully added ${count} question(s)!`);
 
             // Clear local storage on success
-            localStorage.removeItem('addQuestionFormData');
+            // localStorage persistence removed
 
             // Reset the form
             resetForm();
@@ -702,6 +699,7 @@ const AddQuestion = () => {
                                             >
                                                 <span>{sub}</span>
                                                 <button
+                                                    type="button"
                                                     onClick={(e) => handleDeleteSubjectClick(e, sub)}
                                                     style={{
                                                         backgroundColor: '#dc3545',
@@ -832,6 +830,7 @@ const AddQuestion = () => {
                                             >
                                                 <span>{uni}</span>
                                                 <button
+                                                    type="button"
                                                     onClick={(e) => handleDeleteUniversityClick(e, uni)}
                                                     style={{
                                                         backgroundColor: '#dc3545',

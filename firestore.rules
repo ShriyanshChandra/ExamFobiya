@@ -27,5 +27,19 @@ service cloud.firestore {
     match /daily_stats/{document=**} {
   		allow read, write: if true;
 		}
+
+    // NEW: Allow access to questions, courses, and universities (Nested Structure)
+    match /courses/{document=**} {
+      allow read, write: if true;
+    }
+    
+    match /universities/{document=**} {
+      allow read, write: if true;
+    }
+    
+    // Explicitly allow collectionGroup queries for questions
+    match /{path=**}/questions/{question} {
+      allow read, write: if true;
+    }
   }
 }

@@ -1,156 +1,187 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { db } from '../firebase';
-import { collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc, writeBatch } from 'firebase/firestore';
+import { collection, collectionGroup, onSnapshot, addDoc, deleteDoc, doc, updateDoc, writeBatch, setDoc, getDocs } from 'firebase/firestore';
 
 const QuestionContext = createContext();
-
-// Mock data to seed if database is empty - Plain text format for space efficiency
-const MOCK_QUESTIONS = [
-    // BCA
-    {
-        course: "BCA",
-        subject: "Computer Fundamental and MS-Office",
-        university: "University 1",
-        year: 2023,
-        tags: ["#ComputerFundamental", "#MSOFFICE"],
-        question: "What is a Computer? Explain its block diagram.",
-        answer: "A computer is an electronic device that processes data according to instructions. Its block diagram includes: Input Unit, CPU (Control Unit + ALU), Memory Unit, and Output Unit."
-    },
-    {
-        course: "BCA",
-        subject: "Computer Fundamental and MS-Office",
-        university: "University 1",
-        year: 2023,
-        tags: ["#ComputerFundamental", "#MSOFFICE"],
-        question: "Explain valid and invalid variable names in C.",
-        answer: "Valid variable names must start with a letter or underscore, can contain letters, digits, and underscores. Invalid names start with digits, contain special characters, or use reserved keywords."
-    },
-    {
-        course: "BCA",
-        subject: "AI and Expert System",
-        university: "University 2",
-        year: 2023,
-        tags: ["#AI", "#ExpertSystem"],
-        question: "Define Artificial Intelligence.",
-        answer: "Artificial Intelligence (AI) is the simulation of human intelligence in machines programmed to think and learn like humans, performing tasks that typically require human intelligence."
-    },
-    {
-        course: "BCA",
-        subject: "AI and Expert System",
-        university: "University 2",
-        year: 2023,
-        tags: ["#AI", "#SearchTechniques"],
-        question: "Explain various search techniques.",
-        answer: "Search techniques in AI include: Breadth-First Search (BFS), Depth-First Search (DFS), Uniform Cost Search, A* Search, and Heuristic Search methods."
-    },
-    // DCA
-    {
-        course: "DCA",
-        subject: "Programming in C",
-        university: "University 2",
-        year: 2023,
-        tags: ["#C", "#DataTypes"],
-        question: "Explain Data Types in C.",
-        answer: "C data types include: int (integers), float (floating-point), double (double precision), char (characters), and void. Each has different size and range."
-    },
-    {
-        course: "DCA",
-        subject: "Internet and Web Technology",
-        university: "University 1",
-        year: 2023,
-        tags: ["#HTML", "#WebTech"],
-        question: "What is HTML? Explain its structure.",
-        answer: "HTML (HyperText Markup Language) is the standard markup language for web pages. Its structure includes: <!DOCTYPE>, <html>, <head>, and <body> elements."
-    },
-    // PGDCA
-    {
-        course: "PGDCA",
-        subject: "Fundamental of Computer and Information Technology",
-        university: "University 1",
-        year: 2023,
-        tags: ["#Computer", "#Generations"],
-        question: "Explain Generations of Computer.",
-        answer: "Computer generations: 1st (Vacuum Tubes, 1940-56), 2nd (Transistors, 1956-63), 3rd (ICs, 1964-71), 4th (Microprocessors, 1971-present), 5th (AI, present-future)."
-    },
-    {
-        course: "PGDCA",
-        subject: "Relational Database Management System",
-        university: "University 1",
-        year: 2022,
-        tags: ["#DBMS", "#Database"],
-        question: "What is DBMS?",
-        answer: "DBMS (Database Management System) is software that manages databases. It provides an interface for users to create, read, update, and delete data while ensuring data security and integrity."
-    }
-];
 
 export const QuestionProvider = ({ children }) => {
     const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
+    // Subjects and Universities will likely be fetched on demand or derived, 
+    // but for now we can keep global lists or refetch based on course.
+    // However, with nested structure, watching ALL subjects globally might be expensive if scaled.
+    // We will stick to watching "universities" globally as it's a flat list.
+    const [universities, setUniversities] = useState([]);
 
     useEffect(() => {
-        const unsubscribe = onSnapshot(collection(db, 'questions'), (snapshot) => {
+        // 1. Fetch ALL questions using collectionGroup
+        // This effectively flattens the nested structure for display
+        const unsubscribeQuestions = onSnapshot(collectionGroup(db, 'questions'), (snapshot) => {
+            const data = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+                // We might want to store the parent reference path for easy updates
+                parentPath: doc.ref.parent.path
+            }));
+
+            if (data.length === 0) {
+                // seeding logic might need adjustment for nested, skipping auto-seed for now to avoid mess
+            } else {
+                setQuestions(data);
+            }
+        }, (error) => {
+            console.error("Error fetching questions:", error);
+        });
+
+        const unsubscribeUniversities = onSnapshot(collection(db, 'universities'), (snapshot) => {
             const data = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
             }));
-
-            if (data.length === 0) {
-                seedQuestions();
-            } else {
-                setQuestions(data);
-                setLoading(false);
-            }
-        }, (error) => {
-            console.error("Error fetching questions:", error);
-            setLoading(false);
+            setUniversities(data);
         });
 
-        return () => unsubscribe();
+        setLoading(false);
+
+        return () => {
+            unsubscribeQuestions();
+            unsubscribeUniversities();
+        };
     }, []);
 
-    const seedQuestions = async () => {
-        console.log("Seeding Questions Database...");
-        const batch = writeBatch(db);
-        MOCK_QUESTIONS.forEach(q => {
-            const docRef = doc(collection(db, "questions"));
-            batch.set(docRef, q);
-        });
-
-        try {
-            await batch.commit();
-            console.log("Questions seeded successfully!");
-        } catch (error) {
-            console.error("Error seeding questions:", error);
-        }
-    };
-
+    // Helper to add question to nested path
+    // Path: courses/{course}/subjects/{subject}/questions
     const addQuestion = async (newQuestion) => {
+        const { course, subject } = newQuestion;
+        if (!course || !subject) throw new Error("Course and Subject required for nested storage");
+
         try {
-            await addDoc(collection(db, 'questions'), newQuestion);
+            // Reference to the specific subject's question subcollection
+            const questionsRef = collection(db, 'courses', course, 'subjects', subject, 'questions');
+            await addDoc(questionsRef, newQuestion);
         } catch (error) {
             console.error("Error adding question:", error);
             throw error;
         }
     };
 
-    const updateQuestion = async (id, updates) => {
+    // Helper for updating question (needs knowledge of its path or ID if unique enough)
+    // collectionGroup IDs are unique, but to update we need full path if we use updateDoc with a specific reference.
+    // Fortunately, if we have the question object from our state, we can easily find it?
+    // Actually, `updateDoc` needs a `DocumentReference`.
+    // If we only have ID, we can't easily find the parent without searching or storing the path.
+    // Solution: We stored `parentPath` in the state above.
+    const updateQuestion = async (id, updates, parentPath) => {
         try {
-            await updateDoc(doc(db, 'questions', id), updates);
+            if (!parentPath) {
+                // Fallback: try to find it (expensive) or assume flat? 
+                // For now, let's assume valid parentPath passed from UI
+                console.error("Update requires parentPath for nested docs");
+                return;
+            }
+            // Construct full path: parentPath + "/" + id
+            const docRef = doc(db, parentPath, id);
+            // OR if parentPath is like "courses/BCA/subjects/Maths/questions"
+            await updateDoc(docRef, updates);
         } catch (error) {
             console.error("Error updating question:", error);
         }
     };
 
-    const deleteQuestion = async (id) => {
+    const deleteQuestion = async (id, parentPath) => {
         try {
-            await deleteDoc(doc(db, 'questions', id));
+            if (!parentPath) {
+                console.error("Delete requires parentPath for nested docs");
+                return;
+            }
+            const docRef = doc(db, parentPath, id);
+            await deleteDoc(docRef);
         } catch (error) {
             console.error("Error deleting question:", error);
         }
     };
 
+    // Subject Management (Nested)
+    // Add Subject: courses/{course}/subjects/{name}
+    const addSubject = async (subjectData) => {
+        // subjectData: { name: string, course: string }
+        const { name, course } = subjectData;
+        try {
+            // Use 'name' as ID for easier uniqueness check or random ID?
+            // User wants "Subjects" collection.
+            // Let's use the name as ID to enforce uniqueness within the course easily
+            const subjectDocRef = doc(db, 'courses', course, 'subjects', name);
+            // We can store metadata if needed, or just an empty doc if it's just a container
+            await setDoc(subjectDocRef, { name, course });
+        } catch (error) {
+            console.error("Error adding subject:", error);
+            throw error;
+        }
+    };
+
+    // Cascading Delete Subject
+    const deleteSubject = async (course, subjectName) => {
+        try {
+            // 1. Get all questions in this subject
+            const questionsRef = collection(db, 'courses', course, 'subjects', subjectName, 'questions');
+            const snapshot = await getDocs(questionsRef);
+
+            // 2. Delete all questions (Batching is best for < 500)
+            const batch = writeBatch(db);
+            snapshot.docs.forEach((doc) => {
+                batch.delete(doc.ref);
+            });
+
+            // 3. Delete the subject document itself
+            const subjectDocRef = doc(db, 'courses', course, 'subjects', subjectName);
+            batch.delete(subjectDocRef);
+
+            await batch.commit();
+        } catch (error) {
+            console.error("Error deleting subject:", error);
+            throw error;
+        }
+    };
+
+    const addUniversity = async (universityData) => {
+        try {
+            await addDoc(collection(db, 'universities'), universityData);
+        } catch (error) {
+            console.error("Error adding university:", error);
+            throw error;
+        }
+    };
+
+    const deleteUniversity = async (id) => {
+        try {
+            await deleteDoc(doc(db, 'universities', id));
+        } catch (error) {
+            console.error("Error deleting university:", error);
+            throw error;
+        }
+    };
+
+    // Helper to get subjects (snapshot listener for specific course dropdown?)
+    // Or just a one-time fetch helper
+    // Helper to get subjects
+    const getSubjects = (course) => {
+        return collection(db, 'courses', course, 'subjects');
+    }
+
     return (
-        <QuestionContext.Provider value={{ questions, addQuestion, updateQuestion, deleteQuestion, loading }}>
+        <QuestionContext.Provider value={{
+            questions,
+            universities,
+            addQuestion,
+            updateQuestion,
+            deleteQuestion,
+            addSubject,
+            deleteSubject,
+            addUniversity,
+            deleteUniversity,
+            loading,
+            getSubjects // Export helper to fetch subcollections
+        }}>
             {children}
         </QuestionContext.Provider>
     );

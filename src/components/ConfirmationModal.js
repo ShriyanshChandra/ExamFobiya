@@ -9,14 +9,14 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, variant
             <div className={`modal-content confirmation-modal ${variant}`}>
                 <div className="modal-header">
                     <h3>{title}</h3>
-                    <button className="close-btn" onClick={onClose}>&times;</button>
+                    <button type="button" className="close-btn" onClick={onClose}>&times;</button>
                 </div>
                 <div className="modal-body">
                     <p>{message}</p>
                 </div>
                 <div className="modal-actions">
-                    <button className="cancel-btn" onClick={onClose}>Cancel</button>
-                    <button className={`confirm-btn ${variant}`} onClick={onConfirm}>Yes, Proceed</button>
+                    <button type="button" className="cancel-btn" onClick={onClose}>Cancel</button>
+                    <button type="button" className={`confirm-btn ${variant}`} onClick={onConfirm}>Yes, Proceed</button>
                 </div>
             </div>
         </div>

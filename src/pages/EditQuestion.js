@@ -130,25 +130,7 @@ const EditQuestion = () => {
     const [isNewSubject, setIsNewSubject] = useState(false);
     const [isNewUniversity, setIsNewUniversity] = useState(false);
 
-    // Load custom subjects and universities from localStorage
-    useEffect(() => {
-        try {
-            const storedSubjects = localStorage.getItem('customSubjects');
-            const storedUniversities = localStorage.getItem('customUniversities');
-
-            if (storedSubjects) {
-                const parsed = JSON.parse(storedSubjects);
-                const allSubjects = Object.values(parsed).flat();
-                setCustomSubjects(allSubjects);
-            }
-
-            if (storedUniversities) {
-                setCustomUniversities(JSON.parse(storedUniversities));
-            }
-        } catch (error) {
-            console.error('Error loading custom subjects/universities:', error);
-        }
-    }, []);
+    // LocalStorage persistence removed as per request
 
     // Quill modules configuration
     const modules = React.useMemo(() => ({
@@ -254,23 +236,7 @@ const EditQuestion = () => {
                 setCustomSubjects([...customSubjects, newSubject]);
             }
 
-            // Save to localStorage
-            try {
-                const storedSubjects = localStorage.getItem('customSubjects');
-                const subjectsObj = storedSubjects ? JSON.parse(storedSubjects) : {};
-
-                if (!subjectsObj[formData.course]) {
-                    subjectsObj[formData.course] = [];
-                }
-
-                if (!subjectsObj[formData.course].includes(newSubject)) {
-                    subjectsObj[formData.course].push(newSubject);
-                }
-
-                localStorage.setItem('customSubjects', JSON.stringify(subjectsObj));
-            } catch (error) {
-                console.error('Error saving custom subject:', error);
-            }
+            // Persistence removed
 
             setIsNewSubject(false);
         } else {
@@ -289,12 +255,7 @@ const EditQuestion = () => {
 
             setCustomUniversities(newCustomUniversities);
 
-            // Save to localStorage
-            try {
-                localStorage.setItem('customUniversities', JSON.stringify(newCustomUniversities));
-            } catch (error) {
-                console.error('Error saving custom university:', error);
-            }
+            // Persistence removed
 
             setIsNewUniversity(false);
         } else {
@@ -427,7 +388,9 @@ const EditQuestion = () => {
                 answer: cleanPrefix(parsedQuestions[0].answer)
             };
 
-            await updateQuestion(id, normalizedData);
+            // Construct the parent path for nested updateQuestion
+            const parentPath = `courses/${formData.course}/subjects/${formData.subject}/questions`;
+            await updateQuestion(id, normalizedData, parentPath);
             alert("Question updated successfully!");
             navigate('/questions');
         } catch (error) {

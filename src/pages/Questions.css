@@ -194,7 +194,7 @@
   font-size: 1.2rem;
   padding: 60px;
   background: rgba(255, 255, 255, 0.02);
-  border: 2px dashed var(--glass-border);
+  border: 2px dashed var(--border-adaptive);
   border-radius: 20px;
   font-weight: 500;
 }

@@ -86,7 +86,7 @@ const parseQuestions = async (req, res) => {
         console.log('DEBUG - Parsing questions with AI...');
         console.log('DEBUG - Content length:', content.length);
 
-        const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
         const prompt = `You are a question parser. Extract individual question-answer pairs from the provided content and return them with their HTML formatting preserved.
 
