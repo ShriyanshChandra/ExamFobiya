@@ -138,11 +138,12 @@
   line-height: 1.6;
   font-weight: 500;
   white-space: pre-wrap;
-  hyphens: manual;
-  -webkit-hyphens: manual;
-  -moz-hyphens: manual;
-  -ms-hyphens: manual;
-  word-break: keep-all;
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: none;
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
 }
 
 .qa-divider {
@@ -163,11 +164,12 @@
   padding: 20px;
   border-radius: 12px;
   /* Gold accent line removed */
-  hyphens: manual;
-  -webkit-hyphens: manual;
-  -moz-hyphens: manual;
-  -ms-hyphens: manual;
-  word-break: keep-all;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+  hyphens: none !important;
+  -webkit-hyphens: none !important;
+  -moz-hyphens: none !important;
+  -ms-hyphens: none !important;
 }
 
 /* Animation for list items */
@@ -379,9 +381,12 @@
     font-size: 0.95rem;
     line-height: 1.5;
     word-break: normal;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
     white-space: normal;
     hyphens: none;
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
   }
 
   .qa-answer p,
@@ -391,9 +396,12 @@
     padding: 12px;
     border-radius: 10px;
     word-break: normal;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
     white-space: normal;
     hyphens: none;
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
   }
 
   /* Better list formatting in answers */
@@ -407,7 +415,11 @@
   .qa-question div li {
     margin-bottom: 8px;
     word-break: normal;
-    overflow-wrap: anywhere;
+    overflow-wrap: break-word;
+    hyphens: none;
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
   }
 
   .qa-divider {
@@ -505,11 +517,12 @@
 .qa-question div,
 .qa-answer div {
   color: var(--text-color);
-  hyphens: manual !important;
-  -webkit-hyphens: manual !important;
-  -moz-hyphens: manual !important;
-  -ms-hyphens: manual !important;
-  word-break: keep-all !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+  hyphens: none !important;
+  -webkit-hyphens: none !important;
+  -moz-hyphens: none !important;
+  -ms-hyphens: none !important;
 }
 
 .qa-question div ul,
@@ -521,9 +534,12 @@
 .qa-question div li,
 .qa-answer div li {
   margin-bottom: 8px;
-  hyphens: manual !important;
-  -webkit-hyphens: manual !important;
-  word-break: keep-all !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
+  hyphens: none !important;
+  -webkit-hyphens: none !important;
+  -moz-hyphens: none !important;
+  -ms-hyphens: none !important;
 }
 
 /* Ensure rich text content is readable */
@@ -531,6 +547,19 @@
   background: rgba(255, 255, 255, 0.03);
   padding: 20px;
   border-radius: 12px;
+}
+
+/* Ensure all content inside answer has proper word-break */
+.qa-answer,
+.qa-answer *,
+.qa-answer p *,
+.qa-answer div * {
+  word-break: normal !important;
+  overflow-wrap: break-word !important;
+  hyphens: none !important;
+  -webkit-hyphens: none !important;
+  -moz-hyphens: none !important;
+  -ms-hyphens: none !important;
 }
 
 @media (max-width: 768px) {

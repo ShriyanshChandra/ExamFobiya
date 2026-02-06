@@ -71,14 +71,23 @@ const Questions = () => {
   };
 
   const handleSearch = () => {
-    setAppliedFilters({
-      course: selectedCourse,
-      subject: selectedSubject,
-      university: selectedUniversity,
-      year: selectedYear,
-      query: searchQuery,
-      tags: selectedTags
-    });
+    // Only apply filters if at least one filter or search query is provided
+    const hasFilters = selectedCourse || selectedSubject || selectedUniversity || selectedYear ||
+      searchQuery.trim() || (selectedTags && selectedTags.length > 0);
+
+    if (hasFilters) {
+      setAppliedFilters({
+        course: selectedCourse,
+        subject: selectedSubject,
+        university: selectedUniversity,
+        year: selectedYear,
+        query: searchQuery,
+        tags: selectedTags
+      });
+    } else {
+      // If no filters are selected, keep appliedFilters as null to show placeholder
+      setAppliedFilters(null);
+    }
     setShowTags(false); // Close tag menu on search
   };
 
