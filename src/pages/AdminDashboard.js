@@ -4,6 +4,7 @@ import {
     PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend,
     XAxis, YAxis, CartesianGrid, Area, AreaChart
 } from 'recharts';
+import Loader from '../components/Loader';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -57,7 +58,7 @@ const AdminDashboard = () => {
     const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF', '#FF1919'];
 
     if (loading) {
-        return <div className="text-center mt-5" style={{ color: '#333' }}><h3>Loading Dashboard...</h3></div>;
+        return <Loader text="Loading Dashboard..." size={150} />;
     }
 
     return (

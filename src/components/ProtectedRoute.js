@@ -1,13 +1,14 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Loader from './Loader';
 
 const ProtectedRoute = ({ children, requiredRole }) => {
     const { user, loading } = useAuth();
 
     if (loading) {
         // Optional: Render a spinner or simpler loading state
-        return <div className="text-center mt-5">Loading...</div>;
+        return <Loader text="Loading..." size={120} />;
     }
 
     if (!user) {

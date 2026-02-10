@@ -4,6 +4,7 @@ import { useBooks } from "../context/BookContext";
 import { useAuth } from "../context/AuthContext";
 import RemoveBookModal from "../components/RemoveBookModal";
 import BookCard from "../components/BookCard";
+import Loader from "../components/Loader";
 import "./Books.css";
 
 // Search results styling
@@ -102,7 +103,7 @@ function Books({ searchQuery }) {
   return (
     <div className="books-page">
       <div className="books-content">
-        {loading && <p style={{ textAlign: "center", padding: "2rem" }}>Loading library...</p>}
+        {loading && <Loader text="Loading library..." size={150} />}
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h1>Available Books</h1>
