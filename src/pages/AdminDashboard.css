@@ -1,11 +1,25 @@
 /* Main Dashboard Layout */
 .admin-dashboard-container {
-    padding: 2rem 5%;
-    background-color: #f8f9fa;
-    /* Light grey background */
+    padding: 40px 0;
+    background: transparent;
+    /* Transparent to show dynamic background */
     min-height: 100vh;
     color: #333;
     font-family: 'Nunito', sans-serif;
+}
+
+/* Frosted Glass Content Wrapper */
+.dashboard-content-wrapper {
+    padding: 60px 40px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 30px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    max-width: 1600px;
+    width: 95%;
+    margin: 0 auto;
 }
 
 .dashboard-title {
@@ -81,14 +95,15 @@
     margin-bottom: 1.5rem !important;
 }
 
-/* Base Card Style - Clean Shadow */
+/* Base Card Style - Frosted Glass Effect */
 .stats-card {
-    background: white;
-    border: none;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 12px;
     padding: 1.5rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    /* Soft shadow */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     height: 100%;
     display: flex;
@@ -97,7 +112,7 @@
 
 .stats-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
 .stats-icon-wrapper {
@@ -155,12 +170,15 @@
     gap: 4px;
 }
 
-/* Charts Section */
+/* Charts Section - Frosted Glass */
 .chart-container {
-    background: white;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 12px;
     padding: 24px;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     margin-bottom: 24px;
     min-height: 400px;
     /* Ensure container has minimum height for charts */
@@ -228,4 +246,103 @@
         min-width: 0;
         /* Allow flex items to shrink */
     }
+}
+
+/* Dark Mode Styles */
+[data-theme='dark'] .admin-dashboard-container,
+body.dark-mode .admin-dashboard-container {
+    background: transparent;
+    color: #e0e0e0;
+}
+
+[data-theme='dark'] .dashboard-content-wrapper,
+body.dark-mode .dashboard-content-wrapper {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .dashboard-title,
+body.dark-mode .dashboard-title {
+    color: #ffd700;
+}
+
+/* Stats Cards Dark Mode */
+[data-theme='dark'] .stats-card,
+body.dark-mode .stats-card {
+    background: rgba(42, 42, 42, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .stats-card:hover,
+body.dark-mode .stats-card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7);
+}
+
+[data-theme='dark'] .stats-label,
+body.dark-mode .stats-label {
+    color: #adb5bd;
+}
+
+[data-theme='dark'] .stats-value,
+body.dark-mode .stats-value {
+    color: #ffffff;
+}
+
+[data-theme='dark'] .stats-trend,
+body.dark-mode .stats-trend {
+    color: #4caf50;
+}
+
+/* Icon Wrappers Dark Mode */
+[data-theme='dark'] .icon-blue,
+body.dark-mode .icon-blue {
+    background: rgba(25, 118, 210, 0.2);
+    color: #64b5f6;
+}
+
+[data-theme='dark'] .icon-green,
+body.dark-mode .icon-green {
+    background: rgba(46, 125, 50, 0.2);
+    color: #81c784;
+}
+
+[data-theme='dark'] .icon-orange,
+body.dark-mode .icon-orange {
+    background: rgba(239, 108, 0, 0.2);
+    color: #ffb74d;
+}
+
+[data-theme='dark'] .icon-purple,
+body.dark-mode .icon-purple {
+    background: rgba(123, 31, 162, 0.2);
+    color: #ba68c8;
+}
+
+/* Chart Container Dark Mode */
+[data-theme='dark'] .chart-container,
+body.dark-mode .chart-container {
+    background: rgba(42, 42, 42, 0.8);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .chart-title,
+body.dark-mode .chart-title {
+    color: #ffd700;
+}
+
+[data-theme='dark'] .chart-subtitle,
+body.dark-mode .chart-subtitle {
+    color: #6c757d;
+}
+
+/* Text Muted in Dark Mode */
+[data-theme='dark'] .text-muted,
+body.dark-mode .text-muted {
+    color: #6c757d !important;
 }
