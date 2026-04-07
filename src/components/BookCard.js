@@ -1,25 +1,17 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import BookDetailsModal from './BookDetailsModal';
 import './BookCard.css';
 
 const BookCard = ({ book, index, canEdit, onRemove, onEdit }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-
-    const handleCardClick = () => {
-        setIsModalOpen(true);
-    };
-
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-    };
+    const navigate = useNavigate();
 
     return (
         <>
             <motion.div
                 className="book-card"
-                onClick={handleCardClick}
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: Math.min(index * 0.03, 0.5) }}
@@ -40,13 +32,31 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit }) => {
                         <span className="book-category-badge">{book.category}</span>
                     )}
                     <h3>{book.title}</h3>
-                    <p className="book-price">
-                        {book.price !== undefined && book.price !== null ? `₹ ${book.price}` : '₹ 0'}
-                    </p>
+                    <div className="book-card-btns">
+                        <button
+                            className="action-btn questions-btn"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                navigate('/questions');
+                            }}
+                        >
+                            Questions
+                        </button>
+                        <button
+                            className="action-btn syllabus-btn"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setIsModalOpen(true);
+                            }}
+                        >
+                            Syllabus
+                        </button>
+                    </div>
                 </div>
 
+                {/* Admin edit/remove buttons */}
                 {canEdit && (
-                    <div className="book-actions" onClick={(e) => e.stopPropagation()}>
+                    <div className="book-actions admin-actions-row" onClick={(e) => e.stopPropagation()}>
                         <Link to={`/edit-book/${book.id}`} className="action-btn edit-btn">Edit</Link>
                         <button onClick={() => onRemove(book)} className="action-btn remove-btn">Remove</button>
                     </div>
@@ -54,10 +64,11 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit }) => {
             </motion.div>
 
             {isModalOpen && (
-                <BookDetailsModal book={book} onClose={handleCloseModal} />
+                <BookDetailsModal book={book} onClose={() => setIsModalOpen(false)} />
             )}
         </>
     );
 };
 
 export default BookCard;
+

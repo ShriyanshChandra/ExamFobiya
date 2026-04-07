@@ -150,8 +150,7 @@ const Navbar = ({ setSearchQuery }) => {
 
           <li><Link to="/questions" onClick={() => setIsOpen(false)}>Questions</Link></li>
           <li><Link to="/about" onClick={() => setIsOpen(false)}>About Us</Link></li>
-          <li className="nav-separator">|</li>
-          <li><Link to="/tools" onClick={() => setIsOpen(false)}>Tools</Link></li>
+
 
           {/* Mobile Only Auth Link (Optional, if we want it inside menu on mobile) */}
           <li className="mobile-only-auth">

@@ -15,7 +15,7 @@ import Welcome from "./pages/Welcome";
 import AdminDashboard from "./pages/AdminDashboard";
 import DevDashboard from "./pages/DevDashboard";
 import AddBook from "./pages/AddBook";
-import Tools from "./pages/Tools";
+
 import QRGenerator from "./pages/tool-pages/QRGenerator";
 import SpeedTest from "./pages/tool-pages/SpeedTest";
 import TermsAndConditions from "./pages/TermsAndConditions";
@@ -57,7 +57,7 @@ function App() {
                     <Route path="/distributors" element={<Distributors />} />
                     <Route path="/questions" element={<Questions />} />
                     <Route path="/about" element={<AboutUs />} />
-                    <Route path="/tools" element={<Tools />} />
+
                     <Route path="/tools/qr-generator" element={<QRGenerator />} />
                     <Route path="/tools/speed-test" element={<SpeedTest />} />
                     <Route path="/terms" element={<TermsAndConditions />} />

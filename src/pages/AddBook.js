@@ -22,7 +22,6 @@ const AddBook = () => {
     const isEditMode = !!id;
 
     const [title, setTitle] = useState('');
-    const [price, setPrice] = useState('');
     const [category, setCategory] = useState('');
     const [semester, setSemester] = useState('');
     const [sections, setSections] = useState([]);
@@ -72,7 +71,6 @@ const AddBook = () => {
             const bookToEdit = books.find(b => b.id.toString() === id);
             if (bookToEdit) {
                 setTitle(bookToEdit.title);
-                setPrice(bookToEdit.price || ''); // Load price
                 setCategory(bookToEdit.category || ''); // Load category
                 setSemester(bookToEdit.semester || ''); // Load semester
                 // Handle legacy 'section' or new 'sections'
@@ -102,7 +100,6 @@ const AddBook = () => {
                 try {
                     const parsedData = JSON.parse(savedData);
                     setTitle(parsedData.title || '');
-                    setPrice(parsedData.price || '');
                     setCategory(parsedData.category || '');
                     setSemester(parsedData.semester || '');
                     setSections(parsedData.sections || []);
@@ -120,7 +117,6 @@ const AddBook = () => {
         if (!isEditMode) {
             const formData = {
                 title,
-                price,
                 category,
                 semester,
                 sections,
@@ -129,7 +125,7 @@ const AddBook = () => {
             };
             localStorage.setItem('addBookFormData', JSON.stringify(formData));
         }
-    }, [title, price, category, semester, sections, image, contents, isEditMode]);
+    }, [title, category, semester, sections, image, contents, isEditMode]);
 
     const [imageUrlInput, setImageUrlInput] = useState('');
 
@@ -223,7 +219,6 @@ const AddBook = () => {
     // Reset form to initial state
     const resetForm = () => {
         setTitle('');
-        setPrice('');
         setCategory('');
         setSemester('');
         setSections([]);
@@ -254,7 +249,6 @@ const AddBook = () => {
         try {
             const bookData = {
                 title,
-                price: parseFloat(price) || 0, // Save price
                 category, // Save category
                 semester: category === 'BCA' ? semester : null, // Save semester only if BCA
                 author: "Smart Publications",
@@ -367,17 +361,6 @@ const AddBook = () => {
                     <div className="form-group">
                         <label>Title:</label>
                         <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
-                    </div>
-
-                    <div className="form-group">
-                        <label>Price (₹):</label>
-                        <input
-                            type="number"
-                            value={price}
-                            onChange={(e) => setPrice(e.target.value)}
-                            placeholder="Enter price"
-                            min="0"
-                        />
                     </div>
 
                     <div className="form-group">

@@ -41,9 +41,7 @@ const BookDetailsModal = ({ book, onClose }) => {
                             }}
                         />
                         <h3 className="modal-book-title">{book.title}</h3>
-                        {book.price !== undefined && book.price !== null && (
-                            <p className="modal-book-price">₹ {book.price}</p>
-                        )}
+
                     </div>
 
                     {/* Right Section - Topics Covered */}
