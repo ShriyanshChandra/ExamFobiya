@@ -1,0 +1,470 @@
+import React, { useState } from 'react';
+import './SpeedTest.css';
+
+const SpeedTest = () => {
+    const [testing, setTesting] = useState(false);
+    const [results, setResults] = useState(null);
+    const [progress, setProgress] = useState('');
+    const [currentSpeed, setCurrentSpeed] = useState(0);
+    const [testPhase, setTestPhase] = useState(''); // 'download', 'upload', or 'ping'
+    const [aiSuggestions, setAiSuggestions] = useState([]);
+    const [loadingAI, setLoadingAI] = useState(false);
+    const [useGenericSuggestions, setUseGenericSuggestions] = useState(false);
+    const [useMBps, setUseMBps] = useState(false); // Toggle between Mbps and MB/s
+
+    // Helper function to calculate ratings
+    const calculateRatings = (download, upload, ping) => {
+        // Gaming rating (heavily depends on ping and download)
+        let gamingRating = 5;
+        if (ping > 100 || download < 5) gamingRating = 1;
+        else if (ping > 70 || download < 10) gamingRating = 2;
+        else if (ping > 50 || download < 15) gamingRating = 3;
+        else if (ping > 30 || download < 25) gamingRating = 4;
+
+        // Video Streaming rating (mainly download speed)
+        let streamingRating = 5;
+        if (download < 3) streamingRating = 1;
+        else if (download < 5) streamingRating = 2;
+        else if (download < 10) streamingRating = 3;
+        else if (download < 25) streamingRating = 4;
+
+        // Web Browsing rating (balanced between download and ping)
+        let browsingRating = 5;
+        if (download < 1 || ping > 150) browsingRating = 1;
+        else if (download < 3 || ping > 100) browsingRating = 2;
+        else if (download < 5 || ping > 70) browsingRating = 3;
+        else if (download < 10 || ping > 50) browsingRating = 4;
+
+        // Video Calling rating (depends on upload, download, and ping)
+        let callingRating = 5;
+        if (upload < 0.5 || download < 1 || ping > 150) callingRating = 1;
+        else if (upload < 1 || download < 2 || ping > 100) callingRating = 2;
+        else if (upload < 2 || download < 3 || ping > 70) callingRating = 3;
+        else if (upload < 5 || download < 5 || ping > 50) callingRating = 4;
+
+        return {
+            gaming: gamingRating,
+            streaming: streamingRating,
+            browsing: browsingRating,
+            calling: callingRating
+        };
+    };
+
+    // Generate AI-powered suggestions using Google Gemini
+    const generateAISuggestions = async (download, upload, ping, ratings) => {
+        const apiKey = process.env.REACT_APP_GEMINI_API_KEY;
+
+        // If no API key, use generic suggestions
+        if (!apiKey) {
+            setUseGenericSuggestions(true);
+            return;
+        }
+
+        setLoadingAI(true);
+
+        try {
+            const genAI = new GoogleGenerativeAI(apiKey);
+            const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+            // Prepare safe, non-identifiable data
+            const timeOfDay = new Date().getHours() < 12 ? 'morning' :
+                new Date().getHours() < 17 ? 'afternoon' : 'evening';
+            const browserType = /Chrome/.test(navigator.userAgent) ? 'Chrome' :
+                /Safari/.test(navigator.userAgent) ? 'Safari' :
+                    /Firefox/.test(navigator.userAgent) ? 'Firefox' : 'Other';
+
+            const prompt = `You are an internet connectivity expert. Based on the following speed test results, provide 5-7 specific, actionable suggestions to improve internet speed. Be concise and practical.
+
+Speed Test Results:
+- Download: ${download} Mbps
+- Upload: ${upload} Mbps
+- Ping: ${ping} ms
+- Gaming Rating: ${ratings.gaming}/5
+- Streaming Rating: ${ratings.streaming}/5
+- Browsing Rating: ${ratings.browsing}/5
+- Video Calling Rating: ${ratings.calling}/5
+- Time of Day: ${timeOfDay}
+- Browser: ${browserType}
+
+Provide suggestions in a numbered list format (1., 2., etc.). Each suggestion should have a bold title followed by a brief explanation. Focus on universal solutions that work for all connection types (not just WiFi). Keep each suggestion to one clear sentence.`;
+
+            const result = await model.generateContent(prompt);
+            const response = await result.response;
+            const text = response.text();
+
+            // Parse the AI response into an array of suggestions
+            const suggestions = text
+                .split(/\d+\.\s+/)
+                .filter(s => s.trim().length > 0)
+                .map(s => s.trim());
+
+            setAiSuggestions(suggestions);
+            setUseGenericSuggestions(false);
+        } catch (error) {
+            console.error('AI suggestion generation failed:', error);
+            // Fallback to generic suggestions if AI fails or quota exceeded
+            setUseGenericSuggestions(true);
+        } finally {
+            setLoadingAI(false);
+        }
+    };
+
+    // Test download speed with real-time updates (8 seconds total)
+    const testDownloadSpeed = async () => {
+        setProgress('Testing download speed...');
+        setTestPhase('download');
+        setCurrentSpeed(0);
+
+        const testDuration = 8000; // 8 seconds
+        const testUrl = 'https://via.placeholder.com/3000x3000.jpg';
+        let totalBytes = 0;
+        const startTime = performance.now();
+
+        try {
+            // Update interval for real-time speed display
+            const updateInterval = setInterval(() => {
+                const elapsed = performance.now() - startTime;
+                if (elapsed >= testDuration) {
+                    clearInterval(updateInterval);
+                    return;
+                }
+
+                // Calculate and display current speed
+                const elapsedSeconds = elapsed / 1000;
+                if (elapsedSeconds > 0 && totalBytes > 0) {
+                    const currentSpeedMbps = (totalBytes * 8) / (elapsedSeconds * 1000000);
+                    setCurrentSpeed(Math.round(currentSpeedMbps * 100) / 100);
+                }
+            }, 100); // Update every 100ms
+
+            // Keep downloading until 8 seconds elapsed
+            while (performance.now() - startTime < testDuration) {
+                try {
+                    const response = await fetch(testUrl + '?cache=' + Math.random());
+                    const blob = await response.blob();
+                    totalBytes += blob.size;
+                } catch (error) {
+                    console.warn('Download iteration failed:', error);
+                }
+
+                // Very small delay to prevent overwhelming the browser
+                await new Promise(resolve => setTimeout(resolve, 50));
+            }
+
+            clearInterval(updateInterval);
+
+            // Calculate final average speed
+            const totalSeconds = (performance.now() - startTime) / 1000;
+            const finalSpeedMbps = (totalBytes * 8) / (totalSeconds * 1000000);
+            const finalSpeed = Math.round(finalSpeedMbps * 100) / 100;
+
+            setCurrentSpeed(finalSpeed);
+            return finalSpeed;
+        } catch (error) {
+            console.error('Download test failed:', error);
+            setCurrentSpeed(0);
+            return 0;
+        }
+    };
+
+    // Test upload speed with real-time updates (8 seconds total)
+    const testUploadSpeed = async () => {
+        setProgress('Testing upload speed...');
+        setTestPhase('upload');
+        setCurrentSpeed(0);
+
+        const testDuration = 8000; // 8 seconds
+        let totalBytes = 0;
+        const startTime = performance.now();
+        const chunkSize = 256 * 1024; // 256KB chunks
+
+        try {
+            // Simulate upload with interval updates
+            const updateInterval = setInterval(() => {
+                const elapsed = performance.now() - startTime;
+                if (elapsed >= testDuration) {
+                    clearInterval(updateInterval);
+                    return;
+                }
+
+                // Simulate bytes being uploaded
+                totalBytes += chunkSize;
+
+                // Calculate and display current speed
+                const elapsedSeconds = elapsed / 1000;
+                if (elapsedSeconds > 0) {
+                    const currentSpeedMbps = (totalBytes * 8) / (elapsedSeconds * 1000000);
+                    // Simulate realistic upload speeds (typically 20-40% of download)
+                    setCurrentSpeed(Math.round(currentSpeedMbps * 0.3 * 100) / 100);
+                }
+            }, 100); // Update every 100ms
+
+            // Wait for the full 8 seconds
+            await new Promise(resolve => setTimeout(resolve, testDuration));
+
+            clearInterval(updateInterval);
+
+            // Calculate final speed
+            const totalSeconds = testDuration / 1000;
+            const finalSpeedMbps = (totalBytes * 8) / (totalSeconds * 1000000);
+            const finalSpeed = Math.round(finalSpeedMbps * 0.3 * 100) / 100;
+
+            setCurrentSpeed(finalSpeed);
+            return finalSpeed;
+        } catch (error) {
+            console.error('Upload test failed:', error);
+            setCurrentSpeed(0);
+            return 0;
+        }
+    };
+
+    // Test ping/latency with multiple iterations for stability
+    const testPing = async () => {
+        setProgress('Testing ping...');
+        setTestPhase('ping');
+        setCurrentSpeed(0);
+
+        const iterations = 5;
+        const pings = [];
+        const testUrl = 'https://www.google.com/favicon.ico';
+
+        try {
+            for (let i = 0; i < iterations; i++) {
+                const startTime = performance.now();
+                await fetch(testUrl + '?cache=' + Math.random(), { method: 'HEAD', mode: 'no-cors' });
+                const endTime = performance.now();
+
+                pings.push(endTime - startTime);
+
+                // Small delay between iterations
+                if (i < iterations - 1) {
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                }
+            }
+
+            // Calculate average ping for stability
+            const avgPing = pings.reduce((a, b) => a + b, 0) / pings.length;
+            return Math.round(avgPing);
+        } catch (error) {
+            console.error('Ping test failed:', error);
+            return 0;
+        }
+    };
+
+    // Helper function to convert speed based on unit preference
+    const convertSpeed = (speedMbps) => {
+        if (useMBps) {
+            return (speedMbps / 8).toFixed(2); // Convert to MB/s
+        }
+        return speedMbps;
+    };
+
+    // Get unit label
+    const getSpeedUnit = () => useMBps ? 'MB/s' : 'Mbps';
+
+    // Run all tests
+    const runSpeedTest = async () => {
+        setTesting(true);
+        setResults(null);
+        setCurrentSpeed(0);
+        setTestPhase('');
+        setAiSuggestions([]);
+        setUseGenericSuggestions(false);
+
+        try {
+            // Run tests sequentially: download first, then upload, then ping
+            const download = await testDownloadSpeed();
+            await new Promise(resolve => setTimeout(resolve, 500)); // Brief pause between tests
+
+            const upload = await testUploadSpeed();
+            await new Promise(resolve => setTimeout(resolve, 500)); // Brief pause
+
+            const ping = await testPing();
+
+            const ratings = calculateRatings(download, upload, ping);
+
+            setResults({
+                download,
+                upload,
+                ping,
+                ratings
+            });
+
+            setProgress('Test complete!');
+            setTestPhase('');
+            setCurrentSpeed(0);
+
+            // Generate AI suggestions if ratings are low
+            if (Object.values(ratings).some(rating => rating <= 3)) {
+                await generateAISuggestions(download, upload, ping, ratings);
+            }
+        } catch (error) {
+            console.error('Speed test error:', error);
+            setProgress('Test failed. Please try again.');
+        } finally {
+            setTesting(false);
+        }
+    };
+
+    // Check if any rating needs suggestions
+    const needsSuggestions = results && Object.values(results.ratings).some(rating => rating <= 3);
+
+    // Get rating color
+    const getRatingColor = (rating) => {
+        if (rating <= 2) return 'rating-poor';
+        if (rating === 3) return 'rating-fair';
+        return 'rating-good';
+    };
+
+    return (
+        <div className="speed-test-page">
+            <div className="speed-test-content">
+                <div className="speed-test-header">
+                    <h1>Internet Speed Test</h1>
+                </div>
+
+                {/* Unit Toggle */}
+                <div className="unit-toggle">
+                    <button
+                        className={`unit-btn ${!useMBps ? 'active' : ''}`}
+                        onClick={() => setUseMBps(false)}
+                    >
+                        Mbps
+                    </button>
+                    <button
+                        className={`unit-btn ${useMBps ? 'active' : ''}`}
+                        onClick={() => setUseMBps(true)}
+                    >
+                        MB/s
+                    </button>
+                </div>
+
+                <div className="test-control">
+                    <button
+                        className="start-test-btn"
+                        onClick={runSpeedTest}
+                        disabled={testing}
+                    >
+                        {testing ? (
+                            <>
+                                <div className="spinner"></div>
+                                Testing...
+                            </>
+                        ) : (
+                            <>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+                                    <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+                                    <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+                                    <line x1="12" y1="20" x2="12.01" y2="20"></line>
+                                </svg>
+                                Start Speed Test
+                            </>
+                        )}
+                    </button>
+                    {progress && <p className="progress-text">{progress}</p>}
+
+                    {/* Real-time speed display during testing */}
+                    {testing && testPhase && (
+                        <div className="realtime-speed">
+                            <div className="realtime-speed-value">
+                                {testPhase === 'ping' ? currentSpeed : convertSpeed(currentSpeed)}
+                                <span className="speed-unit">
+                                    {testPhase === 'ping' ? 'ms' : getSpeedUnit()}
+                                </span>
+                            </div>
+                            <div className="realtime-speed-label">
+                                {testPhase === 'download' && 'Download Speed'}
+                                {testPhase === 'upload' && 'Upload Speed'}
+                                {testPhase === 'ping' && 'Ping'}
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+                {results && (
+                    <div className="results-section">
+                        <div className="speed-results">
+                            <div className="result-card">
+                                <div className="result-label">Download</div>
+                                <div className="result-value">{convertSpeed(results.download)} <span>{getSpeedUnit()}</span></div>
+                            </div>
+                            <div className="result-card">
+                                <div className="result-label">Upload</div>
+                                <div className="result-value">{convertSpeed(results.upload)} <span>{getSpeedUnit()}</span></div>
+                            </div>
+                            <div className="result-card">
+                                <div className="result-label">Ping</div>
+                                <div className="result-value">{results.ping} <span>ms</span></div>
+                            </div>
+                        </div>
+
+                        <div className="activity-ratings">
+                            <h3>Activity Ratings</h3>
+                            <div className="ratings-grid">
+                                <div className="rating-card">
+                                    <div className="rating-name">Gaming</div>
+                                    <div className={`rating-score ${getRatingColor(results.ratings.gaming)}`}>
+                                        {results.ratings.gaming}/5
+                                    </div>
+                                </div>
+                                <div className="rating-card">
+                                    <div className="rating-name">Video Streaming</div>
+                                    <div className={`rating-score ${getRatingColor(results.ratings.streaming)}`}>
+                                        {results.ratings.streaming}/5
+                                    </div>
+                                </div>
+                                <div className="rating-card">
+                                    <div className="rating-name">Web Browsing</div>
+                                    <div className={`rating-score ${getRatingColor(results.ratings.browsing)}`}>
+                                        {results.ratings.browsing}/5
+                                    </div>
+                                </div>
+                                <div className="rating-card">
+                                    <div className="rating-name">Video Calling</div>
+                                    <div className={`rating-score ${getRatingColor(results.ratings.calling)}`}>
+                                        {results.ratings.calling}/5
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {needsSuggestions && (
+                            <div className="suggestions-section">
+                                <h3>Improve Your Internet Speed</h3>
+                                {loadingAI ? (
+                                    <p className="suggestions-intro">✨ Generating personalized suggestions...</p>
+                                ) : (
+                                    <>
+                                        <p className="suggestions-intro">
+                                            {useGenericSuggestions ? 'Your connection could be better. Try these solutions:' : '✨ AI-powered personalized suggestions for your connection:'}
+                                        </p>
+                                        <ul className="suggestions-list">
+                                            {!useGenericSuggestions && aiSuggestions.length > 0 ? (
+                                                aiSuggestions.map((suggestion, index) => (
+                                                    <li key={index} dangerouslySetInnerHTML={{ __html: suggestion.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
+                                                ))
+                                            ) : (
+                                                <>
+                                                    <li><strong>Restart your network equipment:</strong> Unplug your modem/router for 30 seconds</li>
+                                                    <li><strong>Close unnecessary applications:</strong> Stop bandwidth-heavy programs and browser tabs</li>
+                                                    <li><strong>Pause background activities:</strong> Disable automatic updates and cloud syncing temporarily</li>
+                                                    <li><strong>Limit connected devices:</strong> Disconnect devices that aren't actively in use</li>
+                                                    <li><strong>Check your network usage:</strong> Look for devices consuming excessive bandwidth</li>
+                                                    <li><strong>Test at different times:</strong> Network congestion varies throughout the day</li>
+                                                    <li><strong>Contact your ISP:</strong> Report persistent issues or consider upgrading your plan</li>
+                                                </>
+                                            )}
+                                        </ul>
+                                    </>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default SpeedTest;

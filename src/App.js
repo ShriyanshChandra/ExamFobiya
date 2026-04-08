@@ -19,8 +19,8 @@ import AddBook from "./pages/AddBook";
 import UploadQuestions from "./pages/UploadQuestions";
 import EditQuestionPdf from "./pages/EditQuestionPdf";
 
-import QRGenerator from "./pages/old_pages/tool-pages/QRGenerator";
-import SpeedTest from "./pages/old_pages/tool-pages/SpeedTest";
+import QRGenerator from "./pages/tools/QRGenerator";
+import SpeedTest from "./pages/tools/SpeedTest";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ProtectedRoute from "./components/ProtectedRoute";
