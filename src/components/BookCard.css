@@ -209,8 +209,11 @@
 /* Buttons inside the card content — no container background */
 .book-card-btns {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     margin-top: auto;
+    margin-left: -15px;
+    margin-right: -15px;
+    margin-bottom: -15px;
     padding-top: 10px;
 }
 
@@ -220,6 +223,7 @@
     color: #1a1a1a;
     border: none;
     font-weight: 700;
+    border-radius: 0;
 }
 
 .questions-btn:hover {
@@ -232,6 +236,7 @@
     color: #1a1a1a;
     border: none;
     font-weight: 700;
+    border-radius: 0;
 }
 
 .syllabus-btn:hover {

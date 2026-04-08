@@ -1,7 +1,6 @@
 .questions-container {
   min-height: 100vh;
   padding: 40px 0;
-  /* Matched to .books-page padding */
 }
 
 .questions-content {
@@ -31,250 +30,88 @@
   font-size: 1.1rem;
 }
 
-/* Filters Grid moved to QueSearch.css */
+/* ===== SEARCH BAR ===== */
 
-/* Secondary Filters moved to QueSearch.css */
-
-/* Results List */
-.questions-list-container {
+.search-section {
+  max-width: 900px;
+  margin: 0 auto 30px;
   display: flex;
-  flex-direction: column;
-  gap: 30px;
-  width: 100%;
-  margin: 0 auto;
+  gap: 15px;
+  align-items: center;
 }
 
-.qa-box {
+.search-input-wrapper {
+  display: flex;
+  align-items: center;
   background: var(--input-bg);
-  /* Stronger border for better definition in light mode (copied from search bar) */
-  border: 1px solid rgba(100, 100, 100, 0.2);
-  border-radius: 20px;
-  padding: 25px;
-  /* Reduced from 35px */
-  text-align: left;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  /* Stronger shadow for visibility in light mode (copied from search bar) */
+  border-radius: 50px;
+  padding: 5px 5px 5px 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1), inset 0 2px 4px rgba(0, 0, 0, 0.05);
-  overflow-wrap: break-word;
-  box-sizing: border-box;
-}
-
-.qa-box:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.2);
-  border-color: rgba(255, 215, 0, 0.5);
-  /* Subtle gold border on hover */
-}
-
-.qa-meta {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 15px;
-  /* Reduced from 25px */
-  padding-bottom: 15px;
-}
-
-.meta-uni {
-  font-weight: 700;
-  color: #ffd700;
-  /* Gold standout */
-  font-size: 0.9rem;
-  letter-spacing: 0.5px;
-}
-
-.meta-separator {
-  color: var(--text-color);
-  opacity: 0.3;
-}
-
-.meta-year {
-  color: var(--text-color);
-  opacity: 0.7;
-  font-size: 0.9rem;
-}
-
-.qa-tags {
-  display: flex;
-  gap: 8px;
-  margin-left: auto;
-  flex-wrap: wrap;
-}
-
-.qa-tag-badge {
-  background: rgba(37, 117, 252, 0.15);
-  color: #2575fc;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  border: 1px solid rgba(37, 117, 252, 0.2);
-}
-
-.qa-content-section {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  /* Reduced from 25px */
-}
-
-/* Typography for labels */
-.qa-question strong,
-.qa-answer strong {
-  display: block;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 1.2px;
-  color: var(--text-color);
-  opacity: 0.5;
-  margin-bottom: 10px;
-}
-
-.qa-question p {
-  font-size: 1.15rem;
-  color: var(--text-color);
-  line-height: 1.6;
-  font-weight: 500;
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-  word-break: normal;
-  hyphens: none;
-  -webkit-hyphens: none;
-  -moz-hyphens: none;
-  -ms-hyphens: none;
-}
-
-.qa-divider {
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  border: 1px solid rgba(100, 100, 100, 0.2);
   width: 100%;
-  margin: 5px 0;
+  transition: all 0.3s ease;
+  height: 50px;
 }
 
-.qa-answer p {
-  font-size: 1.05rem;
-  color: var(--text-color);
-  opacity: 0.9;
-  line-height: 1.7;
-  white-space: pre-wrap;
-  background: rgba(255, 255, 255, 0.03);
-  /* Subtle background for answer */
-  padding: 20px;
-  border-radius: 12px;
-  /* Gold accent line removed */
-  overflow-wrap: break-word !important;
-  word-break: normal !important;
-  hyphens: none !important;
-  -webkit-hyphens: none !important;
-  -moz-hyphens: none !important;
-  -ms-hyphens: none !important;
+.search-input-wrapper:focus-within {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 10px rgba(37, 117, 252, 0.3);
 }
 
-/* Animation for list items */
-.qa-box {
-  animation: slideUp 0.4s ease forwards;
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.instruction-placeholder,
-.no-results {
-  color: var(--text-color);
-  opacity: 0.8;
-  font-size: 1.2rem;
-  padding: 60px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 2px dashed var(--border-adaptive);
-  border-radius: 20px;
-  font-weight: 500;
-}
-
-/* Admin Actions */
-.admin-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
-  gap: 12px;
-  padding-top: 15px;
-  border-top: 1px solid rgba(100, 100, 100, 0.1);
-}
-
-.action-btn {
-  padding: 6px 16px;
-  border-radius: 6px;
-  text-decoration: none;
-  font-size: 0.8rem;
-  font-weight: 600;
-  cursor: pointer;
+.questions-search-input {
+  width: 100%;
   border: none;
-  transition: all 0.2s;
-  min-width: auto;
-  max-width: fit-content;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
+  outline: none;
+  background: transparent;
+  color: var(--text-color);
+  font-size: 1rem;
+  padding: 0;
+  margin-right: 10px;
+  box-shadow: none;
 }
 
-.edit-btn {
+.questions-search-input::placeholder {
+  color: var(--text-color);
+  opacity: 0.6;
+}
+
+.questions-search-input:focus {
+  outline: none;
+  background: transparent;
+  box-shadow: none;
+  border-color: transparent;
+}
+
+.questions-search-btn {
   background-color: #ffd700;
-  color: #333;
+  color: #182848;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  flex-shrink: 0;
 }
 
-.edit-btn:hover {
-  background-color: #e6c200;
+.questions-search-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2px;
 }
 
-.remove-btn {
-  background-color: #dc3545;
-  color: white;
+.questions-search-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+  background-color: #ffed4a;
 }
 
-.remove-btn:hover {
-  background-color: #c82333;
-}
+/* ===== RESPONSIVE ===== */
 
-/* ===== MOBILE OPTIMIZATIONS ===== */
-
-/* Tablet (iPad, medium screens) */
-@media (max-width: 1024px) {
-  .questions-content {
-    padding: 40px 30px;
-    width: 92%;
-  }
-
-  .questions-content h2 {
-    font-size: 2rem;
-  }
-
-
-
-  .qa-box {
-    padding: 20px;
-  }
-
-  .qa-question p {
-    font-size: 1.1rem;
-  }
-
-  .qa-answer p {
-    font-size: 1rem;
-    padding: 15px;
-  }
-}
-
-/* Mobile (phones) */
 @media (max-width: 768px) {
   .questions-container {
     padding: 20px 0;
@@ -288,7 +125,6 @@
 
   .questions-content h2 {
     font-size: 1.75rem;
-    margin-bottom: 0.5rem;
   }
 
   .subtitle {
@@ -296,157 +132,30 @@
     margin-bottom: 1.5rem;
   }
 
-  /* Center and stack header elements on mobile */
-  .questions-content>div:first-child {
-    flex-direction: column !important;
-    align-items: center !important;
-    text-align: center;
-    gap: 15px;
-    margin-bottom: 25px !important;
+  .search-section {
+    margin-bottom: 20px;
   }
 
-  .questions-content>div:first-child>div {
-    width: 100%;
+  .search-input-wrapper {
+    padding: 5px 5px 5px 15px;
+    height: 46px;
   }
 
-  .questions-content h2 {
-    text-align: center;
-    margin-bottom: 0.3rem;
-  }
-
-  .subtitle {
-    text-align: center;
-    margin-bottom: 0;
-  }
-
-  .add-question-btn {
-    width: 100%;
-    max-width: 300px;
-  }
-
-  /* Single column filters on mobile */
-
-
-  /* Question cards */
-  .questions-list-container {
-    gap: 20px;
-  }
-
-  .qa-box {
-    padding: 15px;
-    border-radius: 16px;
-    max-width: 100%;
-    overflow-x: hidden;
-    word-break: normal !important;
-  }
-
-  .qa-box * {
-    word-break: normal !important;
-  }
-
-  .qa-meta {
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 12px;
-    padding-bottom: 12px;
-  }
-
-  .meta-uni,
-  .meta-year {
-    font-size: 0.85rem;
-  }
-
-  .qa-tags {
-    width: 100%;
-    margin-left: 0;
-  }
-
-  .qa-tag-badge {
-    font-size: 0.7rem;
-    padding: 3px 10px;
-  }
-
-  .qa-content-section {
-    gap: 12px;
-  }
-
-  .qa-question strong,
-  .qa-answer strong {
-    font-size: 0.7rem;
-    margin-bottom: 8px;
-  }
-
-  .qa-question p,
-  .qa-question div {
-    font-size: 0.95rem;
-    line-height: 1.5;
-    word-break: normal;
-    overflow-wrap: break-word;
-    white-space: normal;
-    hyphens: none;
-    -webkit-hyphens: none;
-    -moz-hyphens: none;
-    -ms-hyphens: none;
-  }
-
-  .qa-answer p,
-  .qa-answer div {
+  .questions-search-input {
     font-size: 0.9rem;
-    line-height: 1.6;
-    padding: 12px;
-    border-radius: 10px;
-    word-break: normal;
-    overflow-wrap: break-word;
-    white-space: normal;
-    hyphens: none;
-    -webkit-hyphens: none;
-    -moz-hyphens: none;
-    -ms-hyphens: none;
   }
 
-  /* Better list formatting in answers */
-  .qa-answer div ul,
-  .qa-question div ul {
-    padding-left: 18px;
-    margin-left: 0;
+  .questions-search-btn {
+    width: 36px;
+    height: 36px;
   }
 
-  .qa-answer div li,
-  .qa-question div li {
-    margin-bottom: 8px;
-    word-break: normal;
-    overflow-wrap: break-word;
-    hyphens: none;
-    -webkit-hyphens: none;
-    -moz-hyphens: none;
-    -ms-hyphens: none;
-  }
-
-  .qa-divider {
-    margin: 3px 0;
-  }
-
-  /* Admin actions - stack vertically on small screens */
-  .admin-actions {
-    gap: 8px;
-    margin-top: 15px;
-    padding-top: 12px;
-  }
-
-  .action-btn {
-    padding: 8px 14px;
-    font-size: 0.85rem;
-    flex: 1;
-  }
-
-  .instruction-placeholder,
-  .no-results {
-    font-size: 1rem;
-    padding: 40px 20px;
+  .questions-search-btn svg {
+    width: 18px;
+    height: 18px;
   }
 }
 
-/* Small mobile phones */
 @media (max-width: 480px) {
   .questions-content {
     padding: 25px 16px;
@@ -457,121 +166,160 @@
     font-size: 1.5rem;
   }
 
-  .subtitle {
-    font-size: 0.9rem;
+  .search-input-wrapper {
+    padding: 4px 4px 4px 12px;
+    height: 44px;
   }
 
-
-
-  .qa-box {
-    padding: 16px;
+  .questions-search-input {
+    font-size: 0.85rem;
   }
 
-  .qa-meta {
-    gap: 8px;
-  }
-
-  .meta-uni,
-  .meta-year {
-    font-size: 0.8rem;
-  }
-
-  .qa-tag-badge {
-    font-size: 0.65rem;
-    padding: 3px 8px;
-  }
-
-  .qa-question p,
-  .qa-question div {
-    font-size: 0.95rem;
-  }
-
-  .qa-answer p,
-  .qa-answer div {
-    font-size: 0.9rem;
-    padding: 12px;
-  }
-
-  .admin-actions {
-    flex-direction: row;
-    justify-content: space-between;
-    gap: 12px;
-  }
-
-  .action-btn {
-    width: auto;
-    padding: 10px 20px;
-    font-size: 0.9rem;
-    flex: 1;
-    max-width: none;
-  }
-
-  .instruction-placeholder,
-  .no-results {
-    font-size: 0.95rem;
-    padding: 30px 16px;
+  .questions-search-btn {
+    width: 34px;
+    height: 34px;
   }
 }
 
-/* Fix for HTML content rendering in cards */
-.qa-question div,
-.qa-answer div {
+/* ===== UPLOAD BUTTON (admin only) ===== */
+.uq-upload-btn {
+  background-color: #ffd700;
+  color: #182848;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.95rem;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.uq-upload-btn:hover {
+  background-color: #ffed4a;
+  transform: translateY(-1px);
+}
+
+/* ===== PLACEHOLDERS ===== */
+.instruction-placeholder,
+.no-results {
   color: var(--text-color);
-  overflow-wrap: break-word !important;
-  word-break: normal !important;
-  hyphens: none !important;
-  -webkit-hyphens: none !important;
-  -moz-hyphens: none !important;
-  -ms-hyphens: none !important;
-}
-
-.qa-question div ul,
-.qa-answer div ul {
-  margin-left: 20px;
+  opacity: 0.75;
+  font-size: 1.05rem;
+  padding: 50px 20px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 2px dashed rgba(150, 150, 150, 0.3);
+  border-radius: 16px;
   margin-top: 10px;
 }
 
-.qa-question div li,
-.qa-answer div li {
-  margin-bottom: 8px;
-  overflow-wrap: break-word !important;
-  word-break: normal !important;
-  hyphens: none !important;
-  -webkit-hyphens: none !important;
-  -moz-hyphens: none !important;
-  -ms-hyphens: none !important;
+/* ===== PDF RESULT CARDS (LIST / ROW VIEW) ===== */
+.pdf-results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
 }
 
-/* Ensure rich text content is readable */
-.qa-answer div {
-  background: rgba(255, 255, 255, 0.03);
-  padding: 20px;
+.pdf-result-card-row {
+  background: var(--input-bg);
+  border: 1px solid rgba(100, 100, 100, 0.2);
   border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  text-decoration: none;
+  color: var(--text-color);
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-/* Ensure all content inside answer has proper word-break */
-.qa-answer,
-.qa-answer *,
-.qa-answer p *,
-.qa-answer div * {
-  word-break: normal !important;
-  overflow-wrap: break-word !important;
-  hyphens: none !important;
-  -webkit-hyphens: none !important;
-  -moz-hyphens: none !important;
-  -ms-hyphens: none !important;
+.pdf-result-card-row:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  border-color: rgba(255, 215, 0, 0.5);
 }
 
-@media (max-width: 768px) {
+.pdf-row-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
 
-  .qa-question div ul,
-  .qa-answer div ul {
-    margin-left: 15px;
-  }
+.pdf-row-details {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
 
-  /* Remove yellow borders on mobile */
-  .qa-answer div {
-    border-left: none;
-    border-right: none;
+.pdf-card-subject {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.pdf-card-course {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: #ffd700;
+  color: #182848;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.pdf-card-label-row,
+.pdf-card-year-row {
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+.pdf-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.pdf-card-open-row {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #ffd700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.pdf-card-open-row:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  .pdf-result-card-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
   }
+  .pdf-row-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+/* Admin edit button on PDF cards */
+.pdf-edit-btn {
+  background: #ffd700;
+  color: #182848;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 16px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.pdf-edit-btn:hover {
+  background: #ffed4a;
 }

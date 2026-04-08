@@ -12,6 +12,7 @@ export const QuestionProvider = ({ children }) => {
     // However, with nested structure, watching ALL subjects globally might be expensive if scaled.
     // We will stick to watching "universities" globally as it's a flat list.
     const [universities, setUniversities] = useState([]);
+    const [questionPdfs, setQuestionPdfs] = useState([]);
 
     useEffect(() => {
         // 1. Fetch ALL questions using collectionGroup
@@ -41,11 +42,24 @@ export const QuestionProvider = ({ children }) => {
             setUniversities(data);
         });
 
+        // 3. Fetch ALL question PDFs using collectionGroup
+        const unsubscribePdfs = onSnapshot(collectionGroup(db, 'questionPdfs'), (snapshot) => {
+            const data = snapshot.docs.map(d => ({
+                id: d.id,
+                docPath: d.ref.path,
+                ...d.data()
+            }));
+            setQuestionPdfs(data);
+        }, (error) => {
+            console.error('Error fetching question PDFs:', error);
+        });
+
         setLoading(false);
 
         return () => {
             unsubscribeQuestions();
             unsubscribeUniversities();
+            unsubscribePdfs();
         };
     }, []);
 
@@ -161,6 +175,52 @@ export const QuestionProvider = ({ children }) => {
         }
     };
 
+    // Update an existing questionPdf document
+    const updateQuestionPdf = async (docPath, updates) => {
+        try {
+            const ref = doc(db, docPath);
+            await updateDoc(ref, updates);
+        } catch (error) {
+            console.error('Error updating question PDF:', error);
+            throw error;
+        }
+    };
+
+    // Delete a questionPdf document
+    const deleteQuestionPdf = async (docPath) => {
+        try {
+            const ref = doc(db, docPath);
+            await deleteDoc(ref);
+        } catch (error) {
+            console.error('Error deleting question PDF:', error);
+            throw error;
+        }
+    };
+
+    // Save uploaded PDF links for a subject
+    // Path: courses/{course}/subjects/{subject}/questionPdfs
+    const addQuestionPdfs = async (course, subject, pdfLinks) => {
+        try {
+            const pdfsRef = collection(db, 'courses', course, 'subjects', subject, 'questionPdfs');
+            const batch = writeBatch(db);
+            pdfLinks.forEach(({ label, url, year }) => {
+                const docRef = doc(pdfsRef);
+                batch.set(docRef, {
+                    url: url.trim(),
+                    label: (label || '').trim(),
+                    year: year || '',
+                    course,
+                    subject,
+                    uploadedAt: new Date().toISOString()
+                });
+            });
+            await batch.commit();
+        } catch (error) {
+            console.error('Error saving question PDFs:', error);
+            throw error;
+        }
+    };
+
     // Helper to get subjects (snapshot listener for specific course dropdown?)
     // Or just a one-time fetch helper
     // Helper to get subjects
@@ -171,6 +231,9 @@ export const QuestionProvider = ({ children }) => {
     return (
         <QuestionContext.Provider value={{
             questions,
+            questionPdfs,
+            updateQuestionPdf,
+            deleteQuestionPdf,
             universities,
             addQuestion,
             updateQuestion,
@@ -179,6 +242,7 @@ export const QuestionProvider = ({ children }) => {
             deleteSubject,
             addUniversity,
             deleteUniversity,
+            addQuestionPdfs,
             loading,
             getSubjects // Export helper to fetch subcollections
         }}>

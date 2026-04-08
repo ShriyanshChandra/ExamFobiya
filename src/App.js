@@ -8,6 +8,7 @@ import Home from "./pages/Home";
 import Books from "./pages/Books";
 import Distributors from "./pages/Distributors";
 import Questions from "./pages/Questions";
+import Search from "./pages/Search";
 import AboutUs from "./pages/About_us";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -15,9 +16,11 @@ import Welcome from "./pages/Welcome";
 import AdminDashboard from "./pages/AdminDashboard";
 import DevDashboard from "./pages/DevDashboard";
 import AddBook from "./pages/AddBook";
+import UploadQuestions from "./pages/UploadQuestions";
+import EditQuestionPdf from "./pages/EditQuestionPdf";
 
-import QRGenerator from "./pages/tool-pages/QRGenerator";
-import SpeedTest from "./pages/tool-pages/SpeedTest";
+import QRGenerator from "./pages/old_pages/tool-pages/QRGenerator";
+import SpeedTest from "./pages/old_pages/tool-pages/SpeedTest";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -25,8 +28,6 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
 import { BookProvider } from "./context/BookContext";
 import { QuestionProvider } from "./context/QuestionContext";
-import AddQuestion from "./pages/AddQuestion";
-import EditQuestion from "./pages/EditQuestion";
 import "@fontsource/nunito";
 import './App.css';
 import { trackVisit } from "./services/TrackingService";
@@ -53,7 +54,8 @@ function App() {
                 <div className="p-6 content-wrap">
                   <Routes>
                     <Route path="/" element={<Home />} />
-                    <Route path="/books" element={<Books searchQuery={searchQuery} />} />
+                    <Route path="/books" element={<Books />} />
+                    <Route path="/search" element={<Search searchQuery={searchQuery} />} />
                     <Route path="/distributors" element={<Distributors />} />
                     <Route path="/questions" element={<Questions />} />
                     <Route path="/about" element={<AboutUs />} />
@@ -75,21 +77,22 @@ function App() {
                       }
                     />
                     <Route
-                      path="/add-question"
+                      path="/upload-questions"
                       element={
                         <ProtectedRoute requiredRole="admin">
-                          <AddQuestion />
+                          <UploadQuestions />
                         </ProtectedRoute>
                       }
                     />
                     <Route
-                      path="/edit-question/:id"
+                      path="/edit-question-pdf"
                       element={
                         <ProtectedRoute requiredRole="admin">
-                          <EditQuestion />
+                          <EditQuestionPdf />
                         </ProtectedRoute>
                       }
                     />
+
                     <Route
                       path="/edit-book/:id"
                       element={

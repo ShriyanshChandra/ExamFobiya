@@ -37,8 +37,12 @@ service cloud.firestore {
       allow read, write: if true;
     }
     
-    // Explicitly allow collectionGroup queries for questions
+    // Explicitly allow collectionGroup queries for questions and questionPdfs
     match /{path=**}/questions/{question} {
+      allow read, write: if true;
+    }
+    
+    match /{path=**}/questionPdfs/{document} {
       allow read, write: if true;
     }
   }

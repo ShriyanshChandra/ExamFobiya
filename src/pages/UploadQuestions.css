@@ -1,0 +1,361 @@
+/* ===== LAYOUT ===== */
+.uq-container {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 1rem;
+    min-height: 80vh;
+}
+
+.uq-card {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 680px;
+}
+
+.uq-card h2 {
+    text-align: center;
+    margin-bottom: 0.5rem;
+    font-size: 1.8rem;
+    color: #182848;
+}
+
+.uq-subtitle {
+    text-align: center;
+    color: #666;
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+}
+
+.uq-hint {
+    font-size: 0.82rem;
+    color: #888;
+    margin-top: 5px;
+    margin-bottom: 0;
+}
+
+.uq-required {
+    color: #e74c3c;
+}
+
+/* ===== FORM GROUP ===== */
+.uq-form-group {
+    margin-bottom: 22px;
+}
+
+.uq-form-group > label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #444;
+    font-size: 0.95rem;
+}
+
+/* ===== SELECT ===== */
+.uq-select-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.uq-select-wrapper::after {
+    content: '';
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid #6c757d;
+    border-bottom: 2px solid #6c757d;
+    transform: translateY(-60%) rotate(45deg);
+    pointer-events: none;
+}
+
+.uq-select-wrapper select {
+    width: 100%;
+    padding: 11px 36px 11px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: white;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+    color: #333;
+}
+
+.uq-select-wrapper select:focus {
+    outline: none;
+    border-color: #ffd700;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.25);
+}
+
+.uq-select-wrapper select:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* ===== PDF ROWS ===== */
+.uq-pdf-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 12px;
+    margin-top: 8px;
+}
+
+.uq-pdf-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.uq-pdf-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.uq-label-input {
+    width: 160px;
+    flex-shrink: 0;
+    padding: 9px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.uq-url-input {
+    flex: 1;
+    padding: 9px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.uq-label-input:focus,
+.uq-url-input:focus {
+    outline: none;
+    border-color: #ffd700;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+}
+
+.uq-label-input::placeholder,
+.uq-url-input::placeholder {
+    color: #bbb;
+    font-size: 0.84rem;
+}
+
+/* Year selector in each PDF row */
+.uq-year-select {
+    width: 120px;
+    flex-shrink: 0;
+    padding: 9px 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: white;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath fill='%236c757d' d='M0 2.5l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+    color: #333;
+}
+
+.uq-year-select:focus {
+    outline: none;
+    border-color: #ffd700;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+}
+
+body.dark-mode .uq-year-select {
+    background-color: #374151;
+    color: #f9fafb;
+    border-color: #4b5563;
+}
+
+.uq-remove-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    background: #fee2e2;
+    color: #dc2626;
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.2s;
+}
+
+.uq-remove-btn:hover:not(:disabled) {
+    background: #fecaca;
+}
+
+.uq-remove-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* Add row button */
+.uq-add-row-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    background: #ffd700;
+    color: #182848;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    margin-top: 4px;
+}
+
+.uq-add-row-btn:hover {
+    background: #ffed4a;
+    transform: translateY(-1px);
+}
+
+/* ===== ACTIONS ===== */
+.uq-actions {
+    display: flex;
+    gap: 14px;
+    margin-top: 2rem;
+}
+
+.uq-submit-btn {
+    flex: 1;
+    padding: 0.95rem;
+    background-color: #ffd700;
+    color: #182848;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.05rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.uq-submit-btn:hover:not(:disabled) {
+    background-color: #ffed4a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.35);
+}
+
+.uq-submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.uq-cancel-btn {
+    flex: 1;
+    padding: 0.95rem;
+    background-color: #f8f9fa;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1.05rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.uq-cancel-btn:hover {
+    background-color: #e2e6ea;
+}
+
+/* ===== DARK MODE ===== */
+body.dark-mode .uq-card {
+    background: #1f2937;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .uq-card h2 {
+    color: #f3f4f6;
+}
+
+body.dark-mode .uq-subtitle,
+body.dark-mode .uq-hint {
+    color: #9ca3af;
+}
+
+body.dark-mode .uq-form-group > label {
+    color: #d1d5db;
+}
+
+body.dark-mode .uq-select-wrapper select,
+body.dark-mode .uq-label-input,
+body.dark-mode .uq-url-input {
+    background-color: #374151;
+    color: #f9fafb;
+    border-color: #4b5563;
+}
+
+body.dark-mode .uq-select-wrapper select:disabled {
+    background-color: #2d3748;
+}
+
+body.dark-mode .uq-remove-btn {
+    background: #3b2222;
+    color: #f87171;
+}
+
+body.dark-mode .uq-remove-btn:hover:not(:disabled) {
+    background: #4b2626;
+}
+
+body.dark-mode .uq-cancel-btn {
+    background-color: #374151;
+    color: #e5e7eb;
+    border-color: #4b5563;
+}
+
+body.dark-mode .uq-cancel-btn:hover {
+    background-color: #4b5563;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+    .uq-container {
+        padding: 1rem 0.5rem;
+    }
+
+    .uq-card {
+        padding: 1.5rem 1rem;
+    }
+
+    .uq-card h2 {
+        font-size: 1.4rem;
+    }
+
+    .uq-pdf-row {
+        flex-wrap: wrap;
+    }
+
+    .uq-label-input {
+        width: 100%;
+    }
+
+    .uq-actions {
+        flex-direction: column;
+    }
+}

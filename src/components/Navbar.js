@@ -67,7 +67,7 @@ const Navbar = ({ setSearchQuery }) => {
     if (setSearchQuery) {
       setSearchQuery(localSearch);
     }
-    navigate("/books");
+    navigate("/search");
     setIsOpen(false);
     setShowMobileSearch(false);
   };

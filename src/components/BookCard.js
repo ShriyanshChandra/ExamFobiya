@@ -37,7 +37,7 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit }) => {
                             className="action-btn questions-btn"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                navigate('/questions');
+                                navigate('/questions', { state: { initialSearch: book.title } });
                             }}
                         >
                             Questions

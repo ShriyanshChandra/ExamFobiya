@@ -1,0 +1,157 @@
+/* =============================================
+   Search.css — Frosted glass Search Results page
+   ============================================= */
+
+/* Add-book button style (shared utility used by Search) */
+.add-book-action {
+  margin-bottom: 20px;
+  text-align: right;
+}
+
+.add-book-btn {
+  background-color: #ffd700;
+  color: #182848;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  display: inline-block;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.add-book-btn:hover {
+  background-color: #ffed4a;
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+  color: #182848;
+}
+
+
+
+/* Page background with a soft gradient */
+.search-results-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 60px;
+}
+
+/* ---- Section headings ---- */
+.search-section-heading {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #182848;
+  margin-bottom: 16px;
+  text-align: center;
+  justify-content: center;
+}
+
+[data-theme='dark'] .search-section-heading {
+  color: #f0f0f0;
+}
+
+/* ---- Summary pill ---- */
+.search-summary-text {
+  margin: 1rem 0 2.5rem 0;
+  padding: 1.1rem 1.4rem;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 215, 0, 0.45);
+  border-left: 4px solid #ffd700;
+  border-radius: 10px;
+  color: #333;
+  font-weight: 500;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme='dark'] .search-summary-text {
+  background: rgba(30, 30, 30, 0.55);
+  border-color: rgba(255, 215, 0, 0.3);
+  color: #e0e0e0;
+}
+
+/* ---- Section wrapper ---- */
+.search-section-block {
+  margin-bottom: 50px;
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='dark'] .search-section-block {
+  background: rgba(25, 25, 35, 0.55);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+/* ---- View More buttons ---- */
+.search-view-more-btn {
+  display: inline-block;
+  padding: 10px 28px;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 215, 0, 0.6);
+  border-radius: 30px;
+  color: #333;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.search-view-more-btn:hover {
+  background: rgba(255, 215, 0, 0.25);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+}
+
+[data-theme='dark'] .search-view-more-btn {
+  background: rgba(40, 40, 50, 0.6);
+  border-color: rgba(255, 215, 0, 0.4);
+  color: #e0e0e0;
+}
+
+[data-theme='dark'] .search-view-more-btn:hover {
+  background: rgba(255, 215, 0, 0.15);
+}
+
+/* ---- No results card ---- */
+.search-no-results {
+  text-align: center;
+  padding: 50px 30px;
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='dark'] .search-no-results {
+  background: rgba(25, 25, 35, 0.55);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.search-no-results h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+[data-theme='dark'] .search-no-results h2 {
+  color: #f0f0f0;
+}
+
+.search-no-results p {
+  color: #777;
+}
+
+[data-theme='dark'] .search-no-results p {
+  color: #aaa;
+}
