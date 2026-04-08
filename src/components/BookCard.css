@@ -214,7 +214,12 @@
     margin-left: -15px;
     margin-right: -15px;
     margin-bottom: -15px;
-    padding-top: 10px;
+    padding-top: 0;
+    border-top: 1px solid #eee;
+}
+
+[data-theme='dark'] .book-card-btns {
+    border-top-color: #333;
 }
 
 /* Yellow action buttons — Questions & Syllabus */
@@ -308,8 +313,13 @@
     }
 
     .action-btn {
-        padding: 6px 0;
-        font-size: 0.8rem;
+        padding: 0 5px !important;
+        height: 30px !important;
+        min-height: 30px !important;
+        max-height: 30px !important;
+        font-size: 0.8rem !important;
+        line-height: 30px !important;
+        box-sizing: border-box !important;
     }
 
     .book-price {
@@ -322,5 +332,33 @@
         padding: 2px 6px;
         top: 6px;
         right: 6px;
+    }
+
+    /* Questions & Syllabus standard buttons on mobile */
+    .book-card-btns {
+        margin-left: 0;
+        margin-right: 0;
+        margin-bottom: 0;
+        margin-top: auto; /* Restored auto margin to push buttons to the bottom of the card */
+        padding-top: 8px; /* Used padding instead for the spacing */
+        gap: 8px;
+        border-top: none;
+    }
+
+    .questions-btn,
+    .syllabus-btn {
+        border-radius: 4px; /* Match standard action-btn */
+        margin: 0;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .book-card-btns {
+        gap: 3px;
+    }
+
+    .questions-btn,
+    .syllabus-btn {
+        border-radius: 4px; /* Default for very small screens too */
     }
 }
