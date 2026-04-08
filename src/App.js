@@ -32,6 +32,7 @@ import "@fontsource/nunito";
 import './App.css';
 import { trackVisit } from "./services/TrackingService";
 import { useEffect } from "react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 function App() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -43,6 +44,7 @@ function App() {
 
 
   return (
+    <>
     <BookProvider>
       <AuthProvider>
         <ThemeProvider>
@@ -126,6 +128,8 @@ function App() {
         </ThemeProvider>
       </AuthProvider>
     </BookProvider>
+    <SpeedInsights />
+    </>
   );
 }
 
