@@ -1,8 +1,15 @@
+import { getApiUrl } from '../utils/api';
+
 export const trackVisit = async () => {
+    if (process.env.NODE_ENV === 'development' && !process.env.REACT_APP_API_URL) {
+        return;
+    }
+
     try {
-        const apiUrl = process.env.REACT_APP_API_URL || '';
-        await fetch(`${apiUrl}/api/track`, { method: 'POST' });
+        await fetch(getApiUrl('/api/track'), { method: 'POST' });
     } catch (error) {
-        console.error("Error tracking visit:", error);
+        if (process.env.NODE_ENV !== 'development') {
+            console.error("Error tracking visit:", error);
+        }
     }
 };

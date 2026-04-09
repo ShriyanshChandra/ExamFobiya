@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getApiUrl } from '../utils/api';
 import './Login.css';
 
 const LoginBox = ({ role, title, onAuth, allowRegister = true }) => {
@@ -29,10 +30,8 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true }) => {
         setSuccessMsg('');
         setLoading(true);
         try {
-            const apiUrl = process.env.REACT_APP_API_URL || '';
-
             if (role === 'admin') {
-                const checkResponse = await fetch(`${apiUrl}/api/check-admin`, {
+                const checkResponse = await fetch(getApiUrl('/api/check-admin'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: resetEmail })
@@ -44,7 +43,7 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true }) => {
                 }
             }
 
-            const response = await fetch(`${apiUrl}/send-otp`, {
+            const response = await fetch(getApiUrl('/send-otp'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: resetEmail }),
@@ -88,8 +87,7 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true }) => {
 
         setLoading(true);
         try {
-            const apiUrl = process.env.REACT_APP_API_URL || '';
-            const response = await fetch(`${apiUrl}/api/reset-password`, {
+            const response = await fetch(getApiUrl('/api/reset-password'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: resetEmail, otp: enteredOtp, newPassword }),

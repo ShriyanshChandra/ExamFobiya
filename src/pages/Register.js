@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getApiUrl } from '../utils/api';
 import './Register.css';
 
 const Register = () => {
@@ -20,8 +21,7 @@ const Register = () => {
 
     const sendOtpEmail = async (userEmail) => {
         try {
-            const apiUrl = process.env.REACT_APP_API_URL || '';
-            const response = await fetch(`${apiUrl}/send-otp`, {
+            const response = await fetch(getApiUrl('/send-otp'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -74,8 +74,7 @@ const Register = () => {
                 throw new Error("Please enter a valid 6-digit OTP.");
             }
 
-            const apiUrl = process.env.REACT_APP_API_URL || '';
-            const verifyResponse = await fetch(`${apiUrl}/api/verify-otp`, {
+            const verifyResponse = await fetch(getApiUrl('/api/verify-otp'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, otp: enteredOtp })
