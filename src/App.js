@@ -39,7 +39,7 @@ function App() {
 
   // ========================================================================================
   // TOGGLE THIS VARIABLE TO "true" WHEN YOU WANT TO PAUSE THE ENTIRE WEBSITE DEPLOYMENT!
-  const isMaintenanceMode = true;
+  const isMaintenanceMode = false;
   // ========================================================================================
 
   useEffect(() => {
