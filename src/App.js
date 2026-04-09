@@ -19,7 +19,7 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Analytics } from "@vercel/analytics/react";
 
 // LAZY LOADED HEAVY COMPONENTS 
-const Distributors = lazy(() => import('./pages/Distributors'));
+
 const Questions = lazy(() => import('./pages/Questions'));
 const AboutUs = lazy(() => import('./pages/About_us'));
 const Login = lazy(() => import('./pages/Login'));
@@ -70,7 +70,7 @@ function App() {
                         <Route path="/" element={<Home />} />
                         <Route path="/books" element={<Books />} />
                         <Route path="/search" element={<Search searchQuery={searchQuery} />} />
-                        <Route path="/distributors" element={<Distributors />} />
+
                         <Route path="/questions" element={<Questions />} />
                         <Route path="/about" element={<AboutUs />} />
 
