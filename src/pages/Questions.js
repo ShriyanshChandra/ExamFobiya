@@ -8,20 +8,47 @@ const Questions = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState([]);
   const [searched, setSearched] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    course: "",
+    year: "",
+    subject: ""
+  });
 
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { questionPdfs } = useQuestions();
 
+  const uniqueCourses = [...new Set(questionPdfs.map((pdf) => pdf.course).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+  const uniqueYears = [...new Set(questionPdfs.map((pdf) => pdf.year).filter(Boolean))].sort((a, b) => String(b).localeCompare(String(a)));
+  const uniqueSubjects = [...new Set(questionPdfs.map((pdf) => pdf.subject).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+
+  const applySearchAndFilters = (query = searchQuery, activeFilters = filters) => {
+    const q = query.trim().toLowerCase();
+
+    return questionPdfs.filter((pdf) => {
+      const matchesQuery = !q || (
+        (pdf.subject && pdf.subject.toLowerCase().includes(q)) ||
+        (pdf.course && pdf.course.toLowerCase().includes(q)) ||
+        (pdf.label && pdf.label.toLowerCase().includes(q))
+      );
+
+      const matchesCourse = !activeFilters.course || pdf.course === activeFilters.course;
+      const matchesYear = !activeFilters.year || String(pdf.year) === activeFilters.year;
+      const matchesSubject = !activeFilters.subject || pdf.subject === activeFilters.subject;
+
+      return matchesQuery && matchesCourse && matchesYear && matchesSubject;
+    });
+  };
+
   // Handle auto-search when redirected from a BookCard
   React.useEffect(() => {
     if (location.state?.initialSearch && questionPdfs.length > 0) {
       const q = location.state.initialSearch.trim();
       setSearchQuery(q);
-      
       const qLower = q.toLowerCase();
-      const filtered = questionPdfs.filter(pdf =>
+      const filtered = questionPdfs.filter((pdf) =>
         (pdf.subject && pdf.subject.toLowerCase().includes(qLower)) ||
         (pdf.course && pdf.course.toLowerCase().includes(qLower)) ||
         (pdf.label && pdf.label.toLowerCase().includes(qLower))
@@ -35,20 +62,49 @@ const Questions = () => {
   }, [location.state, questionPdfs]);
 
   const handleSearch = () => {
-    const q = searchQuery.trim().toLowerCase();
-    if (!q) {
+    const hasActiveFilters = Object.values(filters).some(Boolean);
+    const q = searchQuery.trim();
+
+    if (!q && !hasActiveFilters) {
       setResults([]);
       setSearched(false);
       return;
     }
-    const filtered = questionPdfs.filter(pdf =>
-      (pdf.subject && pdf.subject.toLowerCase().includes(q)) ||
-      (pdf.course && pdf.course.toLowerCase().includes(q)) ||
-      (pdf.label && pdf.label.toLowerCase().includes(q))
-    );
+
+    const filtered = applySearchAndFilters(searchQuery, filters);
     setResults(filtered);
     setSearched(true);
   };
+
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => {
+      const nextFilters = { ...prev, [key]: value };
+
+      if (searched) {
+        const filtered = applySearchAndFilters(searchQuery, nextFilters);
+        setResults(filtered);
+      }
+
+      return nextFilters;
+    });
+  };
+
+  const clearFilters = () => {
+    const resetFilters = { course: "", year: "", subject: "" };
+    setFilters(resetFilters);
+
+    if (searched) {
+      const hasQuery = searchQuery.trim();
+      if (!hasQuery) {
+        setResults([]);
+        setSearched(false);
+      } else {
+        setResults(applySearchAndFilters(searchQuery, resetFilters));
+      }
+    }
+  };
+
+  const activeFilterCount = Object.values(filters).filter(Boolean).length;
 
   return (
     <div className="questions-container">
@@ -86,7 +142,67 @@ const Questions = () => {
               </svg>
             </button>
           </div>
+
+          <button
+            type="button"
+            className={`questions-filter-btn ${showFilters ? 'active' : ''}`}
+            onClick={() => setShowFilters((prev) => !prev)}
+          >
+            <span>Filters</span>
+            {activeFilterCount > 0 && <span className="filter-count">{activeFilterCount}</span>}
+          </button>
         </div>
+
+        {showFilters && (
+          <div className="questions-filters-panel">
+            <div className="questions-filter-grid">
+              <label className="questions-filter-field">
+                <span>Course</span>
+                <select
+                  value={filters.course}
+                  onChange={(e) => handleFilterChange('course', e.target.value)}
+                >
+                  <option value="">All courses</option>
+                  {uniqueCourses.map((course) => (
+                    <option key={course} value={course}>{course}</option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="questions-filter-field">
+                <span>Year</span>
+                <select
+                  value={filters.year}
+                  onChange={(e) => handleFilterChange('year', e.target.value)}
+                >
+                  <option value="">All years</option>
+                  {uniqueYears.map((year) => (
+                    <option key={year} value={String(year)}>{year}</option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="questions-filter-field">
+                <span>Subject</span>
+                <select
+                  value={filters.subject}
+                  onChange={(e) => handleFilterChange('subject', e.target.value)}
+                >
+                  <option value="">All subjects</option>
+                  {uniqueSubjects.map((subject) => (
+                    <option key={subject} value={subject}>{subject}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <div className="questions-filter-actions">
+              <button type="button" className="questions-clear-filters-btn" onClick={clearFilters}>
+                Clear Filters
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Results */}
         {searched && (
