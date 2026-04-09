@@ -16,6 +16,7 @@ import "@fontsource/nunito";
 import './App.css';
 import { trackVisit } from "./services/TrackingService";
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import { Analytics } from "@vercel/analytics/react";
 
 // LAZY LOADED HEAVY COMPONENTS 
 const Distributors = lazy(() => import('./pages/Distributors'));
@@ -132,6 +133,7 @@ function App() {
         </AuthProvider>
       </BookProvider>
       <SpeedInsights />
+      <Analytics />
     </>
   );
 }
