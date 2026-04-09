@@ -23,6 +23,7 @@ import QRGenerator from "./pages/tools/QRGenerator";
 import SpeedTest from "./pages/tools/SpeedTest";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import Maintenance from "./pages/Maintenance";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
@@ -37,11 +38,20 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 function App() {
   const [searchQuery, setSearchQuery] = useState("");
 
+  // ========================================================================================
+  // TOGGLE THIS VARIABLE TO "true" WHEN YOU WANT TO PAUSE THE ENTIRE WEBSITE DEPLOYMENT!
+  const isMaintenanceMode = true; 
+  // ========================================================================================
+
   useEffect(() => {
     trackVisit();
   }, []);
 
-
+  if (isMaintenanceMode) {
+    return (
+       <Maintenance />
+    );
+  }
 
   return (
     <>

@@ -13,17 +13,12 @@ const Register = () => {
 
     // 2FA State
     const [step, setStep] = useState('form'); // 'form' | 'verify'
-    const [generatedOtp, setGeneratedOtp] = useState('');
     const [enteredOtp, setEnteredOtp] = useState('');
 
     const { register } = useAuth();
     const navigate = useNavigate();
 
-    const generateOtp = () => {
-        return Math.floor(100000 + Math.random() * 900000).toString();
-    };
-
-    const sendOtpEmail = async (userEmail, otp) => {
+    const sendOtpEmail = async (userEmail) => {
         try {
             const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
             const response = await fetch(`${apiUrl}/send-otp`, {
@@ -31,20 +26,17 @@ const Register = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email: userEmail, otp: otp }),
+                body: JSON.stringify({ email: userEmail }),
             });
 
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.error || 'Failed to send OTP');
             }
-            console.log(`[BACKEND] OTP Sent successfully to ${userEmail}`);
+            console.log(`[BACKEND] OTP requested for ${userEmail}`);
         } catch (error) {
             console.error('Frontend Error sending email:', error);
-            // Fallback for demo if backend is not running
-            console.log(`[FALLBACK] Backend unreachable. Mock OTP: ${otp}`);
-            // In production, you might want to re-throw this to show an error to user
-            // throw error; 
+            throw error; 
         }
     };
 
@@ -62,9 +54,7 @@ const Register = () => {
 
         setLoading(true);
         try {
-            const otp = generateOtp();
-            await sendOtpEmail(email, otp);
-            setGeneratedOtp(otp);
+            await sendOtpEmail(email);
             setStep('verify');
         } catch (err) {
             console.error(err);
@@ -79,12 +69,23 @@ const Register = () => {
         setError('');
         setLoading(true);
 
-        if (enteredOtp !== generatedOtp) {
-            setLoading(false);
-            return setError("Invalid OTP. Please check your email and try again.");
-        }
-
         try {
+            if (enteredOtp.length !== 6) {
+                throw new Error("Please enter a valid 6-digit OTP.");
+            }
+
+            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+            const verifyResponse = await fetch(`${apiUrl}/api/verify-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, otp: enteredOtp })
+            });
+
+            if (!verifyResponse.ok) {
+                const errorData = await verifyResponse.json();
+                throw new Error(errorData.error || "Invalid OTP. Please check your email and try again.");
+            }
+
             const username = email.split('@')[0];
             // Default role is 'user' for public registration
             await register(email, password, 'user', username);

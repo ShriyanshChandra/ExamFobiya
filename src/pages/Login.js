@@ -7,44 +7,253 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
+    // Forgot Password State
+    const [step, setStep] = useState('login'); // 'login' | 'email' | 'otp' | 'new-password'
+    const [resetEmail, setResetEmail] = useState('');
+    const [enteredOtp, setEnteredOtp] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [localError, setLocalError] = useState('');
+    const [successMsg, setSuccessMsg] = useState('');
+
     const handleSubmit = (e) => {
         e.preventDefault();
         onAuth(role, email, password, false);
     };
 
+    const handleSendOtp = async (e) => {
+        e.preventDefault();
+        setLocalError('');
+        setSuccessMsg('');
+        setLoading(true);
+        try {
+            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+            if (role === 'admin') {
+                const checkResponse = await fetch(`${apiUrl}/api/check-admin`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: resetEmail })
+                });
+
+                if (!checkResponse.ok) {
+                    const errorData = await checkResponse.json();
+                    throw new Error(errorData.error || 'Account checking failed.');
+                }
+            }
+
+            const response = await fetch(`${apiUrl}/send-otp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: resetEmail }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to send OTP');
+            }
+            // Backend stored the OTP. We just move to next step.
+            setStep('otp');
+        } catch (err) {
+            console.error(err);
+            setLocalError(err.message || "Failed to send verification code.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleVerifyOtp = (e) => {
+        e.preventDefault();
+        setLocalError('');
+        if (enteredOtp.length !== 6) {
+            return setLocalError("Please enter a valid 6-digit OTP.");
+        }
+        // Proceed to password input. Final validation happens securely on the backend.
+        setStep('new-password');
+    };
+
+    const handleResetPassword = async (e) => {
+        e.preventDefault();
+        setLocalError('');
+        setSuccessMsg('');
+        
+        if (newPassword !== confirmPassword) {
+            return setLocalError("Passwords do not match");
+        }
+        if (newPassword.length < 6) {
+            return setLocalError("Password should be at least 6 characters");
+        }
+
+        setLoading(true);
+        try {
+            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+            const response = await fetch(`${apiUrl}/api/reset-password`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: resetEmail, otp: enteredOtp, newPassword }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to reset password');
+            }
+
+            setSuccessMsg("Password reset successfully! You can now login.");
+            setStep('login');
+            setResetEmail('');
+            setEnteredOtp('');
+            setNewPassword('');
+            setConfirmPassword('');
+        } catch (err) {
+            console.error(err);
+            setLocalError(err.message || "Failed to reset password.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="login-card">
-            <h2>{title}</h2>
-            <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label>Email:</label>
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Enter email"
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label>Password:</label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Enter password"
-                        required
-                    />
-                </div>
-                <button type="submit" className="login-btn">
-                    Login
-                </button>
-            </form>
+            <h2>{step === 'login' ? title : "Forgot Password"}</h2>
+            
+            {localError && <div className="register-error-message" style={{color: 'red', marginBottom: '10px'}}>{localError}</div>}
+            {successMsg && <div className="success-message" style={{color: 'green', marginBottom: '10px'}}>{successMsg}</div>}
 
-            {allowRegister && (
-                <p className="toggle-auth">
-                    Need an account? <Link to="/register" style={{ color: '#007bff' }}>Register</Link>
-                </p>
+            {step === 'login' && (
+                <>
+                    <form onSubmit={handleSubmit}>
+                        <div className="form-group">
+                            <label>Email:</label>
+                            <input
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="Enter email"
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Password:</label>
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Enter password"
+                                required
+                            />
+                        </div>
+                        <div className="checkbox-group">
+                            <input
+                                type="checkbox"
+                                id={`show-pass-login-${role}`}
+                                checked={showPassword}
+                                onChange={() => setShowPassword(!showPassword)}
+                            />
+                            <label htmlFor={`show-pass-login-${role}`}>Show Password</label>
+                        </div>
+                        <button type="submit" className="login-btn">
+                            Login
+                        </button>
+                    </form>
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '15px' }}>
+                        <button type="button" onClick={() => setStep('email')} style={{ background: 'none', border: 'none', color: '#007bff', cursor: 'pointer', padding: 0, fontSize: '15px', fontWeight: '500' }}>
+                            Forgot Password?
+                        </button>
+                    </div>
+                    {allowRegister && (
+                        <p className="toggle-auth">
+                            Need an account? <Link to="/register" style={{ color: '#007bff' }}>Register</Link>
+                        </p>
+                    )}
+                </>
+            )}
+
+            {step === 'email' && (
+                <form onSubmit={handleSendOtp}>
+                    <p style={{marginBottom: '15px', color: '#555', fontSize: '0.9rem'}}>Enter your email address and we'll send you a verification code to reset your password.</p>
+                    <div className="form-group">
+                        <label>Email:</label>
+                        <input
+                            type="email"
+                            value={resetEmail}
+                            onChange={(e) => setResetEmail(e.target.value)}
+                            placeholder="Enter your email"
+                            required
+                        />
+                    </div>
+                    <button type="submit" className="login-btn" disabled={loading}>
+                        {loading ? 'Sending...' : 'Send Verification Code'}
+                    </button>
+                    <button type="button" onClick={() => { setStep('login'); setLocalError(''); }} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', width: '100%', marginTop: '10px' }}>
+                        Cancel
+                    </button>
+                </form>
+            )}
+
+            {step === 'otp' && (
+                <form onSubmit={handleVerifyOtp}>
+                    <p style={{marginBottom: '15px', color: '#555', fontSize: '0.9rem'}}>We've sent a 6-digit code to <strong>{resetEmail}</strong>. Enter it below.</p>
+                    <div className="form-group">
+                        <label>OTP Code:</label>
+                        <input
+                            type="text"
+                            value={enteredOtp}
+                            onChange={(e) => setEnteredOtp(e.target.value)}
+                            placeholder="123456"
+                            maxLength="6"
+                            required
+                        />
+                    </div>
+                    <button type="submit" className="login-btn">
+                        Verify Code
+                    </button>
+                    <button type="button" onClick={() => { setStep('email'); setLocalError(''); }} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', width: '100%', marginTop: '10px' }}>
+                        Back
+                    </button>
+                </form>
+            )}
+
+            {step === 'new-password' && (
+                <form onSubmit={handleResetPassword}>
+                    <p style={{marginBottom: '15px', color: '#555', fontSize: '0.9rem'}}>Create a new password for your account.</p>
+                    <div className="form-group">
+                        <label>New Password:</label>
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            placeholder="At least 6 characters"
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label>Confirm Password:</label>
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            placeholder="Confirm new password"
+                            required
+                        />
+                    </div>
+                    <div className="checkbox-group">
+                        <input
+                            type="checkbox"
+                            id={`show-pass-reset-${role}`}
+                            checked={showPassword}
+                            onChange={() => setShowPassword(!showPassword)}
+                        />
+                        <label htmlFor={`show-pass-reset-${role}`}>Show Password</label>
+                    </div>
+                    <button type="submit" className="login-btn" disabled={loading}>
+                        {loading ? 'Resetting...' : 'Reset Password'}
+                    </button>
+                    <button type="button" onClick={() => { setStep('login'); setLocalError(''); setShowPassword(false); }} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', width: '100%', marginTop: '10px' }}>
+                        Cancel
+                    </button>
+                </form>
             )}
         </div>
     );
