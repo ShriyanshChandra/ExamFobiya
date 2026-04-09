@@ -20,7 +20,7 @@ const Register = () => {
 
     const sendOtpEmail = async (userEmail) => {
         try {
-            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+            const apiUrl = process.env.REACT_APP_API_URL || '';
             const response = await fetch(`${apiUrl}/send-otp`, {
                 method: 'POST',
                 headers: {
@@ -74,7 +74,7 @@ const Register = () => {
                 throw new Error("Please enter a valid 6-digit OTP.");
             }
 
-            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+            const apiUrl = process.env.REACT_APP_API_URL || '';
             const verifyResponse = await fetch(`${apiUrl}/api/verify-otp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

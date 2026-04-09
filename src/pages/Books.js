@@ -21,7 +21,7 @@ function Books() {
     return selectedCategory === "All" || book.category === selectedCategory;
   }).sort((a, b) => a.title.localeCompare(b.title));
 
-  const canAddBook = user && (user.role === 'admin' || user.role === 'developer');
+  const canAddBook = user && user.role === 'admin';
 
   const handleRemoveClick = (book) => {
     setBookToRemove(book);

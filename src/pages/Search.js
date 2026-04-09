@@ -51,7 +51,7 @@ function Search({ searchQuery }) {
     );
   }, [searchQuery, questionPdfs]);
 
-  const canAddBook = user && (user.role === 'admin' || user.role === 'developer');
+  const canAddBook = user && user.role === 'admin';
 
   // Book Removal Handlers
   const handleRemoveClick = (book) => {

@@ -39,6 +39,11 @@
       "react-app/jest"
     ]
   },
+  "jest": {
+    "moduleNameMapper": {
+      "^ogl$": "<rootDir>/src/__mocks__/ogl.js"
+    }
+  },
   "browserslist": {
     "production": [
       ">0.2%",

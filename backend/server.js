@@ -7,13 +7,23 @@ const { getFirestore } = require('firebase-admin/firestore');
 
 // Initialize Firebase Admin SDK
 try {
-    const serviceAccount = require('./serviceAccountKey.json');
+    let serviceAccount;
+    // Strictly require production environment variable.
+    if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
+        throw new Error("CRITICAL: FIREBASE_SERVICE_ACCOUNT environment variable is missing.");
+    }
+    
+    serviceAccount = typeof process.env.FIREBASE_SERVICE_ACCOUNT === 'string' 
+        ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT) 
+        : process.env.FIREBASE_SERVICE_ACCOUNT;
+    
     admin.initializeApp({
         credential: admin.credential.cert(serviceAccount)
     });
-    console.log("Firebase Admin Initialized successfully.");
+    console.log("Firebase Admin Initialized securely via Environment Variables.");
 } catch (error) {
-    console.error("Firebase Admin Initialization Error. Did you add serviceAccountKey.json? ", error);
+    console.error("Firebase Admin Initialization Error. Server shutting down for security.", error);
+    process.exit(1);
 }
 
 const aiController = require('./routes/ai');
@@ -205,10 +215,39 @@ app.post('/api/reset-password', async (req, res) => {
         // Delete valid OTP to prevent reuse
         await otpDocRef.delete();
 
-        res.status(200).json({ message: 'Password updated successfully' });
+        res.status(200).json({ message: 'Password successfully reset' });
     } catch (error) {
-        console.error("Error updating password:", error);
-        res.status(500).json({ error: 'Failed to reset password. User may not exist.' });
+        console.error('Password reset error:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Analytics tracking endpoint
+app.post('/api/track', async (req, res) => {
+    try {
+        const db = admin.firestore();
+        
+        // 1. General Stats
+        const statsDocRef = db.collection('stats').doc('general');
+        await statsDocRef.set({ visit_count: admin.firestore.FieldValue.increment(1) }, { merge: true });
+
+        // 2. Daily Stats
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const todayDocId = `${year}-${month}-${day}`;
+
+        const dailyDocRef = db.collection('daily_stats').doc(todayDocId);
+        await dailyDocRef.set({
+            date: todayDocId,
+            visits: admin.firestore.FieldValue.increment(1)
+        }, { merge: true });
+        
+        res.status(200).json({ success: true });
+    } catch (error) {
+        console.error('Tracking Error:', error);
+        res.status(500).json({ error: 'Internal server error while tracking' });
     }
 });
 

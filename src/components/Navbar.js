@@ -141,10 +141,10 @@ const Navbar = ({ setSearchQuery }) => {
 
 
           {/* Conditional Dashboard Link */}
-          {(user?.role === 'admin' || user?.role === 'developer') && (
+          {(user?.role === 'admin') && (
             <>
               {user.role === 'admin' && <li><Link to="/admin" onClick={() => setIsOpen(false)}>Dashboard</Link></li>}
-              {user.role === 'developer' && <li><Link to="/dev" onClick={() => setIsOpen(false)}>Dashboard</Link></li>}
+
             </>
           )}
 

@@ -7,6 +7,7 @@ service cloud.firestore {
       return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin";
     }
 
+    // USER DATA
     match /users/{userId} {
       // User can read/write their own profile
       allow read, write: if request.auth != null && request.auth.uid == userId;
@@ -14,36 +15,42 @@ service cloud.firestore {
       allow read, write: if isAdmin();
     }
 
+    // INVENTORY DATA: Publicly readable, strictly Admin writable
     match /books/{bookId} {
       allow read: if true;
       allow write: if isAdmin();
     }
     
-    // CHANGED: Allow public access for visit tracking (was isAdmin)
-    match /stats/{statId} {
-      allow read, write: if true;
-    }
-    
-    match /daily_stats/{document=**} {
-  		allow read, write: if true;
-		}
-
-    // NEW: Allow access to questions, courses, and universities (Nested Structure)
     match /courses/{document=**} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isAdmin();
     }
     
     match /universities/{document=**} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isAdmin();
     }
     
     // Explicitly allow collectionGroup queries for questions and questionPdfs
     match /{path=**}/questions/{question} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isAdmin();
     }
     
     match /{path=**}/questionPdfs/{document} {
-      allow read, write: if true;
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ANALYTICS TRACKING
+    match /stats/{statId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /daily_stats/{document=**} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
   }
 }

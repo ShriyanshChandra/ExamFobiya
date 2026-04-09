@@ -29,7 +29,7 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true }) => {
         setSuccessMsg('');
         setLoading(true);
         try {
-            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+            const apiUrl = process.env.REACT_APP_API_URL || '';
 
             if (role === 'admin') {
                 const checkResponse = await fetch(`${apiUrl}/api/check-admin`, {
@@ -88,7 +88,7 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true }) => {
 
         setLoading(true);
         try {
-            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+            const apiUrl = process.env.REACT_APP_API_URL || '';
             const response = await fetch(`${apiUrl}/api/reset-password`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
