@@ -215,12 +215,8 @@
     margin-right: -15px;
     margin-bottom: -15px;
     padding-top: 0;
-    border-top: 1px solid #eee;
 }
 
-[data-theme='dark'] .book-card-btns {
-    border-top-color: #333;
-}
 
 /* Yellow action buttons — Questions & Syllabus */
 .questions-btn {
@@ -228,7 +224,7 @@
     color: #1a1a1a;
     border: none;
     font-weight: 700;
-    border-radius: 0;
+    border-radius: 8px;
 }
 
 .questions-btn:hover {
@@ -241,7 +237,7 @@
     color: #1a1a1a;
     border: none;
     font-weight: 700;
-    border-radius: 0;
+    border-radius: 8px;
 }
 
 .syllabus-btn:hover {
