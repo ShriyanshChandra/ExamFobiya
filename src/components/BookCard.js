@@ -34,6 +34,8 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit }) => {
                     src={book.image}
                     alt={book.title}
                     className="book-img"
+                    loading="lazy"
+                    decoding="async"
                     referrerPolicy="no-referrer"
                     onError={(e) => {
                         e.target.onerror = null;
@@ -46,7 +48,7 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit }) => {
                             <span className="book-category-badge">{book.category}</span>
                         )}
                     </div>
-                    <h3>{book.title}</h3>
+                    <h3 className="book-card-title">{book.title}</h3>
                     <div className="book-card-btns">
                         <button
                             className="action-btn questions-btn"

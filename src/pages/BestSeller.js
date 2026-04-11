@@ -6,7 +6,12 @@ import BookCard from '../components/BookCard';
 const BestSeller = ({ limit }) => {
   const { getBooksBySection } = useBooks();
   const bestSellerBooks = getBooksBySection('Best Seller');
-  const visibleBooks = typeof limit === 'number' ? bestSellerBooks.slice(0, limit) : bestSellerBooks;
+  const hasOverflow = typeof limit === 'number' && bestSellerBooks.length > limit;
+  const visibleBooks = hasOverflow
+    ? bestSellerBooks
+    : typeof limit === 'number'
+      ? bestSellerBooks.slice(0, limit)
+      : bestSellerBooks;
 
   return (
     <section className="best-sellers">
@@ -23,7 +28,7 @@ const BestSeller = ({ limit }) => {
       {bestSellerBooks.length === 0 ? (
         <p>No best sellers available right now.</p>
       ) : (
-        <div className="book-grid">
+        <div className={`book-grid home-book-shelf ${hasOverflow ? 'is-scrollable' : 'is-compact'}`}>
           {visibleBooks.map((book, index) => (
             <BookCard key={book.id} book={book} index={index} />
           ))}

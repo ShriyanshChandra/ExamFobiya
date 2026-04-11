@@ -4,6 +4,8 @@ import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import "./Navbar.css";
 
+const NAVBAR_COLLAPSE_BREAKPOINT = 1200;
+
 const Navbar = ({ setSearchQuery }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [localSearch, setLocalSearch] = useState("");
@@ -74,7 +76,7 @@ const Navbar = ({ setSearchQuery }) => {
 
   const handleSearchClick = (e) => {
     // Mobile logic
-    if (window.innerWidth <= 768) {
+    if (window.innerWidth <= NAVBAR_COLLAPSE_BREAKPOINT) {
       if (!showMobileSearch) {
         setShowMobileSearch(true);
         e.preventDefault(); // Prevent submit if just opening
@@ -107,7 +109,13 @@ const Navbar = ({ setSearchQuery }) => {
         </Link>
 
         {/* Hamburger Icon */}
-        <div className="menu-icon" onClick={toggleMenu}>
+        <button
+          type="button"
+          className="menu-icon"
+          onClick={toggleMenu}
+          aria-label={isOpen ? "Close menu" : "Open menu"}
+          aria-expanded={isOpen}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="30"
@@ -132,24 +140,20 @@ const Navbar = ({ setSearchQuery }) => {
               </>
             )}
           </svg>
-        </div>
+        </button>
 
         {/* Navigation Links - Centered */}
         <ul className={isOpen ? "nav-menu active" : "nav-menu"}>
           <li><Link to="/" onClick={() => setIsOpen(false)}>Home</Link></li>
           <li><Link to="/books" onClick={() => setIsOpen(false)}>Books</Link></li>
-
-
-          {/* Conditional Dashboard Link */}
-          {(user?.role === 'admin') && (
-            <>
-              {user.role === 'admin' && <li><Link to="/admin" onClick={() => setIsOpen(false)}>Dashboard</Link></li>}
-
-            </>
-          )}
-
           <li><Link to="/questions" onClick={() => setIsOpen(false)}>Questions</Link></li>
           <li><Link to="/about" onClick={() => setIsOpen(false)}>About Us</Link></li>
+          {(user?.role === 'admin') && (
+            <>
+              <li className="nav-separator" aria-hidden="true">|</li>
+              <li><Link to="/admin" onClick={() => setIsOpen(false)}>Dashboard</Link></li>
+            </>
+          )}
 
 
           {/* Mobile Only Auth Link (Optional, if we want it inside menu on mobile) */}

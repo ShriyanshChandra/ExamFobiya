@@ -17,6 +17,7 @@ import './App.css';
 import { trackVisit } from "./services/TrackingService";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Analytics } from "@vercel/analytics/react";
+import Loader from "./components/Loader";
 
 // LAZY LOADED HEAVY COMPONENTS 
 
@@ -48,7 +49,7 @@ function App() {
 
   if (isMaintenanceMode) {
     return (
-      <Suspense fallback={<div className="loading-screen">Loading Maintenance...</div>}>
+      <Suspense fallback={<Loader text="Loading maintenance mode..." caption="Checking site availability" fullScreen />}>
         <Maintenance />
       </Suspense>
     );
@@ -65,7 +66,7 @@ function App() {
                   <Navbar setSearchQuery={setSearchQuery} />
                   {/* Ensure this div is transparent so the background shows through */}
                   <div className="p-6 content-wrap">
-                    <Suspense fallback={<div className="loading-screen" style={{ height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Loading Page...</div>}>
+                    <Suspense fallback={<Loader text="Loading page..." caption="Pulling in the next section" fullScreen />}>
                       <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/books" element={<Books />} />

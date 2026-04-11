@@ -7,7 +7,12 @@ import './BookCategorySection.css';
 const BookCategorySection = ({ title, section, category, limit }) => {
     const { getBooksBySection } = useBooks();
     const books = getBooksBySection(section);
-    const visibleBooks = typeof limit === 'number' ? books.slice(0, limit) : books;
+    const hasOverflow = typeof limit === 'number' && books.length > limit;
+    const visibleBooks = hasOverflow
+        ? books
+        : typeof limit === 'number'
+            ? books.slice(0, limit)
+            : books;
 
     return (
         <section className="book-category-section">
@@ -30,7 +35,7 @@ const BookCategorySection = ({ title, section, category, limit }) => {
             {books.length === 0 ? (
                 <p>No books available for {section} at the moment.</p>
             ) : (
-                <div className="book-grid">
+                <div className={`book-grid home-book-shelf ${hasOverflow ? 'is-scrollable' : 'is-compact'}`}>
                     {visibleBooks.map((book, index) => (
                         <BookCard key={book.id} book={book} index={index} />
                     ))}
