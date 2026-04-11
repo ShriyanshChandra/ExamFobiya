@@ -4,16 +4,16 @@
 
 .book-card {
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    border: 1px solid #eee;
+    border-radius: 18px;
+    box-shadow: 0 16px 40px rgba(17, 24, 39, 0.08);
+    text-align: left;
+    border: 1px solid rgba(15, 23, 42, 0.08);
     height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: transform 0.2s, box-shadow 0.2s;
-    cursor: default;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    cursor: pointer;
     overflow: hidden;
     position: relative;
     padding: 0;
@@ -27,14 +27,19 @@
 }
 
 .book-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-    /* Slightly larger shadow */
+    transform: translateY(-8px);
+    box-shadow: 0 24px 55px rgba(15, 23, 42, 0.16);
+    border-color: rgba(75, 108, 183, 0.28);
 }
 
 [data-theme='dark'] .book-card:hover {
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.7);
     border-color: rgba(255, 255, 255, 0.3);
+}
+
+.book-card:focus-visible {
+    outline: 3px solid rgba(75, 108, 183, 0.35);
+    outline-offset: 3px;
 }
 
 .book-img {
@@ -43,8 +48,8 @@
     aspect-ratio: 196 / 300;
     /* User specified ratio */
     object-fit: cover;
-    border-radius: 12px;
-    /* Rounded corners */
+    border-radius: 0;
+    /* Rounded corners handled by container */
     background-color: #f9f9f9;
     margin-bottom: 0;
 }
@@ -55,23 +60,33 @@
 
 /* Content Area Wrapper */
 .book-content {
-    padding: 15px;
-    /* Add padding here instead of card */
+    padding: 16px 16px 0;
     flex-grow: 1;
-    /* Allow to expand */
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
 }
 
+.book-card-meta-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
 .book-card h3 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    /* Slightly bolder */
+    font-size: 1.05rem;
+    font-weight: 700;
     color: #333;
     line-height: 1.3;
     margin-bottom: 8px;
-    margin-top: 5px;
+    margin-top: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 [data-theme='dark'] .book-card h3 {
@@ -135,11 +150,9 @@
 .book-actions {
     display: flex;
     gap: 10px;
-    padding: 12px 15px;
-    /* Consistent padding */
-    background-color: #f5f5f5;
-    /* Light grey footer */
-    border-top: 1px solid #eee;
+    padding: 12px 16px 16px;
+    background-color: transparent;
+    border-top: 1px solid rgba(15, 23, 42, 0.08);
     justify-content: center;
     width: 100%;
     margin-top: auto;
@@ -151,20 +164,19 @@
 }
 
 .action-btn {
-    padding: 8px 16px;
-    border-radius: 4px;
+    padding: 10px 14px;
+    border-radius: 12px;
     text-decoration: none;
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
-    border: none;
-    transition: filter 0.2s;
+    border: 1px solid transparent;
+    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
     min-width: 60px;
     display: inline-flex;
     justify-content: center;
     align-items: center;
     flex: 1;
-    /* Stretch buttons in footer */
 }
 
 /* Specific Button Styles */
@@ -209,57 +221,59 @@
 /* Buttons inside the card content — no container background */
 .book-card-btns {
     display: flex;
-    gap: 6px;
+    gap: 8px;
     margin-top: auto;
-    margin-left: -15px;
-    margin-right: -15px;
-    margin-bottom: -15px;
-    padding-top: 0;
+    padding-bottom: 16px;
 }
 
 
 /* Yellow action buttons — Questions & Syllabus */
 .questions-btn {
-    background-color: #ffd700;
-    color: #1a1a1a;
-    border: none;
+    background: linear-gradient(135deg, #ffd84d, #f3b700);
+    color: #1f1b0d;
     font-weight: 700;
-    border-radius: 8px;
+    box-shadow: 0 10px 20px rgba(243, 183, 0, 0.18);
 }
 
 .questions-btn:hover {
-    background-color: #e6c200;
+    background: linear-gradient(135deg, #ffdf68, #efb100);
     color: #000;
+    transform: translateY(-1px);
 }
 
 .syllabus-btn {
-    background-color: #ffd700;
-    color: #1a1a1a;
-    border: none;
+    background-color: #f8fafc;
+    color: #1f2937;
+    border-color: rgba(148, 163, 184, 0.4);
     font-weight: 700;
-    border-radius: 8px;
 }
 
 .syllabus-btn:hover {
-    background-color: #e6c200;
-    color: #000;
+    background-color: #eef2f7;
+    color: #111827;
+    transform: translateY(-1px);
 }
 
 [data-theme='dark'] .questions-btn,
 [data-theme='dark'] .syllabus-btn {
-    background-color: #ffd700;
     color: #1a1a1a;
 }
 
-[data-theme='dark'] .questions-btn:hover,
+[data-theme='dark'] .syllabus-btn {
+    background-color: #1f2937;
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #f3f4f6;
+}
+
 [data-theme='dark'] .syllabus-btn:hover {
-    background-color: #e6c200;
+    background-color: #273244;
+    color: #fff;
 }
 
 /* Admin row sits below the public buttons */
 .admin-actions-row {
-    border-top: 1px solid #eee;
-    background-color: #f5f5f5;
+    border-top: 1px solid rgba(15, 23, 42, 0.08);
+    background-color: #f8fafc;
 }
 
 [data-theme='dark'] .admin-actions-row {
@@ -269,38 +283,28 @@
 
 /* Category Badge */
 .book-category-badge {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: rgba(0, 0, 0, 0.7);
-    color: #fff;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: bold;
-    z-index: 2;
+    background: rgba(75, 108, 183, 0.12);
+    color: #29437a;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
     text-transform: uppercase;
-    backdrop-filter: blur(4px);
+    letter-spacing: 0.04em;
 }
 
 /* Mobile optimizations for narrow screens */
 @media screen and (max-width: 768px) {
     .book-content {
         padding: 10px;
-        /* Reduced padding */
     }
 
     .book-card h3 {
         font-size: 0.85rem;
-        /* Reduced for mobile */
-        white-space: normal;
-        /* Allow wrapping */
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        line-clamp: 2;
-        /* Limit to 2 lines */
-        -webkit-box-orient: vertical;
-        overflow: hidden;
+    }
+
+    .book-card-meta-row {
+        margin-bottom: 8px;
     }
 
     .book-actions {
@@ -316,6 +320,10 @@
         font-size: 0.8rem !important;
         line-height: 30px !important;
         box-sizing: border-box !important;
+    }
+
+    .book-card-btns {
+        padding-bottom: 10px;
     }
 
     .book-price {

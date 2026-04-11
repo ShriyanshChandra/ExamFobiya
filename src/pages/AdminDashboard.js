@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { fetchAnalyticsData } from '../services/AnalyticsService';
 import {
     PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend,
@@ -27,10 +27,10 @@ const AdminDashboard = () => {
             setStats(data);
             setLoading(false);
         };
+
         loadStats();
     }, []);
 
-    // Measure chart container dimensions
     useEffect(() => {
         const updateDimensions = () => {
             if (chartContainerRef.current) {
@@ -43,7 +43,6 @@ const AdminDashboard = () => {
         updateDimensions();
         window.addEventListener('resize', updateDimensions);
 
-        // Use ResizeObserver for more reliable tracking
         const resizeObserver = new ResizeObserver(updateDimensions);
         if (chartContainerRef.current) {
             resizeObserver.observe(chartContainerRef.current);
@@ -53,9 +52,78 @@ const AdminDashboard = () => {
             window.removeEventListener('resize', updateDimensions);
             resizeObserver.disconnect();
         };
-    }, [loading]); // Re-measure after data loads
+    }, [loading]);
 
-    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AF19FF', '#FF1919'];
+    const COLORS = ['#3159b8', '#1fa97a', '#f0b429', '#ee7c4f', '#7a5af8', '#e8517d'];
+
+    const summaryCards = useMemo(() => ([
+        {
+            label: 'Total Users',
+            value: stats.totalUsers,
+            accentClass: 'accent-blue',
+            iconClass: 'icon-blue',
+            trendValue: `${stats.userGrowthPercentage > 0 ? '↗' : '↘'} ${stats.userGrowthPercentage || 0}%`,
+            trendLabel: 'vs last week',
+            trendTone: stats.userGrowthPercentage >= 0 ? 'positive' : 'negative',
+            icon: (
+                <>
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </>
+            )
+        },
+        {
+            label: 'Total Books',
+            value: stats.totalBooks,
+            accentClass: 'accent-green',
+            iconClass: 'icon-green',
+            trendValue: `+ ${stats.newBooksCount || 0}`,
+            trendLabel: 'new added',
+            trendTone: 'neutral',
+            icon: (
+                <>
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </>
+            )
+        },
+        {
+            label: 'Total Visits',
+            value: stats.totalVisits,
+            accentClass: 'accent-orange',
+            iconClass: 'icon-orange',
+            trendValue: `${stats.visitGrowthPercentage > 0 ? '↗' : '↘'} ${stats.visitGrowthPercentage || 0}%`,
+            trendLabel: 'vs last week',
+            trendTone: stats.visitGrowthPercentage >= 0 ? 'positive' : 'negative',
+            icon: (
+                <>
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                </>
+            )
+        },
+        {
+            label: 'Revenue',
+            value: '$0.00',
+            accentClass: 'accent-purple',
+            iconClass: 'icon-purple',
+            trendValue: 'Coming Soon',
+            trendLabel: 'planned metric',
+            trendTone: 'muted',
+            icon: (
+                <>
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </>
+            )
+        }
+    ]), [stats]);
+
+    const strongestCategory = stats.genreData?.length
+        ? [...stats.genreData].sort((a, b) => b.value - a.value)[0]
+        : null;
 
     if (loading) {
         return <Loader text="Loading Dashboard..." size={150} />;
@@ -64,149 +132,126 @@ const AdminDashboard = () => {
     return (
         <div className="admin-dashboard-container">
             <div className="dashboard-content-wrapper">
-                <h1 className="dashboard-title">Dashboard Overview</h1>
-
-                {/* Stats Components - Top Section */}
-                <div className="row mb-5">
-                    <div className="col-6 mb-4">
-                        <div className="stats-card">
-                            <div className="stats-icon-wrapper icon-blue">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="9" cy="7" r="4"></circle>
-                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                                </svg>
-                            </div>
-                            <div className="stats-label">Total Users</div>
-                            <div className="stats-value">{stats.totalUsers}</div>
-                            <div className="stats-trend">
-                                <span>{stats.userGrowthPercentage > 0 ? '↗' : '↘'} {stats.userGrowthPercentage}%</span>
-                                <span className="text-muted small"> vs last week</span>
-                            </div>
-                        </div>
+                <div className="dashboard-hero">
+                    <div className="dashboard-hero-copy">
+                        <span className="dashboard-eyebrow">Admin dashboard</span>
+                        <h1 className="dashboard-title">Track growth, activity, and category mix at a glance.</h1>
+                        <p className="dashboard-subtitle">
+                            A cleaner view of your library health, recent traffic, and where users are spending attention.
+                        </p>
                     </div>
 
-                    <div className="col-6 mb-4">
-                        <div className="stats-card">
-                            <div className="stats-icon-wrapper icon-green">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                                </svg>
-                            </div>
-                            <div className="stats-label">Total Books</div>
-                            <div className="stats-value">{stats.totalBooks}</div>
-                            <div className="stats-trend">
-                                <span>+ {stats.newBooksCount}</span>
-                                <span className="text-muted small"> New added</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="col-6 mb-4">
-                        <div className="stats-card">
-                            <div className="stats-icon-wrapper icon-orange">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                    <circle cx="12" cy="12" r="3"></circle>
-                                </svg>
-                            </div>
-                            <div className="stats-label">Total Visits</div>
-                            <div className="stats-value">{stats.totalVisits}</div>
-                            <div className="stats-trend">
-                                <span>{stats.visitGrowthPercentage > 0 ? '↗' : '↘'} {stats.visitGrowthPercentage}%</span>
-                                <span className="text-muted small"> vs last week</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="col-6 mb-4">
-                        <div className="stats-card">
-                            <div className="stats-icon-wrapper icon-purple">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <line x1="12" y1="1" x2="12" y2="23"></line>
-                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                                </svg>
-                            </div>
-                            <div className="stats-label">Revenue</div>
-                            <div className="stats-value">$0.00</div>
-                            <div className="stats-trend"><span className="text-muted small">Coming Soon</span></div>
-                        </div>
+                    <div className="dashboard-highlight-card">
+                        <span className="highlight-label">Top category</span>
+                        <strong>{strongestCategory?.name || 'No category data yet'}</strong>
+                        <p>
+                            {strongestCategory
+                                ? `${strongestCategory.value} books currently lead your catalog mix.`
+                                : 'Add more categorized books to unlock this summary.'}
+                        </p>
                     </div>
                 </div>
 
-                <div className="row">
-                    {/* Main Content Area (Charts) */}
-                    <div className="col-md-12" ref={chartContainerRef}>
-                        {/* Traffic Chart */}
-                        <div className="chart-container">
-                            <div className="chart-header">
-                                <h4 className="chart-title">Website Traffic</h4>
-                                <span className="chart-subtitle">Last 7 Days</span>
+                <div className="dashboard-stats-grid">
+                    {summaryCards.map((card) => (
+                        <div key={card.label} className={`stats-card ${card.accentClass}`}>
+                            <div className={`stats-icon-wrapper ${card.iconClass}`}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    {card.icon}
+                                </svg>
                             </div>
-                            {chartDimensions.width > 0 && (
-                                <div style={{ width: '100%', height: 300 }}>
-                                    <ResponsiveContainer width="100%" height={300}>
-                                        <AreaChart data={stats.trafficData}>
-                                            <defs>
-                                                <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
-                                                    <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
-                                                </linearGradient>
-                                            </defs>
-                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                                            <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#9CA3AF' }} dy={10} />
-                                            <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9CA3AF' }} />
-                                            <Tooltip
-                                                contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                                            />
-                                            <Area type="monotone" dataKey="visits" stroke="#8884d8" fillOpacity={1} fill="url(#colorVisits)" strokeWidth={3} />
-                                        </AreaChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            )}
+                            <div className="stats-label">{card.label}</div>
+                            <div className="stats-value">{card.value}</div>
+                            <div className={`stats-trend ${card.trendTone}`}>
+                                <span>{card.trendValue}</span>
+                                <span className="text-muted small">{card.trendLabel}</span>
+                            </div>
                         </div>
-                    </div>
+                    ))}
+                </div>
 
-                    {/* Categories Chart */}
-                    <div className="col-md-12">
-                        <div className="chart-container">
-                            <div className="chart-header">
+                <div className="dashboard-chart-grid">
+                    <section className="chart-container chart-container-wide" ref={chartContainerRef}>
+                        <div className="chart-header">
+                            <div>
+                                <span className="chart-kicker">Traffic</span>
+                                <h4 className="chart-title">Website Traffic</h4>
+                            </div>
+                            <span className="chart-subtitle">Last 7 days</span>
+                        </div>
+
+                        {chartDimensions.width > 0 && (
+                            <div className="chart-canvas traffic-chart">
+                                <ResponsiveContainer width="100%" height={300}>
+                                    <AreaChart data={stats.trafficData}>
+                                        <defs>
+                                            <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor="#4b6cb7" stopOpacity={0.8} />
+                                                <stop offset="95%" stopColor="#4b6cb7" stopOpacity={0} />
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#dbe4f0" />
+                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#75839a' }} dy={10} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{ fill: '#75839a' }} />
+                                        <Tooltip
+                                            contentStyle={{
+                                                borderRadius: '12px',
+                                                border: '1px solid rgba(148, 163, 184, 0.18)',
+                                                boxShadow: '0 12px 30px rgba(15,23,42,0.12)'
+                                            }}
+                                        />
+                                        <Area
+                                            type="monotone"
+                                            dataKey="visits"
+                                            stroke="#4b6cb7"
+                                            fillOpacity={1}
+                                            fill="url(#colorVisits)"
+                                            strokeWidth={3}
+                                        />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            </div>
+                        )}
+                    </section>
+
+                    <section className="chart-container chart-container-side">
+                        <div className="chart-header">
+                            <div>
+                                <span className="chart-kicker">Distribution</span>
                                 <h4 className="chart-title">Books per Category</h4>
                             </div>
-                            {chartDimensions.width > 0 && (
-                                <div style={{ width: '100%', height: 400 }}>
-                                    <ResponsiveContainer width="100%" height={400}>
-                                        <PieChart>
-                                            <Pie
-                                                data={stats.genreData}
-                                                innerRadius={isMobile ? 50 : 100}
-                                                outerRadius={isMobile ? 80 : 140}
-                                                paddingAngle={5}
-                                                dataKey="value"
-                                                cx="50%"
-                                                cy="50%"
-                                            >
-                                                {stats.genreData.map((entry, index) => (
-                                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                                ))}
-                                            </Pie>
-                                            <Tooltip />
-                                            <Legend
-                                                verticalAlign="bottom"
-                                                align="center"
-                                                layout="horizontal"
-                                                iconType="circle"
-                                            />
-                                        </PieChart>
-                                    </ResponsiveContainer>
-                                </div>
-                            )}
                         </div>
-                    </div>
-                </div>
 
+                        {chartDimensions.width > 0 && (
+                            <div className="chart-canvas pie-chart-canvas">
+                                <ResponsiveContainer width="100%" height={380}>
+                                    <PieChart>
+                                        <Pie
+                                            data={stats.genreData}
+                                            innerRadius={isMobile ? 46 : 88}
+                                            outerRadius={isMobile ? 76 : 126}
+                                            paddingAngle={4}
+                                            dataKey="value"
+                                            cx="50%"
+                                            cy="45%"
+                                        >
+                                            {stats.genreData.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip />
+                                        <Legend
+                                            verticalAlign="bottom"
+                                            align="center"
+                                            layout="horizontal"
+                                            iconType="circle"
+                                        />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </div>
+                        )}
+                    </section>
+                </div>
             </div>
         </div>
     );

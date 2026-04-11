@@ -8,10 +8,23 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
 
+    const openDetails = () => setIsModalOpen(true);
+
+    const handleCardKeyDown = (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openDetails();
+        }
+    };
+
     return (
         <>
             <motion.div
                 className="book-card"
+                role="button"
+                tabIndex={0}
+                onClick={openDetails}
+                onKeyDown={handleCardKeyDown}
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: Math.min(index * 0.03, 0.5) }}
@@ -28,9 +41,11 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit }) => {
                     }}
                 />
                 <div className="book-content">
-                    {book.category && (
-                        <span className="book-category-badge">{book.category}</span>
-                    )}
+                    <div className="book-card-meta-row">
+                        {book.category && (
+                            <span className="book-category-badge">{book.category}</span>
+                        )}
+                    </div>
                     <h3>{book.title}</h3>
                     <div className="book-card-btns">
                         <button
@@ -46,7 +61,7 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit }) => {
                             className="action-btn syllabus-btn"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                setIsModalOpen(true);
+                                openDetails();
                             }}
                         >
                             Syllabus
@@ -71,4 +86,3 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit }) => {
 };
 
 export default BookCard;
-

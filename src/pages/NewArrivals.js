@@ -1,21 +1,31 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { useBooks } from "../context/BookContext";
 import BookCard from '../components/BookCard';
 import "./NewArrivals.css";
 
-const NewArrivals = () => {
+const NewArrivals = ({ limit }) => {
   const { getBooksBySection } = useBooks();
-  // Fetch books for 'New Arrivals' (Standardized plural name)
   const newArrivals = getBooksBySection("New Arrivals");
+  const visibleBooks = typeof limit === "number" ? newArrivals.slice(0, limit) : newArrivals;
 
   return (
     <section className="new-arrivals">
-      <h2>New Arrivals</h2>
+      <div className="section-header">
+        <div>
+          <span className="section-kicker">Fresh picks</span>
+          <h2>New Arrivals</h2>
+          <p className="section-subtitle">
+            Recently added titles that deserve attention before they disappear into the full catalog.
+          </p>
+        </div>
+        <Link to="/books" className="browse-all-link">Browse all books</Link>
+      </div>
       {newArrivals.length === 0 ? (
         <p>No new arrivals at the moment.</p>
       ) : (
         <div className="book-grid">
-          {newArrivals.map((book, index) => (
+          {visibleBooks.map((book, index) => (
             <BookCard key={book.id} book={book} index={index} />
           ))}
         </div>
