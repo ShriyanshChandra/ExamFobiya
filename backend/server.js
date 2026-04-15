@@ -1,26 +1,31 @@
 require('dotenv').config(); // MUST BE FIRST - Load env before other modules
 const express = require('express');
 const cors = require('cors');
-const nodemailer = require('nodemailer');
+const fs = require('fs');
+const path = require('path');
 const admin = require('firebase-admin');
 const { getFirestore } = require('firebase-admin/firestore');
 
 // Initialize Firebase Admin SDK
 try {
     let serviceAccount;
-    // Strictly require production environment variable.
-    if (!process.env.FIREBASE_SERVICE_ACCOUNT) {
+    const localServiceAccountPath = path.join(__dirname, 'serviceAccountKey.json');
+
+    if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+        serviceAccount = typeof process.env.FIREBASE_SERVICE_ACCOUNT === 'string'
+            ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
+            : process.env.FIREBASE_SERVICE_ACCOUNT;
+        console.log("Firebase Admin Initialized securely via Environment Variables.");
+    } else if (process.env.NODE_ENV !== 'production' && fs.existsSync(localServiceAccountPath)) {
+        serviceAccount = require(localServiceAccountPath);
+        console.warn("Firebase Admin Initialized from local serviceAccountKey.json for development.");
+    } else {
         throw new Error("CRITICAL: FIREBASE_SERVICE_ACCOUNT environment variable is missing.");
     }
-    
-    serviceAccount = typeof process.env.FIREBASE_SERVICE_ACCOUNT === 'string' 
-        ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT) 
-        : process.env.FIREBASE_SERVICE_ACCOUNT;
     
     admin.initializeApp({
         credential: admin.credential.cert(serviceAccount)
     });
-    console.log("Firebase Admin Initialized securely via Environment Variables.");
 } catch (error) {
     console.error("Firebase Admin Initialization Error. Server shutting down for security.", error);
     process.exit(1);
@@ -60,10 +65,65 @@ app.post('/send-otp', async (req, res) => {
         const senderEmail = process.env.SENDER_EMAIL || process.env.EMAIL_USER;
 
         const data = JSON.stringify({
-            sender: { email: senderEmail },
+            sender: { email: senderEmail, name: 'ExamFobiya' },
             to: [{ email: email }],
-            subject: 'Your Verification Code - ExamFobiya',
-            textContent: `Your verification code is: ${otp}. Please do not share this code with anyone.`
+            subject: 'Your ExamFobiya Verification Code',
+            textContent:
+`ExamFobiya Verification Code
+
+Hello,
+
+We received a request to verify your email address for your ExamFobiya account.
+
+Your verification code is: ${otp}
+
+This code will expire in 10 minutes. For your security, please do not share this code with anyone.
+
+If you did not request this code, you can safely ignore this email.
+
+Regards,
+ExamFobiya Team`,
+            htmlContent: `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ExamFobiya Verification Code</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f7fb;font-family:Arial,sans-serif;color:#1f2937;">
+    <div style="max-width:600px;margin:0 auto;padding:32px 16px;">
+        <div style="background:#ffffff;border:1px solid #e5e7eb;border-radius:16px;overflow:hidden;box-shadow:0 8px 24px rgba(15,23,42,0.08);">
+            <div style="background:linear-gradient(135deg,#0f172a,#1d4ed8);padding:28px 32px;color:#ffffff;">
+                <p style="margin:0;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;opacity:0.9;">ExamFobiya</p>
+                <h1 style="margin:10px 0 0;font-size:28px;line-height:1.2;font-weight:700;">Your verification code</h1>
+            </div>
+            <div style="padding:32px;">
+                <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">Hello,</p>
+                <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">
+                    We received a request to verify your email address for your ExamFobiya account.
+                </p>
+                <div style="margin:24px 0;padding:20px;border:1px dashed #93c5fd;border-radius:12px;background:#eff6ff;text-align:center;">
+                    <p style="margin:0 0 8px;font-size:13px;letter-spacing:0.08em;text-transform:uppercase;color:#2563eb;">Verification Code</p>
+                    <p style="margin:0;font-size:36px;line-height:1;font-weight:700;letter-spacing:0.3em;color:#0f172a;">${otp}</p>
+                </div>
+                <p style="margin:0 0 12px;font-size:15px;line-height:1.6;">
+                    This code will expire in <strong>10 minutes</strong>. For your security, please do not share it with anyone.
+                </p>
+                <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#4b5563;">
+                    If you did not request this code, you can safely ignore this email.
+                </p>
+                <div style="padding-top:20px;border-top:1px solid #e5e7eb;">
+                    <p style="margin:0;font-size:14px;line-height:1.6;color:#6b7280;">
+                        Regards,<br />
+                        <strong style="color:#111827;">ExamFobiya Team</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>`
         });
 
         const options = {
