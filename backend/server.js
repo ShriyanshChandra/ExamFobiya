@@ -95,7 +95,7 @@ ExamFobiya Team`,
     <div style="max-width:600px;margin:0 auto;padding:32px 16px;">
         <div style="background:#ffffff;border:1px solid #e5e7eb;border-radius:16px;overflow:hidden;box-shadow:0 8px 24px rgba(15,23,42,0.08);">
             <div style="background:linear-gradient(135deg,#0f172a,#1d4ed8);padding:28px 32px;color:#ffffff;">
-                <p style="margin:0;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;opacity:0.9;">ExamFobiya</p>
+                <p style="margin:0;font-size:14px;letter-spacing:0.08em;text-transform:uppercase;color:#ffd700;font-weight:700;">ExamFobiya</p>
                 <h1 style="margin:10px 0 0;font-size:28px;line-height:1.2;font-weight:700;">Your verification code</h1>
             </div>
             <div style="padding:32px;">
