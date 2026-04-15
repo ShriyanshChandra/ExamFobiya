@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getApiUrl } from '../utils/api';
@@ -18,6 +18,57 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true }) => {
     const [loading, setLoading] = useState(false);
     const [localError, setLocalError] = useState('');
     const [successMsg, setSuccessMsg] = useState('');
+    const [resendTimer, setResendTimer] = useState(0);
+
+    useEffect(() => {
+        if (resendTimer <= 0) {
+            return undefined;
+        }
+
+        const timer = setInterval(() => {
+            setResendTimer((current) => {
+                if (current <= 1) {
+                    clearInterval(timer);
+                    return 0;
+                }
+                return current - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [resendTimer]);
+
+    const formatResendTimer = (seconds) => {
+        const minutes = String(Math.floor(seconds / 60)).padStart(2, '0');
+        const remainingSeconds = String(seconds % 60).padStart(2, '0');
+        return `${minutes}:${remainingSeconds}`;
+    };
+
+    const sendResetOtp = async (userEmail) => {
+        if (role === 'admin') {
+            const checkResponse = await fetch(getApiUrl('/api/check-admin'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: userEmail })
+            });
+
+            if (!checkResponse.ok) {
+                const errorData = await checkResponse.json();
+                throw new Error(errorData.error || 'Account checking failed.');
+            }
+        }
+
+        const response = await fetch(getApiUrl('/send-otp'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: userEmail }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to send OTP');
+        }
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -30,30 +81,9 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true }) => {
         setSuccessMsg('');
         setLoading(true);
         try {
-            if (role === 'admin') {
-                const checkResponse = await fetch(getApiUrl('/api/check-admin'), {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: resetEmail })
-                });
-
-                if (!checkResponse.ok) {
-                    const errorData = await checkResponse.json();
-                    throw new Error(errorData.error || 'Account checking failed.');
-                }
-            }
-
-            const response = await fetch(getApiUrl('/send-otp'), {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: resetEmail }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to send OTP');
-            }
+            await sendResetOtp(resetEmail);
             // Backend stored the OTP. We just move to next step.
+            setResendTimer(120);
             setStep('otp');
         } catch (err) {
             console.error(err);
@@ -71,6 +101,22 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true }) => {
         }
         // Proceed to password input. Final validation happens securely on the backend.
         setStep('new-password');
+    };
+
+    const handleResendOtp = async () => {
+        setLocalError('');
+        setSuccessMsg('');
+        setLoading(true);
+
+        try {
+            await sendResetOtp(resetEmail);
+            setResendTimer(120);
+        } catch (err) {
+            console.error(err);
+            setLocalError(err.message || "Failed to resend verification code.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleResetPassword = async (e) => {
@@ -104,6 +150,7 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true }) => {
             setEnteredOtp('');
             setNewPassword('');
             setConfirmPassword('');
+            setResendTimer(0);
         } catch (err) {
             console.error(err);
             setLocalError(err.message || "Failed to reset password.");
@@ -206,6 +253,19 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true }) => {
                     </div>
                     <button type="submit" className="login-btn">
                         Verify Code
+                    </button>
+                    <p style={{ marginTop: '12px', marginBottom: '0', textAlign: 'center', color: '#555', fontSize: '0.9rem' }}>
+                        {resendTimer > 0
+                            ? `Resend available in ${formatResendTimer(resendTimer)}`
+                            : 'Didn’t receive the code?'}
+                    </p>
+                    <button
+                        type="button"
+                        onClick={handleResendOtp}
+                        disabled={loading || resendTimer > 0}
+                        style={{ background: 'none', border: 'none', color: resendTimer > 0 ? '#999' : '#007bff', cursor: resendTimer > 0 ? 'not-allowed' : 'pointer', width: '100%', marginTop: '10px', fontWeight: '500' }}
+                    >
+                        {loading && resendTimer === 0 ? 'Sending...' : 'Resend Code'}
                     </button>
                     <button type="button" onClick={() => { setStep('email'); setLocalError(''); }} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', width: '100%', marginTop: '10px' }}>
                         Back

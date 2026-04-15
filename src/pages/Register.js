@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getApiUrl } from '../utils/api';
@@ -15,9 +15,34 @@ const Register = () => {
     // 2FA State
     const [step, setStep] = useState('form'); // 'form' | 'verify'
     const [enteredOtp, setEnteredOtp] = useState('');
+    const [resendTimer, setResendTimer] = useState(0);
 
     const { register } = useAuth();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (resendTimer <= 0) {
+            return undefined;
+        }
+
+        const timer = setInterval(() => {
+            setResendTimer((current) => {
+                if (current <= 1) {
+                    clearInterval(timer);
+                    return 0;
+                }
+                return current - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [resendTimer]);
+
+    const formatResendTimer = (seconds) => {
+        const minutes = String(Math.floor(seconds / 60)).padStart(2, '0');
+        const remainingSeconds = String(seconds % 60).padStart(2, '0');
+        return `${minutes}:${remainingSeconds}`;
+    };
 
     const sendOtpEmail = async (userEmail) => {
         try {
@@ -55,10 +80,26 @@ const Register = () => {
         setLoading(true);
         try {
             await sendOtpEmail(email);
+            setResendTimer(120);
             setStep('verify');
         } catch (err) {
             console.error(err);
             setError("Failed to send verification code. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleResendOtp = async () => {
+        setError('');
+        setLoading(true);
+
+        try {
+            await sendOtpEmail(email);
+            setResendTimer(120);
+        } catch (err) {
+            console.error(err);
+            setError("Failed to resend verification code. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -177,6 +218,22 @@ const Register = () => {
                             {loading ? 'Verifying...' : 'Verify & Register'}
                         </button>
 
+                        <p style={{ marginTop: '12px', marginBottom: '0', textAlign: 'center', color: '#555', fontSize: '0.9rem' }}>
+                            {resendTimer > 0
+                                ? `Resend available in ${formatResendTimer(resendTimer)}`
+                                : 'Didn’t receive the code?'}
+                        </p>
+
+                        <button
+                            type="button"
+                            className="cancel-btn"
+                            onClick={handleResendOtp}
+                            disabled={loading || resendTimer > 0}
+                            style={{ marginTop: '10px', width: '100%' }}
+                        >
+                            {loading && resendTimer === 0 ? 'Sending...' : 'Resend Code'}
+                        </button>
+
                         <button
                             type="button"
                             className="cancel-btn"
@@ -184,6 +241,7 @@ const Register = () => {
                                 setStep('form');
                                 setError('');
                                 setEnteredOtp('');
+                                setResendTimer(0);
                             }}
                             style={{ marginTop: '10px', width: '100%' }}
                         >
