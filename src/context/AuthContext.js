@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { auth, db } from '../firebase';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { getApiUrl } from '../utils/api';
 
 const AuthContext = createContext(null);
 
@@ -45,11 +46,43 @@ export const AuthProvider = ({ children }) => {
         return signInWithEmailAndPassword(auth, email, password);
     };
 
+    const checkAccountExists = async (email) => {
+        const normalizedEmail = email.trim().toLowerCase();
+        const response = await fetch(getApiUrl('/api/check-account-exists'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: normalizedEmail })
+        });
+
+        if (response.status === 404) {
+            return false;
+        }
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || 'Failed to verify account.');
+        }
+
+        return true;
+    };
+
     const register = async (email, password, role, username) => {
-        const result = await createUserWithEmailAndPassword(auth, email, password);
+        const normalizedEmail = email.trim().toLowerCase();
+        let result;
+
+        try {
+            result = await createUserWithEmailAndPassword(auth, normalizedEmail, password);
+        } catch (error) {
+            if (error.code === 'auth/email-already-in-use') {
+                throw new Error('Account already exists. Please login.');
+            }
+
+            throw error;
+        }
+
         // Create user document with role
         await setDoc(doc(db, "users", result.user.uid), {
-            email,
+            email: normalizedEmail,
             role,
             username,
             createdAt: new Date()
@@ -62,7 +95,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, register, logout, loading, checkAccountExists }}>
             {children}
         </AuthContext.Provider>
     );

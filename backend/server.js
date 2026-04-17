@@ -40,22 +40,58 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+const findUserByEmail = async (email) => {
+    const normalizedEmail = email.trim().toLowerCase();
+
+    try {
+        const authUser = await admin.auth().getUserByEmail(normalizedEmail);
+        return { exists: true, source: 'auth', authUser };
+    } catch (error) {
+        if (error.code !== 'auth/user-not-found') {
+            throw error;
+        }
+    }
+
+    const usersSnapshot = await getFirestore()
+        .collection('users')
+        .where('email', '==', normalizedEmail)
+        .limit(1)
+        .get();
+
+    if (!usersSnapshot.empty) {
+        return { exists: true, source: 'firestore', userDoc: usersSnapshot.docs[0] };
+    }
+
+    return { exists: false, source: null };
+};
+
 // Routes
 app.post('/send-otp', async (req, res) => {
-    const { email } = req.body;
+    const normalizedEmail = req.body?.email?.trim().toLowerCase();
+    const purpose = req.body?.purpose || 'generic';
 
-    if (!email) {
+    if (!normalizedEmail) {
         return res.status(400).json({ error: 'Email is required' });
     }
 
     try {
+        const accountStatus = await findUserByEmail(normalizedEmail);
+
+        if (purpose === 'register' && accountStatus.exists) {
+            return res.status(409).json({ error: 'Account already exists. Please login.' });
+        }
+
+        if (purpose === 'reset-password' && !accountStatus.exists) {
+            return res.status(404).json({ error: 'Account does not exist in the database. Please register first.' });
+        }
+
         console.log("Attempting to send email via Brevo API...");
 
         // Generate secure 6 digit OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         
         // Save OTP to Firestore (expires in 10 minutes)
-        await getFirestore().collection('otps').doc(email).set({
+        await getFirestore().collection('otps').doc(normalizedEmail).set({
             code: otp,
             expiresAt: Date.now() + 10 * 60 * 1000 
         });
@@ -66,7 +102,7 @@ app.post('/send-otp', async (req, res) => {
 
         const data = JSON.stringify({
             sender: { email: senderEmail, name: 'ExamFobiya' },
-            to: [{ email: email }],
+            to: [{ email: normalizedEmail }],
             subject: 'Your ExamFobiya Verification Code',
             textContent:
 `ExamFobiya Verification Code
@@ -148,7 +184,7 @@ ExamFobiya Team`,
 
             apiRes.on('end', () => {
                 if (apiRes.statusCode >= 200 && apiRes.statusCode < 300) {
-                    console.log(`Email sent to ${email}`);
+                    console.log(`Email sent to ${normalizedEmail}`);
                     res.status(200).json({ message: 'OTP sent successfully' });
                 } else {
                     console.error('Brevo API Error:', responseData);
@@ -184,14 +220,13 @@ app.post('/api/check-admin', async (req, res) => {
     if (!email) return res.status(400).json({ error: 'Email required' });
 
     try {
-        const usersRef = getFirestore().collection('users');
-        const snapshot = await usersRef.where('email', '==', email).get();
+        const accountStatus = await findUserByEmail(email);
 
-        if (snapshot.empty) {
+        if (!accountStatus.exists || accountStatus.source !== 'firestore') {
             return res.status(404).json({ error: 'Account not found.' });
         }
 
-        const userData = snapshot.docs[0].data();
+        const userData = accountStatus.userDoc.data();
         if (userData.role !== 'admin') {
             return res.status(403).json({ error: 'You are not an Admin! Please reset your password in the User portal.' });
         }
@@ -200,6 +235,27 @@ app.post('/api/check-admin', async (req, res) => {
     } catch (error) {
         console.error('Error checking admin role:', error);
         res.status(500).json({ error: 'Failed to verify account permissions.' });
+    }
+});
+
+app.post('/api/check-account-exists', async (req, res) => {
+    const normalizedEmail = req.body?.email?.trim().toLowerCase();
+
+    if (!normalizedEmail) {
+        return res.status(400).json({ error: 'Email is required' });
+    }
+
+    try {
+        const accountStatus = await findUserByEmail(normalizedEmail);
+
+        if (!accountStatus.exists) {
+            return res.status(404).json({ exists: false, error: 'Account does not exist in the database. Please register first.' });
+        }
+
+        return res.status(200).json({ exists: true });
+    } catch (error) {
+        console.error('Error checking account existence:', error);
+        return res.status(500).json({ error: 'Failed to verify account.' });
     }
 });
 

@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { getApiUrl } from '../utils/api';
 import './Login.css';
 
-const LoginBox = ({ role, title, onAuth, allowRegister = true }) => {
+const LoginBox = ({ role, title, onAuth, allowRegister = true, checkAccountExists }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -45,6 +45,12 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true }) => {
     };
 
     const sendResetOtp = async (userEmail) => {
+        const accountExists = await checkAccountExists(userEmail);
+
+        if (!accountExists) {
+            throw new Error('Account does not exist in the database. Please register first.');
+        }
+
         if (role === 'admin') {
             const checkResponse = await fetch(getApiUrl('/api/check-admin'), {
                 method: 'POST',
@@ -61,7 +67,7 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true }) => {
         const response = await fetch(getApiUrl('/send-otp'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: userEmail }),
+            body: JSON.stringify({ email: userEmail, purpose: 'reset-password' }),
         });
 
         if (!response.ok) {
@@ -319,7 +325,7 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true }) => {
 
 const Login = () => {
     const [error, setError] = useState('');
-    const { login, register } = useAuth();
+    const { login, register, checkAccountExists } = useAuth();
     const navigate = useNavigate();
 
     const handleAuth = async (role, email, password, isRegistering) => {
@@ -350,8 +356,8 @@ const Login = () => {
         <div className="login-container">
             {error && <div className="global-error-message">{error}</div>}
             <div className="login-boxes-wrapper">
-                <LoginBox role="admin" title="Admin Portal" onAuth={handleAuth} allowRegister={false} />
-                <LoginBox role="user" title="User Portal" onAuth={handleAuth} allowRegister={true} />
+                <LoginBox role="admin" title="Admin Portal" onAuth={handleAuth} allowRegister={false} checkAccountExists={checkAccountExists} />
+                <LoginBox role="user" title="User Portal" onAuth={handleAuth} allowRegister={true} checkAccountExists={checkAccountExists} />
             </div>
         </div>
     );

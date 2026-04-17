@@ -17,7 +17,7 @@ const Register = () => {
     const [enteredOtp, setEnteredOtp] = useState('');
     const [resendTimer, setResendTimer] = useState(0);
 
-    const { register } = useAuth();
+    const { register, checkAccountExists } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -51,7 +51,7 @@ const Register = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email: userEmail }),
+                body: JSON.stringify({ email: userEmail, purpose: 'register' }),
             });
 
             if (!response.ok) {
@@ -79,12 +79,18 @@ const Register = () => {
 
         setLoading(true);
         try {
+            const accountExists = await checkAccountExists(email);
+
+            if (accountExists) {
+                throw new Error('Account already exists. Please login.');
+            }
+
             await sendOtpEmail(email);
             setResendTimer(120);
             setStep('verify');
         } catch (err) {
             console.error(err);
-            setError("Failed to send verification code. Please try again.");
+            setError(err.message || "Failed to send verification code. Please try again.");
         } finally {
             setLoading(false);
         }
