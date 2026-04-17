@@ -1,5 +1,5 @@
-import React, { useState, useEffect, Suspense, lazy } from 'react';
-import { HashRouter as Router, Routes, Route } from "react-router-dom";
+import React, { useState, useEffect, Suspense, lazy, useRef } from 'react';
+import { HashRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -35,6 +35,24 @@ const TermsAndConditions = lazy(() => import('./pages/TermsAndConditions'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
 const Maintenance = lazy(() => import('./pages/Maintenance'));
 
+function RouteTracker() {
+  const location = useLocation();
+  const lastTrackedPath = useRef(null);
+
+  useEffect(() => {
+    const currentPath = `${location.pathname}${location.search}`;
+
+    if (lastTrackedPath.current === currentPath) {
+      return;
+    }
+
+    lastTrackedPath.current = currentPath;
+    trackVisit();
+  }, [location.pathname, location.search]);
+
+  return null;
+}
+
 function App() {
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -42,10 +60,6 @@ function App() {
   // TOGGLE THIS VARIABLE TO "true" WHEN YOU WANT TO PAUSE THE ENTIRE WEBSITE DEPLOYMENT!
   const isMaintenanceMode = false;
   // ========================================================================================
-
-  useEffect(() => {
-    trackVisit();
-  }, []);
 
   if (isMaintenanceMode) {
     return (
@@ -62,6 +76,7 @@ function App() {
           <ThemeProvider>
             <QuestionProvider>
               <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+                <RouteTracker />
                 <div className="app-container">
                   <Navbar setSearchQuery={setSearchQuery} />
                   {/* Ensure this div is transparent so the background shows through */}

@@ -41,7 +41,8 @@ app.use(cors());
 app.use(express.json());
 
 const findUserByEmail = async (email) => {
-    const normalizedEmail = email.trim().toLowerCase();
+    const rawEmail = email.trim();
+    const normalizedEmail = rawEmail.toLowerCase();
 
     try {
         const authUser = await admin.auth().getUserByEmail(normalizedEmail);
@@ -52,17 +53,84 @@ const findUserByEmail = async (email) => {
         }
     }
 
-    const usersSnapshot = await getFirestore()
+    let usersSnapshot = await getFirestore()
         .collection('users')
         .where('email', '==', normalizedEmail)
         .limit(1)
         .get();
+
+    if (usersSnapshot.empty && rawEmail !== normalizedEmail) {
+        usersSnapshot = await getFirestore()
+            .collection('users')
+            .where('email', '==', rawEmail)
+            .limit(1)
+            .get();
+    }
 
     if (!usersSnapshot.empty) {
         return { exists: true, source: 'firestore', userDoc: usersSnapshot.docs[0] };
     }
 
     return { exists: false, source: null };
+};
+
+const getUserProfileFromAccountStatus = async (accountStatus) => {
+    if (!accountStatus?.exists) {
+        return null;
+    }
+
+    if (accountStatus.source === 'firestore' && accountStatus.userDoc) {
+        return accountStatus.userDoc;
+    }
+
+    if (accountStatus.authUser?.uid) {
+        const userDoc = await getFirestore().collection('users').doc(accountStatus.authUser.uid).get();
+
+        if (userDoc.exists) {
+            return userDoc;
+        }
+    }
+
+    return null;
+};
+
+const isRecentDate = (dateValue) => {
+    if (!dateValue) {
+        return false;
+    }
+
+    const parsedDate = dateValue?.toDate ? dateValue.toDate() : new Date(dateValue);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+        return false;
+    }
+
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    return parsedDate > sevenDaysAgo;
+};
+
+const calculateGrowth = (current, previous) => {
+    if (previous === 0) {
+        return current > 0 ? 100 : 0;
+    }
+
+    return ((current - previous) / previous) * 100;
+};
+
+const getAnalyticsDocMeta = (offsetDays = 0) => {
+    const date = new Date();
+    date.setDate(date.getDate() + offsetDays);
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return {
+        date,
+        docId: `${year}-${month}-${day}`,
+        label: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    };
 };
 
 // Routes
@@ -221,12 +289,13 @@ app.post('/api/check-admin', async (req, res) => {
 
     try {
         const accountStatus = await findUserByEmail(email);
+        const userProfileDoc = await getUserProfileFromAccountStatus(accountStatus);
 
-        if (!accountStatus.exists || accountStatus.source !== 'firestore') {
+        if (!accountStatus.exists || !userProfileDoc) {
             return res.status(404).json({ error: 'Account not found.' });
         }
 
-        const userData = accountStatus.userDoc.data();
+        const userData = userProfileDoc.data();
         if (userData.role !== 'admin') {
             return res.status(403).json({ error: 'You are not an Admin! Please reset your password in the User portal.' });
         }
@@ -261,14 +330,15 @@ app.post('/api/check-account-exists', async (req, res) => {
 
 // OTP Verification Endpoint (For Registration Flow)
 app.post('/api/verify-otp', async (req, res) => {
-    const { email, otp } = req.body;
+    const normalizedEmail = req.body?.email?.trim().toLowerCase();
+    const { otp } = req.body;
     
-    if (!email || !otp) {
+    if (!normalizedEmail || !otp) {
         return res.status(400).json({ error: 'Email and OTP are required' });
     }
 
     try {
-        const otpDocRef = getFirestore().collection('otps').doc(email);
+        const otpDocRef = getFirestore().collection('otps').doc(normalizedEmail);
         const otpDoc = await otpDocRef.get();
         if (!otpDoc.exists) {
             return res.status(400).json({ error: 'No OTP found for this email. Please request a new one.' });
@@ -296,15 +366,16 @@ app.post('/api/verify-otp', async (req, res) => {
 
 // Password Reset Endpoint
 app.post('/api/reset-password', async (req, res) => {
-    const { email, otp, newPassword } = req.body;
+    const normalizedEmail = req.body?.email?.trim().toLowerCase();
+    const { otp, newPassword } = req.body;
 
-    if (!email || !otp || !newPassword) {
+    if (!normalizedEmail || !otp || !newPassword) {
         return res.status(400).json({ error: 'Email, OTP, and new password are required' });
     }
 
     try {
         // Validate OTP security
-        const otpDocRef = getFirestore().collection('otps').doc(email);
+        const otpDocRef = getFirestore().collection('otps').doc(normalizedEmail);
         const otpDoc = await otpDocRef.get();
         if (!otpDoc.exists) {
             return res.status(400).json({ error: 'No OTP found for this email. Please request a new one.' });
@@ -321,7 +392,7 @@ app.post('/api/reset-password', async (req, res) => {
         }
 
         // Fetch user using email
-        const userRecord = await admin.auth().getUserByEmail(email);
+        const userRecord = await admin.auth().getUserByEmail(normalizedEmail);
         
         // Update user's password
         await admin.auth().updateUser(userRecord.uid, {
@@ -335,6 +406,86 @@ app.post('/api/reset-password', async (req, res) => {
     } catch (error) {
         console.error('Password reset error:', error);
         res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/api/admin/analytics', async (req, res) => {
+    try {
+        const database = getFirestore();
+        const [booksSnapshot, usersSnapshot, statsSnapshot] = await Promise.all([
+            database.collection('books').get(),
+            database.collection('users').get(),
+            database.collection('stats').doc('general').get()
+        ]);
+
+        const genreCounts = {};
+        let newBooksCount = 0;
+
+        booksSnapshot.forEach((bookDoc) => {
+            const data = bookDoc.data();
+
+            if (isRecentDate(data.createdAt)) {
+                newBooksCount += 1;
+            }
+
+            const genre = data.genre || data.category || 'Uncategorized';
+            genreCounts[genre] = (genreCounts[genre] || 0) + 1;
+        });
+
+        let newUsersCount = 0;
+        usersSnapshot.forEach((userDoc) => {
+            const data = userDoc.data();
+
+            if (isRecentDate(data.createdAt)) {
+                newUsersCount += 1;
+            }
+        });
+
+        const trafficConfigs = Array.from({ length: 7 }, (_, index) => getAnalyticsDocMeta(index - 6));
+        const previousTrafficConfigs = Array.from({ length: 7 }, (_, index) => getAnalyticsDocMeta(index - 13));
+
+        const [currentTrafficDocs, previousTrafficDocs] = await Promise.all([
+            Promise.all(
+                trafficConfigs.map(({ docId }) => database.collection('daily_stats').doc(docId).get())
+            ),
+            Promise.all(
+                previousTrafficConfigs.map(({ docId }) => database.collection('daily_stats').doc(docId).get())
+            )
+        ]);
+
+        const trafficData = trafficConfigs.map((config, index) => {
+            const data = currentTrafficDocs[index].data() || {};
+            return {
+                name: config.label,
+                visits: data.visits ?? data.visit_count ?? 0
+            };
+        });
+
+        const currentWeekVisits = trafficData.reduce((sum, item) => sum + item.visits, 0);
+        const previousWeekVisits = previousTrafficDocs.reduce((sum, snapshot) => {
+            const data = snapshot.data() || {};
+            return sum + (data.visits ?? data.visit_count ?? 0);
+        }, 0);
+
+        const totalUsers = usersSnapshot.size;
+        const previousUsers = totalUsers - newUsersCount;
+        const genreData = Object.entries(genreCounts).map(([name, value]) => ({ name, value }));
+
+        res.status(200).json({
+            totalBooks: booksSnapshot.size,
+            newBooksCount,
+            totalUsers,
+            userGrowthPercentage: previousUsers > 0
+                ? ((newUsersCount / previousUsers) * 100).toFixed(1)
+                : '100.0',
+            totalVisits: statsSnapshot.exists ? statsSnapshot.data().visit_count || 0 : 0,
+            visitGrowthPercentage: calculateGrowth(currentWeekVisits, previousWeekVisits).toFixed(1),
+            genreData,
+            trafficData
+        });
+    } catch (error) {
+        console.error('Error fetching admin analytics:', error);
+        res.status(500).json({ error: 'Failed to fetch analytics data.' });
     }
 });
 
