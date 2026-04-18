@@ -121,10 +121,6 @@ const AdminDashboard = () => {
         }
     ]), [stats]);
 
-    const strongestCategory = stats.genreData?.length
-        ? [...stats.genreData].sort((a, b) => b.value - a.value)[0]
-        : null;
-
     if (loading) {
         return <Loader text="Loading Dashboard..." size={150} />;
     }
@@ -138,16 +134,6 @@ const AdminDashboard = () => {
                         <h1 className="dashboard-title">Track growth, activity, and category mix at a glance.</h1>
                         <p className="dashboard-subtitle">
                             A cleaner view of your library health, recent traffic, and where users are spending attention.
-                        </p>
-                    </div>
-
-                    <div className="dashboard-highlight-card">
-                        <span className="highlight-label">Top category</span>
-                        <strong>{strongestCategory?.name || 'No category data yet'}</strong>
-                        <p>
-                            {strongestCategory
-                                ? `${strongestCategory.value} books currently lead your catalog mix.`
-                                : 'Add more categorized books to unlock this summary.'}
                         </p>
                     </div>
                 </div>
