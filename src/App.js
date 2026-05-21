@@ -1,6 +1,7 @@
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import { useState } from "react";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
 import Books from "./pages/Books";
@@ -55,6 +56,7 @@ function App() {
                   <Route path="/maintenance" element={<Maintenance />} />
                 </Routes>
               </div>
+              <Footer />
             </Router>
           </QuestionProvider>
         </BookProvider>
