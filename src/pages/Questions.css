@@ -1,18 +1,18 @@
 .questions-container {
   min-height: 100vh;
-  padding: 40px 0;
+  padding: 2.5rem 0;
 }
 
 .questions-content {
-  max-width: 1600px;
+  max-width: 100rem;
   margin: 0 auto;
   text-align: center;
   background: var(--glass-bg);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--glass-border);
-  border-radius: 30px;
-  padding: 60px 40px;
+  border-radius: 1.875rem;
+  padding: 3.75rem 2.5rem;
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
   width: 95%;
 }
@@ -33,10 +33,10 @@
 /* ===== SEARCH BAR ===== */
 
 .search-section {
-  max-width: 980px;
-  margin: 0 auto 30px;
+  max-width: 61.25rem;
+  margin: 0 auto 1.875rem;
   display: flex;
-  gap: 15px;
+  gap: 0.9375rem;
   align-items: center;
 }
 
@@ -44,13 +44,13 @@
   display: flex;
   align-items: center;
   background: var(--input-bg);
-  border-radius: 50px;
-  padding: 5px 5px 5px 20px;
+  border-radius: 3.125rem;
+  padding: 0.3125rem 0.3125rem 0.3125rem 1.25rem;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1), inset 0 2px 4px rgba(0, 0, 0, 0.05);
   border: 1px solid rgba(100, 100, 100, 0.2);
   width: 100%;
   transition: all 0.3s ease;
-  height: 50px;
+  height: 3.125rem;
 }
 
 .search-input-wrapper:focus-within {
@@ -67,7 +67,7 @@
   color: var(--text-color);
   font-size: 1rem;
   padding: 0;
-  margin-right: 10px;
+  margin-right: 0.625rem;
   box-shadow: none;
 }
 
@@ -87,8 +87,8 @@
   background-color: #ffd700;
   color: #182848;
   border: none;
-  width: 40px;
-  height: 40px;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -99,8 +99,8 @@
 }
 
 .questions-search-btn svg {
-  width: 20px;
-  height: 20px;
+  width: 1.25rem;
+  height: 1.25rem;
   stroke-width: 2px;
 }
 
@@ -111,17 +111,17 @@
 }
 
 .questions-filter-btn {
-  min-width: 128px;
-  height: 50px;
-  padding: 0 18px;
-  border-radius: 999px;
+  min-width: 8rem;
+  height: 3.125rem;
+  padding: 0 1.125rem;
+  border-radius: 62.4375rem;
   border: 1px solid rgba(255, 215, 0, 0.28);
   background: rgba(255, 215, 0, 0.1);
   color: var(--text-color);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 0.625rem;
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
@@ -135,10 +135,10 @@
 }
 
 .filter-count {
-  min-width: 22px;
-  height: 22px;
-  padding: 0 6px;
-  border-radius: 999px;
+  min-width: 1.375rem;
+  height: 1.375rem;
+  padding: 0 0.375rem;
+  border-radius: 62.4375rem;
   background: #ffd700;
   color: #182848;
   font-size: 0.8rem;
@@ -148,12 +148,12 @@
 }
 
 .questions-filters-panel {
-  max-width: 980px;
-  margin: -10px auto 26px;
-  padding: 18px;
+  max-width: 61.25rem;
+  margin: -0.625rem auto 1.625rem;
+  padding: 1.125rem;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 22px;
+  border-radius: 1.375rem;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08);
@@ -162,14 +162,14 @@
 .questions-filter-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  gap: 0.875rem;
 }
 
 .questions-filter-field {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 8px;
+  gap: 0.5rem;
   text-align: left;
 }
 
@@ -181,9 +181,9 @@
 
 .questions-filter-field select {
   width: 100%;
-  height: 46px;
-  padding: 0 14px;
-  border-radius: 14px;
+  height: 2.875rem;
+  padding: 0 0.875rem;
+  border-radius: 0.875rem;
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(255, 255, 255, 0.08);
   color: var(--text-color);
@@ -198,7 +198,7 @@
 }
 
 .questions-filter-actions {
-  margin-top: 14px;
+  margin-top: 0.875rem;
   display: flex;
   justify-content: flex-end;
 }
@@ -209,7 +209,7 @@
   color: #ffd700;
   font-weight: 700;
   cursor: pointer;
-  padding: 6px 4px;
+  padding: 0.375rem 0.25rem;
 }
 
 .questions-clear-filters-btn:hover {
@@ -218,15 +218,15 @@
 
 /* ===== RESPONSIVE ===== */
 
-@media (max-width: 768px) {
+@media (max-width: 48rem) {
   .questions-container {
-    padding: 20px 0;
+    padding: 1.25rem 0;
   }
 
   .questions-content {
-    padding: 30px 20px;
+    padding: 1.875rem 1.25rem;
     width: 95%;
-    border-radius: 20px;
+    border-radius: 1.25rem;
   }
 
   .questions-content h2 {
@@ -241,12 +241,12 @@
   .search-section {
     flex-direction: column;
     align-items: stretch;
-    margin-bottom: 20px;
+    margin-bottom: 1.25rem;
   }
 
   .search-input-wrapper {
-    padding: 5px 5px 5px 15px;
-    height: 46px;
+    padding: 0.3125rem 0.3125rem 0.3125rem 0.9375rem;
+    height: 2.875rem;
   }
 
   .questions-search-input {
@@ -254,25 +254,25 @@
   }
 
   .questions-search-btn {
-    width: 36px;
-    height: 36px;
+    width: 2.25rem;
+    height: 2.25rem;
   }
 
   .questions-search-btn svg {
-    width: 18px;
-    height: 18px;
+    width: 1.125rem;
+    height: 1.125rem;
   }
 
   .questions-filter-btn {
     width: 100%;
     min-width: 0;
-    height: 46px;
+    height: 2.875rem;
   }
 
   .questions-filters-panel {
-    margin: -6px auto 20px;
-    padding: 14px;
-    border-radius: 18px;
+    margin: -0.375rem auto 1.25rem;
+    padding: 0.875rem;
+    border-radius: 1.125rem;
   }
 
   .questions-filter-grid {
@@ -285,8 +285,8 @@
 
   .questions-clear-filters-btn {
     width: 100%;
-    min-height: 42px;
-    border-radius: 12px;
+    min-height: 2.625rem;
+    border-radius: 0.75rem;
     background: rgba(255, 215, 0, 0.08);
     border: 1px solid rgba(255, 215, 0, 0.14);
     text-align: center;
@@ -298,9 +298,9 @@
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 30rem) {
   .questions-content {
-    padding: 25px 16px;
+    padding: 1.5625rem 1rem;
     width: 96%;
   }
 
@@ -309,8 +309,8 @@
   }
 
   .search-input-wrapper {
-    padding: 4px 4px 4px 12px;
-    height: 44px;
+    padding: 0.25rem 0.25rem 0.25rem 0.75rem;
+    height: 2.75rem;
   }
 
   .questions-search-input {
@@ -318,27 +318,27 @@
   }
 
   .questions-search-btn {
-    width: 34px;
-    height: 34px;
+    width: 2.125rem;
+    height: 2.125rem;
   }
 
   .questions-filters-panel {
-    padding: 12px;
+    padding: 0.75rem;
   }
 
   .questions-filter-btn {
-    height: 44px;
+    height: 2.75rem;
     font-size: 0.92rem;
   }
 
   .filter-count {
-    min-width: 20px;
-    height: 20px;
+    min-width: 1.25rem;
+    height: 1.25rem;
     font-size: 0.75rem;
   }
 
   .questions-filter-field {
-    gap: 6px;
+    gap: 0.375rem;
   }
 
   .questions-filter-field span {
@@ -346,7 +346,7 @@
   }
 
   .questions-filter-field select {
-    height: 44px;
+    height: 2.75rem;
     font-size: 0.9rem;
   }
 }
@@ -355,8 +355,8 @@
 .uq-upload-btn {
   background-color: #ffd700;
   color: #182848;
-  padding: 10px 20px;
-  border-radius: 8px;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
   border: none;
   cursor: pointer;
   font-weight: bold;
@@ -375,26 +375,26 @@
   color: var(--text-color);
   opacity: 0.75;
   font-size: 1.05rem;
-  padding: 50px 20px;
+  padding: 3.125rem 1.25rem;
   background: rgba(255, 255, 255, 0.02);
   border: 2px dashed rgba(150, 150, 150, 0.3);
-  border-radius: 16px;
-  margin-top: 10px;
+  border-radius: 1rem;
+  margin-top: 0.625rem;
 }
 
 /* ===== PDF RESULT CARDS (LIST / ROW VIEW) ===== */
 .pdf-results-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: 24px;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
 }
 
 .pdf-result-card-row {
   background: var(--input-bg);
   border: 1px solid rgba(100, 100, 100, 0.2);
-  border-radius: 12px;
-  padding: 16px 20px;
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -414,13 +414,13 @@
 .pdf-row-info {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 0.9375rem;
 }
 
 .pdf-row-details {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
   flex-wrap: wrap;
 }
 
@@ -435,8 +435,8 @@
   font-weight: 700;
   background: #ffd700;
   color: #182848;
-  padding: 4px 12px;
-  border-radius: 20px;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1.25rem;
 }
 
 .pdf-card-label-row,
@@ -448,7 +448,7 @@
 .pdf-row-actions {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 0.9375rem;
 }
 
 .pdf-card-open-row {
@@ -463,30 +463,30 @@
   text-decoration: underline;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 37.5rem) {
   .pdf-result-card-row {
     flex-direction: column;
     align-items: flex-start;
-    gap: 12px;
-    padding: 14px 16px;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
   }
 
   .pdf-row-info {
     flex-direction: column;
     align-items: flex-start;
-    gap: 6px;
+    gap: 0.375rem;
     width: 100%;
   }
 
   .pdf-row-details {
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 0.375rem;
   }
 
   .pdf-row-actions {
     width: 100%;
     justify-content: flex-end;
-    gap: 10px;
+    gap: 0.625rem;
   }
 
   .pdf-card-subject {
@@ -494,24 +494,24 @@
   }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 25rem) {
   .pdf-row-actions {
     flex-direction: column;
     align-items: stretch;
-    gap: 8px;
+    gap: 0.5rem;
   }
 
   .pdf-card-open-row {
     text-align: center;
     display: block;
-    padding: 8px 12px;
+    padding: 0.5rem 0.75rem;
     background: rgba(255, 215, 0, 0.12);
-    border-radius: 6px;
+    border-radius: 0.375rem;
   }
 
   .pdf-edit-btn {
     width: 100%;
-    padding: 8px 0;
+    padding: 0.5rem 0;
     text-align: center;
   }
 }
@@ -521,8 +521,8 @@
   background: #ffd700;
   color: #182848;
   border: none;
-  border-radius: 6px;
-  padding: 6px 16px;
+  border-radius: 0.375rem;
+  padding: 0.375rem 1rem;
   font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;

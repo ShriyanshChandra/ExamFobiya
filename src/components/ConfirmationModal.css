@@ -17,10 +17,10 @@
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.3);
     padding: 2rem;
-    border-radius: 16px;
+    border-radius: 1rem;
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
     width: 90%;
-    max-width: 500px;
+    max-width: 31.25rem;
     color: #fff;
     animation: fadeIn 0.3s ease;
 }
@@ -29,9 +29,9 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 1.25rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-    padding-bottom: 15px;
+    padding-bottom: 0.9375rem;
 }
 
 .modal-header h3 {
@@ -59,7 +59,7 @@
     font-size: 1.2rem;
     color: #182848;
     /* Dark Blue */
-    margin-bottom: 30px;
+    margin-bottom: 1.875rem;
     line-height: 1.5;
     text-align: center;
 }
@@ -67,12 +67,12 @@
 .modal-actions {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 1.25rem;
 }
 
 .modal-actions button {
-    padding: 10px 25px;
-    border-radius: 8px;
+    padding: 0.625rem 1.5625rem;
+    border-radius: 0.5rem;
     border: none;
     cursor: pointer;
     font-weight: 600;

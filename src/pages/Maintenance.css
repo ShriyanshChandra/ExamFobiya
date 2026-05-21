@@ -16,17 +16,17 @@
 .maintenance-card {
     background: var(--card-bg);
     padding: 3rem;
-    border-radius: 20px;
+    border-radius: 1.25rem;
     box-shadow: var(--shadow-lg);
     text-align: center;
-    max-width: 500px;
+    max-width: 31.25rem;
     width: 90%;
     border: 1px solid var(--glass-border);
 }
 
 .maintenance-animation {
-    width: 250px;
-    height: 250px;
+    width: 15.625rem;
+    height: 15.625rem;
     margin: 0 auto 1.5rem auto;
 }
 

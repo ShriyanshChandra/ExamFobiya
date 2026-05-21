@@ -86,8 +86,8 @@ const Home = () => {
         </div>
       </section>
 
-      <NewArrivals limit={5} />
-      <BestSeller limit={5} />
+      <NewArrivals limit={3} />
+      <BestSeller limit={3} />
 
       <section className="course-browse-strip">
         <div className="course-browse-header">
@@ -114,9 +114,9 @@ const Home = () => {
         </div>
       </section>
 
-      <BookCategorySection title="BCA Spotlight" section="BCA Books" category="BCA" limit={5} />
-      <BookCategorySection title="DCA Spotlight" section="DCA Books" category="DCA" limit={5} />
-      <BookCategorySection title="PGDCA Spotlight" section="PGDCA Books" category="PGDCA" limit={5} />
+      <BookCategorySection title="BCA Spotlight" section="BCA Books" category="BCA" limit={3} />
+      <BookCategorySection title="DCA Spotlight" section="DCA Books" category="DCA" limit={3} />
+      <BookCategorySection title="PGDCA Spotlight" section="PGDCA Books" category="PGDCA" limit={3} />
 
       <ExploreSection />
     </div>

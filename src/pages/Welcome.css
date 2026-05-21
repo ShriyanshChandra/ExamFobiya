@@ -19,17 +19,17 @@
     /* Gold color */
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     margin: 0;
-    padding: 0 20px;
+    padding: 0 1.25rem;
     text-align: center;
 }
 
 /* Cursor Blink Animation */
 .cursor {
     display: inline-block;
-    width: 3px;
+    width: 0.1875rem;
     background-color: var(--text-color);
     animation: blink 1s infinite;
-    margin-left: 5px;
+    margin-left: 0.3125rem;
 }
 
 @keyframes blink {
@@ -45,7 +45,7 @@
 }
 
 /* Mobile Responsiveness */
-@media (max-width: 768px) {
+@media (max-width: 48rem) {
     .welcome-text {
         font-size: 2.5rem;
     }
