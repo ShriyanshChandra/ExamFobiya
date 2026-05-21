@@ -13,7 +13,7 @@ const TermsAndConditions = () => {
         {
             title: '2. Description of the Service',
             points: [
-                'ExamFobiya provides information and resources related to books, study materials, indexes, and question papers for academic use.',
+                'ExamFobiya provides information and resources related to books, study materials, indexes, and questions for academic use.',
                 'We may update, remove, suspend, or change parts of the website at any time.'
             ]
         },
@@ -36,7 +36,7 @@ const TermsAndConditions = () => {
             title: '5. Content and Intellectual Property',
             points: [
                 'The website design, branding, text, and original site content are owned by or licensed to ExamFobiya unless otherwise stated.',
-                'Books, author names, cover images, question papers, and related materials may belong to their respective owners.',
+                'Books, author names, cover images, questions, and related materials may belong to their respective owners.',
                 'If any third-party rights holder believes content should be reviewed or removed, they may contact us.'
             ]
         },

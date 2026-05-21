@@ -132,7 +132,7 @@ function Search({ searchQuery }) {
       {/* --- QUESTIONS SECTION --- */}
       {filteredQuestions.length > 0 && (
         <div className="search-section-block">
-          <h2 className="search-section-heading">Papers &amp; Questions</h2>
+          <h2 className="search-section-heading">Questions</h2>
           <div className="pdf-results-list">
             {filteredQuestions.slice(0, questionsLimit).map(pdf => (
               <div key={pdf.id} className="pdf-result-card-row">

@@ -110,7 +110,7 @@ const Questions = () => {
     <div className="questions-container">
       <div className="questions-content">
         <h2>Previous Year Questions</h2>
-        <p className="subtitle">Search by subject, course or paper name</p>
+        <p className="subtitle">Search by subject, course, or question label</p>
 
         {/* Admin: Upload Questions button */}
         {user?.role === 'admin' && (
@@ -251,7 +251,7 @@ const Questions = () => {
 
         {!searched && (
           <p className="instruction-placeholder">
-            Enter a subject, course, or paper name above to find question PDFs.
+            Enter a subject, course, or question label above to find question PDFs.
           </p>
         )}
 

@@ -6,7 +6,7 @@ export default function AboutUs() {
       shortName: 'PGDCA',
       title: 'Post Graduate Diploma in Computer Applications',
       description: 'Focused resources that help learners move quickly from revision to exam readiness.',
-      features: ['Comprehensive textbooks', 'Solved question papers', 'Syllabus breakdown']
+      features: ['Comprehensive textbooks', 'Solved questions', 'Syllabus breakdown']
     },
     {
       shortName: 'DCA',
@@ -33,7 +33,7 @@ export default function AboutUs() {
     },
     {
       title: 'Built for exam season',
-      description: 'From textbooks to previous year papers, our collection is organized around real preparation needs.'
+      description: 'From textbooks to previous year questions, our collection is organized around real preparation needs.'
     }
   ];
 
@@ -70,7 +70,7 @@ export default function AboutUs() {
             <p className="about-section-kicker">Our mission</p>
             <h2 className="about-section-title">Make exam preparation feel organized, not overwhelming.</h2>
             <p className="about-mission-text">
-              At <strong className="brand-name">ExamFobiya</strong>, we simplify the search for reliable academic resources. Instead of forcing students to dig through scattered material, we bring together quality books, detailed indexes, and previous year question papers in one place so study time feels more focused and productive.
+              At <strong className="brand-name">ExamFobiya</strong>, we simplify the search for reliable academic resources. Instead of forcing students to dig through scattered material, we bring together quality books, detailed indexes, and previous year questions in one place so study time feels more focused and productive.
             </p>
           </div>
 

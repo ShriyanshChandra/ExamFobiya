@@ -203,7 +203,6 @@
 
 .intro-card {
   padding: 1.5rem;
-  text-align: center;
 }
 
 .intro-card h2 {
@@ -330,10 +329,13 @@
 }
 
 .home-book-shelf {
-  --home-shelf-columns: 3;
+  --home-shelf-columns: 5;
   --home-shelf-gap: 1.5rem;
-  --home-shelf-card-width: calc(
-    (100% - (var(--home-shelf-gap) * (var(--home-shelf-columns) - 1))) / var(--home-shelf-columns)
+  --home-shelf-card-width: min(
+    16rem,
+    calc(
+      (100% - (var(--home-shelf-gap) * (var(--home-shelf-columns) - 1))) / var(--home-shelf-columns)
+    )
   );
   padding: 0.875rem;
   width: 100%;
@@ -413,7 +415,7 @@
 
 @media screen and (max-width: 80rem) and (min-width: 48.0625rem) {
   .home-book-shelf {
-    --home-shelf-columns: 3;
+    --home-shelf-columns: 4;
     --home-shelf-gap: 1.25rem;
   }
 }
@@ -494,6 +496,10 @@
     grid-template-columns: 1fr;
     width: 98%;
     gap: 0.875rem;
+  }
+
+  .intro-card {
+    text-align: center;
   }
 
   .course-browse-strip,
