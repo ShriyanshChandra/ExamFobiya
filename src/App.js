@@ -1,5 +1,5 @@
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -22,12 +22,17 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
 import { BookProvider } from "./context/BookContext";
 import { QuestionProvider } from "./context/QuestionContext";
+import { trackVisit } from "./services/TrackingService";
 import "@fontsource/nunito"; 
 
 import './App.css'; 
 
 function App() {
   const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    trackVisit();
+  }, []);
 
   return (
     <ThemeProvider>

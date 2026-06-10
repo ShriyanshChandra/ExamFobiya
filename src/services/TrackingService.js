@@ -12,7 +12,14 @@ export const trackVisit = async () => {
     }
 
     try {
-        await fetch(getApiUrl('/api/track'), { method: 'POST' });
+        const response = await fetch(getApiUrl('/api/track'), {
+            method: 'POST',
+            keepalive: true
+        });
+
+        if (!response.ok) {
+            throw new Error(`Visit tracking failed with status ${response.status}`);
+        }
 
         if (typeof window !== 'undefined') {
             window.sessionStorage.setItem(VISIT_SESSION_KEY, 'true');
