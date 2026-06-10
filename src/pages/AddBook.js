@@ -15,7 +15,7 @@ icons['find-replace'] = `<svg viewBox="0 0 18 18" width="18" height="18"><path c
 
 
 const AddBook = () => {
-    const { addBook, updateBook, books } = useBooks();
+    const { addBook, updateBook, books, loading: booksLoading } = useBooks();
     const navigate = useNavigate();
     const { id } = useParams();
 
@@ -68,6 +68,8 @@ const AddBook = () => {
     // Load book data if editing
     useEffect(() => {
         if (isEditMode) {
+            if (booksLoading) return;
+
             const bookToEdit = books.find(b => b.id.toString() === id);
             if (bookToEdit) {
                 setTitle(bookToEdit.title);
@@ -90,7 +92,7 @@ const AddBook = () => {
                 navigate('/books');
             }
         }
-    }, [id, books, isEditMode, navigate]);
+    }, [id, books, booksLoading, isEditMode, navigate]);
 
     // Load from localStorage on mount (only in add mode, not edit mode)
     useEffect(() => {

@@ -5,7 +5,7 @@ if (process.env.NODE_ENV === 'production' && !configuredApiBaseUrl) {
 }
 
 const API_BASE_URL = configuredApiBaseUrl || (
-  process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : ''
+  process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:5000' : ''
 );
 
 export const getApiUrl = (path) => `${API_BASE_URL}${path}`;
