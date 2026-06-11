@@ -10,11 +10,26 @@ const Navbar = ({ setSearchQuery }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [localSearch, setLocalSearch] = useState("");
   const [showMobileSearch, setShowMobileSearch] = useState(false);
+  const [showAccountMenu, setShowAccountMenu] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuth();
+
+  const getAccountName = () => {
+    return user?.name || user?.fullName || user?.displayName || "";
+  };
+
+  const getAccountLabel = () => {
+    return getAccountName() || user?.email || user?.username || "Account";
+  };
+
+  const getAccountInitial = () => {
+    const accountName = getAccountName() || user?.username || user?.email;
+    const firstLetter = accountName?.trim()?.charAt(0);
+    return firstLetter ? firstLetter.toUpperCase() : "U";
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -49,20 +64,25 @@ const Navbar = ({ setSearchQuery }) => {
       if (showMobileSearch && !event.target.closest('.search-container')) {
         setShowMobileSearch(false);
       }
+
+      if (showAccountMenu && !event.target.closest('.account-menu-scope')) {
+        setShowAccountMenu(false);
+      }
     };
 
-    if (showMobileSearch) {
+    if (showMobileSearch || showAccountMenu) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showMobileSearch]);
+  }, [showMobileSearch, showAccountMenu]);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
     setShowMobileSearch(false); // Close search when menu opens
+    setShowAccountMenu(false);
   };
 
   const handleSearchSubmit = () => {
@@ -93,11 +113,21 @@ const Navbar = ({ setSearchQuery }) => {
     }
   };
 
+  const toggleAccountMenu = () => {
+    setShowAccountMenu((current) => !current);
+  };
+
   const handleLogout = () => {
-    // Only verify logout if we want to confirm, but usually direct is fine
     logout();
+    setShowAccountMenu(false);
     setIsOpen(false);
     navigate('/login');
+  };
+
+  const handleSavedItems = () => {
+    setShowAccountMenu(false);
+    setIsOpen(false);
+    navigate('/saved-items');
   };
 
   return (
@@ -157,13 +187,40 @@ const Navbar = ({ setSearchQuery }) => {
 
 
           {/* Mobile Only Auth Link (Optional, if we want it inside menu on mobile) */}
-          <li className="mobile-only-auth">
+          <li className={`mobile-only-auth account-menu-scope ${user ? "mobile-account-menu-item" : ""}`}>
             {user ? (
-              <span onClick={handleLogout}>Logout</span>
+              <button
+                type="button"
+                className="mobile-account-btn"
+                aria-label="Account"
+                aria-expanded={showAccountMenu}
+                aria-haspopup="menu"
+                title="Account"
+                onClick={toggleAccountMenu}
+              >
+                <span className="account-avatar-letter">{getAccountInitial()}</span>
+              </button>
             ) : (
               <Link to="/login" onClick={() => setIsOpen(false)}>Login</Link>
             )}
           </li>
+          {user && showAccountMenu && (
+            <li className="mobile-account-actions account-menu-scope" role="menu">
+              <button type="button" className="mobile-account-action-btn" role="menuitem" onClick={handleSavedItems}>
+                Saved Items
+              </button>
+              <button type="button" className="mobile-account-action-btn" role="menuitem">
+                Settings
+              </button>
+            </li>
+          )}
+          {user && (
+            <li className="mobile-only-logout">
+              <button type="button" onClick={handleLogout}>
+                Logout
+              </button>
+            </li>
+          )}
         </ul>
 
         {/* Action Group: Theme -> Search -> Auth */}
@@ -208,9 +265,40 @@ const Navbar = ({ setSearchQuery }) => {
           </div>
 
           {/* Desktop Auth Button */}
-          <div className="desktop-auth">
+          <div className="desktop-auth account-menu-scope">
             {user ? (
-              <button className="auth-btn" onClick={handleLogout}>Logout</button>
+              <>
+                <button
+                  type="button"
+                  className="account-avatar-btn"
+                  aria-label="Open account menu"
+                  aria-expanded={showAccountMenu}
+                  aria-haspopup="menu"
+                  title="Account"
+                  onClick={toggleAccountMenu}
+                >
+                  <span className="account-avatar-letter">{getAccountInitial()}</span>
+                </button>
+                {showAccountMenu && (
+                  <div className="account-dropdown" role="menu">
+                    <div className="account-dropdown-header">
+                      <div className="account-dropdown-avatar">
+                        <span className="account-avatar-letter">{getAccountInitial()}</span>
+                      </div>
+                      <p className="account-dropdown-label">{getAccountLabel()}</p>
+                    </div>
+                    <button type="button" className="account-dropdown-item" role="menuitem" onClick={handleSavedItems}>
+                      Saved Items
+                    </button>
+                    <button type="button" className="account-dropdown-item" role="menuitem">
+                      Settings
+                    </button>
+                    <button type="button" className="account-dropdown-logout" role="menuitem" onClick={handleLogout}>
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </>
             ) : (
               <Link to="/login" className="auth-btn-link">Login</Link>
             )}

@@ -18,6 +18,7 @@ import AboutUs from "./pages/About_us";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Maintenance from "./pages/Maintenance";
+import SavedItems from "./pages/SavedItems";
 import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
 import { BookProvider } from "./context/BookContext";
@@ -51,6 +52,7 @@ function App() {
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="/welcome" element={<ProtectedRoute><Welcome /></ProtectedRoute>} />
+                  <Route path="/saved-items" element={<ProtectedRoute><SavedItems /></ProtectedRoute>} />
                   <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
                   <Route path="/add-book" element={<ProtectedRoute requiredRole="admin"><AddBook /></ProtectedRoute>} />
                   <Route path="/edit-book/:id" element={<ProtectedRoute requiredRole="admin"><AddBook /></ProtectedRoute>} />

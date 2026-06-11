@@ -395,6 +395,7 @@
   border: 1px solid rgba(100, 100, 100, 0.2);
   border-radius: 0.75rem;
   padding: 1rem 1.25rem;
+  position: relative;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -415,6 +416,74 @@
   display: flex;
   align-items: center;
   gap: 0.9375rem;
+  min-width: 0;
+  text-align: left;
+}
+
+.question-save-btn {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 215, 0, 0.32);
+  background: rgba(255, 215, 0, 0.08);
+  color: var(--text-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex: 0 0 auto;
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.question-save-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 215, 0, 0.18);
+  border-color: rgba(255, 215, 0, 0.68);
+}
+
+.question-save-btn:focus-visible {
+  outline: 3px solid rgba(255, 215, 0, 0.35);
+  outline-offset: 0.1875rem;
+}
+
+.question-save-btn svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.question-save-btn.saved {
+  background: #ffd700;
+  border-color: rgba(255, 215, 0, 0.92);
+  color: #182848;
+}
+
+.question-save-btn.saved svg {
+  fill: currentColor;
+}
+
+.question-save-error {
+  margin: 0 0 0.25rem;
+  color: #dc3545;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+[data-theme='dark'] .question-save-btn {
+  background: rgba(255, 215, 0, 0.1);
+  border-color: rgba(255, 215, 0, 0.28);
+  color: #f3f4f6;
+}
+
+[data-theme='dark'] .question-save-btn:hover,
+[data-theme='dark'] .question-save-btn.saved {
+  background: #ffd700;
+  border-color: rgba(255, 215, 0, 0.9);
+  color: #182848;
 }
 
 .pdf-row-details {
@@ -463,6 +532,22 @@
   text-decoration: underline;
 }
 
+@media (max-width: 75rem) {
+  .pdf-result-card-row {
+    padding-right: 4rem;
+  }
+
+  .question-save-btn {
+    position: absolute;
+    top: 0.875rem;
+    right: 1rem;
+  }
+
+  .pdf-row-info {
+    padding-right: 0.75rem;
+  }
+}
+
 @media (max-width: 37.5rem) {
   .pdf-result-card-row {
     flex-direction: column;
@@ -472,7 +557,8 @@
   }
 
   .pdf-row-info {
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
     align-items: flex-start;
     gap: 0.375rem;
     width: 100%;

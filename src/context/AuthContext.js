@@ -90,12 +90,52 @@ export const AuthProvider = ({ children }) => {
         return result;
     };
 
+    const toggleSavedItem = async (itemType, itemId) => {
+        if (!user?.uid || !itemId) {
+            throw new Error('You must be logged in to save items.');
+        }
+
+        const fields = itemType === 'question'
+            ? ['savedQuestions', 'savedQuestionIds', 'savedQuestionPdfs']
+            : ['savedBooks', 'savedBookIds'];
+        const currentSavedItems = [
+            ...new Set(fields.flatMap((savedField) => Array.isArray(user[savedField]) ? user[savedField] : []))
+        ];
+        const isSaved = currentSavedItems.includes(itemId);
+        const nextSavedItems = isSaved
+            ? currentSavedItems.filter((savedId) => savedId !== itemId)
+            : [...currentSavedItems, itemId];
+        const savedItemUpdates = fields.reduce((updates, savedField) => ({
+            ...updates,
+            [savedField]: nextSavedItems
+        }), {});
+
+        setUser((currentUser) => ({
+            ...currentUser,
+            ...savedItemUpdates
+        }));
+
+        try {
+            await setDoc(doc(db, "users", user.uid), savedItemUpdates, { merge: true });
+        } catch (error) {
+            const previousSavedItemUpdates = fields.reduce((updates, savedField) => ({
+                ...updates,
+                [savedField]: currentSavedItems
+            }), {});
+            setUser((currentUser) => ({
+                ...currentUser,
+                ...previousSavedItemUpdates
+            }));
+            throw error;
+        }
+    };
+
     const logout = () => {
         return signOut(auth);
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, loading, checkAccountExists }}>
+        <AuthContext.Provider value={{ user, login, register, logout, loading, checkAccountExists, toggleSavedItem }}>
             {children}
         </AuthContext.Provider>
     );
