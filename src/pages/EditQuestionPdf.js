@@ -6,6 +6,20 @@ import '../components/RemoveBookModal.css'; // Reuse modal styles from RemoveBoo
 
 const CURRENT_YEAR = new Date().getFullYear();
 const YEARS = Array.from({ length: CURRENT_YEAR - 2010 + 1 }, (_, i) => CURRENT_YEAR - i);
+const MONTHS = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+];
 
 const EditQuestionPdf = () => {
     const navigate = useNavigate();
@@ -17,6 +31,7 @@ const EditQuestionPdf = () => {
 
     const [label, setLabel] = useState(pdf?.label || '');
     const [url, setUrl] = useState(pdf?.url || '');
+    const [month, setMonth] = useState(pdf?.month || '');
     const [year, setYear] = useState(pdf?.year || '');
     const [saving, setSaving] = useState(false);
     const [deleting, setDeleting] = useState(false);
@@ -39,6 +54,7 @@ const EditQuestionPdf = () => {
             await updateQuestionPdf(pdf.docPath, {
                 label: label.trim(),
                 url: url.trim(),
+                month: month || '',
                 year: year || ''
             });
             alert('✅ Question PDF updated successfully.');
@@ -88,6 +104,22 @@ const EditQuestionPdf = () => {
                             value={label}
                             onChange={(e) => setLabel(e.target.value)}
                         />
+                    </div>
+
+                    {/* Month */}
+                    <div className="uq-form-group">
+                        <label>Month</label>
+                        <div className="uq-select-wrapper">
+                            <select
+                                value={month}
+                                onChange={(e) => setMonth(e.target.value)}
+                            >
+                                <option value="">Select Month</option>
+                                {MONTHS.map(m => (
+                                    <option key={m} value={m}>{m}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
 
                     {/* Year */}

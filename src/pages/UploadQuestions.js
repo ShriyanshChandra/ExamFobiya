@@ -8,6 +8,20 @@ import './UploadQuestions.css';
 const COURSES = ['BCA', 'DCA', 'PGDCA'];
 const CURRENT_YEAR = new Date().getFullYear();
 const YEARS = Array.from({ length: CURRENT_YEAR - 2010 + 1 }, (_, i) => CURRENT_YEAR - i);
+const MONTHS = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+];
 
 const UploadQuestions = () => {
     const navigate = useNavigate();
@@ -16,7 +30,7 @@ const UploadQuestions = () => {
 
     const [selectedCourse, setSelectedCourse] = useState('');
     const [selectedSubject, setSelectedSubject] = useState('');
-    const [pdfLinks, setPdfLinks] = useState([{ label: '', url: '', year: '' }]);
+    const [pdfLinks, setPdfLinks] = useState([{ label: '', url: '', month: '', year: '' }]);
     const [saving, setSaving] = useState(false);
 
     // Derive unique subjects from books matching the selected course
@@ -39,7 +53,7 @@ const UploadQuestions = () => {
         setPdfLinks(updated);
     };
 
-    const addRow = () => setPdfLinks([...pdfLinks, { label: '', url: '', year: '' }]);
+    const addRow = () => setPdfLinks([...pdfLinks, { label: '', url: '', month: '', year: '' }]);
 
     const removeRow = (index) => {
         if (pdfLinks.length === 1) return;
@@ -134,6 +148,18 @@ const UploadQuestions = () => {
                                         value={pdf.label}
                                         onChange={(e) => handleLinkChange(index, 'label', e.target.value)}
                                     />
+
+                                    {/* Month */}
+                                    <select
+                                        className="uq-year-select"
+                                        value={pdf.month}
+                                        onChange={(e) => handleLinkChange(index, 'month', e.target.value)}
+                                    >
+                                        <option value="">Select Month</option>
+                                        {MONTHS.map(month => (
+                                            <option key={month} value={month}>{month}</option>
+                                        ))}
+                                    </select>
 
                                     {/* Year */}
                                     <select

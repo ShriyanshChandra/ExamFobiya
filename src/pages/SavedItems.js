@@ -17,6 +17,7 @@ const SavedItems = () => {
   const { questionPdfs } = useQuestions();
   const navigate = useNavigate();
   const bookFilters = ["All", "BCA", "DCA", "PGDCA"];
+  const formatQuestionDate = (pdf) => [pdf.month, pdf.year].filter(Boolean).join(" ");
 
   const savedBooks = useMemo(() => {
     const savedBookIds = user?.savedBooks || user?.savedBookIds || [];
@@ -190,7 +191,7 @@ const SavedItems = () => {
                     <div>
                       <span className="saved-card-meta">{pdf.course || "Question PDF"}</span>
                       <h2>{pdf.subject || pdf.label || "Saved Question"}</h2>
-                      <p>{[pdf.label, pdf.year].filter(Boolean).join(" | ")}</p>
+                      <p>{[pdf.label, formatQuestionDate(pdf)].filter(Boolean).join(" | ")}</p>
                     </div>
                   </div>
                   {pdf.url && (

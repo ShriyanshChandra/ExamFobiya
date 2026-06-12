@@ -509,18 +509,6 @@ body.dark-mode .find-input {
     color: #fff;
 }
 
-/* Nested Bullet Styling */
-/* Level 1 (Defaut) is Disc */
-/* Level 2 (Indented once) - Circle */
-.ql-editor li.ql-indent-1 {
-    list-style-type: circle !important;
-}
-
-/* Level 3 (Indented twice) - Square */
-.ql-editor li.ql-indent-2 {
-    list-style-type: square !important;
-}
-
 /* Custom Toolbar Button Styling (Native Quill) */
 /* Custom Toolbar Button Styling (Native Quill) */
 .ql-snow .ql-toolbar button.ql-find-replace {

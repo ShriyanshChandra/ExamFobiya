@@ -23,6 +23,7 @@ function Search({ searchQuery }) {
   // Pagination limits
   const [booksLimit, setBooksLimit] = useState(8);
   const [questionsLimit, setQuestionsLimit] = useState(7);
+  const formatQuestionDate = (pdf) => [pdf.month, pdf.year].filter(Boolean).join(' ');
 
   // Reset limits when search changes
   React.useEffect(() => {
@@ -47,7 +48,8 @@ function Search({ searchQuery }) {
     return questionPdfs.filter(pdf => 
       (pdf.subject && pdf.subject.toLowerCase().includes(q)) ||
       (pdf.course && pdf.course.toLowerCase().includes(q)) ||
-      (pdf.label && pdf.label.toLowerCase().includes(q))
+      (pdf.label && pdf.label.toLowerCase().includes(q)) ||
+      (pdf.month && pdf.month.toLowerCase().includes(q))
     );
   }, [searchQuery, questionPdfs]);
 
@@ -141,8 +143,11 @@ function Search({ searchQuery }) {
                   <span className="pdf-card-course">{pdf.course}</span>
                   <div className="pdf-row-details">
                     <span className="pdf-card-subject">{pdf.subject}</span>
-                    {pdf.label && <span className="pdf-card-label-row">| {pdf.label}</span>}
-                    {pdf.year && <span className="pdf-card-year-row">📅 {pdf.year}</span>}
+                    {(pdf.label || pdf.month || pdf.year) && (
+                      <span className="pdf-card-label-row">
+                        {[pdf.label, formatQuestionDate(pdf)].filter(Boolean).join(' | ')}
+                      </span>
+                    )}
                   </div>
                 </div>
 

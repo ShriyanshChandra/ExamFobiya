@@ -508,8 +508,7 @@
   border-radius: 1.25rem;
 }
 
-.pdf-card-label-row,
-.pdf-card-year-row {
+.pdf-card-label-row {
   font-size: 0.9rem;
   opacity: 0.7;
 }

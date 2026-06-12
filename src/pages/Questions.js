@@ -20,6 +20,7 @@ const Questions = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { questionPdfs } = useQuestions();
+  const formatQuestionDate = (pdf) => [pdf.month, pdf.year].filter(Boolean).join(' ');
 
   const uniqueCourses = [...new Set(questionPdfs.map((pdf) => pdf.course).filter(Boolean))].sort((a, b) => a.localeCompare(b));
   const uniqueYears = [...new Set(questionPdfs.map((pdf) => pdf.year).filter(Boolean))].sort((a, b) => String(b).localeCompare(String(a)));
@@ -32,7 +33,8 @@ const Questions = () => {
       const matchesQuery = !q || (
         (pdf.subject && pdf.subject.toLowerCase().includes(q)) ||
         (pdf.course && pdf.course.toLowerCase().includes(q)) ||
-        (pdf.label && pdf.label.toLowerCase().includes(q))
+        (pdf.label && pdf.label.toLowerCase().includes(q)) ||
+        (pdf.month && pdf.month.toLowerCase().includes(q))
       );
 
       const matchesCourse = !activeFilters.course || pdf.course === activeFilters.course;
@@ -52,7 +54,8 @@ const Questions = () => {
       const filtered = questionPdfs.filter((pdf) =>
         (pdf.subject && pdf.subject.toLowerCase().includes(qLower)) ||
         (pdf.course && pdf.course.toLowerCase().includes(qLower)) ||
-        (pdf.label && pdf.label.toLowerCase().includes(qLower))
+        (pdf.label && pdf.label.toLowerCase().includes(qLower)) ||
+        (pdf.month && pdf.month.toLowerCase().includes(qLower))
       );
       setResults(filtered);
       setSearched(true);
@@ -255,8 +258,11 @@ const Questions = () => {
                     <span className="pdf-card-course">{pdf.course}</span>
                     <div className="pdf-row-details">
                       <span className="pdf-card-subject">{pdf.subject}</span>
-                      {pdf.label && <span className="pdf-card-label-row">| {pdf.label}</span>}
-                      {pdf.year && <span className="pdf-card-year-row">📅 {pdf.year}</span>}
+                      {(pdf.label || pdf.month || pdf.year) && (
+                        <span className="pdf-card-label-row">
+                          {[pdf.label, formatQuestionDate(pdf)].filter(Boolean).join(' | ')}
+                        </span>
+                      )}
                     </div>
                   </div>
 

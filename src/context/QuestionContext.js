@@ -203,11 +203,12 @@ export const QuestionProvider = ({ children }) => {
         try {
             const pdfsRef = collection(db, 'courses', course, 'subjects', subject, 'questionPdfs');
             const batch = writeBatch(db);
-            pdfLinks.forEach(({ label, url, year }) => {
+            pdfLinks.forEach(({ label, url, month, year }) => {
                 const docRef = doc(pdfsRef);
                 batch.set(docRef, {
                     url: url.trim(),
                     label: (label || '').trim(),
+                    month: month || '',
                     year: year || '',
                     course,
                     subject,

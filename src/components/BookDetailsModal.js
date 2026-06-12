@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
+import 'react-quill-new/dist/quill.core.css';
 import './BookDetailsModal.css';
 
 const BookDetailsModal = ({ book, onClose }) => {
@@ -75,7 +76,7 @@ const renderTopics = (contents) => {
     if (hasHtml) {
         return (
             <div
-                className="rich-text-content"
+                className="rich-text-content ql-editor"
                 dangerouslySetInnerHTML={{ __html: contents }}
             />
         );
