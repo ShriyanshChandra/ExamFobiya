@@ -197,6 +197,12 @@ const AddBook = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Trigger native browser validation UI (highlights required fields inline)
+        if (!e.target.checkValidity()) {
+            e.target.reportValidity();
+            return;
+        }
+
         // Normalize title for comparison
         const normalizedTitle = title.trim().toLowerCase();
 
@@ -399,6 +405,8 @@ const AddBook = () => {
                                     <option value="BCA 4th Semester">4th Semester</option>
                                     <option value="BCA 5th Semester">5th Semester</option>
                                     <option value="BCA 6th Semester">6th Semester</option>
+                                    <option value="BCA 7th Semester">7th Semester</option>
+                                    <option value="BCA 8th Semester">8th Semester</option>
                                 </select>
                             </div>
                         </div>

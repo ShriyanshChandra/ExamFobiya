@@ -15,23 +15,29 @@ function Books() {
   const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
   const [bookToRemove, setBookToRemove] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(location.state?.category || "All");
+  const [selectedSemester, setSelectedSemester] = useState(location.state?.semester || "All");
   const [searchTerm, setSearchTerm] = useState(location.state?.search || "");
   const [sortBy, setSortBy] = useState("title-asc");
 
   const categories = ["All", "BCA", "DCA", "PGDCA"];
+  const semesters = ["All", "BCA 1st Semester", "BCA 2nd Semester", "BCA 3rd Semester", "BCA 4th Semester", "BCA 5th Semester", "BCA 6th Semester", "BCA 7th Semester", "BCA 8th Semester"];
   const canAddBook = user && user.role === "admin";
 
   const filteredBooks = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
     const visibleBooks = books.filter((book) => {
       const matchesCategory = selectedCategory === "All" || book.category === selectedCategory;
+      const matchesSemester =
+        selectedCategory !== "BCA" ||
+        selectedSemester === "All" ||
+        book.semester === selectedSemester;
       const matchesSearch =
         !normalizedSearch ||
         book.title?.toLowerCase().includes(normalizedSearch) ||
         book.author?.toLowerCase().includes(normalizedSearch) ||
         book.category?.toLowerCase().includes(normalizedSearch);
 
-      return matchesCategory && matchesSearch;
+      return matchesCategory && matchesSemester && matchesSearch;
     });
 
     return visibleBooks.sort((a, b) => {
@@ -45,7 +51,7 @@ function Books() {
 
       return a.title.localeCompare(b.title);
     });
-  }, [books, searchTerm, selectedCategory, sortBy]);
+  }, [books, searchTerm, selectedCategory, selectedSemester, sortBy]);
 
   const handleRemoveClick = (book) => {
     setBookToRemove(book);
@@ -72,8 +78,14 @@ function Books() {
     setBookToRemove(null);
   };
 
+  const handleCategorySelect = (category) => {
+    setSelectedCategory(category);
+    setSelectedSemester("All"); // reset semester whenever category changes
+  };
+
   const resetFilters = () => {
     setSelectedCategory("All");
+    setSelectedSemester("All");
     setSearchTerm("");
     setSortBy("title-asc");
   };
@@ -133,13 +145,31 @@ function Books() {
             <button
               key={category}
               type="button"
-              onClick={() => setSelectedCategory(category)}
+              onClick={() => handleCategorySelect(category)}
               className={`category-chip ${selectedCategory === category ? "active" : ""}`}
             >
               {category}
             </button>
           ))}
         </div>
+
+        {selectedCategory === "BCA" && (
+          <div className="semester-filter-container">
+            <span className="semester-filter-label">Semester</span>
+            <div className="semester-chips">
+              {semesters.map((sem) => (
+                <button
+                  key={sem}
+                  type="button"
+                  onClick={() => setSelectedSemester(sem)}
+                  className={`semester-chip ${selectedSemester === sem ? "active" : ""}`}
+                >
+                  {sem === "All" ? "All Semesters" : sem.replace("BCA ", "")}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {filteredBooks.length > 0 ? (
           <div className="books-grid">
