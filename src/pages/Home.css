@@ -186,6 +186,7 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1.25rem;
+  text-align: center;
 }
 
 .intro-card,
@@ -332,12 +333,8 @@
 .home-book-shelf {
   --home-shelf-columns: 5;
   --home-shelf-gap: 1.5rem;
-  --home-shelf-card-width: min(
-    16rem,
-    calc(
-      (100% - (var(--home-shelf-gap) * (var(--home-shelf-columns) - 1))) / var(--home-shelf-columns)
-    )
-  );
+  --home-shelf-card-width: min(16rem,
+      calc((100% - (var(--home-shelf-gap) * (var(--home-shelf-columns) - 1))) / var(--home-shelf-columns)));
   padding: 0.875rem;
   width: 100%;
   margin: 0;

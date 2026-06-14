@@ -7,12 +7,12 @@ import ExploreSection from "./ExploreSection";
 import BookCategorySection from "../components/BookCategorySection";
 
 const Home = () => {
-  const quickBrowseItems = [
-    { label: "BCA Library", category: "BCA" },
-    { label: "DCA Picks", category: "DCA" },
-    { label: "PGDCA Shelf", category: "PGDCA" },
-    { label: "Question Bank", path: "/questions" },
-  ];
+  // const quickBrowseItems = [
+  //   { label: "BCA Library", category: "BCA" },
+  //   { label: "DCA Picks", category: "DCA" },
+  //   { label: "PGDCA Shelf", category: "PGDCA" },
+  //   { label: "Question Bank", path: "/questions" },
+  // ];
 
   return (
     <div className="home-container">
@@ -27,7 +27,7 @@ const Home = () => {
         </div>
 
         <div className="hero-content">
-          <span className="hero-eyebrow">Smart study library</span>
+
           <h1>
             Welcome to <span className="brand-name">ExamFobiya</span>
           </h1>
@@ -56,18 +56,7 @@ const Home = () => {
             <Link to="/questions" className="secondary-btn">Search Questions</Link>
           </div>
 
-          <div className="quick-browse-row">
-            {quickBrowseItems.map((item) => (
-              <Link
-                key={item.label}
-                to={item.path || "/books"}
-                state={item.category ? { category: item.category } : undefined}
-                className="quick-browse-chip"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
+
         </div>
       </section>
 
