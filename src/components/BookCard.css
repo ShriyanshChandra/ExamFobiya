@@ -301,8 +301,8 @@
 .questions-btn {
     background: linear-gradient(135deg, #ffd84d, #f3b700);
     color: #1f1b0d;
-    font-weight: 700;
     box-shadow: 0 10px 20px rgba(243, 183, 0, 0.18);
+    font-weight: 700;
 }
 
 .questions-btn:hover {
@@ -312,32 +312,21 @@
 }
 
 .syllabus-btn {
-    background-color: #f8fafc;
-    color: #1f2937;
-    border-color: rgba(148, 163, 184, 0.4);
+    background: linear-gradient(135deg, #ffd84d, #f3b700);
+    color: #1f1b0d;
+    box-shadow: 0 10px 20px rgba(243, 183, 0, 0.18);
     font-weight: 700;
 }
 
 .syllabus-btn:hover {
-    background-color: #eef2f7;
-    color: #111827;
+    background: linear-gradient(135deg, #ffdf68, #efb100);
+    color: #000;
     transform: translateY(-1px);
 }
 
 [data-theme='dark'] .questions-btn,
 [data-theme='dark'] .syllabus-btn {
     color: #1a1a1a;
-}
-
-[data-theme='dark'] .syllabus-btn {
-    background-color: #1f2937;
-    border-color: rgba(255, 255, 255, 0.12);
-    color: #f3f4f6;
-}
-
-[data-theme='dark'] .syllabus-btn:hover {
-    background-color: #273244;
-    color: #fff;
 }
 
 /* Admin row sits below the public buttons */

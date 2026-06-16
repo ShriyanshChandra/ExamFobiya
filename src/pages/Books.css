@@ -61,6 +61,7 @@
 .add-book-btn {
   display: inline-flex;
   align-items: center;
+  text-align: center;
   justify-content: center;
   padding: 0.875rem 1.25rem;
   border-radius: 1rem;
@@ -180,6 +181,7 @@
     opacity: 0;
     transform: translateY(-8px) scale(0.98);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);

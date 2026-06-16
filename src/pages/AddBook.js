@@ -439,33 +439,33 @@ const AddBook = () => {
                                 <label className="checkbox-label">
                                     <input
                                         type="checkbox"
-                                        value="BCA Books"
-                                        checked={sections.includes("BCA Books")}
+                                        value="BCA Spotlight"
+                                        checked={sections.includes("BCA Spotlight")}
                                         onChange={handleSectionChange}
                                     />
-                                    BCA Books
+                                    BCA Spotlight
                                 </label>
                             )}
                             {category === 'DCA' && (
                                 <label className="checkbox-label">
                                     <input
                                         type="checkbox"
-                                        value="DCA Books"
-                                        checked={sections.includes("DCA Books")}
+                                        value="DCA Spotlight"
+                                        checked={sections.includes("DCA Spotlight")}
                                         onChange={handleSectionChange}
                                     />
-                                    DCA Books
+                                    DCA Spotlight
                                 </label>
                             )}
                             {category === 'PGDCA' && (
                                 <label className="checkbox-label">
                                     <input
                                         type="checkbox"
-                                        value="PGDCA Books"
-                                        checked={sections.includes("PGDCA Books")}
+                                        value="PGDCA Spotlight"
+                                        checked={sections.includes("PGDCA Spotlight")}
                                         onChange={handleSectionChange}
                                     />
-                                    PGDCA Books
+                                    PGDCA Spotlight
                                 </label>
                             )}
                             <label className="checkbox-label">

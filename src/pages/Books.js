@@ -106,7 +106,7 @@ function Books() {
 
           {canAddBook && (
             <div className="add-book-action">
-              <Link to="/add-book" className="add-book-btn">Add New Book</Link>
+              <Link to="/add-book" className="add-book-btn">Add Book</Link>
             </div>
           )}
         </div>
@@ -180,7 +180,7 @@ function Books() {
                 index={index}
                 canEdit={canAddBook}
                 onRemove={(selectedBook) => handleRemoveClick(selectedBook)}
-                onEdit={() => {}}
+                onEdit={() => { }}
               />
             ))}
           </div>
