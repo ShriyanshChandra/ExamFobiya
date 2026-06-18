@@ -11,8 +11,6 @@ const Navbar = ({ setSearchQuery }) => {
   const [localSearch, setLocalSearch] = useState("");
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [showAccountMenu, setShowAccountMenu] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuth();
@@ -33,22 +31,10 @@ const Navbar = ({ setSearchQuery }) => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-
-      if (currentScrollY > lastScrollY && currentScrollY > 70) {
-        // Scrolling down & past navbar height
-        setIsVisible(false);
-      } else {
-        // Scrolling up
-        setIsVisible(true);
-      }
-
       // Close mobile search on scroll
       if (showMobileSearch) {
         setShowMobileSearch(false);
       }
-
-      setLastScrollY(currentScrollY);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -56,7 +42,7 @@ const Navbar = ({ setSearchQuery }) => {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [lastScrollY, showMobileSearch]);
+  }, [showMobileSearch]);
 
   // Click outside listener for mobile search
   useEffect(() => {
@@ -131,7 +117,7 @@ const Navbar = ({ setSearchQuery }) => {
   };
 
   return (
-    <nav className={`navbar ${!isVisible ? "navbar-hidden" : ""}`}>
+    <nav className="navbar">
       <div className="navbar-container">
         {/* Logo */}
         <Link to="/" className="logo-link" onClick={() => setIsOpen(false)}>

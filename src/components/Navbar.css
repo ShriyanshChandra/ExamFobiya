@@ -1,16 +1,15 @@
 .navbar {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
   z-index: 1000;
   background: var(--navbar-bg);
   border-bottom: 1px solid var(--glass-border);
   padding: 0.25rem 0;
   transition: all 0.3s ease;
   box-shadow: var(--shadow-sm);
-}
-
-.navbar-hidden {
-  transform: translateY(-100%);
 }
 
 .theme-toggle {
@@ -613,10 +612,10 @@
 
   .nav-menu {
     position: absolute;
-    top: 4.375rem;
+    top: 100%;
     left: -100%;
     width: 100%;
-    height: calc(100vh - 4.375rem);
+    height: calc(100vh - 100%);
     background: rgba(24, 40, 72, 0.98);
     backdrop-filter: blur(15px);
     flex-direction: column;

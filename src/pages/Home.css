@@ -411,6 +411,17 @@
   }
 }
 
+/* Non-desktop: pull hero flush against the fixed navbar by cancelling App.js paddingTop */
+@media screen and (max-width: 75rem) {
+  .home-container {
+    margin-top: -4rem;
+  }
+
+  .hero-section {
+    padding-top: 5.5rem; /* 4rem navbar offset + breathing room for content */
+  }
+}
+
 @media screen and (max-width: 80rem) and (min-width: 48.0625rem) {
   .home-book-shelf {
     --home-shelf-columns: 4;
@@ -449,7 +460,7 @@
 @media screen and (max-width: 48rem) {
   .hero-section {
     min-height: 50vh;
-    padding: 5rem 0 2.5rem;
+    padding: 2rem 0 2.5rem;
     border-radius: 0 0 1.5625rem 1.5625rem;
   }
 

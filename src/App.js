@@ -43,7 +43,7 @@ function App() {
             <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
               <Navbar setSearchQuery={setSearchQuery} />
               {/* Ensure this div is transparent so the background shows through */}
-              <div className="p-6">
+              <div className="p-6" style={{ paddingTop: "4rem" }}>
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/books" element={<Books searchQuery={searchQuery} />} />
