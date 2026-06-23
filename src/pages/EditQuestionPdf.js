@@ -57,10 +57,10 @@ const EditQuestionPdf = () => {
                 month: month || '',
                 year: year || ''
             });
-            alert('✅ Question PDF updated successfully.');
+            alert('Question PDF updated successfully.');
             navigate('/questions');
         } catch (err) {
-            alert(`❌ Update failed: ${err.message}`);
+            alert(`Update failed: ${err.message}`);
         } finally {
             setSaving(false);
         }
@@ -74,10 +74,10 @@ const EditQuestionPdf = () => {
         setDeleting(true);
         try {
             await deleteQuestionPdf(pdf.docPath);
-            alert('🗑 PDF deleted.');
+            alert('PDF deleted.');
             navigate('/questions');
         } catch (err) {
-            alert(`❌ Delete failed: ${err.message}`);
+            alert(`Delete failed: ${err.message}`);
         } finally {
             setDeleting(false);
             setIsConfirmingDelete(false);
@@ -100,7 +100,7 @@ const EditQuestionPdf = () => {
                         <input
                             type="text"
                             className="uq-url-input"
-                            placeholder="e.g. Unit 1 Paper"
+                            placeholder="enter PDF label here..."
                             value={label}
                             onChange={(e) => setLabel(e.target.value)}
                         />
@@ -144,7 +144,7 @@ const EditQuestionPdf = () => {
                         <input
                             type="text"
                             className="uq-url-input"
-                            placeholder="https://drive.google.com/file/d/..."
+                            placeholder="paste drive link here..."
                             value={url}
                             onChange={(e) => setUrl(e.target.value)}
                             required

@@ -130,12 +130,19 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const updateUsername = async (newUsername) => {
+        if (!user?.uid) throw new Error('Not authenticated.');
+        const trimmed = newUsername.trim();
+        await setDoc(doc(db, 'users', user.uid), { username: trimmed }, { merge: true });
+        setUser((current) => ({ ...current, username: trimmed }));
+    };
+
     const logout = () => {
         return signOut(auth);
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, loading, checkAccountExists, toggleSavedItem }}>
+        <AuthContext.Provider value={{ user, login, register, logout, loading, checkAccountExists, toggleSavedItem, updateUsername }}>
             {children}
         </AuthContext.Provider>
     );
