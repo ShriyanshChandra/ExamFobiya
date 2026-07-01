@@ -35,8 +35,11 @@ function Search({ searchQuery }) {
   const filteredBooks = React.useMemo(() => {
     if (!searchQuery) return [];
     const q = searchQuery.toLowerCase();
-    return books.filter(book => 
+    return books.filter(book =>
       (book.title && book.title.toLowerCase().includes(q)) ||
+      (book.author && book.author.toLowerCase().includes(q)) ||
+      (book.category && book.category.toLowerCase().includes(q)) ||
+      (book.semester && book.semester.toLowerCase().includes(q)) ||
       (book.description && book.description.toLowerCase().includes(q))
     ).sort((a, b) => a.title.localeCompare(b.title));
   }, [searchQuery, books]);
