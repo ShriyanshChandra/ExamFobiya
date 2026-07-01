@@ -460,7 +460,7 @@
 @media screen and (max-width: 48rem) {
   .hero-section {
     min-height: 50vh;
-    padding: 2rem 0 2.5rem;
+    padding: 5.5rem 0 2.5rem; /* top keeps navbar offset on mobile too */
     border-radius: 0 0 1.5625rem 1.5625rem;
   }
 

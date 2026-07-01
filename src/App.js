@@ -1,4 +1,4 @@
-import { HashRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -29,6 +29,14 @@ import "@fontsource/nunito";
 
 import './App.css'; 
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [pathname]);
+  return null;
+}
+
 function App() {
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -42,6 +50,7 @@ function App() {
         <BookProvider>
           <QuestionProvider>
             <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+              <ScrollToTop />
               <Navbar setSearchQuery={setSearchQuery} />
               {/* Ensure this div is transparent so the background shows through */}
               <div className="p-6" style={{ paddingTop: "4rem" }}>
