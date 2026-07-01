@@ -104,62 +104,47 @@
 .uq-pdf-list {
     display: flex;
     flex-direction: column;
-    gap: 0.625rem;
+    gap: 0.75rem;
     margin-bottom: 0.75rem;
     margin-top: 0.5rem;
 }
 
 .uq-pdf-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr auto auto auto;
+    grid-template-rows: auto auto;
+    gap: 0.5rem 0.5rem;
     align-items: center;
-    gap: 0.625rem;
 }
 
+/* Icon: row 1, col 1 */
 .uq-pdf-icon {
     width: 2rem;
     height: 2rem;
     object-fit: contain;
-    flex-shrink: 0;
+    grid-row: 1;
+    grid-column: 1;
+    align-self: center;
 }
 
+/* Label: row 1, col 2 */
 .uq-label-input {
-    width: 10rem;
-    flex-shrink: 0;
+    grid-row: 1;
+    grid-column: 2;
     padding: 0.5625rem 0.75rem;
     border: 1px solid #ddd;
     border-radius: 0.5rem;
     font-size: 0.88rem;
     box-sizing: border-box;
     transition: border-color 0.2s;
+    min-width: 0;
 }
 
-.uq-url-input {
-    flex: 1;
-    padding: 0.5625rem 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 0.5rem;
-    font-size: 0.88rem;
-    box-sizing: border-box;
-    transition: border-color 0.2s;
-}
-
-.uq-label-input:focus,
-.uq-url-input:focus {
-    outline: none;
-    border-color: #ffd700;
-    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
-}
-
-.uq-label-input::placeholder,
-.uq-url-input::placeholder {
-    color: #bbb;
-    font-size: 0.84rem;
-}
-
-/* Year selector in each PDF row */
-.uq-year-select {
-    width: 7.5rem;
-    flex-shrink: 0;
+/* Month select: row 1, col 3 */
+.uq-month-select {
+    grid-row: 1;
+    grid-column: 3;
+    width: 8.5rem;
     padding: 0.5625rem 0.625rem;
     border: 1px solid #ddd;
     border-radius: 0.5rem;
@@ -176,19 +161,31 @@
     color: #333;
 }
 
-.uq-year-select:focus {
-    outline: none;
-    border-color: #ffd700;
-    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+/* Year select: row 1, col 4 */
+.uq-year-select {
+    grid-row: 1;
+    grid-column: 4;
+    width: 7rem;
+    padding: 0.5625rem 0.625rem;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    font-size: 0.88rem;
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: white;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath fill='%236c757d' d='M0 2.5l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.625rem center;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+    color: #333;
 }
 
-body.dark-mode .uq-year-select {
-    background-color: #374151;
-    color: #f9fafb;
-    border-color: #4b5563;
-}
-
+/* Remove button: row 1, col 5 */
 .uq-remove-btn {
+    grid-row: 1;
+    grid-column: 5;
     width: 2rem;
     height: 2rem;
     border: none;
@@ -202,6 +199,40 @@ body.dark-mode .uq-year-select {
     justify-content: center;
     flex-shrink: 0;
     transition: background 0.2s;
+}
+
+/* URL input: row 2, spans col 2–5 */
+.uq-url-input {
+    grid-row: 2;
+    grid-column: 2 / -1;
+    padding: 0.5625rem 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    font-size: 0.88rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+    min-width: 0;
+    width: 100%;
+}
+
+.uq-month-select:focus,
+.uq-year-select:focus {
+    outline: none;
+    border-color: #ffd700;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+}
+
+.uq-label-input:focus,
+.uq-url-input:focus {
+    outline: none;
+    border-color: #ffd700;
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+}
+
+.uq-label-input::placeholder,
+.uq-url-input::placeholder {
+    color: #bbb;
+    font-size: 0.84rem;
 }
 
 .uq-remove-btn:hover:not(:disabled) {
@@ -304,7 +335,9 @@ body.dark-mode .uq-form-group > label {
 
 body.dark-mode .uq-select-wrapper select,
 body.dark-mode .uq-label-input,
-body.dark-mode .uq-url-input {
+body.dark-mode .uq-url-input,
+body.dark-mode .uq-month-select,
+body.dark-mode .uq-year-select {
     background-color: #374151;
     color: #f9fafb;
     border-color: #4b5563;
@@ -348,14 +381,47 @@ body.dark-mode .uq-cancel-btn:hover {
     }
 
     .uq-pdf-row {
-        flex-wrap: wrap;
+        /* icon | label(flex) | X */
+        grid-template-columns: auto 1fr auto;
+        grid-template-rows: auto auto auto;
     }
 
+    /* icon: row 1, col 1 — unchanged */
+
+    /* label: row 1, col 2 */
     .uq-label-input {
+        grid-row: 1;
+        grid-column: 2;
+    }
+
+    /* X: row 1, col 3 */
+    .uq-remove-btn {
+        grid-row: 1;
+        grid-column: 3;
+    }
+
+    /* month: row 2, col 2 */
+    .uq-month-select {
+        grid-row: 2;
+        grid-column: 2;
         width: 100%;
+    }
+
+    /* year: row 2, col 3 — sits next to month */
+    .uq-year-select {
+        grid-row: 2;
+        grid-column: 3;
+        width: auto;
+    }
+
+    /* URL: row 3, col 2–3 */
+    .uq-url-input {
+        grid-row: 3;
+        grid-column: 2 / -1;
     }
 
     .uq-actions {
         flex-direction: column;
     }
 }
+

@@ -282,7 +282,7 @@ const Questions = () => {
                       rel="noopener noreferrer"
                       className="pdf-card-open-row"
                     >
-                      Open PDF →
+                      Open PDF &rarr;
                     </a>
                   </div>
 

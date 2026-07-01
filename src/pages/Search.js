@@ -169,7 +169,7 @@ function Search({ searchQuery }) {
                     rel="noopener noreferrer"
                     className="pdf-card-open-row"
                   >
-                    Open PDF →
+                    Open PDF &rarr;
                   </a>
                 </div>
 
@@ -193,7 +193,7 @@ function Search({ searchQuery }) {
       {/* NO RESULTS */}
       {filteredBooks.length === 0 && filteredQuestions.length === 0 && !loading && (
         <div className="search-no-results">
-          <h2>No matching results found 😞</h2>
+          <h2>No matching results found</h2>
           <p>Try exploring other subjects or courses!</p>
         </div>
       )}

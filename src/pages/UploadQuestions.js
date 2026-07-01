@@ -39,7 +39,7 @@ const UploadQuestions = () => {
             books
                 .filter(b => b.category === selectedCourse && b.title)
                 .map(b => b.title)
-          )].sort()
+        )].sort()
         : [];
 
     const handleCourseChange = (e) => {
@@ -70,10 +70,10 @@ const UploadQuestions = () => {
         setSaving(true);
         try {
             await addQuestionPdfs(selectedCourse, selectedSubject, filled);
-            alert(`✅ Uploaded ${filled.length} PDF(s) for "${selectedSubject}" (${selectedCourse}).`);
+            alert(`Uploaded ${filled.length} PDF(s) for "${selectedSubject}" (${selectedCourse}).`);
             navigate('/questions');
         } catch (err) {
-            alert(`❌ Upload failed: ${err.message}`);
+            alert(`Upload failed: ${err.message}`);
         } finally {
             setSaving(false);
         }
@@ -132,7 +132,7 @@ const UploadQuestions = () => {
                         <label>
                             Question PDF Links <span className="uq-required">*</span>
                         </label>
-                        <p className="uq-hint">Paste Google Drive sharing links below. Add a label (optional) to identify each PDF.</p>
+                        <p className="uq-hint">Paste Google Drive sharing links below. Add a title to identify each PDF.</p>
 
                         <div className="uq-pdf-list">
                             {pdfLinks.map((pdf, index) => (
@@ -144,14 +144,14 @@ const UploadQuestions = () => {
                                     <input
                                         type="text"
                                         className="uq-label-input"
-                                        placeholder="Label (e.g. Unit 1 Paper)"
+                                        placeholder="Title of PDF"
                                         value={pdf.label}
                                         onChange={(e) => handleLinkChange(index, 'label', e.target.value)}
                                     />
 
                                     {/* Month */}
                                     <select
-                                        className="uq-year-select"
+                                        className="uq-month-select"
                                         value={pdf.month}
                                         onChange={(e) => handleLinkChange(index, 'month', e.target.value)}
                                     >
@@ -177,7 +177,7 @@ const UploadQuestions = () => {
                                     <input
                                         type="text"
                                         className="uq-url-input"
-                                        placeholder="https://drive.google.com/file/d/..."
+                                        placeholder="Paste Drive link here"
                                         value={pdf.url}
                                         onChange={(e) => handleLinkChange(index, 'url', e.target.value)}
                                     />
@@ -190,7 +190,7 @@ const UploadQuestions = () => {
                                         disabled={pdfLinks.length === 1}
                                         title="Remove row"
                                     >
-                                        ✕
+                                        &times;
                                     </button>
                                 </div>
                             ))}
