@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import pdfIcon from '../assets/pdf.png';
 import { useBooks } from '../context/BookContext';
 import { useQuestions } from '../context/QuestionContext';
+import ConfirmationModal from '../components/ConfirmationModal';
 import './UploadQuestions.css';
 
 const COURSES = ['BCA', 'DCA', 'PGDCA'];
@@ -32,6 +33,17 @@ const UploadQuestions = () => {
     const [selectedSubject, setSelectedSubject] = useState('');
     const [pdfLinks, setPdfLinks] = useState([{ label: '', url: '', month: '', year: '' }]);
     const [saving, setSaving] = useState(false);
+    const [alertModal, setAlertModal] = useState(null);
+
+    const showAlertModal = ({ title, message, variant = 'yellow', onClose }) => {
+        setAlertModal({ title, message, variant, onClose });
+    };
+
+    const closeAlertModal = () => {
+        const closeAction = alertModal?.onClose;
+        setAlertModal(null);
+        if (closeAction) closeAction();
+    };
 
     // Derive unique subjects from books matching the selected course
     const subjects = selectedCourse
@@ -64,16 +76,27 @@ const UploadQuestions = () => {
         e.preventDefault();
         const filled = pdfLinks.filter(p => p.url.trim() !== '');
         if (!selectedCourse || !selectedSubject || filled.length === 0) {
-            alert('Please select a course, subject, and add at least one PDF link.');
+            showAlertModal({
+                title: 'Missing Details',
+                message: 'Please select a course, subject, and add at least one PDF link.',
+                variant: 'danger'
+            });
             return;
         }
         setSaving(true);
         try {
             await addQuestionPdfs(selectedCourse, selectedSubject, filled);
-            alert(`Uploaded ${filled.length} PDF(s) for "${selectedSubject}" (${selectedCourse}).`);
-            navigate('/questions');
+            showAlertModal({
+                title: 'Upload Complete',
+                message: `Uploaded ${filled.length} PDF(s) for "${selectedSubject}" (${selectedCourse}).`,
+                onClose: () => navigate('/questions')
+            });
         } catch (err) {
-            alert(`Upload failed: ${err.message}`);
+            showAlertModal({
+                title: 'Upload Failed',
+                message: `Upload failed: ${err.message}`,
+                variant: 'danger'
+            });
         } finally {
             setSaving(false);
         }
@@ -222,6 +245,17 @@ const UploadQuestions = () => {
 
                 </form>
             </div>
+
+            <ConfirmationModal
+                isOpen={!!alertModal}
+                onClose={closeAlertModal}
+                onConfirm={closeAlertModal}
+                title={alertModal?.title}
+                message={alertModal?.message}
+                variant={alertModal?.variant || 'yellow'}
+                confirmLabel="OK"
+                hideCancel
+            />
         </div>
     );
 };

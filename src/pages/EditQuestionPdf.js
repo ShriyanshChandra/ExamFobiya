@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useQuestions } from '../context/QuestionContext';
+import ConfirmationModal from '../components/ConfirmationModal';
 import './UploadQuestions.css';
 import '../components/RemoveBookModal.css'; // Reuse modal styles from RemoveBookModal
 
@@ -36,6 +37,17 @@ const EditQuestionPdf = () => {
     const [saving, setSaving] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+    const [alertModal, setAlertModal] = useState(null);
+
+    const showAlertModal = ({ title, message, variant = 'yellow', onClose }) => {
+        setAlertModal({ title, message, variant, onClose });
+    };
+
+    const closeAlertModal = () => {
+        const closeAction = alertModal?.onClose;
+        setAlertModal(null);
+        if (closeAction) closeAction();
+    };
 
     useEffect(() => {
         if (!pdf) navigate('/questions');
@@ -46,7 +58,11 @@ const EditQuestionPdf = () => {
     const handleSave = async (e) => {
         e.preventDefault();
         if (!url.trim()) {
-            alert('PDF link is required.');
+            showAlertModal({
+                title: 'Missing PDF Link',
+                message: 'PDF link is required.',
+                variant: 'danger'
+            });
             return;
         }
         setSaving(true);
@@ -57,10 +73,17 @@ const EditQuestionPdf = () => {
                 month: month || '',
                 year: year || ''
             });
-            alert('Question PDF updated successfully.');
-            navigate('/questions');
+            showAlertModal({
+                title: 'PDF Updated',
+                message: 'Question PDF updated successfully.',
+                onClose: () => navigate('/questions')
+            });
         } catch (err) {
-            alert(`Update failed: ${err.message}`);
+            showAlertModal({
+                title: 'Update Failed',
+                message: `Update failed: ${err.message}`,
+                variant: 'danger'
+            });
         } finally {
             setSaving(false);
         }
@@ -74,13 +97,20 @@ const EditQuestionPdf = () => {
         setDeleting(true);
         try {
             await deleteQuestionPdf(pdf.docPath);
-            alert('PDF deleted.');
-            navigate('/questions');
+            setIsConfirmingDelete(false);
+            showAlertModal({
+                title: 'PDF Deleted',
+                message: 'PDF deleted.',
+                onClose: () => navigate('/questions')
+            });
         } catch (err) {
-            alert(`Delete failed: ${err.message}`);
+            showAlertModal({
+                title: 'Delete Failed',
+                message: `Delete failed: ${err.message}`,
+                variant: 'danger'
+            });
         } finally {
             setDeleting(false);
-            setIsConfirmingDelete(false);
         }
     };
 
@@ -228,6 +258,17 @@ const EditQuestionPdf = () => {
                     </div>
                 </div>
             )}
+
+            <ConfirmationModal
+                isOpen={!!alertModal}
+                onClose={closeAlertModal}
+                onConfirm={closeAlertModal}
+                title={alertModal?.title}
+                message={alertModal?.message}
+                variant={alertModal?.variant || 'yellow'}
+                confirmLabel="OK"
+                hideCancel
+            />
         </div>
     );
 };

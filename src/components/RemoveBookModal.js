@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ConfirmationModal from './ConfirmationModal';
 import './RemoveBookModal.css';
 
 const RemoveBookModal = ({ book, onClose, onConfirm }) => {
@@ -12,6 +13,7 @@ const RemoveBookModal = ({ book, onClose, onConfirm }) => {
 
     // State for confirmation view
     const [isConfirming, setIsConfirming] = useState(false);
+    const [showSelectionAlert, setShowSelectionAlert] = useState(false);
 
 
 
@@ -32,7 +34,7 @@ const RemoveBookModal = ({ book, onClose, onConfirm }) => {
 
     const handleInitialConfirm = () => {
         if (selectedSectionsToRemove.length === 0 && !removeFromAll) {
-            alert("Please select at least one option.");
+            setShowSelectionAlert(true);
             return;
         }
         setIsConfirming(true);
@@ -129,6 +131,17 @@ const RemoveBookModal = ({ book, onClose, onConfirm }) => {
                     </div>
                 )}
             </div>
+
+            <ConfirmationModal
+                isOpen={showSelectionAlert}
+                onClose={() => setShowSelectionAlert(false)}
+                onConfirm={() => setShowSelectionAlert(false)}
+                title="Selection Required"
+                message="Please select at least one option."
+                variant="danger"
+                confirmLabel="OK"
+                hideCancel
+            />
         </div>
     );
 };

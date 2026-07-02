@@ -1,18 +1,44 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useBooks } from '../context/BookContext';
 import { extractTextFromFile, formatToTopics } from '../utils/documentUtils';
-import ReactQuill, { Quill } from 'react-quill-new';
-import 'react-quill-new/dist/quill.snow.css';
 import './AddBook.css';
 import ConfirmationModal from '../components/ConfirmationModal';
 import Loader from '../components/Loader';
 
-// Register custom icon for Find & Replace
-const icons = Quill.import('ui/icons');
-icons['find-replace'] = `<svg viewBox="0 0 18 18" width="18" height="18"><path class="ql-fill" d="M15.5,14h-.79l-.28-.27A6.47,6.47,0,0,0,16,9.5,6.5,6.5,0,1,0,9.5,16c1.61,0,3.09-.59,4.23-1.57l.27.28v.79l5,4.99L20.49,19l-4.99-5Zm-6,0C7.01,14,5,11.99,5,9.5S7.01,5,9.5,5,14,7.01,14,9.5,11.99,14,9.5,14Z"/></svg>`;
+const decodeHtmlForNotepad = (value) => {
+    if (!value) return '';
+    if (Array.isArray(value)) return value.join('\n');
 
+    const text = String(value);
+    const hasHtmlSyntax = /<[a-z][\s\S]*>/i.test(text) || /&[a-z0-9#]+;/i.test(text);
 
+    if (!hasHtmlSyntax) return text;
+
+    const withLineBreaks = text
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<\/(p|div|li|h[1-6]|tr)>/gi, '\n')
+        .replace(/<li[^>]*>/gi, '- ');
+
+    if (typeof window === 'undefined' || typeof window.DOMParser === 'undefined') {
+        return withLineBreaks
+            .replace(/<[^>]+>/g, '')
+            .replace(/&nbsp;/gi, ' ')
+            .replace(/&amp;/gi, '&')
+            .replace(/&lt;/gi, '<')
+            .replace(/&gt;/gi, '>')
+            .replace(/\u00a0/g, ' ')
+            .replace(/\n{3,}/g, '\n\n')
+            .trim();
+    }
+
+    const parsed = new window.DOMParser().parseFromString(withLineBreaks, 'text/html');
+
+    return parsed.body.textContent
+        .replace(/\u00a0/g, ' ')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+};
 
 const AddBook = () => {
     const { addBook, updateBook, books, loading: booksLoading } = useBooks();
@@ -31,36 +57,17 @@ const AddBook = () => {
     const [entryMode, setEntryMode] = useState('pdf');
 
     const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
+    const [alertModal, setAlertModal] = useState(null);
 
-    // Find and Replace States
-    const [showFindReplace, setShowFindReplace] = useState(false);
-    const [findText, setFindText] = useState('');
-    const [replaceText, setReplaceText] = useState('');
+    const showAlertModal = ({ title, message, variant = 'yellow', onClose }) => {
+        setAlertModal({ title, message, variant, onClose });
+    };
 
-    // Editor Ref and Search State
-    const quillRef = useRef(null);
-    const [lastSearchIndex, setLastSearchIndex] = useState(0);
-
-    // Stable handler for toggling Find & Replace using Ref for access inside modules
-    const toggleFindRef = useRef(null);
-    toggleFindRef.current = () => setShowFindReplace(prev => !prev);
-
-    const modules = React.useMemo(() => ({
-        toolbar: {
-            container: [
-                ['bold', 'italic', 'underline', 'strike'],
-                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                [{ 'indent': '-1' }, { 'indent': '+1' }],
-                ['clean', 'link'],
-                ['find-replace'] // Custom button name
-            ],
-            handlers: {
-                'find-replace': () => {
-                    if (toggleFindRef.current) toggleFindRef.current();
-                }
-            }
-        }
-    }), []);
+    const closeAlertModal = () => {
+        const closeAction = alertModal?.onClose;
+        setAlertModal(null);
+        if (closeAction) closeAction();
+    };
 
     // Load book data if editing
 
@@ -85,11 +92,14 @@ const AddBook = () => {
                 }
 
                 setImage(bookToEdit.image);
-                setContents(bookToEdit.contents);
+                setContents(decodeHtmlForNotepad(bookToEdit.contents));
                 setEntryMode('manual'); // Default to manual to show existing contents
             } else {
-                alert("Book not found!");
-                navigate('/books');
+                showAlertModal({
+                    title: 'Book Not Found',
+                    message: 'This book could not be found.',
+                    onClose: () => navigate('/books')
+                });
             }
         }
     }, [id, books, booksLoading, isEditMode, navigate]);
@@ -106,7 +116,7 @@ const AddBook = () => {
                     setSemester(parsedData.semester || '');
                     setSections(parsedData.sections || []);
                     setImage(parsedData.image || null);
-                    setContents(parsedData.contents || '');
+                    setContents(decodeHtmlForNotepad(parsedData.contents));
                 } catch (error) {
                     console.error('Error loading saved form data:', error);
                 }
@@ -173,8 +183,12 @@ const AddBook = () => {
                 const formatted = formatToTopics(text);
                 setContents(formatted);
             } catch (err) {
-                alert('Failed to extract text from file');
                 console.error(err);
+                showAlertModal({
+                    title: 'Extraction Failed',
+                    message: 'Failed to extract text from file.',
+                    variant: 'danger'
+                });
             } finally {
                 setLoading(false);
             }
@@ -224,6 +238,22 @@ const AddBook = () => {
         setShowConfirmModal(true);
     };
 
+    const handleSyllabusKeyDown = (e) => {
+        if (e.key !== 'Tab') return;
+
+        e.preventDefault();
+
+        const { selectionStart, selectionEnd, value } = e.target;
+        const updatedContents = `${value.slice(0, selectionStart)}\t${value.slice(selectionEnd)}`;
+
+        setContents(updatedContents);
+
+        requestAnimationFrame(() => {
+            e.target.selectionStart = selectionStart + 1;
+            e.target.selectionEnd = selectionStart + 1;
+        });
+    };
+
     // Reset form to initial state
     const resetForm = () => {
         setTitle('');
@@ -233,17 +263,7 @@ const AddBook = () => {
         setImage(null);
         setImageUrlInput('');
         setContents('');
-        setShowFindReplace(false);
-        setFindText('');
-        setReplaceText('');
-        setLastSearchIndex(0);
         setEntryMode('pdf');
-
-        // Clear the Quill editor
-        if (quillRef.current) {
-            const editor = quillRef.current.getEditor();
-            editor.setText('');
-        }
 
         // Clear localStorage
         localStorage.removeItem('addBookFormData');
@@ -268,96 +288,30 @@ const AddBook = () => {
 
             if (isEditMode) {
                 await updateBook(id, bookData);
-                alert('Book updated successfully!');
+                showAlertModal({
+                    title: 'Book Updated',
+                    message: 'Book updated successfully!',
+                    onClose: () => navigate('/books')
+                });
             } else {
                 await addBook(bookData);
-                alert('Book added successfully!');
                 // Reset form only when adding (not editing)
                 resetForm();
+                showAlertModal({
+                    title: 'Book Added',
+                    message: 'Book added successfully!',
+                    onClose: () => navigate('/books')
+                });
             }
-            navigate('/books');
         } catch (error) {
             console.error("Error saving book:", error);
-            alert(`Operation failed: ${error.message}`);
+            showAlertModal({
+                title: 'Operation Failed',
+                message: `Operation failed: ${error.message}`,
+                variant: 'danger'
+            });
         } finally {
             setLoading(false);
-        }
-    };
-
-    // Find Logic
-    const handleFind = () => {
-        if (!findText) return;
-        if (!quillRef.current) return;
-        const quill = quillRef.current.getEditor();
-        const text = quill.getText();
-        const idx = text.toLowerCase().indexOf(findText.toLowerCase(), lastSearchIndex);
-
-        if (idx !== -1) {
-            quill.setSelection(idx, findText.length);
-            setLastSearchIndex(idx + 1);
-        } else {
-            if (lastSearchIndex > 0) {
-                // Loop back to start
-                if (window.confirm('Reached end of document. Search from top?')) {
-                    setLastSearchIndex(0);
-                    // We can immediately trigger search again here or let user click
-                    // Let's trigger it immediately for better UX (but need careful recursion check, so just set 0)
-                    // Actually, let's just reset 0 and try to find from 0
-                    const retryIdx = text.toLowerCase().indexOf(findText.toLowerCase(), 0);
-                    if (retryIdx !== -1) {
-                        quill.setSelection(retryIdx, findText.length);
-                        setLastSearchIndex(retryIdx + 1);
-                    } else {
-                        alert('Text not found.');
-                    }
-                }
-            } else {
-                alert('Text not found.');
-            }
-        }
-    };
-
-    // Replace Logic
-    const handleReplace = () => {
-        if (!findText) return;
-        if (!quillRef.current) return;
-        const quill = quillRef.current.getEditor();
-        const range = quill.getSelection();
-
-        let didReplace = false;
-        if (range && range.length > 0) {
-            const selectedText = quill.getText(range.index, range.length);
-            if (selectedText.toLowerCase() === findText.toLowerCase()) {
-                quill.deleteText(range.index, range.length);
-                quill.insertText(range.index, replaceText);
-                setLastSearchIndex(range.index + replaceText.length);
-                didReplace = true;
-            }
-        }
-
-        if (!didReplace) {
-            handleFind(); // Find next occurrence if current wasn't a match
-        } else {
-            // After replace, maybe find next automatically?
-            // User behavior varies, but often yes.
-            // Let's not auto-find next to avoid confusion, but finding is one click away.
-            // Or better, stick to "Replace" meaning "Replace current".
-        }
-    };
-
-    // Replace All Logic
-    const handleReplaceAll = () => {
-        if (!findText) return;
-        // Escape special regex characters
-        const escapedFind = findText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const regex = new RegExp(escapedFind, 'g');
-        const newContents = contents.replace(regex, replaceText);
-        setContents(newContents);
-        if (newContents === contents) {
-            alert('No matches found.');
-        } else {
-            alert('Replaced all occurrences.');
-            setLastSearchIndex(0); // Reset search index
         }
     };
 
@@ -366,25 +320,27 @@ const AddBook = () => {
             <div className="add-book-card">
                 <h2>{isEditMode ? 'Edit Book' : 'Add New Book'}</h2>
                 <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label>Title:</label>
-                        <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
-                    </div>
+                    <div className="form-row form-row-two">
+                        <div className="form-group">
+                            <label>Title:</label>
+                            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
+                        </div>
 
-                    <div className="form-group">
-                        <label>Course Category:</label>
-                        <div className="select-wrapper">
-                            <select
-                                value={category}
-                                onChange={(e) => setCategory(e.target.value)}
-                                className="category-select"
-                                required
-                            >
-                                <option value="">Select Category</option>
-                                <option value="BCA">BCA</option>
-                                <option value="DCA">DCA</option>
-                                <option value="PGDCA">PGDCA</option>
-                            </select>
+                        <div className="form-group">
+                            <label>Course Category:</label>
+                            <div className="select-wrapper">
+                                <select
+                                    value={category}
+                                    onChange={(e) => setCategory(e.target.value)}
+                                    className="category-select"
+                                    required
+                                >
+                                    <option value="">Select Category</option>
+                                    <option value="BCA">BCA</option>
+                                    <option value="DCA">DCA</option>
+                                    <option value="PGDCA">PGDCA</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
@@ -479,29 +435,36 @@ const AddBook = () => {
                         </div>
                     </div>
 
-                    <div className="form-group">
-                        <label>Cover Image URL (Paste Drive Link):</label>
-                        <input
-                            type="text"
-                            className="url-input"
-                            placeholder="https://drive.google.com/file/d/..."
-                            value={imageUrlInput}
-                            onChange={handleUrlChange}
-                            required={!isEditMode && !image}
-                        />
-                        <small style={{ display: 'block', color: '#666', marginTop: '5px' }}>
-                            Supports JPEG, PNG, direct links, and Google Drive sharing links.
-                        </small>
-                        {image && (
-                            <div className="image-preview-wrapper" style={{ marginTop: '10px' }}>
-                                <img
-                                    src={image}
-                                    alt="Preview"
-                                    className="img-preview"
-                                    referrerPolicy="no-referrer"
-                                />
+                    <div className="form-row cover-form-row">
+                        <div className="form-group">
+                            <label>Cover Image URL (Paste Drive Link):</label>
+                            <input
+                                type="text"
+                                className="url-input"
+                                placeholder="https://drive.google.com/file/d/..."
+                                value={imageUrlInput}
+                                onChange={handleUrlChange}
+                                required={!isEditMode && !image}
+                            />
+                            <small style={{ display: 'block', color: '#666', marginTop: '5px' }}>
+                                Supports JPEG, PNG, direct links, and Google Drive sharing links.
+                            </small>
+                        </div>
+                        <div className="form-group cover-preview-group">
+                            <label>Cover Preview:</label>
+                            <div className="image-preview-wrapper">
+                                {image ? (
+                                    <img
+                                        src={image}
+                                        alt="Preview"
+                                        className="img-preview"
+                                        referrerPolicy="no-referrer"
+                                    />
+                                ) : (
+                                    <div className="img-preview-placeholder">No cover selected</div>
+                                )}
                             </div>
-                        )}
+                        </div>
                     </div>
 
                     <div className="form-group">
@@ -524,55 +487,6 @@ const AddBook = () => {
                         </div>
                     </div>
 
-                    {/* Find and Replace Logic */}
-                    {/* Find and Replace Logic */}
-                    {entryMode === 'manual' && showFindReplace && (
-                        <div className="form-group" style={{ marginBottom: '10px' }}>
-                            <div className="find-replace-toolbar">
-                                <input
-                                    type="text"
-                                    placeholder="Find..."
-                                    value={findText}
-                                    onChange={(e) => {
-                                        setFindText(e.target.value);
-                                        setLastSearchIndex(0); // Reset search when text changes
-                                    }}
-                                    className="find-input"
-                                />
-                                <input
-                                    type="text"
-                                    placeholder="Replace with..."
-                                    value={replaceText}
-                                    onChange={(e) => setReplaceText(e.target.value)}
-                                    className="find-input"
-                                />
-                                <button
-                                    type="button"
-                                    className="action-btn"
-                                    style={{ backgroundColor: '#007bff', color: 'white' }}
-                                    onClick={handleFind}
-                                >
-                                    Find
-                                </button>
-                                <button
-                                    type="button"
-                                    className="action-btn"
-                                    style={{ backgroundColor: '#17a2b8', color: 'white' }}
-                                    onClick={handleReplace}
-                                >
-                                    Replace
-                                </button>
-                                <button
-                                    type="button"
-                                    className="action-btn replace-btn"
-                                    onClick={handleReplaceAll}
-                                >
-                                    Replace All
-                                </button>
-                            </div>
-                        </div>
-                    )}
-
                     {entryMode === 'pdf' ? (
                         <div className="form-group">
                             <label>Table of Content (PDF / DOCX):</label>
@@ -592,15 +506,14 @@ const AddBook = () => {
                     )}
 
                     <div className="form-group">
-                        <label>{entryMode === 'pdf' ? 'Extracted Contents (Editable):' : 'Enter Topics:'}</label>
-                        <ReactQuill
-                            ref={quillRef}
-                            key={entryMode}
-                            theme="snow"
+                        <label>{entryMode === 'pdf' ? 'Extracted Contents:' : 'Enter Topics:'}</label>
+                        <textarea
+                            className="syllabus-notepad"
                             value={contents}
-                            onChange={setContents}
+                            onChange={(e) => setContents(e.target.value)}
+                            onKeyDown={handleSyllabusKeyDown}
                             placeholder={entryMode === 'pdf' ? "Topics will appear here..." : "Paste your topics here (formatting will be preserved)..."}
-                            modules={modules}
+                            spellCheck="true"
                         />
                     </div>
 
@@ -647,6 +560,17 @@ const AddBook = () => {
                     : `Are you sure you want to add the book "${title}" to the library?`
                 }
                 variant="yellow"
+            />
+
+            <ConfirmationModal
+                isOpen={!!alertModal}
+                onClose={closeAlertModal}
+                onConfirm={closeAlertModal}
+                title={alertModal?.title}
+                message={alertModal?.message}
+                variant={alertModal?.variant || 'yellow'}
+                confirmLabel="OK"
+                hideCancel
             />
         </div>
     );

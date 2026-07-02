@@ -1,8 +1,20 @@
 import React from 'react';
 import './ConfirmationModal.css';
 
-const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, variant = 'danger', confirmLabel = 'Yes, Proceed' }) => {
+const ConfirmationModal = ({
+    isOpen,
+    onClose,
+    onConfirm,
+    title,
+    message,
+    variant = 'danger',
+    confirmLabel = 'Yes, Proceed',
+    cancelLabel = 'Cancel',
+    hideCancel = false
+}) => {
     if (!isOpen) return null;
+
+    const handleConfirm = onConfirm || onClose;
 
     return (
         <div className="modal-overlay">
@@ -15,8 +27,10 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, variant
                     <p>{message}</p>
                 </div>
                 <div className="modal-actions">
-                    <button type="button" className="cancel-btn" onClick={onClose}>Cancel</button>
-                    <button type="button" className={`confirm-btn ${variant}`} onClick={onConfirm}>{confirmLabel}</button>
+                    {!hideCancel && (
+                        <button type="button" className="cancel-btn" onClick={onClose}>{cancelLabel}</button>
+                    )}
+                    <button type="button" className={`confirm-btn ${variant}`} onClick={handleConfirm}>{confirmLabel}</button>
                 </div>
             </div>
         </div>

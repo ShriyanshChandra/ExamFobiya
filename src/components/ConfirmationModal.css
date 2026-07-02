@@ -23,11 +23,13 @@
     max-width: 31.25rem;
     color: #fff;
     animation: fadeIn 0.3s ease;
+    text-align: center;
+    position: relative;
 }
 
 .modal-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     margin-bottom: 1.25rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.3);
@@ -42,7 +44,10 @@
     font-size: 1.5rem;
 }
 
-.close-btn {
+.confirmation-modal .close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
     background: none;
     border: none;
     font-size: 1.8rem;
@@ -51,7 +56,7 @@
     transition: transform 0.2s;
 }
 
-.close-btn:hover {
+.confirmation-modal .close-btn:hover {
     transform: scale(1.1);
 }
 
@@ -64,7 +69,7 @@
     text-align: center;
 }
 
-.modal-actions {
+.confirmation-modal .modal-actions {
     display: flex;
     justify-content: center;
     gap: 1.25rem;

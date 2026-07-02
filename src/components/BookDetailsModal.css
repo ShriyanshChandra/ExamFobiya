@@ -217,6 +217,11 @@
     padding: 0;
 }
 
+.syllabus-plain-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
 .rich-text-content * {
     text-align: left !important;
     font-size: 0.85rem !important;

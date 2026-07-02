@@ -30,7 +30,7 @@ export const BookProvider = ({ children }) => {
             await addDoc(collection(db, 'books'), newBook);
         } catch (error) {
             console.error("Error adding book:", error);
-            alert("Failed to add book. check console.");
+            throw error;
         }
     };
 
@@ -47,6 +47,7 @@ export const BookProvider = ({ children }) => {
             await updateDoc(doc(db, 'books', id), updates);
         } catch (error) {
             console.error("Error updating book:", error);
+            throw error;
         }
     };
 

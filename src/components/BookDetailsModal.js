@@ -82,11 +82,11 @@ const renderTopics = (contents) => {
         );
     }
 
-    // Fallback for plain text (legacy)
+    // Fallback for plain text: preserve textarea line breaks exactly.
     return (
-        <ul className="hierarchical-topics">
-            {contents.split('\n').filter(l => l.trim()).map((line, i) => <li key={i}>{line}</li>)}
-        </ul>
+        <div className="rich-text-content syllabus-plain-text">
+            {contents}
+        </div>
     );
 };
 

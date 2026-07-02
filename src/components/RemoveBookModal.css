@@ -26,6 +26,7 @@
     max-width: 31.25rem;
     color: #fff;
     animation: fadeIn 0.3s ease;
+    text-align: center;
 }
 
 /* Ensure text is readable on frosted bg if it's over dark or light */
@@ -43,6 +44,7 @@
     border-radius: 0.5rem;
     margin-bottom: 1.25rem;
     color: #333;
+    text-align: center;
 }
 
 .options-group {
@@ -69,9 +71,9 @@
     accent-color: #ffd700;
 }
 
-.modal-actions {
+.frosted-modal .modal-actions {
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
     gap: 0.9375rem;
 }
 

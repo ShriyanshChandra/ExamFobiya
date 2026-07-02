@@ -12,7 +12,7 @@
     border-radius: 1rem;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 42.5rem;
+    max-width: 75rem;
 }
 
 .uq-card h2 {
@@ -424,4 +424,3 @@ body.dark-mode .uq-cancel-btn:hover {
         flex-direction: column;
     }
 }
-
