@@ -467,6 +467,7 @@ const AddBook = () => {
                         </div>
                     </div>
 
+
                     <div className="form-group">
                         <label>Content Entry Mode:</label>
                         <div className="entry-mode-toggle">

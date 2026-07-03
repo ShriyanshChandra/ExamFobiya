@@ -522,13 +522,17 @@
 .pdf-card-open-row {
   font-size: 0.9rem;
   font-weight: 700;
-  color: #ffd700;
+  color: #111827;
   text-decoration: none;
   white-space: nowrap;
 }
 
 .pdf-card-open-row:hover {
   text-decoration: underline;
+}
+
+[data-theme='dark'] .pdf-card-open-row {
+  color: #ffd700;
 }
 
 @media (max-width: 75rem) {

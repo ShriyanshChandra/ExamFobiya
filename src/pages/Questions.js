@@ -159,7 +159,7 @@ const Questions = () => {
               placeholder="Search by subject, course or label..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               className="questions-search-input"
             />
             <button className="questions-search-btn" onClick={handleSearch}>

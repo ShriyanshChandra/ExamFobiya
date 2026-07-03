@@ -51,6 +51,57 @@ export const BookProvider = ({ children }) => {
         }
     };
 
+    const addProgrammingSolution = async (bookId, solution) => {
+        try {
+            const book = books.find(b => b.id === bookId);
+
+            // Migrate legacy single-solution field into the array so it isn't lost
+            let existing = [];
+            if (Array.isArray(book?.programmingSolutions) && book.programmingSolutions.length > 0) {
+                existing = book.programmingSolutions;
+            } else if (book?.programmingSolution && Object.keys(book.programmingSolution).length > 0) {
+                existing = [{ ...book.programmingSolution, id: 'legacy' }];
+            }
+
+            const newSolution = { ...solution, id: `sol-${Date.now()}-${Math.random().toString(36).slice(2, 7)}` };
+            await updateDoc(doc(db, 'books', bookId), {
+                hasProgrammingSolution: true,
+                programmingSolutions: [...existing, newSolution]
+            });
+            return newSolution.id;
+        } catch (error) {
+            console.error("Error adding programming solution:", error);
+            throw error;
+        }
+    };
+
+    const updateProgrammingSolution = async (bookId, solutionId, updates) => {
+        try {
+            const book = books.find(b => b.id === bookId);
+            const existing = book?.programmingSolutions || [];
+            const updated = existing.map(s => s.id === solutionId ? { ...s, ...updates } : s);
+            await updateDoc(doc(db, 'books', bookId), { programmingSolutions: updated });
+        } catch (error) {
+            console.error("Error updating programming solution:", error);
+            throw error;
+        }
+    };
+
+    const deleteProgrammingSolution = async (bookId, solutionId) => {
+        try {
+            const book = books.find(b => b.id === bookId);
+            const existing = book?.programmingSolutions || [];
+            const updated = existing.filter(s => s.id !== solutionId);
+            await updateDoc(doc(db, 'books', bookId), {
+                programmingSolutions: updated,
+                hasProgrammingSolution: updated.length > 0
+            });
+        } catch (error) {
+            console.error("Error deleting programming solution:", error);
+            throw error;
+        }
+    };
+
     const getBooksBySection = (sectionName) => {
         if (!sectionName) return books;
         return books.filter(book => book.sections && book.sections.includes(sectionName));
@@ -62,7 +113,7 @@ export const BookProvider = ({ children }) => {
     };
 
     return (
-        <BookContext.Provider value={{ books, addBook, removeBook, updateBook, getBooksBySection, getBooksByCategory, loading }}>
+        <BookContext.Provider value={{ books, addBook, removeBook, updateBook, addProgrammingSolution, updateProgrammingSolution, deleteProgrammingSolution, getBooksBySection, getBooksByCategory, loading }}>
             {children}
         </BookContext.Provider>
     );

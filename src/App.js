@@ -20,6 +20,8 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Maintenance from "./pages/Maintenance";
 import SavedItems from "./pages/SavedItems";
 import Settings from "./pages/Settings";
+import ProgrammingSolutions from "./pages/ProgrammingSolutions";
+import AddProgrammingSolution from "./pages/AddProgrammingSolution";
 import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
 import { BookProvider } from "./context/BookContext";
@@ -64,6 +66,10 @@ function App() {
                   <Route path="/welcome" element={<ProtectedRoute><Welcome /></ProtectedRoute>} />
                   <Route path="/saved-items" element={<ProtectedRoute><SavedItems /></ProtectedRoute>} />
                   <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+                  <Route path="/programming-solutions" element={<ProgrammingSolutions />} />
+                  <Route path="/programming-solutions/:id" element={<ProgrammingSolutions />} />
+                  <Route path="/add-programming-solution" element={<ProtectedRoute requiredRole="admin"><AddProgrammingSolution /></ProtectedRoute>} />
+                  <Route path="/edit-programming-solution/:bookId/:solutionId" element={<ProtectedRoute requiredRole="admin"><AddProgrammingSolution /></ProtectedRoute>} />
                   <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
                   <Route path="/add-book" element={<ProtectedRoute requiredRole="admin"><AddBook /></ProtectedRoute>} />
                   <Route path="/edit-book/:id" element={<ProtectedRoute requiredRole="admin"><AddBook /></ProtectedRoute>} />

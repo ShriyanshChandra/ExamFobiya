@@ -329,6 +329,18 @@
     white-space: pre-wrap;
 }
 
+.programming-solution-toggle-group {
+    padding: 1rem;
+    border: 1px solid rgba(15, 159, 130, 0.18);
+    border-radius: 0.5rem;
+    background: rgba(15, 159, 130, 0.06);
+}
+
+.programming-solution-checkbox {
+    margin: 0;
+    font-weight: 700;
+}
+
 /* Dark Mode Support */
 body.dark-mode .add-book-card {
     background: #1f2937;
@@ -453,6 +465,11 @@ body.dark-mode .subject-option:hover {
 body.dark-mode .form-group textarea.syllabus-notepad {
     color: #f9fafb;
     background: #374151;
+}
+
+body.dark-mode .programming-solution-toggle-group {
+    background: rgba(45, 212, 191, 0.1);
+    border-color: rgba(45, 212, 191, 0.24);
 }
 
 body.dark-mode .img-preview-placeholder {

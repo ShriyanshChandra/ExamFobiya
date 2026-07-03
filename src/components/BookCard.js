@@ -90,24 +90,37 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit, onSaveClick }) => {
                     </div>
                     <h3 className="book-card-title">{book.title}</h3>
                     <div className="book-card-btns">
-                        <button
-                            className="action-btn questions-btn"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                navigate('/questions', { state: { initialSearch: book.title } });
-                            }}
-                        >
-                            Questions
-                        </button>
-                        <button
-                            className="action-btn syllabus-btn"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                openDetails();
-                            }}
-                        >
-                            Syllabus
-                        </button>
+                        {book.hasProgrammingSolution && (
+                            <button
+                                className="action-btn solutions-btn"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigate('/programming-solutions', { state: { initialSearch: book.title } });
+                                }}
+                            >
+                                Programming Solutions
+                            </button>
+                        )}
+                        <div className="book-card-primary-btns">
+                            <button
+                                className="action-btn questions-btn"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigate('/questions', { state: { initialSearch: book.title } });
+                                }}
+                            >
+                                Questions
+                            </button>
+                            <button
+                                className="action-btn syllabus-btn"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    openDetails();
+                                }}
+                            >
+                                Syllabus
+                            </button>
+                        </div>
                     </div>
                 </div>
                 {saveError && <p className="book-save-error">{saveError}</p>}

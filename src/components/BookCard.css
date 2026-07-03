@@ -283,9 +283,15 @@
 /* Buttons inside the card content — no container background */
 .book-card-btns {
     display: flex;
+    flex-direction: column;
     gap: 0.5rem;
     margin-top: auto;
     padding-bottom: 1rem;
+}
+
+.book-card-primary-btns {
+    display: flex;
+    gap: 0.5rem;
 }
 
 
@@ -316,9 +322,27 @@
     transform: translateY(-1px);
 }
 
+.solutions-btn {
+    background: linear-gradient(135deg, #2dd4bf, #0f9f82);
+    color: #06251f;
+    box-shadow: 0 10px 20px rgba(15, 159, 130, 0.2);
+    font-weight: 700;
+    width: 100%;
+}
+
+.solutions-btn:hover {
+    background: linear-gradient(135deg, #5eead4, #0d9488);
+    color: #021c17;
+    transform: translateY(-1px);
+}
+
 [data-theme='dark'] .questions-btn,
 [data-theme='dark'] .syllabus-btn {
     color: #1a1a1a;
+}
+
+[data-theme='dark'] .solutions-btn {
+    color: #03241e;
 }
 
 /* Admin row sits below the public buttons */
@@ -369,6 +393,7 @@
         height: 1.875rem !important;
         min-height: 1.875rem !important;
         max-height: 1.875rem !important;
+        min-width: 0;
         font-size: 0.8rem !important;
         line-height: 1.875rem !important;
         box-sizing: border-box !important;
@@ -398,8 +423,13 @@
         border-top: none;
     }
 
+    .book-card-primary-btns {
+        gap: 0.5rem;
+    }
+
     .questions-btn,
-    .syllabus-btn {
+    .syllabus-btn,
+    .solutions-btn {
         border-radius: 0.25rem; /* Match standard action-btn */
         margin: 0;
     }
@@ -410,8 +440,17 @@
         gap: 0.1875rem;
     }
 
+    .book-card-primary-btns {
+        gap: 0.1875rem;
+    }
+
+    .action-btn {
+        font-size: 0.68rem !important;
+    }
+
     .questions-btn,
-    .syllabus-btn {
+    .syllabus-btn,
+    .solutions-btn {
         border-radius: 0.25rem; /* Default for very small screens too */
     }
 }

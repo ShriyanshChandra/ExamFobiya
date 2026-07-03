@@ -42,6 +42,8 @@
     /* Dark Blue from theme */
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
     font-size: 1.5rem;
+    text-align: center;
+    width: 100%;
 }
 
 .confirmation-modal .close-btn {
@@ -60,7 +62,11 @@
     transform: scale(1.1);
 }
 
-.modal-body p {
+.confirmation-modal .modal-body {
+    display: block;
+}
+
+.confirmation-modal .modal-body p {
     font-size: 1.2rem;
     color: #182848;
     /* Dark Blue */
