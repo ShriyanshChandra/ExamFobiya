@@ -168,7 +168,7 @@ const Navbar = ({ setSearchQuery }) => {
         <ul className={isOpen ? "nav-menu active" : "nav-menu"}>
           <li><Link to="/" onClick={() => setIsOpen(false)}>Home</Link></li>
           <li><Link to="/books" onClick={() => setIsOpen(false)}>Books</Link></li>
-          <li><Link to="/programming-solutions" onClick={() => setIsOpen(false)}>Programming Solutions</Link></li>
+          <li><Link to="/solutions" onClick={() => setIsOpen(false)}>Programming Solutions</Link></li>
           <li><Link to="/questions" onClick={() => setIsOpen(false)}>Questions</Link></li>
           <li><Link to="/about" onClick={() => setIsOpen(false)}>About Us</Link></li>
           {(user?.role === 'admin') && (

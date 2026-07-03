@@ -389,14 +389,16 @@
     }
 
     .action-btn {
-        padding: 0 0.3125rem !important;
-        height: 1.875rem !important;
+        padding: 0.35rem 0.3125rem !important;
+        height: auto !important;
         min-height: 1.875rem !important;
-        max-height: 1.875rem !important;
+        max-height: none !important;
         min-width: 0;
-        font-size: 0.8rem !important;
-        line-height: 1.875rem !important;
+        font-size: 0.75rem !important;
+        line-height: 1.2 !important;
         box-sizing: border-box !important;
+        text-align: center;
+        white-space: normal; /* allow text to wrap */
     }
 
     .book-card-btns {
