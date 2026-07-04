@@ -417,7 +417,7 @@ const ProgrammingSolutions = () => {
           ) : (
             <div className="pdf-results-list">
               {results.map(({ book, solution, rowId }) => (
-                <div key={rowId} className="pdf-result-card-row solution-result-card">
+                <div key={rowId} className={`pdf-result-card-row solution-result-card ${expandedRowIds.has(rowId) ? "expanded" : ""}`}>
                   <div className="pdf-row-info">
                     <span className="pdf-card-course">{book.category || book.semester || "All"}</span>
                     <div className="pdf-row-details">
