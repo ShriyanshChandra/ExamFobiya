@@ -19,9 +19,6 @@ const BestSeller = ({ limit }) => {
         <div>
           <span className="section-kicker">Popular now</span>
           <h2>Best Sellers</h2>
-          <p className="section-subtitle">
-            Reliable crowd favorites that make good first stops when you want proven material.
-          </p>
         </div>
         <Link to="/books" className="browse-all-link">See full library</Link>
       </div>

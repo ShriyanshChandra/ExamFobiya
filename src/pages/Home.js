@@ -36,20 +36,7 @@ const Home = () => {
             without digging through crowded lists.
           </p>
 
-          <div className="hero-stats">
-            <div className="hero-stat-pill">
-              <strong>3</strong>
-              <span>Course tracks</span>
-            </div>
-            <div className="hero-stat-pill">
-              <strong>Books</strong>
-              <span>Curated by category</span>
-            </div>
-            <div className="hero-stat-pill">
-              <strong>Fast</strong>
-              <span>Syllabus + questions</span>
-            </div>
-          </div>
+
 
           <div className="hero-buttons">
             <Link to="/books" className="primary-btn">Explore Books</Link>

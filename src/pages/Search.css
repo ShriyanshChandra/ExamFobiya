@@ -32,44 +32,72 @@
 
 /* Page background with a soft gradient */
 .search-results-page {
-  max-width: 75rem;
+  max-width: 100rem;
+  width: 95%;
   margin: 0 auto;
   padding-bottom: 3.75rem;
 }
 
-/* ---- Section headings ---- */
 .search-section-heading {
-  font-size: 1.3rem;
-  font-weight: 700;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-weight: 800;
   color: #182848;
-  margin-bottom: 1rem;
+  margin-top: 0;
+  margin-bottom: 2rem;
   text-align: center;
   justify-content: center;
+}
+
+.search-section-heading::after {
+  content: '';
+  display: block;
+  width: 6.875rem;
+  height: 0.25rem;
+  border-radius: 62.4375rem;
+  margin: 0.75rem auto 0;
+  background: linear-gradient(90deg, #4b6cb7, #182848);
 }
 
 [data-theme='dark'] .search-section-heading {
   color: #f0f0f0;
 }
 
-/* ---- Summary pill ---- */
-.search-summary-text {
-  margin: 1rem 0 2.5rem 0;
-  padding: 1.1rem 1.4rem;
+/* ---- Header Container ---- */
+.search-header-container {
   background: rgba(255, 255, 255, 0.55);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 215, 0, 0.45);
-  border-left: 4px solid #ffd700;
-  border-radius: 0.625rem;
-  color: #333;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 1.5rem;
+  padding: 1.5rem 2rem;
+  margin: 1.5rem 0 2.5rem 0;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  text-align: center;
+}
+
+[data-theme='dark'] .search-header-container {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.search-header-container h1 {
+  color: #182848;
+  margin-top: 0;
+}
+
+[data-theme='dark'] .search-header-container h1 {
+  color: #f0f0f0;
+}
+
+/* ---- Summary pill ---- */
+.search-summary-text {
+  color: #182848;
   font-weight: 500;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  text-align: center;
 }
 
 [data-theme='dark'] .search-summary-text {
-  background: rgba(30, 30, 30, 0.55);
-  border-color: rgba(255, 215, 0, 0.3);
-  color: #e0e0e0;
+  color: #e2e8f0;
 }
 
 /* ---- Section wrapper ---- */

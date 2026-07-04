@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useQuestions } from "../context/QuestionContext";
+import ConfirmationModal from "../components/ConfirmationModal";
 import "./Questions.css";
 
 const Questions = () => {
@@ -19,7 +20,9 @@ const Questions = () => {
   const { user, toggleSavedItem } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const { questionPdfs } = useQuestions();
+  const { questionPdfs, deleteQuestionPdf } = useQuestions();
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
   const formatQuestionDate = (pdf) => [pdf.month, pdf.year].filter(Boolean).join(' ');
 
   const uniqueCourses = [...new Set(questionPdfs.map((pdf) => pdf.course).filter(Boolean))].sort((a, b) => a.localeCompare(b));
@@ -133,11 +136,25 @@ const Questions = () => {
 
   const activeFilterCount = Object.values(filters).filter(Boolean).length;
 
+  const handleDeleteQuestion = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      await deleteQuestionPdf(deleteTarget.docPath);
+      setResults((prev) => prev.filter((pdf) => pdf.id !== deleteTarget.id));
+    } catch (error) {
+      console.error('Error deleting question PDF:', error);
+    } finally {
+      setDeleting(false);
+      setDeleteTarget(null);
+    }
+  };
+
   return (
     <div className="questions-container">
       <div className="questions-content">
         <h2>Previous Year Questions</h2>
-        <p className="subtitle">Search by subject, course, or question label</p>
+
 
         {/* Admin: Upload Questions button */}
         {user?.role === 'admin' && (
@@ -255,9 +272,11 @@ const Questions = () => {
                         <path d="M6 3.75C6 2.78 6.78 2 7.75 2h8.5C17.22 2 18 2.78 18 3.75V21l-6-3.5L6 21V3.75Z" />
                       </svg>
                     </button>
-                    <span className="pdf-card-course">{pdf.course}</span>
-                    <div className="pdf-row-details">
-                      <span className="pdf-card-subject">{pdf.subject}</span>
+                    <div className="pdf-row-info-body">
+                      <div className="pdf-row-info-header">
+                        <span className="pdf-card-course">{pdf.course}</span>
+                        <span className="pdf-card-subject">{pdf.subject}</span>
+                      </div>
                       {(pdf.label || pdf.month || pdf.year) && (
                         <span className="pdf-card-label-row">
                           {[pdf.label, formatQuestionDate(pdf)].filter(Boolean).join(' | ')}
@@ -269,12 +288,21 @@ const Questions = () => {
                   {/* Right Side: Actions */}
                   <div className="pdf-row-actions">
                     {user?.role === 'admin' && (
+                      <>
                       <button
                         className="pdf-edit-btn"
                         onClick={(e) => { e.stopPropagation(); navigate('/edit-question-pdf', { state: { pdf } }) }}
                       >
                         Edit
                       </button>
+                      <button
+                        type="button"
+                        className="pdf-edit-btn solution-delete-btn"
+                        onClick={(e) => { e.stopPropagation(); setDeleteTarget({ id: pdf.id, docPath: pdf.docPath || pdf.id, title: pdf.subject || pdf.label || 'this question' }); }}
+                      >
+                        Delete
+                      </button>
+                      </>
                     )}
                     <a
                       href={pdf.url}
@@ -282,7 +310,7 @@ const Questions = () => {
                       rel="noopener noreferrer"
                       className="pdf-card-open-row"
                     >
-                      Open PDF &rarr;
+                      Open PDF
                     </a>
                   </div>
 
@@ -299,6 +327,16 @@ const Questions = () => {
         )}
 
       </div>
+
+      <ConfirmationModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDeleteQuestion}
+        title="Delete Question PDF"
+        message={`Are you sure you want to delete "${deleteTarget?.title}"? This action cannot be undone.`}
+        confirmLabel={deleting ? "Deleting..." : "Yes, Delete"}
+        variant="danger"
+      />
     </div>
   );
 };

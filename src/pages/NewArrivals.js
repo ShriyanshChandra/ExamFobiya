@@ -20,9 +20,6 @@ const NewArrivals = ({ limit }) => {
         <div>
           <span className="section-kicker">Fresh picks</span>
           <h2>New Arrivals</h2>
-          <p className="section-subtitle">
-            Recently added titles that deserve attention before they disappear into the full catalog.
-          </p>
         </div>
         <Link to="/books" className="browse-all-link">Browse all books</Link>
       </div>

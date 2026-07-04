@@ -20,9 +20,6 @@ const BookCategorySection = ({ title, section, category, limit }) => {
                 <div>
                     <span className="section-kicker">Course spotlight</span>
                     <h2 data-section={section}>{title}</h2>
-                    <p className="section-subtitle">
-                        Quick picks from this course collection so visitors can scan the right shelf faster.
-                    </p>
                 </div>
                 <Link
                     to="/books"

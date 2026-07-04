@@ -357,6 +357,7 @@
   scroll-snap-type: x proximity;
   scroll-padding-inline: 0.875rem;
   scrollbar-width: none;
+  align-items: stretch;
 }
 
 .home-book-shelf.is-scrollable {
@@ -369,6 +370,7 @@
   scroll-snap-type: x proximity;
   scroll-padding-inline: 0.875rem;
   scrollbar-width: none;
+  align-items: stretch;
 }
 
 .home-book-shelf.is-compact::-webkit-scrollbar,

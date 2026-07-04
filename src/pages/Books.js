@@ -99,9 +99,6 @@ function Books() {
           <div className="books-hero-copy">
             <span className="books-eyebrow">Library</span>
             <h1>Browse books with less scrolling and faster discovery.</h1>
-            <p>
-              Search by title, narrow by course, and jump straight into syllabus or question sets.
-            </p>
           </div>
 
           {canAddBook && (

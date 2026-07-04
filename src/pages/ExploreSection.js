@@ -14,9 +14,6 @@ const ExploreSection = () => {
                 <div>
                     <span className="section-kicker">Explore everything</span>
                     <h2>More books worth a look</h2>
-                    <p className="section-subtitle">
-                        A broader mix from across the library when visitors want to keep browsing after the highlights.
-                    </p>
                 </div>
                 <Link to="/books" className="browse-all-link">View all books</Link>
             </div>

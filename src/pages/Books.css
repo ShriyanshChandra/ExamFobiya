@@ -12,8 +12,8 @@
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 2rem;
   box-shadow: 0 30px 60px rgba(31, 38, 135, 0.12);
-  max-width: 90rem;
-  width: min(95%, 90rem);
+  max-width: 100rem;
+  width: 95%;
   margin: 0 auto;
 }
 

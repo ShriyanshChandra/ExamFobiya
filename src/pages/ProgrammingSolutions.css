@@ -431,7 +431,7 @@
 
 .pdf-row-info {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 0.9375rem;
     min-width: 0;
     text-align: left;
@@ -505,15 +505,23 @@
 
 .pdf-row-details {
     display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+}
+
+.pdf-card-top-row {
+    display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.375rem;
     flex-wrap: wrap;
 }
 
 .pdf-card-subject {
-    font-size: 1.05rem;
+    font-size: 0.92rem;
     font-weight: 600;
     color: var(--text-color);
+    opacity: 0.7;
 }
 
 .pdf-card-course {
@@ -525,15 +533,33 @@
     border-radius: 1.25rem;
 }
 
-.pdf-card-label-row {
-    font-size: 0.9rem;
-    opacity: 0.7;
+.solution-result-card > .pdf-card-label-row {
+    display: block;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-color);
+    text-align: left;
+    margin-top: 0.85rem;
 }
 
 .pdf-row-actions {
     display: flex;
     align-items: center;
     gap: 0.9375rem;
+}
+
+.solution-label-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 0.85rem;
+}
+
+.solution-label-row .pdf-card-label-row {
+    flex: 1;
+    min-width: 0;
+    margin-top: 0;
 }
 
 .pdf-card-open-row {
@@ -685,6 +711,17 @@
 
 .pdf-edit-btn:hover {
     background: #ffed4a;
+}
+
+/* Delete button on solution cards (admin) */
+.solution-delete-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+}
+
+.solution-delete-btn:hover {
+    background-color: #c82333;
 }
 
 /* ===== PROGRAMMING SOLUTION DETAIL / EDITOR ===== */
@@ -1084,6 +1121,42 @@
     box-shadow: 0 4px 20px rgba(45, 212, 191, 0.25), 0 1px 4px rgba(0, 0, 0, 0.35);
 }
 
+/* Desktop Layout using Grid */
+.solution-result-card {
+    display: grid !important;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+        "info actions"
+        "text btn"
+        "panel panel";
+    align-items: flex-start;
+    gap: 0.85rem 1rem;
+}
+
+.solution-result-card .pdf-row-info {
+    grid-area: info;
+}
+
+.solution-result-card .solution-text-content {
+    grid-area: text;
+    min-width: 0;
+}
+
+.solution-result-card .pdf-row-actions {
+    grid-area: actions;
+}
+
+.solution-result-card .solution-toggle-btn {
+    grid-area: btn;
+    align-self: flex-start;
+}
+
+.solution-result-card .solution-inline-panel {
+    grid-area: panel;
+    margin-top: 0 !important;
+}
+
 @media (max-width: 40rem) {
     .programming-solution-page {
         width: min(100% - 1rem, 72rem);
@@ -1097,5 +1170,54 @@
 
     .solution-admin-actions {
         flex-direction: column;
+    }
+}
+
+@media (max-width: 37.5rem) {
+    /* Mobile Layout using Flex */
+    .solution-result-card {
+        display: flex !important;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .solution-result-card .pdf-row-info {
+        order: 1;
+        margin-bottom: 0.75rem;
+        width: 100%;
+    }
+
+    .solution-result-card .solution-text-content {
+        order: 2;
+        width: 100%;
+        margin-bottom: 0.85rem;
+    }
+
+    .solution-result-card .pdf-row-actions {
+        order: 3;
+        width: 100%;
+        justify-content: flex-start;
+        margin-bottom: 0.85rem;
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .solution-result-card .pdf-row-actions .pdf-edit-btn {
+        flex: 1;
+        text-align: center;
+    }
+
+    .solution-result-card .solution-toggle-btn {
+        order: 4;
+        width: 100%;
+        text-align: center;
+        display: block;
+        padding: 0.5rem 0.75rem;
+        background: rgba(255, 215, 0, 0.12);
+        border-radius: 0.375rem;
+    }
+    
+    .solution-result-card .solution-inline-panel {
+        order: 5;
     }
 }

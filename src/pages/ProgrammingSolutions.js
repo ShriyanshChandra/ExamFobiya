@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useBooks } from "../context/BookContext";
+import ConfirmationModal from "../components/ConfirmationModal";
 import Loader from "../components/Loader";
 import "./ProgrammingSolutions.css";
 
@@ -22,7 +23,7 @@ const ProgrammingSolutions = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  const { books, loading } = useBooks();
+  const { books, loading, deleteProgrammingSolution } = useBooks();
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState([]);
   const [searched, setSearched] = useState(false);
@@ -36,6 +37,8 @@ const ProgrammingSolutions = () => {
     language: "",
     subject: ""
   });
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   // Books that have at least one programming solution
   const solutionBooks = useMemo(() => {
@@ -188,6 +191,23 @@ const ProgrammingSolutions = () => {
 
   const activeFilterCount = Object.values(filters).filter(Boolean).length;
 
+  const handleDeleteSolution = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      await deleteProgrammingSolution(deleteTarget.bookId, deleteTarget.solutionId);
+      // Remove from search results if present
+      if (searched) {
+        setResults((prev) => prev.filter((r) => r.rowId !== `${deleteTarget.bookId}__${deleteTarget.solutionId}`));
+      }
+    } catch (error) {
+      console.error("Error deleting solution:", error);
+    } finally {
+      setDeleting(false);
+      setDeleteTarget(null);
+    }
+  };
+
   if (loading) {
     return (
       <main className="programming-solution-page">
@@ -235,13 +255,22 @@ const ProgrammingSolutions = () => {
                     <span className="solution-language-badge">{solution.language || "Code"}</span>
                   </div>
                   {user?.role === "admin" && (
-                    <button
-                      type="button"
-                      className="pdf-edit-btn"
-                      onClick={() => navigate(`/edit-programming-solution/${detailBook.id}/${solution.id}`)}
-                    >
-                      Edit
-                    </button>
+                    <div style={{ display: "flex", gap: "0.5rem" }}>
+                      <button
+                        type="button"
+                        className="pdf-edit-btn"
+                        onClick={() => navigate(`/edit-programming-solution/${detailBook.id}/${solution.id}`)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        className="pdf-edit-btn solution-delete-btn"
+                        onClick={() => setDeleteTarget({ bookId: detailBook.id, solutionId: solution.id, title: solution.title || "this solution" })}
+                      >
+                        Delete
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
@@ -279,6 +308,17 @@ const ProgrammingSolutions = () => {
             </section>
           );
         })}
+
+        <ConfirmationModal
+          isOpen={!!deleteTarget}
+          onClose={() => setDeleteTarget(null)}
+          onConfirm={handleDeleteSolution}
+          title="Delete Solution"
+          message={`Are you sure you want to delete "${deleteTarget?.title || "this solution"}"? This action cannot be undone.`}
+          variant="danger"
+          confirmLabel={deleting ? "Deleting..." : "Yes, Delete"}
+          cancelLabel="Cancel"
+        />
       </main>
     );
   }
@@ -288,7 +328,7 @@ const ProgrammingSolutions = () => {
     <div className="questions-container">
       <div className="questions-content">
         <h2>Programming Solutions</h2>
-        <p className="subtitle">Search by subject, course, or programming language</p>
+
 
         {user?.role === "admin" && (
           <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "20px" }}>
@@ -377,55 +417,62 @@ const ProgrammingSolutions = () => {
           ) : (
             <div className="pdf-results-list">
               {results.map(({ book, solution, rowId }) => (
-                <div
-                  key={rowId}
-                  className={`pdf-result-card-row solution-result-card ${expandedRowIds.has(rowId) ? "expanded" : ""}`}
-                >
-                  <div className="solution-row-main">
-                    <div className="pdf-row-info">
-                      <span className="pdf-card-course">{book.category}</span>
-                      <div className="pdf-row-details">
+                <div key={rowId} className="pdf-result-card-row solution-result-card">
+                  <div className="pdf-row-info">
+                    <span className="pdf-card-course">{book.category || book.semester || "All"}</span>
+                    <div className="pdf-row-details">
+                      <div className="pdf-card-top-row">
                         <span className="pdf-card-subject">{book.title}</span>
-                        {(solution.title || solution.language) && (
-                          <span className="pdf-card-label-row">
-                            {[solution.title, solution.language].filter(Boolean).join(" | ")}
-                          </span>
-                        )}
+                        {solution.language && <span className="pdf-card-subject">| {solution.language}</span>}
                       </div>
-                    </div>
-
-                    <div className="pdf-row-actions">
-                      {user?.role === "admin" && (
-                        <button
-                          type="button"
-                          className="pdf-edit-btn"
-                          onClick={() => navigate(`/edit-programming-solution/${book.id}/${solution.id}`)}
-                        >
-                          Edit
-                        </button>
-                      )}
-                      <button
-                        type="button"
-                        className="pdf-card-open-row solution-toggle-btn"
-                        onClick={() => setExpandedRowIds((prev) => {
-                          const next = new Set(prev);
-                          if (next.has(rowId)) { next.delete(rowId); } else { next.add(rowId); }
-                          return next;
-                        })}
-                        aria-expanded={expandedRowIds.has(rowId)}
-                      >
-                        {expandedRowIds.has(rowId) ? "Hide Solution" : "View Solution"}
-                      </button>
                     </div>
                   </div>
 
+                  <div className="solution-text-content">
+                    {solution.title && (
+                      <span className="pdf-card-label-row">{solution.title}</span>
+                    )}
+                    {solution.description && (
+                      <p className="solution-description solution-inline-description">{solution.description}</p>
+                    )}
+                  </div>
+
+                  <div className="pdf-row-actions">
+                    {user?.role === "admin" && (
+                      <>
+                      <button
+                        type="button"
+                        className="pdf-edit-btn"
+                        onClick={() => navigate(`/edit-programming-solution/${book.id}/${solution.id}`)}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        className="pdf-edit-btn solution-delete-btn"
+                        onClick={() => setDeleteTarget({ bookId: book.id, solutionId: solution.id, title: solution.title || book.title })}
+                      >
+                        Delete
+                      </button>
+                      </>
+                    )}
+                  </div>
+
+                  <button
+                    type="button"
+                    className="pdf-card-open-row solution-toggle-btn"
+                    onClick={() => setExpandedRowIds((prev) => {
+                      const next = new Set(prev);
+                      if (next.has(rowId)) { next.delete(rowId); } else { next.add(rowId); }
+                      return next;
+                    })}
+                    aria-expanded={expandedRowIds.has(rowId)}
+                  >
+                    {expandedRowIds.has(rowId) ? "Hide Solution" : "View Solution"}
+                  </button>
+
                   <div className="solution-inline-panel" aria-hidden={!expandedRowIds.has(rowId)}>
                     <div className="solution-inline-content">
-                      {solution.description && (
-                        <p className="solution-description solution-inline-description">
-                          {solution.description}
-                        </p>
-                      )}
 
                       <div className="solution-code-shell">
                         <button
@@ -463,6 +510,17 @@ const ProgrammingSolutions = () => {
           </p>
         )}
       </div>
+
+      <ConfirmationModal
+        isOpen={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDeleteSolution}
+        title="Delete Solution"
+        message={`Are you sure you want to delete "${deleteTarget?.title || "this solution"}"? This action cannot be undone.`}
+        variant="danger"
+        confirmLabel={deleting ? "Deleting..." : "Yes, Delete"}
+        cancelLabel="Cancel"
+      />
     </div>
   );
 };
