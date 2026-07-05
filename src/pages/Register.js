@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getApiUrl } from '../utils/api';
+import useSEO from '../utils/useSEO';
 import './Register.css';
 
 const Register = () => {
@@ -19,6 +20,12 @@ const Register = () => {
 
     const { register, checkAccountExists } = useAuth();
     const navigate = useNavigate();
+
+    useSEO({
+        title: 'Register',
+        description: 'Create a free ExamFobiya account to save your favorite books and question papers for easy access.',
+        path: '/#/register'
+    });
 
     useEffect(() => {
         if (resendTimer <= 0) {

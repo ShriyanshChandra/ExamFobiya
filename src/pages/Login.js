@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getApiUrl } from '../utils/api';
+import useSEO from '../utils/useSEO';
 import './Login.css';
 
 const LoginBox = ({ role, title, onAuth, allowRegister = true, checkAccountExists }) => {
@@ -327,6 +328,12 @@ const Login = () => {
     const [error, setError] = useState('');
     const { login, register, checkAccountExists } = useAuth();
     const navigate = useNavigate();
+
+    useSEO({
+        title: 'Login',
+        description: 'Sign in to your ExamFobiya account to save books, questions, and access personalized features.',
+        path: '/#/login'
+    });
 
     const handleAuth = async (role, email, password, isRegistering) => {
         setError('');

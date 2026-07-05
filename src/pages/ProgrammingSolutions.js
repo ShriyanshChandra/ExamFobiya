@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { useBooks } from "../context/BookContext";
 import ConfirmationModal from "../components/ConfirmationModal";
 import Loader from "../components/Loader";
+import useSEO from "../utils/useSEO";
 import "./ProgrammingSolutions.css";
 
 // Normalises old single-solution books into a 1-item array so all rendering
@@ -39,6 +40,12 @@ const ProgrammingSolutions = () => {
   });
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
+
+  useSEO({
+    title: 'Programming Solutions',
+    description: 'Access programming solutions with source code for BCA, DCA, and PGDCA courses. Search by subject, language, or course.',
+    path: '/#/programming-solutions'
+  });
 
   // Books that have at least one programming solution
   const solutionBooks = useMemo(() => {

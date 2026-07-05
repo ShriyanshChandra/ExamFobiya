@@ -1,3 +1,4 @@
+import useSEO from '../utils/useSEO';
 import './About_us.css';
 
 export default function AboutUs() {
@@ -36,6 +37,12 @@ export default function AboutUs() {
       description: 'From textbooks to previous year questions, our collection is organized around real preparation needs.'
     }
   ];
+
+  useSEO({
+    title: 'About Us',
+    description: 'Learn about ExamFobiya — a student resource platform for BCA, DCA, and PGDCA exam preparation materials and study guides.',
+    path: '/#/about'
+  });
 
   return (
     <div className="about-us-container about-us-page">

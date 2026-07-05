@@ -1,4 +1,5 @@
 import React from 'react';
+import useSEO from '../utils/useSEO';
 import './About_us.css'; // Reusing styles for consistency
 
 const PrivacyPolicy = () => {
@@ -83,6 +84,12 @@ const PrivacyPolicy = () => {
             ]
         }
     ];
+
+    useSEO({
+        title: 'Privacy Policy',
+        description: 'Read how ExamFobiya collects, uses, and protects your personal information.',
+        path: '/#/privacy'
+    });
 
     return (
         <div className="about-us-container legal-page">

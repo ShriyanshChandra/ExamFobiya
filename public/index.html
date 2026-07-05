@@ -5,11 +5,30 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
+    <meta name="theme-color" content="#182848" />
     <meta
       name="description"
-      content="ExamFobiya - Your ultimate destination for BCA, DCA, and PGDCA course materials, books, previous year questions, and programming solutions."
+      content="ExamFobiya — Your ultimate destination for BCA, DCA, and PGDCA course materials, books, previous year questions, and programming solutions."
     />
+
+    <!-- Canonical URL (updated dynamically per page by useSEO hook) -->
+    <link rel="canonical" href="https://examfobiya.vercel.app/" />
+
+    <!-- Open Graph Meta Tags (defaults — updated per page by useSEO hook) -->
+    <meta property="og:title" content="ExamFobiya — BCA, DCA & PGDCA Study Materials" />
+    <meta property="og:description" content="Your ultimate destination for BCA, DCA, and PGDCA course materials, books, previous year questions, and programming solutions." />
+    <meta property="og:url" content="https://examfobiya.vercel.app/" />
+    <meta property="og:image" content="https://examfobiya.vercel.app/logo512.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="ExamFobiya" />
+
+    <!-- Twitter Card Meta Tags (defaults — updated per page by useSEO hook) -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="ExamFobiya — BCA, DCA & PGDCA Study Materials" />
+    <meta name="twitter:description" content="Your ultimate destination for BCA, DCA, and PGDCA course materials, books, previous year questions, and programming solutions." />
+    <meta name="twitter:image" content="https://examfobiya.vercel.app/logo512.png" />
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Henny+Penny&display=swap" rel="stylesheet">
@@ -19,29 +38,55 @@
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
     -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
+    <!-- Organization Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "ExamFobiya",
+        "url": "https://examfobiya.vercel.app",
+        "logo": "https://examfobiya.vercel.app/logo512.png",
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "email": "examfobiya@gmail.com",
+          "contactType": "customer service"
+        },
+        "sameAs": [
+          "https://instagram.com/examfobiya"
+        ]
+      }
+    </script>
+
+    <!-- Website Structured Data with SearchAction (JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "ExamFobiya",
+        "url": "https://examfobiya.vercel.app",
+        "description": "Your ultimate destination for BCA, DCA, and PGDCA course materials, books, previous year questions, and programming solutions.",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://examfobiya.vercel.app/#/search?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+
+    <!-- Google Analytics (GA4) — Replace G-XXXXXXXXXX with your actual Measurement ID -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+    </script>
+
     <title>ExamFobiya</title>
   </head>
   <body>
-
+    <noscript>You need to enable JavaScript to run ExamFobiya.</noscript>
     <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
   </body>
 </html>

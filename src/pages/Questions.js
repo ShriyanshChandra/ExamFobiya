@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useQuestions } from "../context/QuestionContext";
 import ConfirmationModal from "../components/ConfirmationModal";
+import useSEO from "../utils/useSEO";
 import "./Questions.css";
 
 const Questions = () => {
@@ -24,6 +25,12 @@ const Questions = () => {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const formatQuestionDate = (pdf) => [pdf.month, pdf.year].filter(Boolean).join(' ');
+
+  useSEO({
+    title: 'Previous Year Questions',
+    description: 'Find previous year question papers for BCA, DCA, and PGDCA courses. Filter by course, year, and subject.',
+    path: '/#/questions'
+  });
 
   const uniqueCourses = [...new Set(questionPdfs.map((pdf) => pdf.course).filter(Boolean))].sort((a, b) => a.localeCompare(b));
   const uniqueYears = [...new Set(questionPdfs.map((pdf) => pdf.year).filter(Boolean))].sort((a, b) => String(b).localeCompare(String(a)));

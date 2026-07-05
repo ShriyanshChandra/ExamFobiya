@@ -456,7 +456,7 @@ const AddBook = () => {
                                 {image ? (
                                     <img
                                         src={image}
-                                        alt="Preview"
+                                        alt={title ? `Cover preview for ${title}` : "Book cover preview"}
                                         className="img-preview"
                                         referrerPolicy="no-referrer"
                                     />

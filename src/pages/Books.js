@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import RemoveBookModal from "../components/RemoveBookModal";
 import BookCard from "../components/BookCard";
 import Loader from "../components/Loader";
+import useSEO from "../utils/useSEO";
 import "./Books.css";
 
 function Books() {
@@ -22,6 +23,12 @@ function Books() {
   const categories = ["All", "BCA", "DCA", "PGDCA"];
   const semesters = ["All", "BCA 1st Semester", "BCA 2nd Semester", "BCA 3rd Semester", "BCA 4th Semester", "BCA 5th Semester", "BCA 6th Semester", "BCA 7th Semester", "BCA 8th Semester"];
   const canAddBook = user && user.role === "admin";
+
+  useSEO({
+    title: 'Books Library',
+    description: 'Browse and discover BCA, DCA, and PGDCA textbooks. Filter by course, semester, and search by title or author.',
+    path: '/#/books'
+  });
 
   const filteredBooks = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();

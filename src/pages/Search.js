@@ -7,6 +7,7 @@ import BookCard from "../components/BookCard";
 import RemoveBookModal from "../components/RemoveBookModal";
 import ConfirmationModal from "../components/ConfirmationModal";
 import Loader from "../components/Loader";
+import useSEO from "../utils/useSEO";
 import "./Books.css";
 import "./Questions.css";
 import "./ProgrammingSolutions.css";
@@ -46,6 +47,12 @@ function Search({ searchQuery }) {
   const [questionsLimit, setQuestionsLimit] = useState(7);
   const [solutionsLimit, setSolutionsLimit] = useState(7);
   const formatQuestionDate = (pdf) => [pdf.month, pdf.year].filter(Boolean).join(' ');
+
+  useSEO({
+    title: 'Search Results',
+    description: 'Search across books, questions, and programming solutions on ExamFobiya.',
+    path: '/#/search'
+  });
 
   // Reset limits when search changes
   React.useEffect(() => {

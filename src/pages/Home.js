@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import useSEO from "../utils/useSEO";
 import "./Home.css";
 import Aurora from "./Aurora";
 import NewArrivals from "./NewArrivals";
@@ -7,6 +8,12 @@ import ExploreSection from "./ExploreSection";
 import BookCategorySection from "../components/BookCategorySection";
 
 const Home = () => {
+  useSEO({
+    title: 'Home',
+    description: 'ExamFobiya — Your ultimate destination for BCA, DCA, and PGDCA books, previous year questions, and programming solutions.',
+    path: '/#/'
+  });
+
   // const quickBrowseItems = [
   //   { label: "BCA Library", category: "BCA" },
   //   { label: "DCA Picks", category: "DCA" },

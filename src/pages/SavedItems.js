@@ -5,6 +5,7 @@ import { useBooks } from "../context/BookContext";
 import { useQuestions } from "../context/QuestionContext";
 import ConfirmationModal from "../components/ConfirmationModal";
 import BookCard from "../components/BookCard";
+import useSEO from "../utils/useSEO";
 import "./SavedItems.css";
 
 const SavedItems = () => {
@@ -18,6 +19,12 @@ const SavedItems = () => {
   const navigate = useNavigate();
   const bookFilters = ["All", "BCA", "DCA", "PGDCA"];
   const formatQuestionDate = (pdf) => [pdf.month, pdf.year].filter(Boolean).join(" ");
+
+  useSEO({
+    title: 'Saved Items',
+    description: 'View your saved books and question papers on ExamFobiya.',
+    path: '/#/saved-items'
+  });
 
   const savedBooks = useMemo(() => {
     const savedBookIds = user?.savedBooks || user?.savedBookIds || [];

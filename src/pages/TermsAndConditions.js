@@ -1,4 +1,5 @@
 import React from 'react';
+import useSEO from '../utils/useSEO';
 import './About_us.css'; // Reusing styles for consistency
 
 const TermsAndConditions = () => {
@@ -76,6 +77,12 @@ const TermsAndConditions = () => {
             ]
         }
     ];
+
+    useSEO({
+        title: 'Terms & Conditions',
+        description: 'Review the terms and conditions for using ExamFobiya.',
+        path: '/#/terms'
+    });
 
     return (
         <div className="about-us-container legal-page">

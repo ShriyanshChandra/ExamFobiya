@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { getApiUrl } from '../utils/api';
 import { useNavigate } from 'react-router-dom';
+import useSEO from '../utils/useSEO';
 import './Settings.css';
 
 /* ─── SVG Icons ───────────────────────────────────────────────── */
@@ -515,6 +516,12 @@ const Settings = () => {
     const { user, checkAccountExists, updateUsername } = useAuth();
     const navigate = useNavigate();
     const [activeSection, setActiveSection] = useState('account');
+
+    useSEO({
+        title: 'Settings',
+        description: 'Manage your ExamFobiya account settings and preferences.',
+        path: '/#/settings'
+    });
 
     if (!user) {
         navigate('/login');

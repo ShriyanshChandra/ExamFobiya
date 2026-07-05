@@ -161,7 +161,7 @@ const UploadQuestions = () => {
                             {pdfLinks.map((pdf, index) => (
                                 <div key={index} className="uq-pdf-row">
                                     {/* PDF icon */}
-                                    <img src={pdfIcon} alt="PDF" className="uq-pdf-icon" />
+                                    <img src={pdfIcon} alt="PDF document icon" className="uq-pdf-icon" />
 
                                     {/* Label */}
                                     <input
