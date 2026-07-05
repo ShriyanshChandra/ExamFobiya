@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 const SITE_NAME = 'ExamFobiya';
-const SITE_URL = 'https://examfobiya.vercel.app';
+const SITE_URL = 'https://www.examfobiya.com';
 const DEFAULT_IMAGE = `${SITE_URL}/logo512.png`;
 
 /**

@@ -2,4 +2,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://examfobiya.vercel.app/sitemap.xml
+Sitemap: https://www.examfobiya.com/sitemap.xml
