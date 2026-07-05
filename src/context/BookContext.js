@@ -104,7 +104,14 @@ export const BookProvider = ({ children }) => {
 
     const getBooksBySection = (sectionName) => {
         if (!sectionName) return books;
-        return books.filter(book => book.sections && book.sections.includes(sectionName));
+        return books.filter(book => {
+            if (!book.sections) return false;
+            const altName1 = sectionName.replace('Books', 'Spotlight');
+            const altName2 = sectionName.replace('Spotlight', 'Books');
+            return book.sections.includes(sectionName) || 
+                   book.sections.includes(altName1) || 
+                   book.sections.includes(altName2);
+        });
     };
 
     const getBooksByCategory = (category) => {
