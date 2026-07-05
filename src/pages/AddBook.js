@@ -51,6 +51,7 @@ const AddBook = () => {
     const [category, setCategory] = useState('');
     const [semester, setSemester] = useState('');
     const [sections, setSections] = useState([]);
+    const [sectionOrders, setSectionOrders] = useState({});
     const [image, setImage] = useState(null);
     const [contents, setContents] = useState('');
     const [loading, setLoading] = useState(false);
@@ -83,13 +84,24 @@ const AddBook = () => {
                 setCategory(bookToEdit.category || ''); // Load category
                 setSemester(bookToEdit.semester || ''); // Load semester
                 // Handle legacy 'section' or new 'sections'
+                let loadedSections = [];
                 if (bookToEdit.sections) {
-                    setSections(bookToEdit.sections);
+                    loadedSections = [...bookToEdit.sections];
                 } else if (bookToEdit.section) {
-                    setSections([bookToEdit.section]);
-                } else {
-                    setSections([]);
+                    loadedSections = [bookToEdit.section];
                 }
+                
+                // Normalize older 'Books' labels to 'Spotlight' labels for the UI
+                loadedSections = loadedSections.map(s => {
+                    if (s === 'BCA Books') return 'BCA Spotlight';
+                    if (s === 'DCA Books') return 'DCA Spotlight';
+                    if (s === 'PGDCA Books') return 'PGDCA Spotlight';
+                    return s;
+                });
+                
+                // Remove duplicates just in case a book had both
+                setSections([...new Set(loadedSections)]);
+                setSectionOrders(bookToEdit.sectionOrders || {});
 
                 setImage(bookToEdit.image);
                 setContents(decodeHtmlForNotepad(bookToEdit.contents));
@@ -204,6 +216,38 @@ const AddBook = () => {
                 return prev.filter(s => s !== value);
             }
         });
+        
+        setSectionOrders(prev => {
+            if (checked) {
+                let relevantBooks = [];
+                if (value === 'Best Seller' || value === 'New Arrivals' || value === 'General Books') {
+                    relevantBooks = books;
+                } else if (value === 'BCA Spotlight') {
+                    relevantBooks = books.filter(b => b.category === 'BCA');
+                } else if (value === 'DCA Spotlight') {
+                    relevantBooks = books.filter(b => b.category === 'DCA');
+                } else if (value === 'PGDCA Spotlight') {
+                    relevantBooks = books.filter(b => b.category === 'PGDCA');
+                }
+                const currentBookInList = isEditMode ? relevantBooks.some(b => b.id.toString() === id) : false;
+                const maxAllowedOrder = Math.max(1, currentBookInList ? relevantBooks.length : relevantBooks.length + 1);
+                
+                // Find first available spot
+                let assigned = 1;
+                for (let i = 1; i <= maxAllowedOrder; i++) {
+                    const taken = books.some(b => b.id.toString() !== id && b.sections?.includes(value) && b.sectionOrders?.[value] === i);
+                    if (!taken) {
+                        assigned = i;
+                        break;
+                    }
+                }
+                return { ...prev, [value]: assigned };
+            } else {
+                const newOrders = { ...prev };
+                delete newOrders[value];
+                return newOrders;
+            }
+        });
     };
 
     const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -260,6 +304,7 @@ const AddBook = () => {
         setCategory('');
         setSemester('');
         setSections([]);
+        setSectionOrders({});
         setImage(null);
         setImageUrlInput('');
         setContents('');
@@ -281,6 +326,7 @@ const AddBook = () => {
                 semester: category === 'BCA' ? semester : null, // Save semester only if BCA
                 author: "Smart Publications",
                 sections,
+                sectionOrders,
                 image: finalImage,
                 contents: contents || 'No contents available.',
                 createdAt: new Date().toISOString() // Add timestamp for stats
@@ -313,6 +359,76 @@ const AddBook = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    const renderSectionCheckbox = (value, label, disabled = false) => {
+        const isChecked = sections.includes(value);
+        
+        let relevantBooks = [];
+        if (value === 'Best Seller' || value === 'New Arrivals' || value === 'General Books') {
+            relevantBooks = books;
+        } else if (value === 'BCA Spotlight') {
+            relevantBooks = books.filter(b => b.category === 'BCA');
+        } else if (value === 'DCA Spotlight') {
+            relevantBooks = books.filter(b => b.category === 'DCA');
+        } else if (value === 'PGDCA Spotlight') {
+            relevantBooks = books.filter(b => b.category === 'PGDCA');
+        }
+
+        const currentBookInList = isEditMode ? relevantBooks.some(b => b.id.toString() === id) : false;
+        const maxOrder = Math.max(1, currentBookInList ? relevantBooks.length : relevantBooks.length + 1);
+        const options = Array.from({ length: maxOrder }, (_, i) => i + 1);
+
+        const handleOrderChange = (e) => {
+            const newOrder = Number(e.target.value);
+            
+            const isTaken = books.some(b => 
+                b.id.toString() !== id && 
+                b.sections?.includes(value) && 
+                b.sectionOrders?.[value] === newOrder
+            );
+            
+            if (isTaken) {
+                showAlertModal({
+                    title: 'Position Taken',
+                    message: 'This position is already taken by another book. Please choose another position or change the position of that book.',
+                    variant: 'yellow'
+                });
+                return;
+            }
+            
+            setSectionOrders(prev => ({ ...prev, [value]: newOrder }));
+        };
+
+        return (
+            <div className="checkbox-item-container" key={value}>
+                <label className="checkbox-label">
+                    <input
+                        type="checkbox"
+                        value={value}
+                        checked={disabled ? true : isChecked}
+                        onChange={disabled ? undefined : handleSectionChange}
+                        disabled={disabled}
+                    />
+                    {label}
+                </label>
+                {isChecked && !disabled && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <span style={{ fontSize: '0.9rem', color: 'var(--text-color, #555)', fontWeight: 'normal' }}>Order:</span>
+                        <select 
+                            className="order-dropdown" 
+                            value={sectionOrders[value] || ''} 
+                            onChange={handleOrderChange}
+                        >
+                            <option value="" disabled>Category Order</option>
+                            {options.map(num => (
+                                <option key={num} value={num}>{num}</option>
+                            ))}
+                        </select>
+                    </div>
+                )}
+            </div>
+        );
     };
 
     return (
@@ -372,66 +488,13 @@ const AddBook = () => {
 
                     <div className="form-group">
                         <label>Sections:</label>
-                        <div className="checkbox-group">
-                            <label className="checkbox-label">
-                                <input
-                                    type="checkbox"
-                                    value="Best Seller"
-                                    checked={sections.includes("Best Seller")}
-                                    onChange={handleSectionChange}
-                                />
-                                Best Seller
-                            </label>
-                            <label className="checkbox-label">
-                                <input
-                                    type="checkbox"
-                                    value="New Arrivals"
-                                    checked={sections.includes("New Arrivals")}
-                                    onChange={handleSectionChange}
-                                />
-                                New Arrivals
-                            </label>
-                            {category === 'BCA' && (
-                                <label className="checkbox-label">
-                                    <input
-                                        type="checkbox"
-                                        value="BCA Spotlight"
-                                        checked={sections.includes("BCA Spotlight")}
-                                        onChange={handleSectionChange}
-                                    />
-                                    BCA Spotlight
-                                </label>
-                            )}
-                            {category === 'DCA' && (
-                                <label className="checkbox-label">
-                                    <input
-                                        type="checkbox"
-                                        value="DCA Spotlight"
-                                        checked={sections.includes("DCA Spotlight")}
-                                        onChange={handleSectionChange}
-                                    />
-                                    DCA Spotlight
-                                </label>
-                            )}
-                            {category === 'PGDCA' && (
-                                <label className="checkbox-label">
-                                    <input
-                                        type="checkbox"
-                                        value="PGDCA Spotlight"
-                                        checked={sections.includes("PGDCA Spotlight")}
-                                        onChange={handleSectionChange}
-                                    />
-                                    PGDCA Spotlight
-                                </label>
-                            )}
-                            <label className="checkbox-label">
-                                <input
-                                    type="checkbox"
-                                    checked={true}
-                                    disabled
-                                />
-                                General Books (Always Included)
-                            </label>
+                        <div className="addbook-checkbox-group">
+                            {renderSectionCheckbox("General Books", "General Books (Always Included)", true)}
+                            {renderSectionCheckbox("Best Seller", "Best Seller")}
+                            {renderSectionCheckbox("New Arrivals", "New Arrivals")}
+                            {category === 'BCA' && renderSectionCheckbox("BCA Spotlight", "BCA Spotlight")}
+                            {category === 'DCA' && renderSectionCheckbox("DCA Spotlight", "DCA Spotlight")}
+                            {category === 'PGDCA' && renderSectionCheckbox("PGDCA Spotlight", "PGDCA Spotlight")}
                         </div>
                     </div>
 

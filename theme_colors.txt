@@ -1,0 +1,21 @@
+Theme Colors
+
+Light Theme:
+--primary-color: #2575fc;
+--secondary-color: #6a11cb;
+--accent-color: #ffd700;
+--background-color: #f4f7f6;
+--text-color: #000000;
+--white: #ffffff;
+--card-bg: #ffffff;
+--navbar-bg: linear-gradient(90deg, #4b6cb7, #182848);
+
+Dark Theme:
+--primary-color: #4b6cb7;
+--secondary-color: #182848;
+--accent-color: #ffd700;
+--background-color: #121212;
+--text-color: #e0e0e0;
+--white: #1e1e1e;
+--card-bg: #1e1e1e;
+--navbar-bg: linear-gradient(90deg, #1f2937, #111827);

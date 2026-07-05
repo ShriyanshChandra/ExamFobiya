@@ -104,13 +104,37 @@ export const BookProvider = ({ children }) => {
 
     const getBooksBySection = (sectionName) => {
         if (!sectionName) return books;
-        return books.filter(book => {
+        
+        const filtered = books.filter(book => {
             if (!book.sections) return false;
             const altName1 = sectionName.replace('Books', 'Spotlight');
             const altName2 = sectionName.replace('Spotlight', 'Books');
             return book.sections.includes(sectionName) || 
                    book.sections.includes(altName1) || 
                    book.sections.includes(altName2);
+        });
+
+        // Sort books by their explicit order in sectionOrders
+        return filtered.sort((a, b) => {
+            // Find which version of the section name is stored in sectionOrders
+            const getOrder = (book) => {
+                if (!book.sectionOrders) return Infinity;
+                const altName1 = sectionName.replace('Books', 'Spotlight');
+                const altName2 = sectionName.replace('Spotlight', 'Books');
+                
+                let order = book.sectionOrders[sectionName];
+                if (order === undefined) order = book.sectionOrders[altName1];
+                if (order === undefined) order = book.sectionOrders[altName2];
+                
+                // If it's 'Temp' or not set, push to the end
+                if (order === 'Temp' || order === undefined || order === null) return Infinity;
+                return Number(order);
+            };
+
+            const orderA = getOrder(a);
+            const orderB = getOrder(b);
+
+            return orderA - orderB;
         });
     };
 
