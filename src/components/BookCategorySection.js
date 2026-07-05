@@ -6,7 +6,9 @@ import './BookCategorySection.css';
 
 const BookCategorySection = ({ title, section, category, limit }) => {
     const { getBooksBySection } = useBooks();
-    const books = getBooksBySection(section);
+    const sectionBooks = getBooksBySection(section);
+    // Filter by category to ensure no cross-category books appear due to stale section tags
+    const books = category ? sectionBooks.filter(book => book.category === category) : sectionBooks;
     const hasOverflow = typeof limit === 'number' && books.length > limit;
     const visibleBooks = hasOverflow
         ? books
