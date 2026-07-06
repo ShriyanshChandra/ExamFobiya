@@ -14,13 +14,6 @@ const Home = () => {
     path: '/#/'
   });
 
-  // const quickBrowseItems = [
-  //   { label: "BCA Library", category: "BCA" },
-  //   { label: "DCA Picks", category: "DCA" },
-  //   { label: "PGDCA Shelf", category: "PGDCA" },
-  //   { label: "Question Bank", path: "/questions" },
-  // ];
-
   return (
     <div className="home-container">
       <section className="hero-section">
@@ -34,7 +27,6 @@ const Home = () => {
         </div>
 
         <div className="hero-content">
-
           <h1>
             Welcome to <span className="brand-name">ExamFobiya</span>
           </h1>
@@ -43,14 +35,10 @@ const Home = () => {
             without digging through crowded lists.
           </p>
 
-
-
           <div className="hero-buttons">
             <Link to="/books" className="primary-btn">Explore Books</Link>
             <Link to="/questions" className="secondary-btn">Search Questions</Link>
           </div>
-
-
         </div>
       </section>
 
