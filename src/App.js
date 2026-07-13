@@ -18,7 +18,6 @@ import AboutUs from "./pages/About_us";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Maintenance from "./pages/Maintenance";
-import SavedItems from "./pages/SavedItems";
 import Settings from "./pages/Settings";
 import ProgrammingSolutions from "./pages/ProgrammingSolutions";
 import AddProgrammingSolution from "./pages/AddProgrammingSolution";
@@ -64,7 +63,6 @@ function App() {
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="/welcome" element={<ProtectedRoute><Welcome /></ProtectedRoute>} />
-                  <Route path="/saved-items" element={<ProtectedRoute><SavedItems /></ProtectedRoute>} />
                   <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                   <Route path="/programming-solutions" element={<ProgrammingSolutions />} />
                   <Route path="/programming-solutions/:id" element={<ProgrammingSolutions />} />

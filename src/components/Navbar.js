@@ -110,12 +110,6 @@ const Navbar = ({ setSearchQuery }) => {
     navigate('/login');
   };
 
-  const handleSavedItems = () => {
-    setShowAccountMenu(false);
-    setIsOpen(false);
-    navigate('/saved-items');
-  };
-
   const handleSettings = () => {
     setShowAccountMenu(false);
     setIsOpen(false);
@@ -199,9 +193,6 @@ const Navbar = ({ setSearchQuery }) => {
           </li>
           {user && showAccountMenu && (
             <li className="mobile-account-actions account-menu-scope" role="menu">
-              <button type="button" className="mobile-account-action-btn" role="menuitem" onClick={handleSavedItems}>
-                Saved Items
-              </button>
               <button type="button" className="mobile-account-action-btn" role="menuitem" onClick={handleSettings}>
                 Settings
               </button>
@@ -280,9 +271,6 @@ const Navbar = ({ setSearchQuery }) => {
                       </div>
                       <p className="account-dropdown-label">{getAccountLabel()}</p>
                     </div>
-                    <button type="button" className="account-dropdown-item" role="menuitem" onClick={handleSavedItems}>
-                      Saved Items
-                    </button>
                     <button type="button" className="account-dropdown-item" role="menuitem" onClick={handleSettings}>
                       Settings
                     </button>

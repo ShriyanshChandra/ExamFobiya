@@ -11,14 +11,14 @@ const Questions = () => {
   const [results, setResults] = useState([]);
   const [searched, setSearched] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
-  const [saveError, setSaveError] = useState("");
+
   const [filters, setFilters] = useState({
     course: "",
     year: "",
     subject: ""
   });
 
-  const { user, toggleSavedItem } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { questionPdfs, deleteQuestionPdf } = useQuestions();
@@ -117,28 +117,6 @@ const Questions = () => {
     }
   };
 
-  const getQuestionSaveId = (pdf) => pdf.docPath || pdf.id;
-
-  const isQuestionSaved = (pdf) => {
-    const savedQuestionIds = user?.savedQuestions || user?.savedQuestionIds || user?.savedQuestionPdfs || [];
-    const saveId = getQuestionSaveId(pdf);
-    return savedQuestionIds.includes(saveId) || savedQuestionIds.includes(pdf.id) || savedQuestionIds.includes(pdf.docPath);
-  };
-
-  const handleQuestionSave = async (pdf) => {
-    if (!user) {
-      navigate('/login');
-      return;
-    }
-
-    try {
-      setSaveError("");
-      await toggleSavedItem('question', getQuestionSaveId(pdf));
-    } catch (error) {
-      console.error('Error saving question:', error);
-      setSaveError('Could not update saved questions.');
-    }
-  };
 
   const activeFilterCount = Object.values(filters).filter(Boolean).length;
 
@@ -260,24 +238,12 @@ const Questions = () => {
             <p className="no-results">No question PDFs found for "{searchQuery}".</p>
           ) : (
             <div className="pdf-results-list">
-              {saveError && <p className="question-save-error">{saveError}</p>}
+
               {results.map(pdf => (
                 <div key={pdf.id} className="pdf-result-card-row">
                   
                   {/* Left Side: Information */}
                   <div className="pdf-row-info">
-                    <button
-                      type="button"
-                      className={`question-save-btn ${isQuestionSaved(pdf) ? 'saved' : ''}`}
-                      onClick={() => handleQuestionSave(pdf)}
-                      aria-label={isQuestionSaved(pdf) ? `Remove ${pdf.subject || pdf.label || 'question'} from saved questions` : `Save ${pdf.subject || pdf.label || 'question'}`}
-                      aria-pressed={isQuestionSaved(pdf)}
-                      title={isQuestionSaved(pdf) ? 'Remove from saved questions' : 'Save question'}
-                    >
-                      <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M6 3.75C6 2.78 6.78 2 7.75 2h8.5C17.22 2 18 2.78 18 3.75V21l-6-3.5L6 21V3.75Z" />
-                      </svg>
-                    </button>
                     <div className="pdf-row-info-body">
                       <div className="pdf-row-info-header">
                         <span className="pdf-card-course">{pdf.course}</span>

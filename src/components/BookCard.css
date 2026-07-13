@@ -43,7 +43,7 @@
     outline-offset: 0.1875rem;
 }
 
-.book-save-btn {
+.book-code-btn {
     position: absolute;
     top: 0.75rem;
     right: 0.75rem;
@@ -53,7 +53,7 @@
     border-radius: 50%;
     border: 1px solid rgba(255, 255, 255, 0.62);
     background: rgba(255, 255, 255, 0.88);
-    color: #182848;
+    color: #0f9f82;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -62,54 +62,34 @@
     transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
-.book-save-btn:hover {
+.book-code-btn:hover {
     transform: translateY(-1px) scale(1.04);
-    background: #fff7bf;
-    border-color: rgba(255, 215, 0, 0.9);
+    background: #e0f2fe;
+    border-color: #0ea5e9;
+    color: #0369a1;
 }
 
-.book-save-btn:focus-visible {
-    outline: 3px solid rgba(255, 215, 0, 0.45);
+.book-code-btn:focus-visible {
+    outline: 3px solid rgba(14, 165, 233, 0.45);
     outline-offset: 0.1875rem;
 }
 
-.book-save-btn svg {
-    width: 1.25rem;
-    height: 1.25rem;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2;
-    stroke-linejoin: round;
-}
-
-.book-save-btn.saved {
-    background: #ffd700;
-    border-color: rgba(255, 215, 0, 0.92);
-    color: #182848;
-}
-
-.book-save-btn.saved svg {
+.book-code-btn svg {
+    width: 1.4rem;
+    height: 1.4rem;
     fill: currentColor;
 }
 
-[data-theme='dark'] .book-save-btn {
+[data-theme='dark'] .book-code-btn {
     background: rgba(30, 30, 30, 0.88);
     border-color: rgba(255, 255, 255, 0.18);
-    color: #f8fafc;
+    color: #2dd4bf;
 }
 
-[data-theme='dark'] .book-save-btn:hover,
-[data-theme='dark'] .book-save-btn.saved {
-    background: #ffd700;
-    border-color: rgba(255, 215, 0, 0.9);
-    color: #182848;
-}
-
-.book-save-error {
-    margin: 0 1rem 0.75rem;
-    color: #dc3545;
-    font-size: 0.82rem;
-    font-weight: 700;
+[data-theme='dark'] .book-code-btn:hover {
+    background: #0d9488;
+    border-color: #2dd4bf;
+    color: #fff;
 }
 
 .book-img {
@@ -323,28 +303,7 @@
     transform: translateY(-1px);
 }
 
-.solutions-btn {
-    background: linear-gradient(135deg, #2dd4bf, #0f9f82);
-    color: #06251f;
-    box-shadow: 0 10px 20px rgba(15, 159, 130, 0.2);
-    font-weight: 700;
-    width: 100%;
-}
 
-.solutions-btn:hover {
-    background: linear-gradient(135deg, #5eead4, #0d9488);
-    color: #021c17;
-    transform: translateY(-1px);
-}
-
-[data-theme='dark'] .questions-btn,
-[data-theme='dark'] .syllabus-btn {
-    color: #1a1a1a;
-}
-
-[data-theme='dark'] .solutions-btn {
-    color: #03241e;
-}
 
 /* Admin row sits below the public buttons */
 .admin-actions-row {
@@ -431,8 +390,7 @@
     }
 
     .questions-btn,
-    .syllabus-btn,
-    .solutions-btn {
+    .syllabus-btn {
         border-radius: 0.25rem; /* Match standard action-btn */
         margin: 0;
     }
@@ -452,8 +410,7 @@
     }
 
     .questions-btn,
-    .syllabus-btn,
-    .solutions-btn {
+    .syllabus-btn {
         border-radius: 0.25rem; /* Default for very small screens too */
     }
 }
