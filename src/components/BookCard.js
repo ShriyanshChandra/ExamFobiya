@@ -95,7 +95,12 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit, onSaveClick }) => {
                                 className="action-btn solutions-btn"
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    navigate('/programming-solutions', { state: { initialSearch: book.title } });
+                                    navigate('/programming-solutions', { 
+                                        state: { 
+                                            initialSearch: book.title,
+                                            categoryFilter: book.category 
+                                        } 
+                                    });
                                 }}
                             >
                                 Programming Solutions
@@ -106,7 +111,12 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit, onSaveClick }) => {
                                 className="action-btn questions-btn"
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    navigate('/questions', { state: { initialSearch: book.title } });
+                                    navigate('/questions', { 
+                                        state: { 
+                                            initialSearch: book.title,
+                                            categoryFilter: book.category
+                                        } 
+                                    });
                                 }}
                             >
                                 Questions

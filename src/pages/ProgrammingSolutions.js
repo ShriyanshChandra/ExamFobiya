@@ -101,8 +101,12 @@ const ProgrammingSolutions = () => {
   React.useEffect(() => {
     if (location.state?.initialSearch && flatRows.length > 0) {
       const q = location.state.initialSearch.trim();
-      setSearchQuery(q);
-      const filtered = applySearchAndFilters(q, filters);
+      let currentFilters = filters;
+      if (location.state.categoryFilter) {
+        currentFilters = { ...filters, course: location.state.categoryFilter };
+      }
+
+      const filtered = applySearchAndFilters(q, currentFilters);
       setResults(filtered);
       setSearched(true);
 

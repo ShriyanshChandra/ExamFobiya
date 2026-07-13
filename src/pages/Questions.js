@@ -59,20 +59,19 @@ const Questions = () => {
   React.useEffect(() => {
     if (location.state?.initialSearch && questionPdfs.length > 0) {
       const q = location.state.initialSearch.trim();
-      setSearchQuery(q);
-      const qLower = q.toLowerCase();
-      const filtered = questionPdfs.filter((pdf) =>
-        (pdf.subject && pdf.subject.toLowerCase().includes(qLower)) ||
-        (pdf.course && pdf.course.toLowerCase().includes(qLower)) ||
-        (pdf.label && pdf.label.toLowerCase().includes(qLower)) ||
-        (pdf.month && pdf.month.toLowerCase().includes(qLower))
-      );
+      let currentFilters = filters;
+      if (location.state.categoryFilter) {
+        currentFilters = { ...filters, course: location.state.categoryFilter };
+      }
+
+      const filtered = applySearchAndFilters(q, currentFilters);
       setResults(filtered);
       setSearched(true);
 
       // Clear the state so refreshing the page doesn't run it again
       window.history.replaceState({}, document.title);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.state, questionPdfs]);
 
   const handleSearch = () => {
