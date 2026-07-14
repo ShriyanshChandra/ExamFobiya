@@ -29,7 +29,7 @@ const Questions = () => {
   useSEO({
     title: 'Previous Year Questions',
     description: 'Find previous year question papers for BCA, DCA, and PGDCA courses. Filter by course, year, and subject.',
-    path: '/#/questions'
+    path: '/questions'
   });
 
   const uniqueCourses = [...new Set(questionPdfs.map((pdf) => pdf.course).filter(Boolean))].sort((a, b) => a.localeCompare(b));

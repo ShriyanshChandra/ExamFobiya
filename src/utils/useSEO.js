@@ -13,7 +13,7 @@ const DEFAULT_IMAGE = `${SITE_URL}/logo512.png`;
  * @param {Object} options
  * @param {string} options.title   - Page-specific title (appended with " | ExamFobiya")
  * @param {string} options.description - Page meta description
- * @param {string} options.path    - Hash route path, e.g. "/#/books"
+ * @param {string} options.path    - Route path, e.g. "/books"
  * @param {string} [options.image] - OG/Twitter image URL (defaults to logo)
  * @param {string} [options.type]  - OG type (defaults to "website")
  */

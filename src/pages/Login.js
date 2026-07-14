@@ -332,7 +332,7 @@ const Login = () => {
     useSEO({
         title: 'Login',
         description: 'Sign in to your ExamFobiya account to save books, questions, and access personalized features.',
-        path: '/#/login'
+        path: '/login'
     });
 
     const handleAuth = async (role, email, password, isRegistering) => {

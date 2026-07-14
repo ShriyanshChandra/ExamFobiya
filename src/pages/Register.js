@@ -24,7 +24,7 @@ const Register = () => {
     useSEO({
         title: 'Register',
         description: 'Create a free ExamFobiya account to save your favorite books and question papers for easy access.',
-        path: '/#/register'
+        path: '/register'
     });
 
     useEffect(() => {

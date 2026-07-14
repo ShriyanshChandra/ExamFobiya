@@ -520,7 +520,7 @@ const Settings = () => {
     useSEO({
         title: 'Settings',
         description: 'Manage your ExamFobiya account settings and preferences.',
-        path: '/#/settings'
+        path: '/settings'
     });
 
     if (!user) {

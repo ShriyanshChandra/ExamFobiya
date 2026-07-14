@@ -81,7 +81,7 @@ const TermsAndConditions = () => {
     useSEO({
         title: 'Terms & Conditions',
         description: 'Review the terms and conditions for using ExamFobiya.',
-        path: '/#/terms'
+        path: '/terms'
     });
 
     return (

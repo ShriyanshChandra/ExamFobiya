@@ -88,7 +88,7 @@ const PrivacyPolicy = () => {
     useSEO({
         title: 'Privacy Policy',
         description: 'Read how ExamFobiya collects, uses, and protects your personal information.',
-        path: '/#/privacy'
+        path: '/privacy'
     });
 
     return (

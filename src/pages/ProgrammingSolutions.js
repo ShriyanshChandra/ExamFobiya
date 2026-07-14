@@ -44,7 +44,7 @@ const ProgrammingSolutions = () => {
   useSEO({
     title: 'Programming Solutions',
     description: 'Access programming solutions with source code for BCA, DCA, and PGDCA courses. Search by subject, language, or course.',
-    path: '/#/programming-solutions'
+    path: '/programming-solutions'
   });
 
   // Books that have at least one programming solution

@@ -27,7 +27,7 @@ function Books() {
   useSEO({
     title: 'Books Library',
     description: 'Browse and discover BCA, DCA, and PGDCA textbooks. Filter by course, semester, and search by title or author.',
-    path: '/#/books'
+    path: '/books'
   });
 
   const filteredBooks = useMemo(() => {

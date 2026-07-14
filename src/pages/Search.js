@@ -51,7 +51,7 @@ function Search({ searchQuery }) {
   useSEO({
     title: 'Search Results',
     description: 'Search across books, questions, and programming solutions on ExamFobiya.',
-    path: '/#/search'
+    path: '/search'
   });
 
   // Reset limits when search changes

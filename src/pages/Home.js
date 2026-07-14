@@ -11,7 +11,7 @@ const Home = () => {
   useSEO({
     title: 'Home',
     description: 'ExamFobiya — Your ultimate destination for BCA, DCA, and PGDCA books, previous year questions, and programming solutions.',
-    path: '/#/'
+    path: '/'
   });
 
   return (
