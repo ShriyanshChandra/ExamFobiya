@@ -4,9 +4,6 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
-import Books from "./pages/Books";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
 import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
 import { BookProvider } from "./context/BookContext";
@@ -18,6 +15,9 @@ import './App.css';
 
 // Lazy-loaded pages — these pull in heavy libraries (DotLottie, pdfjs-dist, mammoth, etc.)
 // and/or are admin-only / rarely visited, so they are split into separate chunks.
+const Books = React.lazy(() => import("./pages/Books"));
+const Login = React.lazy(() => import("./pages/Login"));
+const Register = React.lazy(() => import("./pages/Register"));
 const Questions = React.lazy(() => import("./pages/Questions"));
 const Search = React.lazy(() => import("./pages/Search"));
 const Welcome = React.lazy(() => import("./pages/Welcome"));

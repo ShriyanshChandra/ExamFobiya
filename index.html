@@ -76,13 +76,28 @@
       }
     </script>
 
-    <!-- Google Analytics (GA4) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-LWX25CE27L"></script>
+    <!-- Google Analytics (GA4) - Deferred until interaction -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-LWX25CE27L');
+
+      const loadGTM = () => {
+        if (window.gtmLoaded) return;
+        window.gtmLoaded = true;
+        const script = document.createElement('script');
+        script.src = "https://www.googletagmanager.com/gtag/js?id=G-LWX25CE27L";
+        script.async = true;
+        document.head.appendChild(script);
+        gtag('config', 'G-LWX25CE27L');
+      };
+
+      // Load on user interaction
+      ['scroll', 'mousemove', 'touchstart', 'keydown', 'click'].forEach(event => {
+        window.addEventListener(event, loadGTM, { once: true, passive: true });
+      });
+      // Fallback: load after 5 seconds if no interaction
+      setTimeout(loadGTM, 5000);
     </script>
 
     <title>ExamFobiya</title>
