@@ -1,7 +1,7 @@
 import * as pdfjsLib from 'pdfjs-dist';
 import mammoth from 'mammoth';
 
-// Use CDN for worker to avoid create-react-app webpack 5 configuration issues with pdfjs-dist
+// Use CDN for worker to avoid bundler configuration issues with pdfjs-dist
 // Ensure the version matches the installed version
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 

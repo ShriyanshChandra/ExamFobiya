@@ -1,11 +1,11 @@
-const configuredApiBaseUrl = process.env.REACT_APP_API_URL?.replace(/\/$/, '');
+const configuredApiBaseUrl = import.meta.env.VITE_API_URL?.replace(/\/$/, '');
 
-if (process.env.NODE_ENV === 'production' && !configuredApiBaseUrl) {
-  console.warn('REACT_APP_API_URL is not set. Backend API requests will use the current origin and may fail if the backend is deployed separately.');
+if (import.meta.env.PROD && !configuredApiBaseUrl) {
+  console.warn('VITE_API_URL is not set. Backend API requests will use the current origin and may fail if the backend is deployed separately.');
 }
 
 const API_BASE_URL = configuredApiBaseUrl || (
-  process.env.NODE_ENV === 'development' ? 'http://127.0.0.1:5000' : ''
+  import.meta.env.DEV ? 'http://127.0.0.1:5000' : ''
 );
 
 export const getApiUrl = (path) => `${API_BASE_URL}${path}`;

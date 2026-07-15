@@ -38,7 +38,14 @@
   --input-text: #e0e0e0;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Henny+Penny&family=Nunito:wght@300;400;500;600;700&display=swap');
+/* Self-hosted Henny Penny — eliminates Google Fonts network chain */
+@font-face {
+  font-family: 'Henny Penny';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/HennyPenny-Regular.ttf') format('truetype');
+}
 
 body {
   margin: 0;

@@ -40,6 +40,10 @@
     align-items: center;
 }
 
+.search-section .questions-filter-btn {
+    order: -1;
+}
+
 .search-input-wrapper {
     display: flex;
     align-items: center;
