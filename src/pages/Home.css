@@ -19,11 +19,69 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-.aurora-wrapper {
+.glow-grid-background {
   position: absolute;
   inset: 0;
   z-index: 1;
-  opacity: 0.6;
+  background-color: #13213f; /* Deep dark blue */
+  overflow: hidden;
+}
+
+.glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.8;
+  animation: float 25s infinite ease-in-out alternate;
+}
+
+.orb-1 {
+  width: 600px;
+  height: 600px;
+  background: rgba(75, 108, 183, 0.8);
+  top: -150px;
+  left: -100px;
+  animation-delay: 0s;
+}
+
+.orb-2 {
+  width: 700px;
+  height: 700px;
+  background: rgba(255, 215, 0, 0.35);
+  bottom: -200px;
+  right: -100px;
+  animation-delay: -5s;
+}
+
+.orb-3 {
+  width: 500px;
+  height: 500px;
+  background: rgba(100, 150, 255, 0.5);
+  top: 30%;
+  left: 30%;
+  transform: translate(-50%, -50%);
+  animation-delay: -10s;
+}
+
+.orb-4 {
+  width: 800px;
+  height: 600px;
+  background: rgba(75, 108, 183, 0.4);
+  bottom: 0;
+  left: 10%;
+  animation-delay: -15s;
+}
+
+@keyframes float {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(50px, 30px) scale(1.1);
+  }
+  100% {
+    transform: translate(-30px, 60px) scale(0.9);
+  }
 }
 
 .hero-content {

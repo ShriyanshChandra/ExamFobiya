@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import useSEO from "../utils/useSEO";
 import "./Home.css";
-import Aurora from "./Aurora";
 import NewArrivals from "./NewArrivals";
 import BestSeller from "./BestSeller";
 import ExploreSection from "./ExploreSection";
@@ -17,13 +16,11 @@ const Home = () => {
   return (
     <div className="home-container">
       <section className="hero-section">
-        <div className="aurora-wrapper">
-          <Aurora
-            colorStops={["#4b6cb7", "#182848", "#ffd700"]}
-            blend={0.6}
-            amplitude={1.2}
-            speed={0.4}
-          />
+        <div className="glow-grid-background">
+          <div className="glow-orb orb-1"></div>
+          <div className="glow-orb orb-2"></div>
+          <div className="glow-orb orb-3"></div>
+          <div className="glow-orb orb-4"></div>
         </div>
 
         <div className="hero-content">
