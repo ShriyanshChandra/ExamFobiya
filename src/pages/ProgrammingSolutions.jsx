@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useBooks } from "../context/BookContext";
@@ -19,12 +19,15 @@ const normalizeSolutions = (book) => {
   return [];
 };
 
+const LANGUAGE_TABS = ['C', 'C#', 'C++', 'Java', 'Python'];
+
 const ProgrammingSolutions = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
   const { books, loading, deleteProgrammingSolution } = useBooks();
+  const [selectedLanguage, setSelectedLanguage] = useState("C");
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState([]);
   const [searched, setSearched] = useState(false);
@@ -77,7 +80,7 @@ const ProgrammingSolutions = () => {
   const uniqueLanguages = [...new Set(flatRows.map((r) => r.solution.language).filter(Boolean))].sort((a, b) => a.localeCompare(b));
   const uniqueSubjects = [...new Set(solutionBooks.map((b) => b.title).filter(Boolean))].sort((a, b) => a.localeCompare(b));
 
-  const applySearchAndFilters = (query = searchQuery, activeFilters = filters) => {
+  const applySearchAndFilters = (query = searchQuery, activeFilters = filters, langTab = selectedLanguage) => {
     const q = query.trim().toLowerCase();
 
     return flatRows.filter(({ book, solution }) => {
@@ -92,10 +95,21 @@ const ProgrammingSolutions = () => {
       const matchesCourse = !activeFilters.course || book.category === activeFilters.course;
       const matchesLanguage = !activeFilters.language || solution.language === activeFilters.language;
       const matchesSubject = !activeFilters.subject || book.title === activeFilters.subject;
+      const matchesLangTab = !langTab || solution.language === langTab;
 
-      return matchesQuery && matchesCourse && matchesLanguage && matchesSubject;
+      return matchesQuery && matchesCourse && matchesLanguage && matchesSubject && matchesLangTab;
     });
   };
+
+  // Auto-show results for the selected language tab
+  useEffect(() => {
+    if (id) return; // Don't run on detail view
+    if (flatRows.length === 0) return;
+    const filtered = applySearchAndFilters(searchQuery, filters, selectedLanguage);
+    setResults(filtered);
+    setSearched(true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedLanguage, flatRows]);
 
   // Handle auto-search when redirected from a BookCard
   React.useEffect(() => {
@@ -126,7 +140,7 @@ const ProgrammingSolutions = () => {
       return;
     }
 
-    setResults(applySearchAndFilters(searchQuery, filters));
+    setResults(applySearchAndFilters(searchQuery, filters, selectedLanguage));
     setSearched(true);
   };
 
@@ -134,7 +148,7 @@ const ProgrammingSolutions = () => {
     setFilters((prev) => {
       const nextFilters = { ...prev, [key]: value };
       if (searched) {
-        setResults(applySearchAndFilters(searchQuery, nextFilters));
+        setResults(applySearchAndFilters(searchQuery, nextFilters, selectedLanguage));
       }
       return nextFilters;
     });
@@ -149,7 +163,7 @@ const ProgrammingSolutions = () => {
         setResults([]);
         setSearched(false);
       } else {
-        setResults(applySearchAndFilters(searchQuery, resetFilters));
+        setResults(applySearchAndFilters(searchQuery, resetFilters, selectedLanguage));
       }
     }
   };
@@ -341,16 +355,29 @@ const ProgrammingSolutions = () => {
         <h2>Programming Solutions</h2>
 
 
-        {user?.role === "admin" && (
-          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "20px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", flexWrap: "wrap", gap: "15px" }}>
+          <div className="lang-tabs-section" style={{ margin: 0 }}>
+            {LANGUAGE_TABS.map((lang) => (
+              <button
+                key={lang}
+                type="button"
+                className={`lang-tab-pill${selectedLanguage === lang ? ' active' : ''}`}
+                onClick={() => setSelectedLanguage(lang)}
+              >
+                {lang}
+              </button>
+            ))}
+          </div>
+
+          {user?.role === "admin" && (
             <button
               onClick={() => navigate("/add-programming-solution")}
               className="uq-upload-btn"
             >
               Add new solution
             </button>
-          </div>
-        )}
+          )}
+        </div>
 
         <div className="search-section">
           <div className="search-input-wrapper">
@@ -379,6 +406,8 @@ const ProgrammingSolutions = () => {
             {activeFilterCount > 0 && <span className="filter-count">{activeFilterCount}</span>}
           </button>
         </div>
+
+
 
         {showFilters && (
           <div className="questions-filters-panel">
@@ -515,9 +544,9 @@ const ProgrammingSolutions = () => {
           )
         )}
 
-        {!searched && (
+        {!searched && flatRows.length === 0 && (
           <p className="instruction-placeholder">
-            Enter a subject, course, or programming language above to find solutions.
+            No programming solutions available yet.
           </p>
         )}
       </div>
