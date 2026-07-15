@@ -21,7 +21,7 @@
 }
 
 .about-hero-inner {
-  max-width: 91.25rem;
+  max-width: 100rem;
   margin: 0 auto;
   padding: 4.5rem 3rem;
   border-radius: 2.25rem;
@@ -97,7 +97,7 @@
 .about-content-wrapper {
   position: relative;
   z-index: 1;
-  max-width: 92.5rem;
+  max-width: 100rem;
   margin: 1rem auto 0;
   padding: 2.25rem 1.6rem;
   background:
@@ -367,7 +367,7 @@
 }
 
 .legal-hero-inner {
-  max-width: 92.5rem;
+  max-width: 100rem;
   margin: 0 auto;
   padding: 3.4rem 2.5rem;
   border-radius: 2rem;
