@@ -32,7 +32,7 @@
 /* Ensure text is readable on frosted bg if it's over dark or light */
 .frosted-modal h2 {
     margin-bottom: 1.25rem;
-    color: #182848;
+    color: var(--secondary-color);
     /* Dark text for contrast if overlay is light, or adjust based on theme */
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
@@ -60,7 +60,7 @@
     gap: 0.625rem;
     font-size: 1.1rem;
     cursor: pointer;
-    color: #182848;
+    color: var(--secondary-color);
     /* Dark Blue */
     font-weight: 600;
 }
@@ -68,7 +68,7 @@
 .checkbox-option input[type="checkbox"] {
     width: 1.25rem;
     height: 1.25rem;
-    accent-color: #ffd700;
+    accent-color: var(--accent-color);
 }
 
 .frosted-modal .modal-actions {
@@ -79,8 +79,8 @@
 
 .cancel-btn {
     background: transparent;
-    border: 1px solid #182848;
-    color: #182848;
+    border: 1px solid var(--secondary-color);
+    color: var(--secondary-color);
     padding: 0.5rem 1.25rem;
     border-radius: 0.5rem;
     cursor: pointer;
@@ -89,7 +89,7 @@
 }
 
 .cancel-btn:hover {
-    background: rgba(24, 40, 72, 0.1);
+    background: color-mix(in srgb, var(--secondary-color) 10%, transparent);
 }
 
 .confirm-remove-btn {
@@ -135,7 +135,7 @@
 .confirmation-message {
     font-size: 1.2rem;
     margin-bottom: 1.875rem;
-    color: #182848;
+    color: var(--secondary-color);
     /* Dark Blue */
     line-height: 1.5;
 }

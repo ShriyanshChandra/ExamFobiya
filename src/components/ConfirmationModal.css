@@ -38,7 +38,7 @@
 
 .modal-header h3 {
     margin: 0;
-    color: #182848;
+    color: var(--secondary-color);
     /* Dark Blue from theme */
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
     font-size: 1.5rem;
@@ -54,7 +54,7 @@
     border: none;
     font-size: 1.8rem;
     cursor: pointer;
-    color: #182848;
+    color: var(--secondary-color);
     transition: transform 0.2s;
 }
 
@@ -68,7 +68,7 @@
 
 .confirmation-modal .modal-body p {
     font-size: 1.2rem;
-    color: #182848;
+    color: var(--secondary-color);
     /* Dark Blue */
     margin-bottom: 1.875rem;
     line-height: 1.5;
@@ -93,17 +93,17 @@
 
 .modal-actions .cancel-btn {
     background: transparent;
-    border: 1px solid #182848;
-    color: #182848;
+    border: 1px solid var(--secondary-color);
+    color: var(--secondary-color);
 }
 
 .modal-actions .cancel-btn:hover {
-    background: rgba(24, 40, 72, 0.1);
+    background: color-mix(in srgb, var(--secondary-color) 10%, transparent);
 }
 
 .modal-actions .confirm-btn.danger {
-    background-color: #ffd700;
-    color: #182848;
+    background-color: var(--accent-color);
+    color: var(--secondary-color);
 }
 
 .modal-actions .confirm-btn.danger:hover {
@@ -123,15 +123,15 @@
 }
 
 .modal-actions .confirm-btn.yellow {
-    background: #ffd700;
-    color: #182848;
-    box-shadow: 0 4px 6px rgba(255, 215, 0, 0.3);
+    background: var(--accent-color);
+    color: var(--secondary-color);
+    box-shadow: 0 4px 6px color-mix(in srgb, var(--accent-color) 30%, transparent);
 }
 
 .modal-actions .confirm-btn.yellow:hover {
     background: #ffcc00;
     transform: translateY(-2px);
-    box-shadow: 0 6px 8px rgba(255, 215, 0, 0.4);
+    box-shadow: 0 6px 8px color-mix(in srgb, var(--accent-color) 40%, transparent);
 }
 
 /* Optional: Different colors for different actions if needed, 

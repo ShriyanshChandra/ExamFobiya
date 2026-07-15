@@ -5,7 +5,7 @@
     height: 0.25rem;
     border-radius: 62.4375rem;
     margin-top: 0.625rem;
-    background: linear-gradient(90deg, #4b6cb7, #182848);
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
 }
 
 .book-category-section h2[data-section="BCA Books"]::after {

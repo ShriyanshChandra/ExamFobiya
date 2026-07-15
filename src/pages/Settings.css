@@ -45,7 +45,7 @@
     left: -4rem;
     width: 14rem;
     height: 14rem;
-    background: radial-gradient(circle, rgba(255, 215, 0, 0.18) 0%, transparent 70%);
+    background: radial-gradient(circle, color-mix(in srgb, var(--accent-color) 18%, transparent) 0%, transparent 70%);
     pointer-events: none;
 }
 
@@ -63,8 +63,8 @@
     width: 2.75rem;
     height: 2.75rem;
     border-radius: 50%;
-    background: linear-gradient(135deg, #ffd700, #f59e0b);
-    color: #182848;
+    background: linear-gradient(135deg, var(--accent-color), #f59e0b);
+    color: var(--secondary-color);
     font-size: 1.6rem;
     font-weight: 900;
     font-family: 'Henny Penny', cursive !important;
@@ -72,7 +72,7 @@
     align-items: center;
     justify-content: center;
     flex: 0 0 auto;
-    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.25);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 25%, transparent);
 }
 
 .settings-aside-user {
@@ -142,8 +142,8 @@
 }
 
 .settings-nav-item.active {
-    background: rgba(255, 215, 0, 0.14);
-    color: #ffd700;
+    background: color-mix(in srgb, var(--accent-color) 14%, transparent);
+    color: var(--accent-color);
 }
 
 .settings-nav-icon {
@@ -165,8 +165,8 @@
     width: 0.4rem;
     height: 0.4rem;
     border-radius: 50%;
-    background: #ffd700;
-    box-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
+    background: var(--accent-color);
+    box-shadow: 0 0 6px color-mix(in srgb, var(--accent-color) 60%, transparent);
 }
 
 /* Footer: theme toggle */
@@ -196,7 +196,7 @@
 .settings-theme-btn:hover {
     background: rgba(255, 255, 255, 0.08);
     color: #f1f5f9;
-    border-color: rgba(255, 215, 0, 0.3);
+    border-color: color-mix(in srgb, var(--accent-color) 30%, transparent);
 }
 
 .settings-theme-btn svg {
@@ -259,8 +259,8 @@
     gap: 1.25rem;
     padding: 1.25rem 1.5rem;
     border-radius: 1rem;
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.04));
-    border: 1px solid rgba(255, 215, 0, 0.28);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--accent-color) 10%, transparent), color-mix(in srgb, var(--accent-color) 4%, transparent));
+    border: 1px solid color-mix(in srgb, var(--accent-color) 28%, transparent);
     margin-bottom: 1.75rem;
 }
 
@@ -268,13 +268,13 @@
     width: 4rem;
     height: 4rem;
     border-radius: 50%;
-    background: linear-gradient(135deg, #ffd700, #f59e0b);
+    background: linear-gradient(135deg, var(--accent-color), #f59e0b);
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow:
-        0 0 0 3px rgba(255, 215, 0, 0.25),
-        0 8px 20px rgba(255, 215, 0, 0.3);
+        0 0 0 3px color-mix(in srgb, var(--accent-color) 25%, transparent),
+        0 8px 20px color-mix(in srgb, var(--accent-color) 30%, transparent);
     flex: 0 0 auto;
 }
 
@@ -282,7 +282,7 @@
     font-size: 2.2rem;
     font-weight: 900;
     font-family: 'Henny Penny', cursive !important;
-    color: #182848;
+    color: var(--secondary-color);
     line-height: 1;
 }
 
@@ -331,7 +331,7 @@
     width: 2.25rem;
     height: 2.25rem;
     border-radius: 0.5rem;
-    background: rgba(255, 215, 0, 0.14);
+    background: color-mix(in srgb, var(--accent-color) 14%, transparent);
     color: #92690a;
     display: flex;
     align-items: center;
@@ -372,12 +372,12 @@
     display: inline-block;
     padding: 0.15rem 0.625rem;
     border-radius: 999px;
-    background: rgba(255, 215, 0, 0.18);
+    background: color-mix(in srgb, var(--accent-color) 18%, transparent);
     color: #7a5500;
     font-size: 0.8rem;
     font-weight: 900;
     text-transform: capitalize;
-    border: 1px solid rgba(255, 215, 0, 0.3);
+    border: 1px solid color-mix(in srgb, var(--accent-color) 30%, transparent);
 }
 
 /* ── Editable username ── */
@@ -397,7 +397,7 @@
     height: 2.25rem;
     border: none;
     border-radius: 0.5rem;
-    background: rgba(255, 215, 0, 0.12);
+    background: color-mix(in srgb, var(--accent-color) 12%, transparent);
     color: #92690a;
     cursor: pointer;
     flex: 0 0 auto;
@@ -405,7 +405,7 @@
 }
 
 .settings-edit-btn:hover {
-    background: rgba(255, 215, 0, 0.28);
+    background: color-mix(in srgb, var(--accent-color) 28%, transparent);
     color: #5a3e00;
     transform: translateY(-1px);
 }
@@ -424,7 +424,7 @@
 
 .settings-username-input {
     padding: 0.5rem 0.75rem;
-    border: 1.5px solid rgba(255, 215, 0, 0.5);
+    border: 1.5px solid color-mix(in srgb, var(--accent-color) 50%, transparent);
     border-radius: 0.5rem;
     background: rgba(255, 255, 255, 0.9);
     color: #1e293b;
@@ -433,13 +433,13 @@
     font-weight: 700;
     outline: none;
     width: 100%;
-    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.15);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 15%, transparent);
     transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .settings-username-input:focus {
-    border-color: rgba(255, 215, 0, 0.8);
-    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.22);
+    border-color: color-mix(in srgb, var(--accent-color) 80%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 22%, transparent);
 }
 
 .settings-username-error {
@@ -464,18 +464,18 @@
     font-size: 0.82rem;
     font-weight: 800;
     border-radius: 0.5rem;
-    background: linear-gradient(135deg, #ffd700, #f59e0b);
-    color: #182848;
+    background: linear-gradient(135deg, var(--accent-color), #f59e0b);
+    color: var(--secondary-color);
     border: none;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--accent-color) 30%, transparent);
     transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
     white-space: nowrap;
 }
 
 .settings-username-actions .settings-btn--primary:hover:not(:disabled) {
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(255, 215, 0, 0.42);
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--accent-color) 42%, transparent);
     background: linear-gradient(135deg, #ffed4a, #fbbf24);
 }
 
@@ -525,25 +525,25 @@
 
 /* Dark mode for editable username */
 [data-theme='dark'] .settings-edit-btn {
-    background: rgba(255, 215, 0, 0.1);
+    background: color-mix(in srgb, var(--accent-color) 10%, transparent);
     color: #fcd34d;
 }
 
 [data-theme='dark'] .settings-edit-btn:hover {
-    background: rgba(255, 215, 0, 0.2);
+    background: color-mix(in srgb, var(--accent-color) 20%, transparent);
     color: #fde68a;
 }
 
 [data-theme='dark'] .settings-username-input {
     background: rgba(30, 40, 68, 0.85);
-    border-color: rgba(255, 215, 0, 0.4);
+    border-color: color-mix(in srgb, var(--accent-color) 40%, transparent);
     color: #e2e8f0;
-    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 10%, transparent);
 }
 
 [data-theme='dark'] .settings-username-input:focus {
-    border-color: rgba(255, 215, 0, 0.65);
-    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.18);
+    border-color: color-mix(in srgb, var(--accent-color) 65%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 18%, transparent);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -658,8 +658,8 @@
 }
 
 .settings-field input:focus {
-    border-color: rgba(255, 215, 0, 0.7);
-    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+    border-color: color-mix(in srgb, var(--accent-color) 70%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 20%, transparent);
 }
 
 /* OTP input style */
@@ -743,14 +743,14 @@
 }
 
 .settings-btn--primary {
-    background: linear-gradient(135deg, #ffd700, #f59e0b);
-    color: #182848;
-    box-shadow: 0 8px 20px rgba(255, 215, 0, 0.3);
+    background: linear-gradient(135deg, var(--accent-color), #f59e0b);
+    color: var(--secondary-color);
+    box-shadow: 0 8px 20px color-mix(in srgb, var(--accent-color) 30%, transparent);
 }
 
 .settings-btn--primary:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 12px 28px rgba(255, 215, 0, 0.4);
+    box-shadow: 0 12px 28px color-mix(in srgb, var(--accent-color) 40%, transparent);
     background: linear-gradient(135deg, #ffed4a, #fbbf24);
 }
 
@@ -803,8 +803,8 @@
     display: inline-block;
     width: 1.1rem;
     height: 1.1rem;
-    border: 2px solid rgba(24, 40, 72, 0.25);
-    border-top-color: #182848;
+    border: 2px solid color-mix(in srgb, var(--secondary-color) 25%, transparent);
+    border-top-color: var(--secondary-color);
     border-radius: 50%;
     animation: settingsSpin 0.7s linear infinite;
 }
@@ -833,11 +833,11 @@
    LIGHT THEME — aside overrides
    ═══════════════════════════════════════════════════════════════ */
 :root:not([data-theme='dark']) .settings-aside {
-    background: linear-gradient(165deg, #4b6cb7 0%, #182848 100%);
+    background: linear-gradient(165deg, var(--primary-color) 0%, var(--secondary-color) 100%);
 }
 
 :root:not([data-theme='dark']) .settings-aside::before {
-    background: radial-gradient(circle, rgba(255, 215, 0, 0.22) 0%, transparent 70%);
+    background: radial-gradient(circle, color-mix(in srgb, var(--accent-color) 22%, transparent) 0%, transparent 70%);
 }
 
 :root:not([data-theme='dark']) .settings-aside-top {
@@ -866,8 +866,8 @@
 }
 
 :root:not([data-theme='dark']) .settings-nav-item.active {
-    background: rgba(255, 215, 0, 0.18);
-    color: #ffd700;
+    background: color-mix(in srgb, var(--accent-color) 18%, transparent);
+    color: var(--accent-color);
 }
 
 :root:not([data-theme='dark']) .settings-aside-footer {
@@ -883,7 +883,7 @@
 :root:not([data-theme='dark']) .settings-theme-btn:hover {
     background: rgba(255, 255, 255, 0.16);
     color: #ffffff;
-    border-color: rgba(255, 215, 0, 0.4);
+    border-color: color-mix(in srgb, var(--accent-color) 40%, transparent);
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -907,8 +907,8 @@
 }
 
 [data-theme='dark'] .settings-avatar-card {
-    background: rgba(255, 215, 0, 0.07);
-    border-color: rgba(255, 215, 0, 0.2);
+    background: color-mix(in srgb, var(--accent-color) 7%, transparent);
+    border-color: color-mix(in srgb, var(--accent-color) 20%, transparent);
 }
 
 [data-theme='dark'] .settings-avatar-name {
@@ -937,9 +937,9 @@
 }
 
 [data-theme='dark'] .settings-role-badge {
-    background: rgba(255, 215, 0, 0.15);
+    background: color-mix(in srgb, var(--accent-color) 15%, transparent);
     color: #fcd34d;
-    border-color: rgba(255, 215, 0, 0.25);
+    border-color: color-mix(in srgb, var(--accent-color) 25%, transparent);
 }
 
 [data-theme='dark'] .settings-field input {
@@ -949,8 +949,8 @@
 }
 
 [data-theme='dark'] .settings-field input:focus {
-    border-color: rgba(255, 215, 0, 0.5);
-    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.15);
+    border-color: color-mix(in srgb, var(--accent-color) 50%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 15%, transparent);
 }
 
 [data-theme='dark'] .settings-field label {

@@ -3,7 +3,7 @@
 /* Existing styles... */
 
 .book-card {
-    background: white;
+    background-color: var(--card-bg);
     border-radius: 1.125rem;
     filter: drop-shadow(0 12px 24px rgba(17, 24, 39, 0.12));
     text-align: left;
@@ -13,11 +13,17 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    transition: transform 0.25s ease, filter 0.25s ease, border-color 0.25s ease;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.4s ease, border-color 0.4s ease;
     cursor: pointer;
     overflow: hidden;
     position: relative;
     padding: 0;
+}
+
+.book-card:hover {
+    transform: translateY(-8px) scale(1.05);
+    filter: drop-shadow(0 20px 34px rgba(15, 23, 42, 0.18));
+    border-color: color-mix(in srgb, var(--primary-color) 45%, transparent);
 }
 
 [data-theme='dark'] .book-card {
@@ -27,19 +33,13 @@
     color: #eee;
 }
 
-.book-card:hover {
-    transform: translateY(-8px);
-    filter: drop-shadow(0 20px 34px rgba(15, 23, 42, 0.18));
-    border-color: rgba(75, 108, 183, 0.28);
-}
-
 [data-theme='dark'] .book-card:hover {
     filter: drop-shadow(0 16px 28px rgba(0, 0, 0, 0.6));
-    border-color: rgba(255, 255, 255, 0.3);
+    border-color: color-mix(in srgb, var(--primary-color) 60%, transparent);
 }
 
 .book-card:focus-visible {
-    outline: 3px solid rgba(75, 108, 183, 0.35);
+    outline: 3px solid color-mix(in srgb, var(--primary-color) 35%, transparent);
     outline-offset: 0.1875rem;
 }
 
@@ -102,6 +102,7 @@
     /* Rounded corners handled by container */
     background-color: #f9f9f9;
     margin-bottom: 0;
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 [data-theme='dark'] .book-img {
@@ -225,7 +226,7 @@
 /* Specific Button Styles */
 /* Specific Button Styles */
 .edit-btn {
-    background-color: #ffd700;
+    background-color: var(--accent-color);
     /* Solid Theme Yellow */
     color: #333;
     border: none;
@@ -247,7 +248,7 @@
 }
 
 [data-theme='dark'] .edit-btn {
-    background-color: #ffd700;
+    background-color: var(--accent-color);
     color: #333;
 }
 
@@ -318,7 +319,7 @@
 
 /* Category Badge */
 .book-category-badge {
-    background: rgba(75, 108, 183, 0.12);
+    background: color-mix(in srgb, var(--primary-color) 12%, transparent);
     color: #3a76f8;
     padding: 0.375rem 0.625rem;
     border-radius: 62.4375rem;

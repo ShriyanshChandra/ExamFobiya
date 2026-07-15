@@ -15,19 +15,16 @@ export const ThemeProvider = ({ children }) => {
         document.documentElement.setAttribute('data-theme', theme);
 
         // Also toggle body class for legacy CSS support
+        document.body.classList.remove('dark-mode', 'vintage-mode');
         if (theme === 'dark') {
             document.body.classList.add('dark-mode');
-        } else {
-            document.body.classList.remove('dark-mode');
+        } else if (theme === 'vintage') {
+            document.body.classList.add('vintage-mode');
         }
     }, [theme]);
 
-    const toggleTheme = () => {
-        setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
-    };
-
     return (
-        <ThemeContext.Provider value={{ theme, toggleTheme }}>
+        <ThemeContext.Provider value={{ theme, setTheme }}>
             {children}
         </ThemeContext.Provider>
     );

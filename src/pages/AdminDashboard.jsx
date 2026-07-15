@@ -172,8 +172,8 @@ const AdminDashboard = () => {
                                     <AreaChart data={stats.trafficData}>
                                         <defs>
                                             <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor="#4b6cb7" stopOpacity={0.8} />
-                                                <stop offset="95%" stopColor="#4b6cb7" stopOpacity={0} />
+                                                <stop offset="5%" stopColor="var(--primary-color)" stopOpacity={0.8} />
+                                                <stop offset="95%" stopColor="var(--primary-color)" stopOpacity={0} />
                                             </linearGradient>
                                         </defs>
                                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#dbe4f0" />
@@ -189,7 +189,7 @@ const AdminDashboard = () => {
                                         <Area
                                             type="monotone"
                                             dataKey="visits"
-                                            stroke="#4b6cb7"
+                                            stroke="var(--primary-color)"
                                             fillOpacity={1}
                                             fill="url(#colorVisits)"
                                             strokeWidth={3}

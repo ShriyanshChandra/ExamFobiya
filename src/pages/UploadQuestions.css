@@ -7,7 +7,7 @@
 }
 
 .uq-card {
-    background: white;
+    background-color: var(--card-bg);
     padding: 2.5rem;
     border-radius: 1rem;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
@@ -19,7 +19,7 @@
     text-align: center;
     margin-bottom: 0.5rem;
     font-size: 1.8rem;
-    color: #182848;
+    color: var(--secondary-color);
 }
 
 .uq-subtitle {
@@ -81,7 +81,7 @@
     font-size: 1rem;
     appearance: none;
     -webkit-appearance: none;
-    background-color: white;
+    background-color: var(--card-bg);
     cursor: pointer;
     transition: border-color 0.2s, box-shadow 0.2s;
     box-sizing: border-box;
@@ -90,8 +90,8 @@
 
 .uq-select-wrapper select:focus {
     outline: none;
-    border-color: #ffd700;
-    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.25);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 25%, transparent);
 }
 
 .uq-select-wrapper select:disabled {
@@ -151,7 +151,7 @@
     font-size: 0.88rem;
     appearance: none;
     -webkit-appearance: none;
-    background-color: white;
+    background-color: var(--card-bg);
     background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath fill='%236c757d' d='M0 2.5l5 5 5-5z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.625rem center;
@@ -172,7 +172,7 @@
     font-size: 0.88rem;
     appearance: none;
     -webkit-appearance: none;
-    background-color: white;
+    background-color: var(--card-bg);
     background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath fill='%236c757d' d='M0 2.5l5 5 5-5z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.625rem center;
@@ -218,15 +218,15 @@
 .uq-month-select:focus,
 .uq-year-select:focus {
     outline: none;
-    border-color: #ffd700;
-    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 20%, transparent);
 }
 
 .uq-label-input:focus,
 .uq-url-input:focus {
     outline: none;
-    border-color: #ffd700;
-    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.2);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 20%, transparent);
 }
 
 .uq-label-input::placeholder,
@@ -250,8 +250,8 @@
     align-items: center;
     gap: 0.375rem;
     padding: 0.5625rem 1.125rem;
-    background: #ffd700;
-    color: #182848;
+    background: var(--accent-color);
+    color: var(--secondary-color);
     border: none;
     border-radius: 0.5rem;
     font-size: 0.9rem;
@@ -276,8 +276,8 @@
 .uq-submit-btn {
     flex: 1;
     padding: 0.95rem;
-    background-color: #ffd700;
-    color: #182848;
+    background-color: var(--accent-color);
+    color: var(--secondary-color);
     border: none;
     border-radius: 0.5rem;
     font-size: 1.05rem;
@@ -289,7 +289,7 @@
 .uq-submit-btn:hover:not(:disabled) {
     background-color: #ffed4a;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.35);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--accent-color) 35%, transparent);
 }
 
 .uq-submit-btn:disabled {

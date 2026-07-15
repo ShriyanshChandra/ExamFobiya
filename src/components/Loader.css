@@ -17,7 +17,7 @@
   border-radius: 1.75rem;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(243, 247, 251, 0.72));
   border: 1px solid rgba(255, 255, 255, 0.46);
-  box-shadow: 0 24px 44px rgba(24, 40, 72, 0.12);
+  box-shadow: 0 24px 44px color-mix(in srgb, var(--secondary-color) 12%, transparent);
   backdrop-filter: blur(16px) saturate(145%);
   -webkit-backdrop-filter: blur(16px) saturate(145%);
   display: flex;
@@ -34,7 +34,7 @@
   height: 11.25rem;
   transform: translate(-50%, 58%);
   border-radius: 62.4375rem;
-  background: radial-gradient(circle, rgba(255, 215, 0, 0.28), rgba(75, 108, 183, 0.08) 58%, transparent 74%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent-color) 28%, transparent), color-mix(in srgb, var(--primary-color) 8%, transparent) 58%, transparent 74%);
   pointer-events: none;
 }
 

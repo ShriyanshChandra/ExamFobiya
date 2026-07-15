@@ -79,7 +79,7 @@
     width: 1.125rem !important;
     /* Force small fixed size */
     height: 1.125rem !important;
-    accent-color: #ffd700;
+    accent-color: var(--accent-color);
     margin: 0;
     cursor: pointer;
     flex-shrink: 0;
@@ -128,7 +128,7 @@
 .register-btn {
     width: 100%;
     padding: 0.8rem;
-    background-color: #ffd700;
+    background-color: var(--accent-color);
     /* Theme accent color */
     color: #333;
     /* Dark text for contrast on yellow */

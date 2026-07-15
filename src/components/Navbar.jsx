@@ -11,8 +11,9 @@ const Navbar = ({ setSearchQuery }) => {
   const [localSearch, setLocalSearch] = useState("");
   const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [showAccountMenu, setShowAccountMenu] = useState(false);
+  const [showThemeMenu, setShowThemeMenu] = useState(false);
   const navigate = useNavigate();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const { user, logout } = useAuth();
 
   const getAccountName = () => {
@@ -54,21 +55,25 @@ const Navbar = ({ setSearchQuery }) => {
       if (showAccountMenu && !event.target.closest('.account-menu-scope')) {
         setShowAccountMenu(false);
       }
+      if (showThemeMenu && !event.target.closest('.theme-menu-scope')) {
+        setShowThemeMenu(false);
+      }
     };
 
-    if (showMobileSearch || showAccountMenu) {
+    if (showMobileSearch || showAccountMenu || showThemeMenu) {
       document.addEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showMobileSearch, showAccountMenu]);
+  }, [showMobileSearch, showAccountMenu, showThemeMenu]);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
     setShowMobileSearch(false); // Close search when menu opens
     setShowAccountMenu(false);
+    setShowThemeMenu(false);
   };
 
   const handleSearchSubmit = () => {
@@ -101,17 +106,25 @@ const Navbar = ({ setSearchQuery }) => {
 
   const toggleAccountMenu = () => {
     setShowAccountMenu((current) => !current);
+    setShowThemeMenu(false);
+  };
+
+  const toggleThemeMenu = () => {
+    setShowThemeMenu((current) => !current);
+    setShowAccountMenu(false);
   };
 
   const handleLogout = () => {
     logout();
     setShowAccountMenu(false);
+    setShowThemeMenu(false);
     setIsOpen(false);
     navigate('/login');
   };
 
   const handleSettings = () => {
     setShowAccountMenu(false);
+    setShowThemeMenu(false);
     setIsOpen(false);
     navigate('/settings');
   };
@@ -209,26 +222,25 @@ const Navbar = ({ setSearchQuery }) => {
 
         {/* Action Group: Theme -> Search -> Auth */}
         <div className="navbar-actions">
-          {/* Theme Toggle Button */}
-          <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle Dark Mode">
-            {theme === 'light' ? (
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-moon">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          {/* Theme Dropdown */}
+          <div className="theme-dropdown-container theme-menu-scope" style={{position: 'relative'}}>
+            <button className="theme-toggle" onClick={toggleThemeMenu} aria-label={`Toggle Theme (Current: ${theme})`} aria-expanded={showThemeMenu}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-palette">
+                <circle cx="13.5" cy="6.5" r=".5"></circle>
+                <circle cx="17.5" cy="10.5" r=".5"></circle>
+                <circle cx="8.5" cy="7.5" r=".5"></circle>
+                <circle cx="6.5" cy="12.5" r=".5"></circle>
+                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path>
               </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-sun">
-                <circle cx="12" cy="12" r="5"></circle>
-                <line x1="12" y1="1" x2="12" y2="3"></line>
-                <line x1="12" y1="21" x2="12" y2="23"></line>
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                <line x1="1" y1="12" x2="3" y2="12"></line>
-                <line x1="21" y1="12" x2="23" y2="12"></line>
-                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-              </svg>
+            </button>
+            {showThemeMenu && (
+              <div className="account-dropdown" style={{right: 0, minWidth: '150px'}} role="menu">
+                <button type="button" className={`account-dropdown-item ${theme === 'light' ? 'active' : ''}`} onClick={() => {setTheme('light'); setShowThemeMenu(false);}}>Light</button>
+                <button type="button" className={`account-dropdown-item ${theme === 'dark' ? 'active' : ''}`} onClick={() => {setTheme('dark'); setShowThemeMenu(false);}}>Dark</button>
+                <button type="button" className={`account-dropdown-item ${theme === 'vintage' ? 'active' : ''}`} onClick={() => {setTheme('vintage'); setShowThemeMenu(false);}}>Vintage</button>
+              </div>
             )}
-          </button>
+          </div>
 
           {/* Search Bar */}
           <div className={`search-container ${showMobileSearch ? "active" : ""}`}>

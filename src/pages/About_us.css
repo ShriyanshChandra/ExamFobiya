@@ -27,12 +27,12 @@
   border-radius: 2.25rem;
   text-align: center;
   background:
-    linear-gradient(135deg, rgba(24, 40, 72, 0.94), rgba(75, 108, 183, 0.9)),
+    linear-gradient(135deg, color-mix(in srgb, var(--secondary-color) 94%, transparent), color-mix(in srgb, var(--primary-color) 90%, transparent)),
     linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: 0 24px 60px rgba(24, 40, 72, 0.28);
+  box-shadow: 0 24px 60px color-mix(in srgb, var(--secondary-color) 28%, transparent);
 }
 
 .about-eyebrow,
@@ -42,7 +42,7 @@
   letter-spacing: 0.22em;
   font-size: 0.78rem;
   font-weight: 800;
-  color: rgba(255, 215, 0, 0.9);
+  color: color-mix(in srgb, var(--accent-color) 90%, transparent);
 }
 
 .about-hero-title {
@@ -104,7 +104,7 @@
     linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.96));
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(37, 99, 235, 0.08);
+  border: 1px solid color-mix(in srgb, var(--primary-color) 8%, transparent);
   border-radius: 2.125rem;
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
 }
@@ -243,7 +243,7 @@
   position: absolute;
   inset: 0 0 auto;
   height: 0.25rem;
-  background: linear-gradient(90deg, #d97706, #ffd700);
+  background: linear-gradient(90deg, #d97706, var(--accent-color));
 }
 
 .about-course-card:hover {
@@ -260,8 +260,8 @@
   font-size: 0.85rem;
   font-weight: 800;
   letter-spacing: 0.08em;
-  color: #182848;
-  background: linear-gradient(135deg, #ffd700, #f59e0b);
+  color: var(--secondary-color);
+  background: linear-gradient(135deg, var(--accent-color), #f59e0b);
 }
 
 .about-course-card h3 {
@@ -348,7 +348,7 @@
 .about-closing-banner {
   padding: 2rem 2.2rem;
   border-radius: 1.75rem;
-  background: linear-gradient(135deg, rgba(217, 119, 6, 0.14), rgba(255, 215, 0, 0.08));
+  background: linear-gradient(135deg, rgba(217, 119, 6, 0.14), color-mix(in srgb, var(--accent-color) 8%, transparent));
   border: 1px solid rgba(217, 119, 6, 0.18);
   box-shadow: 0 16px 34px rgba(217, 119, 6, 0.08);
 }
@@ -372,12 +372,12 @@
   padding: 3.4rem 2.5rem;
   border-radius: 2rem;
   background:
-    linear-gradient(135deg, rgba(67, 56, 202, 0.9), rgba(37, 99, 235, 0.84)),
+    linear-gradient(135deg, color-mix(in srgb, var(--secondary-color) 90%, transparent), color-mix(in srgb, var(--primary-color) 84%, transparent)),
     linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0));
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 24px 56px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 24px 56px color-mix(in srgb, var(--primary-color) 20%, transparent);
   text-align: left;
 }
 
@@ -471,11 +471,11 @@
   width: 0.4375rem;
   height: 0.4375rem;
   border-radius: 62.4375rem;
-  background: linear-gradient(135deg, #ffd700, #d97706);
+  background: linear-gradient(135deg, var(--accent-color), #d97706);
 }
 
 .legal-link {
-  color: #1d4ed8;
+  color: var(--primary-color);
   text-decoration: none;
   font-weight: 700;
 }
@@ -488,14 +488,14 @@
 .legal-contact-text,
 .legal-list li,
 .legal-card-title {
-  color: #172033;
+  color: var(--text-color);
 }
 
 [data-theme='dark'] .about-us-page,
 body.dark-mode .about-us-page,
 [data-theme='dark'] .legal-page,
 body.dark-mode .legal-page {
-  color: #f3f6fb;
+  color: var(--text-color);
 }
 
 [data-theme='dark'] .about-content-wrapper,
@@ -591,12 +591,12 @@ body.dark-mode .about-closing-banner {
 
 [data-theme='dark'] .brand-name,
 body.dark-mode .brand-name {
-  color: #f8c33d;
+  color: var(--accent-color);
 }
 
 [data-theme='dark'] .legal-link,
 body.dark-mode .legal-link {
-  color: #ffd56a;
+  color: var(--accent-color);
 }
 
 /* Responsive Design */

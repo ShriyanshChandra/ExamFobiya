@@ -9,8 +9,8 @@
 }
 
 .add-book-btn {
-  background-color: #ffd700;
-  color: #182848;
+  background-color: var(--accent-color);
+  color: var(--secondary-color);
   padding: 0.625rem 1.25rem;
   text-decoration: none;
   border-radius: 0.3125rem;
@@ -24,8 +24,8 @@
 .add-book-btn:hover {
   background-color: #ffed4a;
   transform: scale(1.05);
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
-  color: #182848;
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent-color) 40%, transparent);
+  color: var(--secondary-color);
 }
 
 
@@ -41,7 +41,7 @@
 .search-section-heading {
   font-size: clamp(1.8rem, 4vw, 2.5rem);
   font-weight: 800;
-  color: #182848;
+  color: var(--secondary-color);
   margin-top: 0;
   margin-bottom: 2rem;
   text-align: center;
@@ -55,7 +55,7 @@
   height: 0.25rem;
   border-radius: 62.4375rem;
   margin: 0.75rem auto 0;
-  background: linear-gradient(90deg, #4b6cb7, #182848);
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
 }
 
 [data-theme='dark'] .search-section-heading {
@@ -81,7 +81,7 @@
 }
 
 .search-header-container h1 {
-  color: #182848;
+  color: var(--secondary-color);
   margin-top: 0;
 }
 
@@ -91,7 +91,7 @@
 
 /* ---- Summary pill ---- */
 .search-summary-text {
-  color: #182848;
+  color: var(--secondary-color);
   font-weight: 500;
   text-align: center;
 }
@@ -125,7 +125,7 @@
   background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 215, 0, 0.6);
+  border: 1px solid color-mix(in srgb, var(--accent-color) 60%, transparent);
   border-radius: 1.875rem;
   color: #333;
   font-weight: 600;
@@ -135,18 +135,18 @@
 }
 
 .search-view-more-btn:hover {
-  background: rgba(255, 215, 0, 0.25);
-  box-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+  background: color-mix(in srgb, var(--accent-color) 25%, transparent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--accent-color) 40%, transparent);
 }
 
 [data-theme='dark'] .search-view-more-btn {
   background: rgba(40, 40, 50, 0.6);
-  border-color: rgba(255, 215, 0, 0.4);
+  border-color: color-mix(in srgb, var(--accent-color) 40%, transparent);
   color: #e0e0e0;
 }
 
 [data-theme='dark'] .search-view-more-btn:hover {
-  background: rgba(255, 215, 0, 0.15);
+  background: color-mix(in srgb, var(--accent-color) 15%, transparent);
 }
 
 /* ---- No results card ---- */

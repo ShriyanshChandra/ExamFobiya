@@ -54,7 +54,7 @@
 .navbar .brand-name {
   font-family: "Henny Penny", cursive !important;
   font-size: 2.2rem;
-  color: #ffd700 !important;
+  color: var(--accent-color) !important;
   /* Yellow */
   background: none;
   -webkit-background-clip: text;
@@ -89,8 +89,8 @@
 
 .search-container:focus-within {
   background: rgba(255, 255, 255, 0.2);
-  border-color: #ffd700;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+  border-color: var(--accent-color);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent-color) 30%, transparent);
 }
 
 .search-input {
@@ -107,8 +107,8 @@
 }
 
 .search-btn {
-  background-color: #ffd700;
-  color: #182848;
+  background-color: var(--accent-color);
+  color: var(--secondary-color);
   border: none;
   width: 3.4375rem;
   /* Elongated width */
@@ -124,7 +124,7 @@
 
 .search-btn:hover {
   transform: scale(1.1);
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent-color) 50%, transparent);
   background-color: #ffed4a;
 }
 
@@ -140,9 +140,9 @@
 /* Auth Buttons */
 .auth-btn,
 .auth-btn-link {
-  background-color: #ffd700;
+  background-color: var(--accent-color);
   /* Match brand yellow */
-  color: #182848;
+  color: var(--secondary-color);
   /* Match dark blue */
   padding: 0.5rem 1.25rem;
   border-radius: 1.25rem;
@@ -159,7 +159,7 @@
 .auth-btn-link:hover {
   transform: scale(1.05);
   background-color: #ffed4a;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent-color) 40%, transparent);
 }
 
 .account-avatar-btn,
@@ -168,8 +168,8 @@
   height: 2.75rem;
   border-radius: 50%;
   border: 2px solid rgba(255, 255, 255, 0.65);
-  background-color: #ffd700;
-  color: #182848;
+  background-color: var(--accent-color);
+  color: var(--secondary-color);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -183,7 +183,7 @@
 .mobile-account-btn:hover {
   transform: scale(1.06);
   background-color: #ffed4a;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.45);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent-color) 45%, transparent);
 }
 
 .account-avatar-letter {
@@ -242,9 +242,9 @@
   width: 3.75rem;
   height: 3.75rem;
   border-radius: 50%;
-  background: #ffd700;
-  color: #182848;
-  border: 2px solid rgba(24, 40, 72, 0.16);
+  background: var(--accent-color);
+  color: var(--secondary-color);
+  border: 2px solid color-mix(in srgb, var(--secondary-color) 16%, transparent);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -286,20 +286,20 @@
 }
 
 .account-dropdown-item:hover {
-  background: rgba(75, 108, 183, 0.12);
-  color: #4b6cb7;
+  background: color-mix(in srgb, var(--primary-color) 12%, transparent);
+  color: var(--primary-color);
 }
 
 .account-dropdown-logout {
-  background-color: #ffd700;
-  color: #182848;
+  background-color: var(--accent-color);
+  color: var(--secondary-color);
   margin-top: 0.375rem;
 }
 
 .account-dropdown-logout:hover {
   transform: scale(1.03);
   background-color: #ffed4a;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--accent-color) 40%, transparent);
 }
 
 @keyframes accountMenuIn {
@@ -316,7 +316,7 @@
 
 [data-theme='dark'] .account-dropdown-item:hover {
   background: rgba(255, 255, 255, 0.08);
-  color: #ffd700;
+  color: var(--accent-color);
 }
 
 .mobile-only-auth {
@@ -361,7 +361,7 @@
   bottom: -0.25rem;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #ffd700;
+  background-color: var(--accent-color);
   transition: width 0.3s ease;
 }
 
@@ -372,7 +372,7 @@
 
 .nav-menu li a:hover,
 .dropdown span:hover {
-  color: #ffd700;
+  color: var(--accent-color);
 }
 
 /* Dropdown */
@@ -431,8 +431,8 @@
 }
 
 .nav-menu .dropdown-menu li a:hover {
-  background: rgba(75, 108, 183, 0.1);
-  color: #4b6cb7;
+  background: color-mix(in srgb, var(--primary-color) 10%, transparent);
+  color: var(--primary-color);
 }
 
 .dropdown-menu li a::after {
@@ -451,7 +451,7 @@
 
 [data-theme='dark'] .nav-menu .dropdown-menu li a:hover {
   background: rgba(255, 255, 255, 0.1);
-  color: #ffd700 !important;
+  color: var(--accent-color) !important;
 }
 
 @keyframes fadeIn {
@@ -556,7 +556,7 @@
     width: 90%;
     top: 50%;
     transform: translateY(-50%);
-    background: #ffffff;
+    background-color: var(--card-bg);
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 1.875rem;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -580,8 +580,8 @@
   }
 
   .search-container.active .search-btn {
-    background: #ffd700;
-    color: #182848;
+    background: var(--accent-color);
+    color: var(--secondary-color);
     width: 2.5rem;
     height: 2.5rem;
     border-radius: 50%;
@@ -617,7 +617,7 @@
     left: -100%;
     width: 100%;
     height: calc(100vh - 100%);
-    background: rgba(24, 40, 72, 0.98);
+    background: color-mix(in srgb, var(--secondary-color) 98%, transparent);
     backdrop-filter: blur(15px);
     flex-direction: column;
     align-items: center;
@@ -678,7 +678,7 @@
   }
 
   .nav-menu .dropdown-menu li a:hover {
-    color: #ffd700;
+    color: var(--accent-color);
     background: transparent;
   }
 
@@ -725,28 +725,28 @@
   .mobile-account-action-btn:hover,
   .mobile-account-action-btn:focus-visible {
     transform: translateY(-1px);
-    background: #ffd700;
-    border-color: rgba(255, 215, 0, 0.9);
-    color: #182848;
+    background: var(--accent-color);
+    border-color: color-mix(in srgb, var(--accent-color) 90%, transparent);
+    color: var(--secondary-color);
     outline: none;
   }
 
   .mobile-only-auth a {
     font-size: 1.3rem;
-    color: #182848;
-    background: #ffd700;
+    color: var(--secondary-color);
+    background: var(--accent-color);
     padding: 0.75rem 2.5rem;
     border-radius: 1.875rem;
     font-weight: bold;
     text-decoration: none;
     display: inline-block;
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    box-shadow: 0 4px 15px color-mix(in srgb, var(--accent-color) 30%, transparent);
   }
 
   .mobile-account-btn {
     width: 3.5rem;
     height: 3.5rem;
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    box-shadow: 0 4px 15px color-mix(in srgb, var(--accent-color) 30%, transparent);
   }
 
   .mobile-account-btn .account-avatar-letter {
@@ -764,21 +764,21 @@
     width: min(16rem, 100%);
     border: none;
     border-radius: 0.5rem;
-    background: #ffd700;
-    color: #182848;
+    background: var(--accent-color);
+    color: var(--secondary-color);
     cursor: pointer;
     font-family: inherit;
     font-size: 1.1rem;
     font-weight: 700;
     padding: 0.85rem 1rem;
-    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    box-shadow: 0 4px 15px color-mix(in srgb, var(--accent-color) 30%, transparent);
     transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
   }
 
   .mobile-only-logout button:hover {
     transform: scale(1.03);
     background: #ffed4a;
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--accent-color) 40%, transparent);
   }
 }
 
@@ -796,7 +796,7 @@
 }
 
 .nav-link-btn:hover {
-  color: #ffd700;
+  color: var(--accent-color);
 }
 
 .nav-link-btn::after {
@@ -806,7 +806,7 @@
   height: 0.125rem;
   bottom: -0.25rem;
   left: 0;
-  background-color: #ffd700;
+  background-color: var(--accent-color);
   transition: width 0.3s ease;
 }
 
