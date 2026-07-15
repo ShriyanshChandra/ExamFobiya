@@ -19,6 +19,19 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit, onSaveClick }) => {
         }
     };
 
+    const optimizedImage = React.useMemo(() => {
+        let url = book.image || '';
+        if (url.includes('lh3.googleusercontent.com')) {
+            // Replace existing size parameters (like =w800) with =w400-rw (400px width, WebP format)
+            if (url.match(/=[ws]\d+/)) {
+                return url.replace(/=[ws]\d+/, '=w400-rw');
+            }
+            // Or append it if it doesn't exist
+            return url.includes('?') ? url + '&sz=w400-rw' : url + '=w400-rw';
+        }
+        return url;
+    }, [book.image]);
+
     return (
         <>
             <motion.div
@@ -55,7 +68,7 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit, onSaveClick }) => {
                     </button>
                 )}
                 <img
-                    src={book.image}
+                    src={optimizedImage}
                     alt={book.title}
                     className="book-img"
                     loading="lazy"
