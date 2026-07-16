@@ -69,7 +69,7 @@ function App() {
               <ScrollToTop />
               <Navbar setSearchQuery={setSearchQuery} />
               {/* Ensure this div is transparent so the background shows through */}
-              <div className="p-6" style={{ paddingTop: "4rem" }}>
+              <main className="p-6" style={{ paddingTop: "4rem" }}>
                 <Suspense fallback={<SuspenseFallback />}>
                   <Routes>
                     <Route path="/" element={<Home />} />
@@ -95,7 +95,7 @@ function App() {
                     <Route path="/maintenance" element={<Maintenance />} />
                   </Routes>
                 </Suspense>
-              </div>
+              </main>
               <Footer />
             </Router>
           </QuestionProvider>
