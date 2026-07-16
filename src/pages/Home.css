@@ -925,12 +925,16 @@
   }
 }
 
-/* Dark mode text color overrides for headings */
-[data-theme='dark'] .intro-card h2,
-[data-theme='dark'] .section-header h2,
-[data-theme='dark'] .course-browse-header h2,
-[data-theme='dark'] .browse-all-link {
+/* Theme adaptive text color overrides for headings */
+[data-theme]:not([data-theme='light']) .intro-card h2,
+[data-theme]:not([data-theme='light']) .section-header h2,
+[data-theme]:not([data-theme='light']) .course-browse-header h2,
+[data-theme]:not([data-theme='light']) .browse-all-link {
   color: var(--text-color);
+}
+
+[data-theme]:not([data-theme='light']) .section-kicker {
+  color: var(--primary-color);
 }
 
 @media screen and (max-width: 320px) {
