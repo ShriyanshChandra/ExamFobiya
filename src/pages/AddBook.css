@@ -324,7 +324,7 @@
 }
 
 .submit-btn:hover {
-    background-color: #ffed4a;
+    background-color: color-mix(in srgb, var(--accent-color) 80%, white);
     transform: translateY(-2px);
     box-shadow: 0 4px 8px color-mix(in srgb, var(--accent-color) 30%, transparent);
 }

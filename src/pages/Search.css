@@ -22,7 +22,7 @@
 }
 
 .add-book-btn:hover {
-  background-color: #ffed4a;
+  background-color: color-mix(in srgb, var(--accent-color) 80%, white);
   transform: scale(1.05);
   box-shadow: 0 0 10px color-mix(in srgb, var(--accent-color) 40%, transparent);
   color: var(--secondary-color);

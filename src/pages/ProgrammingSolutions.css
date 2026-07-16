@@ -235,7 +235,7 @@
 .questions-search-btn:hover {
     transform: scale(1.1);
     box-shadow: 0 0 15px color-mix(in srgb, var(--accent-color) 50%, transparent);
-    background-color: #ffed4a;
+    background-color: color-mix(in srgb, var(--accent-color) 80%, white);
 }
 
 .questions-filter-btn {
@@ -493,7 +493,7 @@
 }
 
 .uq-upload-btn:hover {
-    background-color: #ffed4a;
+    background-color: color-mix(in srgb, var(--accent-color) 80%, white);
     transform: translateY(-1px);
 }
 
@@ -838,7 +838,7 @@
 }
 
 .pdf-edit-btn:hover {
-    background: #ffed4a;
+    background: color-mix(in srgb, var(--accent-color) 80%, white);
 }
 
 /* Delete button on solution cards (admin) */

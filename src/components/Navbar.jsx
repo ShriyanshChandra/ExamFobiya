@@ -266,17 +266,17 @@ const Navbar = ({ setSearchQuery }) => {
                   <div className="theme-card-colors">
                     <div style={{background: '#0891b2'}}></div>
                     <div style={{background: '#164e63'}}></div>
-                    <div style={{background: '#f59e0b'}}></div>
+                    <div style={{background: '#ebd576'}}></div>
                     <div style={{background: '#e7f5ff'}}></div>
                   </div>
                   <div className="theme-card-label">Ocean</div>
                 </button>
                 <button type="button" className={`account-dropdown-item theme-option-card ${theme === 'forest' ? 'active' : ''}`} onClick={() => {setTheme('forest'); setShowThemeMenu(false);}}>
                   <div className="theme-card-colors">
+                    <div style={{background: '#e6ccb2'}}></div>
                     <div style={{background: '#059669'}}></div>
-                    <div style={{background: '#064e3b'}}></div>
-                    <div style={{background: '#f97316'}}></div>
-                    <div style={{background: '#fdf5ec'}}></div>
+                    <div style={{background: '#ddb892'}}></div>
+                    <div style={{background: '#f3eadd'}}></div>
                   </div>
                   <div className="theme-card-label">Forest</div>
                 </button>

@@ -391,3 +391,14 @@
     padding: 2.125rem 1rem;
   }
 }
+
+@media screen and (max-width: 24rem) {
+  .books-grid {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .books-page h1 {
+    font-size: 1.6rem;
+  }
+}

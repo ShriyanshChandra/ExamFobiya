@@ -125,7 +125,7 @@
 .search-btn:hover {
   transform: scale(1.1);
   box-shadow: 0 0 10px color-mix(in srgb, var(--accent-color) 50%, transparent);
-  background-color: #ffed4a;
+  background-color: color-mix(in srgb, var(--accent-color) 80%, white);
 }
 
 /* Navbar Actions Group */
@@ -158,7 +158,7 @@
 .auth-btn:hover,
 .auth-btn-link:hover {
   transform: scale(1.05);
-  background-color: #ffed4a;
+  background-color: color-mix(in srgb, var(--accent-color) 80%, white);
   box-shadow: 0 0 10px color-mix(in srgb, var(--accent-color) 40%, transparent);
 }
 
@@ -182,7 +182,7 @@
 .account-avatar-btn:hover,
 .mobile-account-btn:hover {
   transform: scale(1.06);
-  background-color: #ffed4a;
+  background-color: color-mix(in srgb, var(--accent-color) 80%, white);
   box-shadow: 0 0 10px color-mix(in srgb, var(--accent-color) 45%, transparent);
 }
 
@@ -343,7 +343,7 @@
 
 .account-dropdown-logout:hover {
   transform: scale(1.03);
-  background-color: #ffed4a;
+  background-color: color-mix(in srgb, var(--accent-color) 80%, white);
   box-shadow: 0 0 10px color-mix(in srgb, var(--accent-color) 40%, transparent);
 }
 
@@ -722,7 +722,7 @@
   .nav-menu .dropdown-menu li a {
     color: rgba(255, 255, 255, 0.7);
     font-size: 1.1rem;
-    padding: 0.75rem 0;
+    padding: 0.85rem 1rem;
   }
 
   .nav-menu .dropdown-menu li a:hover {
@@ -825,7 +825,7 @@
 
   .mobile-only-logout button:hover {
     transform: scale(1.03);
-    background: #ffed4a;
+    background: color-mix(in srgb, var(--accent-color) 80%, white);
     box-shadow: 0 0 10px color-mix(in srgb, var(--accent-color) 40%, transparent);
   }
 }
