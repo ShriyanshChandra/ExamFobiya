@@ -72,3 +72,42 @@
         text-align: center;
     }
 }
+
+/* Theme-Adaptive Footer (applies to all themes except 'light') */
+[data-theme]:not([data-theme='light']) .footer-container {
+    background-color: color-mix(in srgb, var(--background-color) 92%, var(--text-color));
+    color: var(--text-color);
+    border-top: 1px solid var(--border-adaptive);
+}
+
+[data-theme]:not([data-theme='light']) .footer-section h3 {
+    color: var(--accent-color);
+}
+
+[data-theme]:not([data-theme='light']) .footer-section h4 {
+    color: var(--text-color);
+}
+
+[data-theme]:not([data-theme='light']) .footer-section p,
+[data-theme]:not([data-theme='light']) .footer-section a,
+[data-theme]:not([data-theme='light']) .footer-bottom {
+    color: color-mix(in srgb, var(--text-color) 75%, transparent);
+}
+
+[data-theme]:not([data-theme='light']) .footer-section a:hover {
+    color: var(--accent-color);
+    text-shadow: 0 0 10px color-mix(in srgb, var(--accent-color) 30%, transparent);
+}
+
+[data-theme]:not([data-theme='light']) .footer-bottom {
+    border-top: 1px solid var(--border-adaptive);
+}
+
+/* Ocean theme specific override for Footer brand name */
+[data-theme='ocean'] .footer-container .brand-name {
+    background: var(--navbar-bg) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    color: transparent !important;
+}
