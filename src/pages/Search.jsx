@@ -71,7 +71,13 @@ function Search({ searchQuery }) {
       (book.category && book.category.toLowerCase().includes(q)) ||
       (book.semester && book.semester.toLowerCase().includes(q)) ||
       (book.description && book.description.toLowerCase().includes(q))
-    ).sort((a, b) => a.title.localeCompare(b.title));
+    ).sort((a, b) => {
+      // Exact category matches come first (e.g. "dca" → DCA before PGDCA)
+      const aExact = a.category?.toLowerCase() === q ? 0 : 1;
+      const bExact = b.category?.toLowerCase() === q ? 0 : 1;
+      if (aExact !== bExact) return aExact - bExact;
+      return a.title.localeCompare(b.title);
+    });
   }, [searchQuery, books]);
 
   // Filter questions

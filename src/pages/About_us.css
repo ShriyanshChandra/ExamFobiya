@@ -491,111 +491,111 @@
   color: var(--text-color);
 }
 
-[data-theme='dark'] .about-us-page,
-body.dark-mode .about-us-page,
-[data-theme='dark'] .legal-page,
-body.dark-mode .legal-page {
+:is([data-theme='dark'], [data-theme='midnight']) .about-us-page,
+:is(body.dark-mode, body.midnight-mode) .about-us-page,
+:is([data-theme='dark'], [data-theme='midnight']) .legal-page,
+:is(body.dark-mode, body.midnight-mode) .legal-page {
   color: var(--text-color);
 }
 
-[data-theme='dark'] .about-content-wrapper,
-body.dark-mode .about-content-wrapper {
+:is([data-theme='dark'], [data-theme='midnight']) .about-content-wrapper,
+:is(body.dark-mode, body.midnight-mode) .about-content-wrapper {
   background: rgba(6, 10, 18, 0.78);
   border-color: rgba(148, 163, 184, 0.18);
   box-shadow: 0 28px 60px rgba(0, 0, 0, 0.42);
 }
 
-[data-theme='dark'] .about-mission-copy,
-[data-theme='dark'] .about-mission-panel,
-[data-theme='dark'] .about-course-card,
-[data-theme='dark'] .about-feature-item,
-[data-theme='dark'] .legal-intro-card,
-[data-theme='dark'] .legal-card,
-[data-theme='dark'] .legal-contact-card,
-body.dark-mode .about-mission-copy,
-body.dark-mode .about-mission-panel,
-body.dark-mode .about-course-card,
-body.dark-mode .about-feature-item,
-body.dark-mode .legal-intro-card,
-body.dark-mode .legal-card,
-body.dark-mode .legal-contact-card {
+:is([data-theme='dark'], [data-theme='midnight']) .about-mission-copy,
+:is([data-theme='dark'], [data-theme='midnight']) .about-mission-panel,
+:is([data-theme='dark'], [data-theme='midnight']) .about-course-card,
+:is([data-theme='dark'], [data-theme='midnight']) .about-feature-item,
+:is([data-theme='dark'], [data-theme='midnight']) .legal-intro-card,
+:is([data-theme='dark'], [data-theme='midnight']) .legal-card,
+:is([data-theme='dark'], [data-theme='midnight']) .legal-contact-card,
+:is(body.dark-mode, body.midnight-mode) .about-mission-copy,
+:is(body.dark-mode, body.midnight-mode) .about-mission-panel,
+:is(body.dark-mode, body.midnight-mode) .about-course-card,
+:is(body.dark-mode, body.midnight-mode) .about-feature-item,
+:is(body.dark-mode, body.midnight-mode) .legal-intro-card,
+:is(body.dark-mode, body.midnight-mode) .legal-card,
+:is(body.dark-mode, body.midnight-mode) .legal-contact-card {
   background: linear-gradient(180deg, rgba(15, 23, 42, 0.9), rgba(9, 14, 26, 0.94));
   border-color: rgba(148, 163, 184, 0.18);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.34);
 }
 
-[data-theme='dark'] .about-section-title,
-[data-theme='dark'] .about-mission-text,
-[data-theme='dark'] .about-panel-label,
-[data-theme='dark'] .about-mission-points li,
-[data-theme='dark'] .about-course-card h3,
-[data-theme='dark'] .about-course-card p,
-[data-theme='dark'] .about-course-features li,
-[data-theme='dark'] .about-feature-item h4,
-[data-theme='dark'] .about-feature-item p,
-[data-theme='dark'] .about-closing-text,
-[data-theme='dark'] .legal-card-title,
-[data-theme='dark'] .legal-list li,
-[data-theme='dark'] .legal-intro-text,
-[data-theme='dark'] .legal-contact-text,
-[data-theme='dark'] .legal-meta,
-body.dark-mode .about-section-title,
-body.dark-mode .about-mission-text,
-body.dark-mode .about-panel-label,
-body.dark-mode .about-mission-points li,
-body.dark-mode .about-course-card h3,
-body.dark-mode .about-course-card p,
-body.dark-mode .about-course-features li,
-body.dark-mode .about-feature-item h4,
-body.dark-mode .about-feature-item p,
-body.dark-mode .about-closing-text,
-body.dark-mode .legal-card-title,
-body.dark-mode .legal-list li,
-body.dark-mode .legal-intro-text,
-body.dark-mode .legal-contact-text,
-body.dark-mode .legal-meta {
+:is([data-theme='dark'], [data-theme='midnight']) .about-section-title,
+:is([data-theme='dark'], [data-theme='midnight']) .about-mission-text,
+:is([data-theme='dark'], [data-theme='midnight']) .about-panel-label,
+:is([data-theme='dark'], [data-theme='midnight']) .about-mission-points li,
+:is([data-theme='dark'], [data-theme='midnight']) .about-course-card h3,
+:is([data-theme='dark'], [data-theme='midnight']) .about-course-card p,
+:is([data-theme='dark'], [data-theme='midnight']) .about-course-features li,
+:is([data-theme='dark'], [data-theme='midnight']) .about-feature-item h4,
+:is([data-theme='dark'], [data-theme='midnight']) .about-feature-item p,
+:is([data-theme='dark'], [data-theme='midnight']) .about-closing-text,
+:is([data-theme='dark'], [data-theme='midnight']) .legal-card-title,
+:is([data-theme='dark'], [data-theme='midnight']) .legal-list li,
+:is([data-theme='dark'], [data-theme='midnight']) .legal-intro-text,
+:is([data-theme='dark'], [data-theme='midnight']) .legal-contact-text,
+:is([data-theme='dark'], [data-theme='midnight']) .legal-meta,
+:is(body.dark-mode, body.midnight-mode) .about-section-title,
+:is(body.dark-mode, body.midnight-mode) .about-mission-text,
+:is(body.dark-mode, body.midnight-mode) .about-panel-label,
+:is(body.dark-mode, body.midnight-mode) .about-mission-points li,
+:is(body.dark-mode, body.midnight-mode) .about-course-card h3,
+:is(body.dark-mode, body.midnight-mode) .about-course-card p,
+:is(body.dark-mode, body.midnight-mode) .about-course-features li,
+:is(body.dark-mode, body.midnight-mode) .about-feature-item h4,
+:is(body.dark-mode, body.midnight-mode) .about-feature-item p,
+:is(body.dark-mode, body.midnight-mode) .about-closing-text,
+:is(body.dark-mode, body.midnight-mode) .legal-card-title,
+:is(body.dark-mode, body.midnight-mode) .legal-list li,
+:is(body.dark-mode, body.midnight-mode) .legal-intro-text,
+:is(body.dark-mode, body.midnight-mode) .legal-contact-text,
+:is(body.dark-mode, body.midnight-mode) .legal-meta {
   color: #e8edf7;
   opacity: 1;
 }
 
-[data-theme='dark'] .about-course-card p,
-[data-theme='dark'] .about-feature-item p,
-[data-theme='dark'] .legal-meta,
-body.dark-mode .about-course-card p,
-body.dark-mode .about-feature-item p,
-body.dark-mode .legal-meta {
+:is([data-theme='dark'], [data-theme='midnight']) .about-course-card p,
+:is([data-theme='dark'], [data-theme='midnight']) .about-feature-item p,
+:is([data-theme='dark'], [data-theme='midnight']) .legal-meta,
+:is(body.dark-mode, body.midnight-mode) .about-course-card p,
+:is(body.dark-mode, body.midnight-mode) .about-feature-item p,
+:is(body.dark-mode, body.midnight-mode) .legal-meta {
   color: rgba(226, 232, 240, 0.8);
 }
 
-[data-theme='dark'] .about-mission-points li,
-[data-theme='dark'] .about-course-features li,
-[data-theme='dark'] .legal-list li,
-body.dark-mode .about-mission-points li,
-body.dark-mode .about-course-features li,
-body.dark-mode .legal-list li {
+:is([data-theme='dark'], [data-theme='midnight']) .about-mission-points li,
+:is([data-theme='dark'], [data-theme='midnight']) .about-course-features li,
+:is([data-theme='dark'], [data-theme='midnight']) .legal-list li,
+:is(body.dark-mode, body.midnight-mode) .about-mission-points li,
+:is(body.dark-mode, body.midnight-mode) .about-course-features li,
+:is(body.dark-mode, body.midnight-mode) .legal-list li {
   border-bottom-color: rgba(148, 163, 184, 0.16);
 }
 
-[data-theme='dark'] .about-feature-item:hover,
-body.dark-mode .about-feature-item:hover {
+:is([data-theme='dark'], [data-theme='midnight']) .about-feature-item:hover,
+:is(body.dark-mode, body.midnight-mode) .about-feature-item:hover {
   background: linear-gradient(180deg, rgba(80, 46, 5, 0.5), rgba(23, 18, 10, 0.92));
   border-color: rgba(245, 158, 11, 0.32);
 }
 
-[data-theme='dark'] .about-closing-banner,
-body.dark-mode .about-closing-banner {
+:is([data-theme='dark'], [data-theme='midnight']) .about-closing-banner,
+:is(body.dark-mode, body.midnight-mode) .about-closing-banner {
   background: linear-gradient(135deg, rgba(120, 53, 15, 0.34), rgba(245, 158, 11, 0.14));
   border-color: rgba(245, 158, 11, 0.3);
   box-shadow: 0 18px 32px rgba(0, 0, 0, 0.22);
 }
 
-[data-theme='dark'] .brand-name,
-body.dark-mode .brand-name {
+:is([data-theme='dark'], [data-theme='midnight']) .brand-name,
+:is(body.dark-mode, body.midnight-mode) .brand-name {
   color: var(--accent-color);
 }
 
-[data-theme='dark'] .legal-link,
-body.dark-mode .legal-link {
+:is([data-theme='dark'], [data-theme='midnight']) .legal-link,
+:is(body.dark-mode, body.midnight-mode) .legal-link {
   color: var(--accent-color);
 }
 

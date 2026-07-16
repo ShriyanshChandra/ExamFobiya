@@ -48,6 +48,13 @@ function Books() {
     });
 
     return visibleBooks.sort((a, b) => {
+      // When there's a search term, prioritize exact category matches over partial ones
+      if (normalizedSearch) {
+        const aExact = a.category?.toLowerCase() === normalizedSearch ? 0 : 1;
+        const bExact = b.category?.toLowerCase() === normalizedSearch ? 0 : 1;
+        if (aExact !== bExact) return aExact - bExact;
+      }
+
       if (sortBy === "title-desc") {
         return b.title.localeCompare(a.title);
       }

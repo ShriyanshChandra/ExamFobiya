@@ -310,6 +310,38 @@
 
 .intro-card {
   padding: 1.5rem;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease, border-color 0.3s ease;
+}
+
+.intro-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--primary-color) 15%, transparent), color-mix(in srgb, var(--secondary-color) 10%, transparent));
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.intro-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary-color);
+}
+
+.intro-card:hover::before {
+  opacity: 1;
+}
+
+.intro-card-content {
+  z-index: 2;
+  position: relative;
 }
 
 .intro-card h2 {
@@ -324,6 +356,37 @@
   line-height: 1.7;
 }
 
+.section-icon-bg {
+  position: absolute;
+  top: -10%;
+  right: -5%;
+  opacity: 0.04;
+  color: var(--primary-color);
+  transform: scale(3) rotate(-10deg);
+  z-index: -1;
+  pointer-events: none;
+  transition: transform 0.8s ease, opacity 0.8s ease;
+}
+
+.intro-card .section-icon-bg {
+  top: -20px;
+  right: -20px;
+  transform: scale(1.5) rotate(-10deg);
+}
+
+.intro-card:hover .section-icon-bg,
+.new-arrivals:hover .section-icon-bg,
+.best-sellers:hover .section-icon-bg,
+.book-category-section:hover .section-icon-bg,
+.explore-section:hover .section-icon-bg {
+  transform: scale(3.2) rotate(5deg);
+  opacity: 0.08;
+}
+
+.intro-card:hover .section-icon-bg {
+  transform: scale(1.8) rotate(5deg);
+}
+
 .new-arrivals,
 .best-sellers,
 .book-category-section,
@@ -333,6 +396,42 @@
   width: 95%;
   max-width: 90rem;
   text-align: left;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease, border-color 0.3s ease;
+}
+
+.new-arrivals::before,
+.best-sellers::before,
+.book-category-section::before,
+.explore-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--primary-color) 8%, transparent), color-mix(in srgb, var(--secondary-color) 8%, transparent));
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.new-arrivals:hover,
+.best-sellers:hover,
+.book-category-section:hover,
+.explore-section:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: color-mix(in srgb, var(--primary-color) 50%, transparent);
+}
+
+.new-arrivals:hover::before,
+.best-sellers:hover::before,
+.book-category-section:hover::before,
+.explore-section:hover::before {
+  opacity: 1;
 }
 
 .section-header {

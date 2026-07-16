@@ -14,12 +14,14 @@ export const ThemeProvider = ({ children }) => {
         localStorage.setItem('theme', theme);
         document.documentElement.setAttribute('data-theme', theme);
 
-        // Also toggle body class for legacy CSS support
-        document.body.classList.remove('dark-mode', 'vintage-mode');
-        if (theme === 'dark') {
-            document.body.classList.add('dark-mode');
-        } else if (theme === 'vintage') {
-            document.body.classList.add('vintage-mode');
+        // Remove all theme classes and apply the current one
+        const themeClasses = [
+            'dark-mode', 'vintage-mode', 'ocean-mode', 'forest-mode',
+            'midnight-mode', 'nord-mode'
+        ];
+        document.body.classList.remove(...themeClasses);
+        if (theme !== 'light') {
+            document.body.classList.add(`${theme}-mode`);
         }
     }, [theme]);
 

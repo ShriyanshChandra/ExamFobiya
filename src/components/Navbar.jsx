@@ -235,9 +235,69 @@ const Navbar = ({ setSearchQuery }) => {
             </button>
             {showThemeMenu && (
               <div className="account-dropdown" style={{right: 0, minWidth: '150px'}} role="menu">
-                <button type="button" className={`account-dropdown-item ${theme === 'light' ? 'active' : ''}`} onClick={() => {setTheme('light'); setShowThemeMenu(false);}}>Light</button>
-                <button type="button" className={`account-dropdown-item ${theme === 'dark' ? 'active' : ''}`} onClick={() => {setTheme('dark'); setShowThemeMenu(false);}}>Dark</button>
-                <button type="button" className={`account-dropdown-item ${theme === 'vintage' ? 'active' : ''}`} onClick={() => {setTheme('vintage'); setShowThemeMenu(false);}}>Vintage</button>
+                <button type="button" className={`account-dropdown-item theme-option-card ${theme === 'light' ? 'active' : ''}`} onClick={() => {setTheme('light'); setShowThemeMenu(false);}}>
+                  <div className="theme-card-colors">
+                    <div style={{background: '#2575fc'}}></div>
+                    <div style={{background: '#1e40af'}}></div>
+                    <div style={{background: '#ffd700'}}></div>
+                    <div style={{background: '#f4f7f6'}}></div>
+                  </div>
+                  <div className="theme-card-label">Light</div>
+                </button>
+                <button type="button" className={`account-dropdown-item theme-option-card ${theme === 'dark' ? 'active' : ''}`} onClick={() => {setTheme('dark'); setShowThemeMenu(false);}}>
+                  <div className="theme-card-colors">
+                    <div style={{background: '#4b6cb7'}}></div>
+                    <div style={{background: '#182848'}}></div>
+                    <div style={{background: '#ffd700'}}></div>
+                    <div style={{background: '#121212'}}></div>
+                  </div>
+                  <div className="theme-card-label">Dark</div>
+                </button>
+                <button type="button" className={`account-dropdown-item theme-option-card ${theme === 'vintage' ? 'active' : ''}`} onClick={() => {setTheme('vintage'); setShowThemeMenu(false);}}>
+                  <div className="theme-card-colors">
+                    <div style={{background: '#795548'}}></div>
+                    <div style={{background: '#3e2723'}}></div>
+                    <div style={{background: '#e65100'}}></div>
+                    <div style={{background: '#f4ebd8'}}></div>
+                  </div>
+                  <div className="theme-card-label">Vintage</div>
+                </button>
+                <button type="button" className={`account-dropdown-item theme-option-card ${theme === 'ocean' ? 'active' : ''}`} onClick={() => {setTheme('ocean'); setShowThemeMenu(false);}}>
+                  <div className="theme-card-colors">
+                    <div style={{background: '#0891b2'}}></div>
+                    <div style={{background: '#164e63'}}></div>
+                    <div style={{background: '#f59e0b'}}></div>
+                    <div style={{background: '#e7f5ff'}}></div>
+                  </div>
+                  <div className="theme-card-label">Ocean</div>
+                </button>
+                <button type="button" className={`account-dropdown-item theme-option-card ${theme === 'forest' ? 'active' : ''}`} onClick={() => {setTheme('forest'); setShowThemeMenu(false);}}>
+                  <div className="theme-card-colors">
+                    <div style={{background: '#059669'}}></div>
+                    <div style={{background: '#064e3b'}}></div>
+                    <div style={{background: '#f97316'}}></div>
+                    <div style={{background: '#fdf5ec'}}></div>
+                  </div>
+                  <div className="theme-card-label">Forest</div>
+                </button>
+                <button type="button" className={`account-dropdown-item theme-option-card ${theme === 'midnight' ? 'active' : ''}`} onClick={() => {setTheme('midnight'); setShowThemeMenu(false);}}>
+                  <div className="theme-card-colors">
+                    <div style={{background: '#818cf8'}}></div>
+                    <div style={{background: '#0f0f1a'}}></div>
+                    <div style={{background: '#22d3ee'}}></div>
+                    <div style={{background: '#000000'}}></div>
+                  </div>
+                  <div className="theme-card-label">Midnight</div>
+                </button>
+                <button type="button" className={`account-dropdown-item theme-option-card ${theme === 'nord' ? 'active' : ''}`} onClick={() => {setTheme('nord'); setShowThemeMenu(false);}}>
+                  <div className="theme-card-colors">
+                    <div style={{background: '#5e81ac'}}></div>
+                    <div style={{background: '#2e3440'}}></div>
+                    <div style={{background: '#88c0d0'}}></div>
+                    <div style={{background: '#eceff4'}}></div>
+                  </div>
+                  <div className="theme-card-label">Nord</div>
+                </button>
               </div>
             )}
           </div>

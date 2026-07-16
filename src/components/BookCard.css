@@ -1,6 +1,41 @@
-/* Existing styles... */
+/* ─── Shimmer Sweep Keyframe ─── */
+@keyframes shimmer-sweep {
+    0% {
+        left: -75%;
+    }
 
-/* Existing styles... */
+    100% {
+        left: 125%;
+    }
+}
+
+/* ─── Glow Pulse Keyframe ─── */
+@keyframes glow-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 color-mix(in srgb, var(--primary-color) 0%, transparent);
+    }
+
+    50% {
+        box-shadow: 0 0 18px 4px color-mix(in srgb, var(--primary-color) 25%, transparent);
+    }
+}
+
+/* ─── Badge Bounce Keyframe ─── */
+@keyframes badge-pop {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.12);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
 
 .book-card {
     background-color: var(--card-bg);
@@ -20,10 +55,36 @@
     padding: 0;
 }
 
+/* Shimmer overlay — hidden until hover */
+.book-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -75%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(105deg,
+            transparent 20%,
+            rgba(255, 255, 255, 0.15) 45%,
+            rgba(255, 255, 255, 0.25) 50%,
+            rgba(255, 255, 255, 0.15) 55%,
+            transparent 80%);
+    z-index: 3;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.book-card:hover::after {
+    opacity: 1;
+    animation: shimmer-sweep 0.8s ease-out forwards;
+}
+
 .book-card:hover {
-    transform: translateY(-8px) scale(1.05);
+    transform: translateY(-8px) scale(1.03);
     filter: drop-shadow(0 20px 34px rgba(15, 23, 42, 0.18));
     border-color: color-mix(in srgb, var(--primary-color) 45%, transparent);
+    animation: glow-pulse 2s ease-in-out infinite;
 }
 
 [data-theme='dark'] .book-card {
@@ -36,6 +97,15 @@
 [data-theme='dark'] .book-card:hover {
     filter: drop-shadow(0 16px 28px rgba(0, 0, 0, 0.6));
     border-color: color-mix(in srgb, var(--primary-color) 60%, transparent);
+}
+
+[data-theme='dark'] .book-card::after {
+    background: linear-gradient(105deg,
+            transparent 20%,
+            rgba(255, 255, 255, 0.06) 45%,
+            rgba(255, 255, 255, 0.12) 50%,
+            rgba(255, 255, 255, 0.06) 55%,
+            transparent 80%);
 }
 
 .book-card:focus-visible {
@@ -92,6 +162,19 @@
     color: #fff;
 }
 
+[data-theme='vintage'] .book-code-btn {
+    background: rgba(232, 220, 200, 0.92);
+    border-color: rgba(121, 85, 72, 0.3);
+    color: #795548;
+    box-shadow: 0 8px 20px rgba(78, 52, 46, 0.15);
+}
+
+[data-theme='vintage'] .book-code-btn:hover {
+    background: #795548;
+    border-color: #5d4037;
+    color: #fff;
+}
+
 .book-img {
     width: 100%;
     height: auto;
@@ -102,7 +185,12 @@
     /* Rounded corners handled by container */
     background-color: #f9f9f9;
     margin-bottom: 0;
-    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), filter 0.6s ease;
+}
+
+.book-card:hover .book-img {
+    transform: scale(1.06);
+    filter: brightness(1.04);
 }
 
 [data-theme='dark'] .book-img {
@@ -223,43 +311,68 @@
     flex: 1;
 }
 
-/* Specific Button Styles */
-/* Specific Button Styles */
+/* ─── Edit Button ─── */
 .edit-btn {
     background-color: var(--accent-color);
-    /* Solid Theme Yellow */
-    color: #333;
+    color: rgb(0, 0, 0);
     border: none;
-}
-
-.remove-btn {
-    background-color: #dc3545;
-    /* Solid Red */
-    color: white;
-    border: none;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 .edit-btn:hover {
-    background-color: #e6c200;
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+[data-theme='dark'] .edit-btn {
+    background: linear-gradient(135deg, #ffd700, #e6b800);
+    color: #1a1a1a;
+    text-shadow: none;
+}
+
+[data-theme='dark'] .edit-btn:hover {
+    background: linear-gradient(135deg, #ffe033, #ffd700);
+    color: #000;
+}
+
+[data-theme='vintage'] .edit-btn {
+    background: linear-gradient(135deg, #e65100, #d84315);
+    color: #fff;
+}
+
+[data-theme='vintage'] .edit-btn:hover {
+    background: linear-gradient(135deg, #ef6c00, #e65100);
+}
+
+/* ─── Remove Button ─── */
+.remove-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 
 .remove-btn:hover {
     background-color: #c82333;
-}
-
-[data-theme='dark'] .edit-btn {
-    background-color: var(--accent-color);
-    color: #333;
-}
-
-[data-theme='dark'] .edit-btn:hover {
-    background-color: #e6c200;
+    transform: translateY(-1px);
 }
 
 [data-theme='dark'] .remove-btn {
-    background-color: #dc3545;
-    color: white;
-    border: none;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+}
+
+[data-theme='dark'] .remove-btn:hover {
+    background: linear-gradient(135deg, #f87171, #ef4444);
+}
+
+[data-theme='vintage'] .remove-btn {
+    background: linear-gradient(135deg, #b71c1c, #c62828);
+    color: #fff;
+}
+
+[data-theme='vintage'] .remove-btn:hover {
+    background: linear-gradient(135deg, #d32f2f, #c62828);
 }
 
 /* Buttons inside the card content — no container background */
@@ -277,18 +390,27 @@
 }
 
 
-/* Yellow action buttons — Questions & Syllabus */
+/* ─── Questions & Syllabus Buttons ─── */
 .questions-btn {
     background: linear-gradient(135deg, #ffd84d, #f3b700);
     color: #1f1b0d;
     box-shadow: 0 10px 20px rgba(243, 183, 0, 0.18);
     font-weight: 700;
+    transform: translateY(6px);
+    opacity: 0.85;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease, background 0.2s ease, color 0.2s ease;
+    transition-delay: 0.05s;
+}
+
+.book-card:hover .questions-btn {
+    transform: translateY(0);
+    opacity: 1;
 }
 
 .questions-btn:hover {
     background: linear-gradient(135deg, #ffdf68, #efb100);
     color: #000;
-    transform: translateY(-1px);
+    transform: translateY(-2px) !important;
 }
 
 .syllabus-btn {
@@ -296,14 +418,184 @@
     color: #1f1b0d;
     box-shadow: 0 10px 20px rgba(243, 183, 0, 0.18);
     font-weight: 700;
+    transform: translateY(6px);
+    opacity: 0.85;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease, background 0.2s ease, color 0.2s ease;
+    transition-delay: 0.1s;
+}
+
+.book-card:hover .syllabus-btn {
+    transform: translateY(0);
+    opacity: 1;
 }
 
 .syllabus-btn:hover {
     background: linear-gradient(135deg, #ffdf68, #efb100);
     color: #000;
-    transform: translateY(-1px);
+    transform: translateY(-2px) !important;
 }
 
+/* Dark theme — Questions & Syllabus */
+[data-theme='dark'] .questions-btn,
+[data-theme='dark'] .syllabus-btn {
+    background: linear-gradient(135deg, #4b6cb7, #3b5998);
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(75, 108, 183, 0.25);
+}
+
+[data-theme='dark'] .questions-btn:hover,
+[data-theme='dark'] .syllabus-btn:hover {
+    background: linear-gradient(135deg, #5a7dc8, #4b6cb7);
+    color: #fff;
+}
+
+/* Vintage theme — Questions & Syllabus */
+[data-theme='vintage'] .questions-btn,
+[data-theme='vintage'] .syllabus-btn {
+    background: linear-gradient(135deg, #a1887f, #795548);
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(121, 85, 72, 0.2);
+}
+
+[data-theme='vintage'] .questions-btn:hover,
+[data-theme='vintage'] .syllabus-btn:hover {
+    background: linear-gradient(135deg, #bcaaa4, #8d6e63);
+    color: #fff;
+}
+
+/* Ocean theme */
+[data-theme='ocean'] .questions-btn,
+[data-theme='ocean'] .syllabus-btn {
+    background: linear-gradient(135deg, #0891b2, #0e7490);
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(8, 145, 178, 0.2);
+}
+[data-theme='ocean'] .questions-btn:hover,
+[data-theme='ocean'] .syllabus-btn:hover {
+    background: linear-gradient(135deg, #06b6d4, #0891b2);
+    color: #fff;
+}
+[data-theme='ocean'] .edit-btn {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff;
+}
+[data-theme='ocean'] .book-code-btn {
+    color: #0891b2;
+}
+[data-theme='ocean'] .book-code-btn:hover {
+    background: #0891b2;
+    color: #fff;
+}
+
+/* Forest theme */
+[data-theme='forest'] .questions-btn,
+[data-theme='forest'] .syllabus-btn {
+    background: linear-gradient(135deg, #059669, #047857);
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(5, 150, 105, 0.2);
+}
+[data-theme='forest'] .questions-btn:hover,
+[data-theme='forest'] .syllabus-btn:hover {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #fff;
+}
+[data-theme='forest'] .edit-btn {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: #fff;
+}
+[data-theme='forest'] .book-code-btn {
+    color: #059669;
+}
+[data-theme='forest'] .book-code-btn:hover {
+    background: #059669;
+    color: #fff;
+}
+
+
+/* Midnight theme (AMOLED dark) */
+[data-theme='midnight'] .book-card {
+    background: #0a0a14;
+    border: 1px solid rgba(129, 140, 248, 0.15);
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.6));
+    color: #e2e8f0;
+}
+[data-theme='midnight'] .book-card:hover {
+    filter: drop-shadow(0 16px 28px rgba(0, 0, 0, 0.8));
+    border-color: rgba(129, 140, 248, 0.4);
+}
+[data-theme='midnight'] .book-card::after {
+    background: linear-gradient(105deg,
+            transparent 20%,
+            rgba(129, 140, 248, 0.06) 45%,
+            rgba(129, 140, 248, 0.12) 50%,
+            rgba(129, 140, 248, 0.06) 55%,
+            transparent 80%);
+}
+[data-theme='midnight'] .book-card-title {
+    color: #e2e8f0;
+}
+[data-theme='midnight'] .questions-btn,
+[data-theme='midnight'] .syllabus-btn {
+    background: linear-gradient(135deg, #818cf8, #6366f1);
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(129, 140, 248, 0.2);
+}
+[data-theme='midnight'] .questions-btn:hover,
+[data-theme='midnight'] .syllabus-btn:hover {
+    background: linear-gradient(135deg, #a5b4fc, #818cf8);
+    color: #fff;
+}
+[data-theme='midnight'] .edit-btn {
+    background: linear-gradient(135deg, #22d3ee, #06b6d4);
+    color: #0a0a14;
+    text-shadow: none;
+}
+[data-theme='midnight'] .remove-btn {
+    background: linear-gradient(135deg, #f87171, #ef4444);
+    color: #fff;
+}
+[data-theme='midnight'] .admin-actions-row {
+    background-color: #0a0a14;
+    border-top-color: rgba(129, 140, 248, 0.12);
+}
+[data-theme='midnight'] .book-code-btn {
+    background: rgba(10, 10, 20, 0.88);
+    border-color: rgba(129, 140, 248, 0.2);
+    color: #818cf8;
+}
+[data-theme='midnight'] .book-code-btn:hover {
+    background: #818cf8;
+    color: #fff;
+}
+[data-theme='midnight'] .book-category-badge {
+    color: #a5b4fc;
+}
+
+
+/* Nord theme */
+[data-theme='nord'] .questions-btn,
+[data-theme='nord'] .syllabus-btn {
+    background: linear-gradient(135deg, #5e81ac, #4c566a);
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(94, 129, 172, 0.2);
+}
+[data-theme='nord'] .questions-btn:hover,
+[data-theme='nord'] .syllabus-btn:hover {
+    background: linear-gradient(135deg, #81a1c1, #5e81ac);
+    color: #fff;
+}
+[data-theme='nord'] .edit-btn {
+    background: linear-gradient(135deg, #88c0d0, #5e81ac);
+    color: #2e3440;
+    text-shadow: none;
+}
+[data-theme='nord'] .book-code-btn {
+    color: #5e81ac;
+}
+[data-theme='nord'] .book-code-btn:hover {
+    background: #5e81ac;
+    color: #eceff4;
+}
 
 
 /* Admin row sits below the public buttons */
@@ -317,16 +609,37 @@
     border-top-color: #333;
 }
 
+[data-theme='vintage'] .admin-actions-row {
+    background-color: rgba(141, 110, 99, 0.08);
+    border-top-color: rgba(121, 85, 72, 0.15);
+}
+
 /* Category Badge */
 .book-category-badge {
     background: color-mix(in srgb, var(--primary-color) 12%, transparent);
-    color: #3a76f8;
+    color: var(--primary-color);
     padding: 0.375rem 0.625rem;
     border-radius: 62.4375rem;
     font-size: 0.72rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.book-card:hover .book-category-badge {
+    animation: badge-pop 0.4s ease-out;
+    background: color-mix(in srgb, var(--primary-color) 20%, transparent);
+}
+
+[data-theme='dark'] .book-category-badge {
+    background: color-mix(in srgb, var(--primary-color) 18%, transparent);
+    color: #93b5ff;
+}
+
+[data-theme='vintage'] .book-category-badge {
+    background: color-mix(in srgb, var(--primary-color) 14%, transparent);
+    color: #795548;
 }
 
 /* Mobile optimizations for narrow screens */
@@ -359,14 +672,15 @@
         line-height: 1.2 !important;
         box-sizing: border-box !important;
         text-align: center;
-        white-space: normal; /* allow text to wrap */
+        white-space: normal;
+        /* allow text to wrap */
     }
 
     .book-card-btns {
         padding-bottom: 0.625rem;
     }
 
-    
+
 
     .book-category-badge {
         font-size: 0.6rem;
@@ -380,8 +694,10 @@
         margin-left: 0;
         margin-right: 0;
         margin-bottom: 0;
-        margin-top: auto; /* Restored auto margin to push buttons to the bottom of the card */
-        padding-top: 0.5rem; /* Used padding instead for the spacing */
+        margin-top: auto;
+        /* Restored auto margin to push buttons to the bottom of the card */
+        padding-top: 0.5rem;
+        /* Used padding instead for the spacing */
         gap: 0.5rem;
         border-top: none;
     }
@@ -392,7 +708,8 @@
 
     .questions-btn,
     .syllabus-btn {
-        border-radius: 0.25rem; /* Match standard action-btn */
+        border-radius: 0.25rem;
+        /* Match standard action-btn */
         margin: 0;
     }
 }
@@ -412,6 +729,7 @@
 
     .questions-btn,
     .syllabus-btn {
-        border-radius: 0.25rem; /* Default for very small screens too */
+        border-radius: 0.25rem;
+        /* Default for very small screens too */
     }
 }
