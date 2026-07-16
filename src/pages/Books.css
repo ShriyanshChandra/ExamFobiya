@@ -393,12 +393,14 @@
 }
 
 @media screen and (max-width: 24rem) {
+  .books-page h1 {
+    font-size: 1.6rem;
+  }
+}
+
+@media screen and (max-width: 320px) {
   .books-grid {
     grid-template-columns: 1fr;
     gap: 0.5rem;
-  }
-
-  .books-page h1 {
-    font-size: 1.6rem;
   }
 }
