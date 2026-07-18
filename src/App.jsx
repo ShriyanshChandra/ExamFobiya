@@ -8,7 +8,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
 import { BookProvider } from "./context/BookContext";
 import { QuestionProvider } from "./context/QuestionContext";
-import { trackVisit } from "./services/TrackingService";
+
 import "@fontsource/nunito";
 
 import './App.css'; 
@@ -56,9 +56,7 @@ function ScrollToTop() {
 function App() {
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    trackVisit();
-  }, []);
+
 
   return (
     <ThemeProvider>

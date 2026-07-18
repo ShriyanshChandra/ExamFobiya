@@ -111,28 +111,7 @@ const isRecentDate = (dateValue) => {
     return parsedDate > sevenDaysAgo;
 };
 
-const calculateGrowth = (current, previous) => {
-    if (previous === 0) {
-        return current > 0 ? 100 : 0;
-    }
 
-    return ((current - previous) / previous) * 100;
-};
-
-const getAnalyticsDocMeta = (offsetDays = 0) => {
-    const date = new Date();
-    date.setDate(date.getDate() + offsetDays);
-
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-
-    return {
-        date,
-        docId: `${year}-${month}-${day}`,
-        label: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-    };
-};
 
 // Routes
 app.post('/send-otp', async (req, res) => {
@@ -413,10 +392,8 @@ app.post('/api/reset-password', async (req, res) => {
 app.get('/api/admin/analytics', async (req, res) => {
     try {
         const database = getFirestore();
-        const [booksSnapshot, usersSnapshot, statsSnapshot, questionPdfsSnapshot] = await Promise.all([
+        const [booksSnapshot, questionPdfsSnapshot] = await Promise.all([
             database.collection('books').get(),
-            database.collection('users').get(),
-            database.collection('stats').doc('general').get(),
             database.collectionGroup('questionPdfs').get()
         ]);
 
@@ -453,43 +430,7 @@ app.get('/api/admin/analytics', async (req, res) => {
             questionsByCourse[course] = (questionsByCourse[course] || 0) + 1;
         });
 
-        let newUsersCount = 0;
-        usersSnapshot.forEach((userDoc) => {
-            const data = userDoc.data();
 
-            if (isRecentDate(data.createdAt)) {
-                newUsersCount += 1;
-            }
-        });
-
-        const trafficConfigs = Array.from({ length: 7 }, (_, index) => getAnalyticsDocMeta(index - 6));
-        const previousTrafficConfigs = Array.from({ length: 7 }, (_, index) => getAnalyticsDocMeta(index - 13));
-
-        const [currentTrafficDocs, previousTrafficDocs] = await Promise.all([
-            Promise.all(
-                trafficConfigs.map(({ docId }) => database.collection('daily_stats').doc(docId).get())
-            ),
-            Promise.all(
-                previousTrafficConfigs.map(({ docId }) => database.collection('daily_stats').doc(docId).get())
-            )
-        ]);
-
-        const trafficData = trafficConfigs.map((config, index) => {
-            const data = currentTrafficDocs[index].data() || {};
-            return {
-                name: config.label,
-                visits: data.visits ?? data.visit_count ?? 0
-            };
-        });
-
-        const currentWeekVisits = trafficData.reduce((sum, item) => sum + item.visits, 0);
-        const previousWeekVisits = previousTrafficDocs.reduce((sum, snapshot) => {
-            const data = snapshot.data() || {};
-            return sum + (data.visits ?? data.visit_count ?? 0);
-        }, 0);
-
-        const totalUsers = usersSnapshot.size;
-        const previousUsers = totalUsers - newUsersCount;
         const genreData = Object.entries(genreCounts).map(([name, value]) => ({ name, value }));
         const questionsData = Object.entries(questionsByCourse).map(([name, value]) => ({ name, value }));
         const programmingData = Object.entries(programmingByGenre).map(([name, value]) => ({ name, value }));
@@ -497,14 +438,7 @@ app.get('/api/admin/analytics', async (req, res) => {
         res.status(200).json({
             totalBooks: booksSnapshot.size,
             newBooksCount,
-            totalUsers,
-            userGrowthPercentage: previousUsers > 0
-                ? ((newUsersCount / previousUsers) * 100).toFixed(1)
-                : '100.0',
-            totalVisits: statsSnapshot.exists ? statsSnapshot.data().visit_count || 0 : 0,
-            visitGrowthPercentage: calculateGrowth(currentWeekVisits, previousWeekVisits).toFixed(1),
             genreData,
-            trafficData,
             totalQuestions: questionPdfsSnapshot.size,
             questionsData,
             totalProgrammingSolutions,
@@ -516,34 +450,7 @@ app.get('/api/admin/analytics', async (req, res) => {
     }
 });
 
-// Analytics tracking endpoint
-app.post('/api/track', async (req, res) => {
-    try {
-        const db = admin.firestore();
-        
-        // 1. General Stats
-        const statsDocRef = db.collection('stats').doc('general');
-        await statsDocRef.set({ visit_count: admin.firestore.FieldValue.increment(1) }, { merge: true });
 
-        // 2. Daily Stats
-        const now = new Date();
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        const todayDocId = `${year}-${month}-${day}`;
-
-        const dailyDocRef = db.collection('daily_stats').doc(todayDocId);
-        await dailyDocRef.set({
-            date: todayDocId,
-            visits: admin.firestore.FieldValue.increment(1)
-        }, { merge: true });
-        
-        res.status(200).json({ success: true });
-    } catch (error) {
-        console.error('Tracking Error:', error);
-        res.status(500).json({ error: 'Internal server error while tracking' });
-    }
-});
 
 // AI Suggestions Route
 app.post('/api/ai/suggestions', aiController.generateSuggestions);
