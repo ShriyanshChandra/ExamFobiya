@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useBooks } from '../context/BookContext';
 import { extractTextFromFile, formatToTopics } from '../utils/documentUtils';
 import './AddBook.css';
@@ -43,17 +43,77 @@ const decodeHtmlForNotepad = (value) => {
 const getSyllabusLineCount = (value) => String(value || '').split('\n').length;
 
 const normalizeSyllabusPageNumbers = (pageNumbers, lineCount) => {
-    const safePageNumbers = Array.isArray(pageNumbers) ? pageNumbers : [];
+    let safePageNumbers = [];
+
+    if (Array.isArray(pageNumbers)) {
+        safePageNumbers = pageNumbers;
+    } else if (pageNumbers && typeof pageNumbers === 'object') {
+        safePageNumbers = Object.keys(pageNumbers)
+            .sort((a, b) => Number(a) - Number(b))
+            .map(key => pageNumbers[key]);
+    }
 
     return Array.from({ length: lineCount }, (_, index) => {
         const pageNumber = safePageNumbers[index];
-        return pageNumber === undefined || pageNumber === null ? '' : String(pageNumber);
+        if (pageNumber === undefined || pageNumber === null) return '';
+
+        const normalizedPageNumber = String(pageNumber).trim();
+        return normalizedPageNumber.toLowerCase() === 'pg' ? '' : normalizedPageNumber;
     });
+};
+
+const getStoredSyllabusPageNumbers = (book) => (
+    book?.syllabusPageNumbers ||
+    book?.syllabusPages ||
+    book?.pageNumbers ||
+    book?.pages ||
+    []
+);
+
+const countVisiblePageNumbers = (pageNumbers) => (
+    normalizeSyllabusPageNumbers(
+        pageNumbers,
+        Array.isArray(pageNumbers) ? pageNumbers.length : Object.keys(pageNumbers || {}).length
+    ).filter(pageNumber => pageNumber.trim()).length
+);
+
+const pickBestBookForEdit = (routeStateBook, contextBook, id) => {
+    const matchingRouteStateBook = routeStateBook?.id?.toString() === id ? routeStateBook : null;
+    if (!matchingRouteStateBook) return contextBook;
+    if (!contextBook) return matchingRouteStateBook;
+
+    const routePageCount = countVisiblePageNumbers(getStoredSyllabusPageNumbers(matchingRouteStateBook));
+    const contextPageCount = countVisiblePageNumbers(getStoredSyllabusPageNumbers(contextBook));
+
+    return contextPageCount > routePageCount ? contextBook : matchingRouteStateBook;
+};
+
+const splitSyllabusContentsAndPages = (value, pageNumbers = []) => {
+    const lines = String(value || '').split('\n');
+    const normalizedPages = normalizeSyllabusPageNumbers(pageNumbers, lines.length);
+    const extractedPages = [...normalizedPages];
+
+    const cleanedLines = lines.map((line, index) => {
+        const match = line.match(/^(.*?)(?:\s*[.\u00b7\u2022\u2023\u2024\u2027\u2026\u2219\u22c5\u25cf\u30fb\ufe52\uff0e]{2,}\s*)([a-zA-Z]?\d+(?:[-–]\d+)?[a-zA-Z]?)\s*$/);
+        if (!match) return line;
+
+        if (!String(extractedPages[index] || '').trim()) {
+            extractedPages[index] = match[2].trim();
+        }
+
+        return match[1].trimEnd();
+    });
+
+    return {
+        contents: cleanedLines.join('\n'),
+        pageNumbers: extractedPages
+    };
 };
 
 const AddBook = () => {
     const { addBook, updateBook, books, loading: booksLoading } = useBooks();
     const navigate = useNavigate();
+    const location = useLocation();
     const { id } = useParams();
 
     const isEditMode = !!id;
@@ -64,8 +124,7 @@ const AddBook = () => {
     const [sections, setSections] = useState([]);
     const [sectionOrders, setSectionOrders] = useState({});
     const [image, setImage] = useState(null);
-    const [contents, setContents] = useState('');
-    const [syllabusPageNumbers, setSyllabusPageNumbers] = useState(['']);
+    const [syllabus, setSyllabus] = useState({ contents: '', pageNumbers: [''] });
     const [loading, setLoading] = useState(false);
     const [entryMode, setEntryMode] = useState('pdf');
     const syllabusPageGutterRef = useRef(null);
@@ -73,6 +132,8 @@ const AddBook = () => {
 
     const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
     const [alertModal, setAlertModal] = useState(null);
+    const contents = syllabus.contents;
+    const syllabusPageNumbers = syllabus.pageNumbers;
 
     const showAlertModal = ({ title, message, variant = 'yellow', onClose }) => {
         setAlertModal({ title, message, variant, onClose });
@@ -89,7 +150,9 @@ const AddBook = () => {
         if (isEditMode) {
             if (booksLoading) return;
 
-            const bookToEdit = books.find(b => b.id.toString() === id);
+            const routeStateBook = location.state?.book;
+            const contextBook = books.find(b => b.id.toString() === id);
+            const bookToEdit = pickBestBookForEdit(routeStateBook, contextBook, id);
             if (bookToEdit) {
                 setTitle(bookToEdit.title);
                 setCategory(bookToEdit.category || ''); // Load category
@@ -115,12 +178,11 @@ const AddBook = () => {
                 setSectionOrders(bookToEdit.sectionOrders || {});
 
                 setImage(bookToEdit.image);
-                const loadedContents = decodeHtmlForNotepad(bookToEdit.contents);
-                setContents(loadedContents);
-                setSyllabusPageNumbers(normalizeSyllabusPageNumbers(
-                    bookToEdit.syllabusPageNumbers,
-                    getSyllabusLineCount(loadedContents)
-                ));
+                const loadedSyllabus = splitSyllabusContentsAndPages(
+                    decodeHtmlForNotepad(bookToEdit.contents),
+                    getStoredSyllabusPageNumbers(bookToEdit),
+                );
+                setSyllabus(loadedSyllabus);
                 setEntryMode('manual'); // Default to manual to show existing contents
             } else {
                 showAlertModal({
@@ -130,7 +192,7 @@ const AddBook = () => {
                 });
             }
         }
-    }, [id, books, booksLoading, isEditMode, navigate]);
+    }, [id, books, booksLoading, isEditMode, location.state, navigate]);
 
     // Load from localStorage on mount (only in add mode, not edit mode)
     useEffect(() => {
@@ -144,12 +206,11 @@ const AddBook = () => {
                     setSemester(parsedData.semester || '');
                     setSections(parsedData.sections || []);
                     setImage(parsedData.image || null);
-                    const loadedContents = decodeHtmlForNotepad(parsedData.contents);
-                    setContents(loadedContents);
-                    setSyllabusPageNumbers(normalizeSyllabusPageNumbers(
+                    const loadedSyllabus = splitSyllabusContentsAndPages(
+                        decodeHtmlForNotepad(parsedData.contents),
                         parsedData.syllabusPageNumbers,
-                        getSyllabusLineCount(loadedContents)
-                    ));
+                    );
+                    setSyllabus(loadedSyllabus);
                 } catch (error) {
                     console.error('Error loading saved form data:', error);
                 }
@@ -166,20 +227,12 @@ const AddBook = () => {
                 semester,
                 sections,
                 image,
-                contents,
-                syllabusPageNumbers
+                contents: syllabus.contents,
+                syllabusPageNumbers: syllabus.pageNumbers
             };
             localStorage.setItem('addBookFormData', JSON.stringify(formData));
         }
-    }, [title, category, semester, sections, image, contents, syllabusPageNumbers, isEditMode]);
-
-    useEffect(() => {
-        setSyllabusPageNumbers(prev => {
-            const next = normalizeSyllabusPageNumbers(prev, getSyllabusLineCount(contents));
-            const hasSameValues = next.length === prev.length && next.every((value, index) => value === prev[index]);
-            return hasSameValues ? prev : next;
-        });
-    }, [contents]);
+    }, [title, category, semester, sections, image, syllabus, isEditMode]);
 
     const [imageUrlInput, setImageUrlInput] = useState('');
 
@@ -223,7 +276,8 @@ const AddBook = () => {
                 const text = await extractTextFromFile(file);
                 // Format the extracted text to a simpler representation for details
                 const formatted = formatToTopics(text);
-                setContents(formatted);
+                const extractedSyllabus = splitSyllabusContentsAndPages(formatted);
+                setSyllabus(extractedSyllabus);
             } catch (err) {
                 console.error(err);
                 showAlertModal({
@@ -320,7 +374,10 @@ const AddBook = () => {
         const { selectionStart, selectionEnd, value } = e.target;
         const updatedContents = `${value.slice(0, selectionStart)}\t${value.slice(selectionEnd)}`;
 
-        setContents(updatedContents);
+        setSyllabus(prev => ({
+            contents: updatedContents,
+            pageNumbers: normalizeSyllabusPageNumbers(prev.pageNumbers, getSyllabusLineCount(updatedContents))
+        }));
 
         requestAnimationFrame(() => {
             e.target.selectionStart = selectionStart + 1;
@@ -329,16 +386,15 @@ const AddBook = () => {
     };
 
     const handleSyllabusChange = (e) => {
-        const nextContents = e.target.value;
-        setContents(nextContents);
-        setSyllabusPageNumbers(prev => normalizeSyllabusPageNumbers(prev, getSyllabusLineCount(nextContents)));
+        const nextSyllabus = splitSyllabusContentsAndPages(e.target.value, syllabusPageNumbers);
+        setSyllabus(nextSyllabus);
     };
 
     const handleSyllabusPageNumberChange = (lineIndex, value) => {
-        setSyllabusPageNumbers(prev => {
-            const next = normalizeSyllabusPageNumbers(prev, getSyllabusLineCount(contents));
+        setSyllabus(prev => {
+            const next = normalizeSyllabusPageNumbers(prev.pageNumbers, getSyllabusLineCount(prev.contents));
             next[lineIndex] = value;
-            return next;
+            return { ...prev, pageNumbers: next };
         });
     };
 
@@ -377,8 +433,7 @@ const AddBook = () => {
         setSectionOrders({});
         setImage(null);
         setImageUrlInput('');
-        setContents('');
-        setSyllabusPageNumbers(['']);
+        setSyllabus({ contents: '', pageNumbers: [''] });
         setEntryMode('pdf');
 
         // Clear localStorage
@@ -399,10 +454,10 @@ const AddBook = () => {
                 sections,
                 sectionOrders,
                 image: finalImage,
-                contents: contents || 'No contents available.',
+                contents: syllabus.contents || 'No contents available.',
                 syllabusPageNumbers: normalizeSyllabusPageNumbers(
-                    syllabusPageNumbers,
-                    getSyllabusLineCount(contents)
+                    syllabus.pageNumbers,
+                    getSyllabusLineCount(syllabus.contents)
                 ),
                 createdAt: new Date().toISOString() // Add timestamp for stats
             };

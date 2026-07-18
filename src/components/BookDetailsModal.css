@@ -244,14 +244,14 @@
 .syllabus-topic-page-leader {
     flex: 1 1 1rem;
     min-width: 1rem;
-    border-bottom: 2px dotted #555;
+    border-bottom: 2px dotted currentColor;
     transform: translateY(-0.22rem);
 }
 
 .syllabus-topic-page-number {
     flex: 0 0 2.5rem;
-    color: #555;
-    font-weight: 700;
+    color: inherit;
+    font: inherit;
     text-align: right;
     white-space: nowrap;
 }

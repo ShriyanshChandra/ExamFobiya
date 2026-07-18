@@ -119,7 +119,13 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit, onSaveClick }) => {
                 {/* Admin edit/remove buttons */}
                 {canEdit && (
                     <div className="book-actions admin-actions-row" onClick={(e) => e.stopPropagation()}>
-                        <Link to={`/edit-book/${book.id}`} className="action-btn edit-btn">Edit</Link>
+                        <Link
+                            to={`/edit-book/${book.id}`}
+                            state={{ book }}
+                            className="action-btn edit-btn"
+                        >
+                            Edit
+                        </Link>
                         <button onClick={() => onRemove(book)} className="action-btn remove-btn">Remove</button>
                     </div>
                 )}
