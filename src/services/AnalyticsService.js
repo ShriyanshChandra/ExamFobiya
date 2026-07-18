@@ -3,12 +3,7 @@ import { getApiUrl } from '../utils/api';
 const DEFAULT_ANALYTICS = {
     totalBooks: 0,
     newBooksCount: 0,
-    totalUsers: 0,
-    userGrowthPercentage: '0.0',
-    totalVisits: 0,
-    visitGrowthPercentage: '0.0',
     genreData: [],
-    trafficData: [],
     totalQuestions: 0,
     questionsData: [],
     totalProgrammingSolutions: 0,
@@ -29,7 +24,6 @@ export const fetchAnalyticsData = async () => {
             ...DEFAULT_ANALYTICS,
             ...data,
             genreData: Array.isArray(data.genreData) ? data.genreData : [],
-            trafficData: Array.isArray(data.trafficData) ? data.trafficData : [],
             questionsData: Array.isArray(data.questionsData) ? data.questionsData : [],
             programmingData: Array.isArray(data.programmingData) ? data.programmingData : []
         };

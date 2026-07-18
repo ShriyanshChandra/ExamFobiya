@@ -1,44 +1,18 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { fetchAnalyticsData } from '../services/AnalyticsService';
-import {
-    ResponsiveContainer, Tooltip,
-    XAxis, YAxis, CartesianGrid, Area, AreaChart
-} from 'recharts';
 import Loader from '../components/Loader';
-import { useTheme } from '../context/ThemeContext';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
     const [stats, setStats] = useState({
         totalBooks: 0,
-        totalUsers: 0,
-        totalVisits: 0,
         genreData: [],
-        trafficData: [],
         totalQuestions: 0,
         questionsData: [],
         totalProgrammingSolutions: 0,
         programmingData: []
     });
     const [loading, setLoading] = useState(true);
-    const [chartDimensions, setChartDimensions] = useState({ width: 0, height: 300 });
-    const { theme } = useTheme();
-
-    const chartContainerRef = useRef(null);
-
-    const isDarkChart = theme === 'dark' || theme === 'midnight';
-
-    const gridColor = isDarkChart ? 'rgba(255,255,255,0.08)' : '#dbe4f0';
-    const tickColor = isDarkChart ? '#94a3b8' : '#75839a';
-    const tooltipStyle = {
-        borderRadius: '12px',
-        background: isDarkChart ? '#0a0a14' : '#ffffff',
-        color: isDarkChart ? '#e2e8f0' : '#333',
-        border: isDarkChart ? '1px solid rgba(129,140,248,0.15)' : '1px solid rgba(148, 163, 184, 0.18)',
-        boxShadow: isDarkChart ? '0 12px 30px rgba(0,0,0,0.5)' : '0 12px 30px rgba(15,23,42,0.12)'
-    };
-    const tooltipItemStyle = { color: isDarkChart ? '#e2e8f0' : '#333' };
-    const tooltipLabelStyle = { color: isDarkChart ? '#f1f5f9' : '#1a2745' };
 
     useEffect(() => {
         const loadStats = async () => {
@@ -49,28 +23,6 @@ const AdminDashboard = () => {
 
         loadStats();
     }, []);
-
-    useEffect(() => {
-        const updateDimensions = () => {
-            if (chartContainerRef.current) {
-                const width = chartContainerRef.current.offsetWidth;
-                setChartDimensions({ width: width > 0 ? width : 300, height: 300 });
-            }
-        };
-
-        updateDimensions();
-        window.addEventListener('resize', updateDimensions);
-
-        const resizeObserver = new ResizeObserver(updateDimensions);
-        if (chartContainerRef.current) {
-            resizeObserver.observe(chartContainerRef.current);
-        }
-
-        return () => {
-            window.removeEventListener('resize', updateDimensions);
-            resizeObserver.disconnect();
-        };
-    }, [loading]);
 
     const SEGMENT_COLORS = [
         'var(--primary-color)', 'var(--secondary-color)', 'var(--accent-color)',
@@ -134,20 +86,6 @@ const AdminDashboard = () => {
 
     const summaryCards = useMemo(() => ([
         {
-            label: 'Total Users',
-            value: stats.totalUsers,
-            accentClass: 'accent-primary',
-            iconClass: 'icon-primary',
-            icon: (
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                </svg>
-            )
-        },
-        {
             label: 'Total Books',
             value: stats.totalBooks,
             accentClass: 'accent-secondary',
@@ -156,18 +94,6 @@ const AdminDashboard = () => {
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
                     <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
-                </svg>
-            )
-        },
-        {
-            label: 'Total Visits',
-            value: stats.totalVisits,
-            accentClass: 'accent-accent',
-            iconClass: 'icon-accent',
-            icon: (
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                    <circle cx="12" cy="12" r="3"></circle>
                 </svg>
             )
         },
@@ -226,45 +152,6 @@ const AdminDashboard = () => {
                 </div>
 
                 <div className="dashboard-chart-stack">
-                    <section className="chart-container chart-container-full" ref={chartContainerRef}>
-                        <div className="chart-header">
-                            <div>
-                                <span className="chart-kicker">Traffic</span>
-                            </div>
-                        </div>
-
-                        {chartDimensions.width > 0 && (
-                            <div className="chart-canvas traffic-chart">
-                                <ResponsiveContainer width="100%" height={300}>
-                                    <AreaChart data={stats.trafficData}>
-                                        <defs>
-                                            <linearGradient id="colorVisits" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor="var(--primary-color)" stopOpacity={0.8} />
-                                                <stop offset="95%" stopColor="var(--primary-color)" stopOpacity={0} />
-                                            </linearGradient>
-                                        </defs>
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor} />
-                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: tickColor }} dy={10} />
-                                        <YAxis axisLine={false} tickLine={false} tick={{ fill: tickColor }} />
-                                        <Tooltip
-                                            contentStyle={tooltipStyle}
-                                            itemStyle={tooltipItemStyle}
-                                            labelStyle={tooltipLabelStyle}
-                                        />
-                                        <Area
-                                            type="monotone"
-                                            dataKey="visits"
-                                            stroke="var(--primary-color)"
-                                            fillOpacity={1}
-                                            fill="url(#colorVisits)"
-                                            strokeWidth={3}
-                                        />
-                                    </AreaChart>
-                                </ResponsiveContainer>
-                            </div>
-                        )}
-                    </section>
-
                     {/* Segmented distribution bars */}
                     <section className="chart-container segmented-bars-section">
                         <div className="chart-header">
