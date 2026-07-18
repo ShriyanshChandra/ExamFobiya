@@ -8,7 +8,11 @@ const DEFAULT_ANALYTICS = {
     totalVisits: 0,
     visitGrowthPercentage: '0.0',
     genreData: [],
-    trafficData: []
+    trafficData: [],
+    totalQuestions: 0,
+    questionsData: [],
+    totalProgrammingSolutions: 0,
+    programmingData: []
 };
 
 export const fetchAnalyticsData = async () => {
@@ -25,7 +29,9 @@ export const fetchAnalyticsData = async () => {
             ...DEFAULT_ANALYTICS,
             ...data,
             genreData: Array.isArray(data.genreData) ? data.genreData : [],
-            trafficData: Array.isArray(data.trafficData) ? data.trafficData : []
+            trafficData: Array.isArray(data.trafficData) ? data.trafficData : [],
+            questionsData: Array.isArray(data.questionsData) ? data.questionsData : [],
+            programmingData: Array.isArray(data.programmingData) ? data.programmingData : []
         };
     } catch (error) {
         console.error('Error fetching analytics data:', error);

@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { fetchAnalyticsData } from '../services/AnalyticsService';
 import {
-    PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend,
+    ResponsiveContainer, Tooltip,
     XAxis, YAxis, CartesianGrid, Area, AreaChart
 } from 'recharts';
 import Loader from '../components/Loader';
+import { useTheme } from '../context/ThemeContext';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -13,13 +14,31 @@ const AdminDashboard = () => {
         totalUsers: 0,
         totalVisits: 0,
         genreData: [],
-        trafficData: []
+        trafficData: [],
+        totalQuestions: 0,
+        questionsData: [],
+        totalProgrammingSolutions: 0,
+        programmingData: []
     });
     const [loading, setLoading] = useState(true);
     const [chartDimensions, setChartDimensions] = useState({ width: 0, height: 300 });
-    const [isMobile, setIsMobile] = useState(false);
+    const { theme } = useTheme();
 
     const chartContainerRef = useRef(null);
+
+    const isDarkChart = theme === 'dark' || theme === 'midnight';
+
+    const gridColor = isDarkChart ? 'rgba(255,255,255,0.08)' : '#dbe4f0';
+    const tickColor = isDarkChart ? '#94a3b8' : '#75839a';
+    const tooltipStyle = {
+        borderRadius: '12px',
+        background: isDarkChart ? '#0a0a14' : '#ffffff',
+        color: isDarkChart ? '#e2e8f0' : '#333',
+        border: isDarkChart ? '1px solid rgba(129,140,248,0.15)' : '1px solid rgba(148, 163, 184, 0.18)',
+        boxShadow: isDarkChart ? '0 12px 30px rgba(0,0,0,0.5)' : '0 12px 30px rgba(15,23,42,0.12)'
+    };
+    const tooltipItemStyle = { color: isDarkChart ? '#e2e8f0' : '#333' };
+    const tooltipLabelStyle = { color: isDarkChart ? '#f1f5f9' : '#1a2745' };
 
     useEffect(() => {
         const loadStats = async () => {
@@ -37,7 +56,6 @@ const AdminDashboard = () => {
                 const width = chartContainerRef.current.offsetWidth;
                 setChartDimensions({ width: width > 0 ? width : 300, height: 300 });
             }
-            setIsMobile(window.innerWidth <= 768);
         };
 
         updateDimensions();
@@ -54,7 +72,64 @@ const AdminDashboard = () => {
         };
     }, [loading]);
 
-    const COLORS = ['#3159b8', '#1fa97a', '#f0b429', '#ee7c4f', '#7a5af8', '#e8517d'];
+    const SEGMENT_COLORS = [
+        '#3159b8', '#1fa97a', '#f0b429', '#ee7c4f', '#7a5af8', '#e8517d',
+        '#0891b2', '#dc2626', '#16a34a', '#9333ea'
+    ];
+
+    const renderSegmentedBar = (data, label) => {
+        const total = data.reduce((sum, item) => sum + item.value, 0);
+        if (total === 0) {
+            return (
+                <div className="segmented-bar-row">
+                    <div className="segmented-bar-label">{label}</div>
+                    <div className="segmented-bar-track">
+                        <div className="segmented-bar-empty">No data</div>
+                    </div>
+                </div>
+            );
+        }
+        return (
+            <div className="segmented-bar-row">
+                <div className="segmented-bar-label">{label}</div>
+                <div className="segmented-bar-track">
+                    {data.map((item, index) => {
+                        const pct = (item.value / total) * 100;
+                        if (pct < 1) return null;
+                        return (
+                            <div
+                                key={item.name}
+                                className="segmented-bar-segment"
+                                style={{
+                                    width: `${pct}%`,
+                                    backgroundColor: SEGMENT_COLORS[index % SEGMENT_COLORS.length]
+                                }}
+                                title={`${item.name}: ${item.value} (${pct.toFixed(1)}%)`}
+                            >
+                                {pct > 8 && (
+                                    <span className="segment-text">
+                                        {item.name} ({item.value})
+                                    </span>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+                <div className="segmented-bar-legend">
+                    {data.map((item, index) => (
+                        <div key={item.name} className="segmented-legend-item">
+                            <span
+                                className="segmented-legend-dot"
+                                style={{ backgroundColor: SEGMENT_COLORS[index % SEGMENT_COLORS.length] }}
+                            ></span>
+                            <span className="segmented-legend-name">{item.name}</span>
+                            <span className="segmented-legend-value">{item.value}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    };
 
     const summaryCards = useMemo(() => ([
         {
@@ -105,17 +180,18 @@ const AdminDashboard = () => {
             )
         },
         {
-            label: 'Revenue',
-            value: '$0.00',
+            label: 'Questions',
+            value: stats.totalQuestions,
             accentClass: 'accent-purple',
             iconClass: 'icon-purple',
-            trendValue: 'Coming Soon',
-            trendLabel: 'planned metric',
-            trendTone: 'muted',
+            trendValue: `${stats.totalProgrammingSolutions} solutions`,
+            trendLabel: 'programming',
+            trendTone: 'neutral',
             icon: (
                 <>
-                    <line x1="12" y1="1" x2="12" y2="23"></line>
-                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    <path d="M9 12h6"></path>
+                    <path d="M12 9v6"></path>
+                    <circle cx="12" cy="12" r="10"></circle>
                 </>
             )
         }
@@ -132,9 +208,6 @@ const AdminDashboard = () => {
                     <div className="dashboard-hero-copy">
                         <span className="dashboard-eyebrow">Admin dashboard</span>
                         <h1 className="dashboard-title">Track growth, activity, and category mix at a glance.</h1>
-                        <p className="dashboard-subtitle">
-                            A cleaner view of your library health, recent traffic, and where users are spending attention.
-                        </p>
                     </div>
                 </div>
 
@@ -156,14 +229,13 @@ const AdminDashboard = () => {
                     ))}
                 </div>
 
-                <div className="dashboard-chart-grid">
-                    <section className="chart-container chart-container-wide" ref={chartContainerRef}>
+                <div className="dashboard-chart-stack">
+                    <section className="chart-container chart-container-full" ref={chartContainerRef}>
                         <div className="chart-header">
                             <div>
                                 <span className="chart-kicker">Traffic</span>
                                 <h4 className="chart-title">Website Traffic</h4>
                             </div>
-                            <span className="chart-subtitle">Last 7 days</span>
                         </div>
 
                         {chartDimensions.width > 0 && (
@@ -176,15 +248,13 @@ const AdminDashboard = () => {
                                                 <stop offset="95%" stopColor="var(--primary-color)" stopOpacity={0} />
                                             </linearGradient>
                                         </defs>
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#dbe4f0" />
-                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#75839a' }} dy={10} />
-                                        <YAxis axisLine={false} tickLine={false} tick={{ fill: '#75839a' }} />
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridColor} />
+                                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: tickColor }} dy={10} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{ fill: tickColor }} />
                                         <Tooltip
-                                            contentStyle={{
-                                                borderRadius: '12px',
-                                                border: '1px solid rgba(148, 163, 184, 0.18)',
-                                                boxShadow: '0 12px 30px rgba(15,23,42,0.12)'
-                                            }}
+                                            contentStyle={tooltipStyle}
+                                            itemStyle={tooltipItemStyle}
+                                            labelStyle={tooltipLabelStyle}
                                         />
                                         <Area
                                             type="monotone"
@@ -200,42 +270,19 @@ const AdminDashboard = () => {
                         )}
                     </section>
 
-                    <section className="chart-container chart-container-side">
+                    {/* Segmented distribution bars */}
+                    <section className="chart-container segmented-bars-section">
                         <div className="chart-header">
                             <div>
                                 <span className="chart-kicker">Distribution</span>
-                                <h4 className="chart-title">Books per Category</h4>
+                                <h4 className="chart-title">Content Breakdown</h4>
                             </div>
                         </div>
-
-                        {chartDimensions.width > 0 && (
-                            <div className="chart-canvas pie-chart-canvas">
-                                <ResponsiveContainer width="100%" height={380}>
-                                    <PieChart>
-                                        <Pie
-                                            data={stats.genreData}
-                                            innerRadius={isMobile ? 46 : 88}
-                                            outerRadius={isMobile ? 76 : 126}
-                                            paddingAngle={4}
-                                            dataKey="value"
-                                            cx="50%"
-                                            cy="45%"
-                                        >
-                                            {stats.genreData.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                            ))}
-                                        </Pie>
-                                        <Tooltip />
-                                        <Legend
-                                            verticalAlign="bottom"
-                                            align="center"
-                                            layout="horizontal"
-                                            iconType="circle"
-                                        />
-                                    </PieChart>
-                                </ResponsiveContainer>
-                            </div>
-                        )}
+                        <div className="segmented-bars-wrapper">
+                            {renderSegmentedBar(stats.genreData, 'Books')}
+                            {renderSegmentedBar(stats.questionsData, 'Questions')}
+                            {renderSegmentedBar(stats.programmingData, 'Solutions')}
+                        </div>
                     </section>
                 </div>
             </div>

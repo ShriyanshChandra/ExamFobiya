@@ -33,6 +33,33 @@
   --input-bg: rgba(255, 255, 255, 0.1);
   --input-text: #333;
   --font-family: 'Nunito', sans-serif;
+
+  /* Dashboard tokens */
+  --dashboard-wrapper-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(248, 250, 252, 0.56));
+  --dashboard-wrapper-border: rgba(255, 255, 255, 0.24);
+  --dashboard-eyebrow-color: #28437b;
+  --dashboard-title-color: #1a2745;
+  --dashboard-subtitle-color: #5b6474;
+  --stats-card-bg: rgba(255, 255, 255, 0.72);
+  --stats-card-border: rgba(255, 255, 255, 0.34);
+  --stats-card-shadow: 0 18px 30px rgba(15, 23, 42, 0.08);
+  --stats-card-hover-shadow: 0 24px 40px rgba(15, 23, 42, 0.12);
+  --stats-label-color: #728098;
+  --stats-value-color: #17243f;
+  --chart-grid-color: #dbe4f0;
+  --chart-tick-color: #75839a;
+  --tooltip-bg: #ffffff;
+  --tooltip-border: rgba(148, 163, 184, 0.18);
+  --tooltip-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+  --tooltip-text: #333;
+  --icon-blue-bg: #e5efff;
+  --icon-blue-color: #3159b8;
+  --icon-green-bg: #e4f8f0;
+  --icon-green-color: #1fa97a;
+  --icon-orange-bg: #fff3e4;
+  --icon-orange-color: #ee7c4f;
+  --icon-purple-bg: #f1ebff;
+  --icon-purple-color: #7a5af8;
 }
 
 /* ─── Dark Theme ─── */
@@ -54,6 +81,33 @@
   --input-bg: rgba(255, 255, 255, 0.05);
   --input-text: #e0e0e0;
   --font-family: 'Nunito', sans-serif;
+
+  /* Dashboard tokens */
+  --dashboard-wrapper-bg: linear-gradient(180deg, rgba(14, 18, 28, 0.54), rgba(16, 20, 30, 0.66));
+  --dashboard-wrapper-border: rgba(255, 255, 255, 0.08);
+  --dashboard-eyebrow-color: #8fb0ff;
+  --dashboard-title-color: #f8fafc;
+  --dashboard-subtitle-color: #9aa7bc;
+  --stats-card-bg: rgba(20, 26, 39, 0.8);
+  --stats-card-border: rgba(255, 255, 255, 0.08);
+  --stats-card-shadow: 0 18px 30px rgba(0, 0, 0, 0.34);
+  --stats-card-hover-shadow: 0 24px 40px rgba(0, 0, 0, 0.42);
+  --stats-label-color: #9aa7bc;
+  --stats-value-color: #ffffff;
+  --chart-grid-color: rgba(255, 255, 255, 0.08);
+  --chart-tick-color: #9aa7bc;
+  --tooltip-bg: #1e2533;
+  --tooltip-border: rgba(255, 255, 255, 0.1);
+  --tooltip-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  --tooltip-text: #e0e0e0;
+  --icon-blue-bg: rgba(49, 89, 184, 0.22);
+  --icon-blue-color: #8fb0ff;
+  --icon-green-bg: rgba(31, 169, 122, 0.2);
+  --icon-green-color: #8ce6bf;
+  --icon-orange-bg: rgba(238, 124, 79, 0.18);
+  --icon-orange-color: #ffc09b;
+  --icon-purple-bg: rgba(122, 90, 248, 0.2);
+  --icon-purple-color: #c9b9ff;
 }
 
 /* ─── Vintage Theme ─── */

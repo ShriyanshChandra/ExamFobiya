@@ -413,14 +413,17 @@ app.post('/api/reset-password', async (req, res) => {
 app.get('/api/admin/analytics', async (req, res) => {
     try {
         const database = getFirestore();
-        const [booksSnapshot, usersSnapshot, statsSnapshot] = await Promise.all([
+        const [booksSnapshot, usersSnapshot, statsSnapshot, questionPdfsSnapshot] = await Promise.all([
             database.collection('books').get(),
             database.collection('users').get(),
-            database.collection('stats').doc('general').get()
+            database.collection('stats').doc('general').get(),
+            database.collectionGroup('questionPdfs').get()
         ]);
 
         const genreCounts = {};
         let newBooksCount = 0;
+        let totalProgrammingSolutions = 0;
+        const programmingByGenre = {};
 
         booksSnapshot.forEach((bookDoc) => {
             const data = bookDoc.data();
@@ -431,6 +434,23 @@ app.get('/api/admin/analytics', async (req, res) => {
 
             const genre = data.genre || data.category || 'Uncategorized';
             genreCounts[genre] = (genreCounts[genre] || 0) + 1;
+
+            // Count programming solutions
+            const solCount = Array.isArray(data.programmingSolutions)
+                ? data.programmingSolutions.length
+                : (data.hasProgrammingSolution ? 1 : 0);
+            totalProgrammingSolutions += solCount;
+            if (solCount > 0) {
+                programmingByGenre[genre] = (programmingByGenre[genre] || 0) + solCount;
+            }
+        });
+
+        // Count questions by course
+        const questionsByCourse = {};
+        questionPdfsSnapshot.forEach((qDoc) => {
+            const data = qDoc.data();
+            const course = data.course || 'Other';
+            questionsByCourse[course] = (questionsByCourse[course] || 0) + 1;
         });
 
         let newUsersCount = 0;
@@ -471,6 +491,8 @@ app.get('/api/admin/analytics', async (req, res) => {
         const totalUsers = usersSnapshot.size;
         const previousUsers = totalUsers - newUsersCount;
         const genreData = Object.entries(genreCounts).map(([name, value]) => ({ name, value }));
+        const questionsData = Object.entries(questionsByCourse).map(([name, value]) => ({ name, value }));
+        const programmingData = Object.entries(programmingByGenre).map(([name, value]) => ({ name, value }));
 
         res.status(200).json({
             totalBooks: booksSnapshot.size,
@@ -482,7 +504,11 @@ app.get('/api/admin/analytics', async (req, res) => {
             totalVisits: statsSnapshot.exists ? statsSnapshot.data().visit_count || 0 : 0,
             visitGrowthPercentage: calculateGrowth(currentWeekVisits, previousWeekVisits).toFixed(1),
             genreData,
-            trafficData
+            trafficData,
+            totalQuestions: questionPdfsSnapshot.size,
+            questionsData,
+            totalProgrammingSolutions,
+            programmingData
         });
     } catch (error) {
         console.error('Error fetching admin analytics:', error);
