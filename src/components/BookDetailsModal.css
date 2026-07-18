@@ -222,6 +222,40 @@
     overflow-wrap: anywhere;
 }
 
+.syllabus-topic-page-list {
+    display: grid;
+    gap: 0.15rem;
+    font-size: 0.85rem;
+    line-height: 1.3;
+}
+
+.syllabus-topic-page-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.2rem;
+}
+
+.syllabus-topic-text {
+    flex: 0 1 auto;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.syllabus-topic-page-leader {
+    flex: 1 1 1rem;
+    min-width: 1rem;
+    border-bottom: 2px dotted #555;
+    transform: translateY(-0.22rem);
+}
+
+.syllabus-topic-page-number {
+    flex: 0 0 2.5rem;
+    color: #555;
+    font-weight: 700;
+    text-align: right;
+    white-space: nowrap;
+}
+
 .rich-text-content * {
     text-align: left !important;
     font-size: 0.85rem !important;
@@ -385,6 +419,14 @@ body.dark-mode .topics-list-container,
 body.dark-mode .topics-list-container li,
 body.dark-mode .rich-text-content {
     color: #e5e7eb;
+}
+
+[data-theme='dark'] .syllabus-topic-page-leader,
+[data-theme='dark'] .syllabus-topic-page-number,
+body.dark-mode .syllabus-topic-page-leader,
+body.dark-mode .syllabus-topic-page-number {
+    color: #cbd5e1;
+    border-bottom-color: #cbd5e1;
 }
 
 /* Force dark mode colors on rich text children */

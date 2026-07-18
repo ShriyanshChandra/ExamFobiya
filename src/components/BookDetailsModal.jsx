@@ -50,7 +50,7 @@ const BookDetailsModal = ({ book, onClose }) => {
                         <h2 className="topics-heading">Topics Covered</h2>
                         <div className="topics-list-container">
                             <div className="topics-content">
-                                {renderTopics(book.contents)}
+                                {renderTopics(book.contents, book.syllabusPageNumbers)}
                             </div>
                         </div>
                     </div>
@@ -62,11 +62,33 @@ const BookDetailsModal = ({ book, onClose }) => {
 };
 
 // Helper to render topics (supports both legacy text and new HTML)
-const renderTopics = (contents) => {
+const hasVisiblePageNumbers = (pageNumbers) => (
+    Array.isArray(pageNumbers) && pageNumbers.some(pageNumber => String(pageNumber || '').trim())
+);
+
+const renderTopicRowsWithPages = (topics, pageNumbers) => (
+    <div className="syllabus-topic-page-list">
+        {topics.map((topic, index) => (
+            <div className="syllabus-topic-page-row" key={`${index}-${topic}`}>
+                <span className="syllabus-topic-text">{topic || ' '}</span>
+                <span className="syllabus-topic-page-leader" aria-hidden="true"></span>
+                <span className="syllabus-topic-page-number">
+                    {pageNumbers[index] ?? ''}
+                </span>
+            </div>
+        ))}
+    </div>
+);
+
+const renderTopics = (contents, pageNumbers = []) => {
     if (!contents) return <p>No specific topics listed.</p>;
 
     // Check if contents are array (legacy data support)
     if (Array.isArray(contents)) {
+        if (hasVisiblePageNumbers(pageNumbers)) {
+            return renderTopicRowsWithPages(contents, pageNumbers);
+        }
+
         return <ul>{contents.map((t, i) => <li key={i}>{t}</li>)}</ul>;
     }
 
@@ -83,6 +105,10 @@ const renderTopics = (contents) => {
     }
 
     // Fallback for plain text: preserve textarea line breaks exactly.
+    if (hasVisiblePageNumbers(pageNumbers)) {
+        return renderTopicRowsWithPages(String(contents).split('\n'), pageNumbers);
+    }
+
     return (
         <div className="rich-text-content syllabus-plain-text">
             {contents}

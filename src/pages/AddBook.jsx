@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useBooks } from '../context/BookContext';
 import { extractTextFromFile, formatToTopics } from '../utils/documentUtils';
@@ -40,6 +40,17 @@ const decodeHtmlForNotepad = (value) => {
         .trim();
 };
 
+const getSyllabusLineCount = (value) => String(value || '').split('\n').length;
+
+const normalizeSyllabusPageNumbers = (pageNumbers, lineCount) => {
+    const safePageNumbers = Array.isArray(pageNumbers) ? pageNumbers : [];
+
+    return Array.from({ length: lineCount }, (_, index) => {
+        const pageNumber = safePageNumbers[index];
+        return pageNumber === undefined || pageNumber === null ? '' : String(pageNumber);
+    });
+};
+
 const AddBook = () => {
     const { addBook, updateBook, books, loading: booksLoading } = useBooks();
     const navigate = useNavigate();
@@ -54,8 +65,11 @@ const AddBook = () => {
     const [sectionOrders, setSectionOrders] = useState({});
     const [image, setImage] = useState(null);
     const [contents, setContents] = useState('');
+    const [syllabusPageNumbers, setSyllabusPageNumbers] = useState(['']);
     const [loading, setLoading] = useState(false);
     const [entryMode, setEntryMode] = useState('pdf');
+    const syllabusPageGutterRef = useRef(null);
+    const syllabusPageInputRefs = useRef([]);
 
     const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
     const [alertModal, setAlertModal] = useState(null);
@@ -69,9 +83,6 @@ const AddBook = () => {
         setAlertModal(null);
         if (closeAction) closeAction();
     };
-
-    // Load book data if editing
-
 
     // Load book data if editing
     useEffect(() => {
@@ -104,7 +115,12 @@ const AddBook = () => {
                 setSectionOrders(bookToEdit.sectionOrders || {});
 
                 setImage(bookToEdit.image);
-                setContents(decodeHtmlForNotepad(bookToEdit.contents));
+                const loadedContents = decodeHtmlForNotepad(bookToEdit.contents);
+                setContents(loadedContents);
+                setSyllabusPageNumbers(normalizeSyllabusPageNumbers(
+                    bookToEdit.syllabusPageNumbers,
+                    getSyllabusLineCount(loadedContents)
+                ));
                 setEntryMode('manual'); // Default to manual to show existing contents
             } else {
                 showAlertModal({
@@ -128,7 +144,12 @@ const AddBook = () => {
                     setSemester(parsedData.semester || '');
                     setSections(parsedData.sections || []);
                     setImage(parsedData.image || null);
-                    setContents(decodeHtmlForNotepad(parsedData.contents));
+                    const loadedContents = decodeHtmlForNotepad(parsedData.contents);
+                    setContents(loadedContents);
+                    setSyllabusPageNumbers(normalizeSyllabusPageNumbers(
+                        parsedData.syllabusPageNumbers,
+                        getSyllabusLineCount(loadedContents)
+                    ));
                 } catch (error) {
                     console.error('Error loading saved form data:', error);
                 }
@@ -145,11 +166,20 @@ const AddBook = () => {
                 semester,
                 sections,
                 image,
-                contents
+                contents,
+                syllabusPageNumbers
             };
             localStorage.setItem('addBookFormData', JSON.stringify(formData));
         }
-    }, [title, category, semester, sections, image, contents, isEditMode]);
+    }, [title, category, semester, sections, image, contents, syllabusPageNumbers, isEditMode]);
+
+    useEffect(() => {
+        setSyllabusPageNumbers(prev => {
+            const next = normalizeSyllabusPageNumbers(prev, getSyllabusLineCount(contents));
+            const hasSameValues = next.length === prev.length && next.every((value, index) => value === prev[index]);
+            return hasSameValues ? prev : next;
+        });
+    }, [contents]);
 
     const [imageUrlInput, setImageUrlInput] = useState('');
 
@@ -298,6 +328,46 @@ const AddBook = () => {
         });
     };
 
+    const handleSyllabusChange = (e) => {
+        const nextContents = e.target.value;
+        setContents(nextContents);
+        setSyllabusPageNumbers(prev => normalizeSyllabusPageNumbers(prev, getSyllabusLineCount(nextContents)));
+    };
+
+    const handleSyllabusPageNumberChange = (lineIndex, value) => {
+        setSyllabusPageNumbers(prev => {
+            const next = normalizeSyllabusPageNumbers(prev, getSyllabusLineCount(contents));
+            next[lineIndex] = value;
+            return next;
+        });
+    };
+
+    const focusSyllabusPageInput = (lineIndex) => {
+        const nextInput = syllabusPageInputRefs.current[lineIndex];
+        if (!nextInput) return;
+
+        nextInput.focus();
+        nextInput.select();
+    };
+
+    const handleSyllabusPageNumberKeyDown = (e, lineIndex) => {
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            focusSyllabusPageInput(Math.min(lineIndex + 1, visibleSyllabusPageNumbers.length - 1));
+        }
+
+        if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            focusSyllabusPageInput(Math.max(lineIndex - 1, 0));
+        }
+    };
+
+    const handleSyllabusScroll = (e) => {
+        if (syllabusPageGutterRef.current) {
+            syllabusPageGutterRef.current.scrollTop = e.currentTarget.scrollTop;
+        }
+    };
+
     // Reset form to initial state
     const resetForm = () => {
         setTitle('');
@@ -308,6 +378,7 @@ const AddBook = () => {
         setImage(null);
         setImageUrlInput('');
         setContents('');
+        setSyllabusPageNumbers(['']);
         setEntryMode('pdf');
 
         // Clear localStorage
@@ -329,6 +400,10 @@ const AddBook = () => {
                 sectionOrders,
                 image: finalImage,
                 contents: contents || 'No contents available.',
+                syllabusPageNumbers: normalizeSyllabusPageNumbers(
+                    syllabusPageNumbers,
+                    getSyllabusLineCount(contents)
+                ),
                 createdAt: new Date().toISOString() // Add timestamp for stats
             };
 
@@ -430,6 +505,9 @@ const AddBook = () => {
             </div>
         );
     };
+
+    const syllabusLineCount = getSyllabusLineCount(contents);
+    const visibleSyllabusPageNumbers = normalizeSyllabusPageNumbers(syllabusPageNumbers, syllabusLineCount);
 
     return (
         <div className="add-book-container">
@@ -570,15 +648,45 @@ const AddBook = () => {
                     )}
 
                     <div className="form-group">
-                        <label>{entryMode === 'pdf' ? 'Extracted Contents:' : 'Enter Topics:'}</label>
-                        <textarea
-                            className="syllabus-notepad"
-                            value={contents}
-                            onChange={(e) => setContents(e.target.value)}
-                            onKeyDown={handleSyllabusKeyDown}
-                            placeholder={entryMode === 'pdf' ? "Topics will appear here..." : "Paste your topics here (formatting will be preserved)..."}
-                            spellCheck="true"
-                        />
+                        <div className="syllabus-editor-label-row">
+                            <label>{entryMode === 'pdf' ? 'Extracted Contents:' : 'Enter Topics:'}</label>
+                            <span>Page no.:</span>
+                        </div>
+                        <div className="syllabus-editor-shell">
+                            <textarea
+                                className="syllabus-notepad"
+                                value={contents}
+                                onChange={handleSyllabusChange}
+                                onKeyDown={handleSyllabusKeyDown}
+                                onScroll={handleSyllabusScroll}
+                                placeholder={entryMode === 'pdf' ? "Topics will appear here..." : "Paste your topics here (formatting will be preserved)..."}
+                                spellCheck="true"
+                                wrap="off"
+                            />
+                            <div
+                                className="syllabus-page-gutter"
+                                ref={syllabusPageGutterRef}
+                                aria-label="Editable syllabus page numbers"
+                            >
+                                {visibleSyllabusPageNumbers.map((pageNumber, index) => (
+                                    <div className="syllabus-page-row" key={`syllabus-page-${index}`}>
+                                        <input
+                                            type="text"
+                                            inputMode="numeric"
+                                            className="syllabus-page-input"
+                                            value={pageNumber}
+                                            ref={(element) => {
+                                                syllabusPageInputRefs.current[index] = element;
+                                            }}
+                                            onChange={(e) => handleSyllabusPageNumberChange(index, e.target.value)}
+                                            onKeyDown={(e) => handleSyllabusPageNumberKeyDown(e, index)}
+                                            placeholder="Pg"
+                                            aria-label={`Page number for syllabus line ${index + 1}`}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
 
                     <div className="form-actions">
