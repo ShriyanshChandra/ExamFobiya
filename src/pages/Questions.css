@@ -559,7 +559,7 @@
   text-decoration: underline;
 }
 
-[data-theme='dark'] .pdf-card-open-row {
+:is([data-theme='dark'], [data-theme='midnight']) .pdf-card-open-row {
   color: var(--accent-color);
 }
 
