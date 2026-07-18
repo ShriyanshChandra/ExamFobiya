@@ -157,9 +157,10 @@
 }
 
 .category-chip.active {
-  background: linear-gradient(135deg, #ffe27b, var(--accent-color));
+  background: var(--accent-color);
   color: var(--secondary-color);
-  border-color: rgba(243, 183, 0, 0.55);
+  border-color: transparent;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent-color) 40%, transparent);
 }
 
 /* ── Semester filter ────────────────────────────────────────── */

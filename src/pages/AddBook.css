@@ -17,7 +17,7 @@
 .add-book-card h2 {
     text-align: center;
     margin-bottom: 1.5rem;
-    color: #333;
+    color: var(--text-color);
 }
 
 .form-group {
@@ -47,19 +47,22 @@
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 600;
-    color: #444;
+    color: var(--text-color);
 }
 
 .form-group input[type="text"],
+.form-group input[type="number"],
 .form-group select,
 .form-group textarea,
 .custom-dropdown-trigger {
     width: 100%;
     padding: 0.625rem;
-    border: 1px solid #ddd;
+    border: 1px solid var(--glass-border);
     border-radius: 0.375rem;
     font-size: 1rem;
     box-sizing: border-box;
+    background-color: var(--input-bg);
+    color: var(--text-color);
     /* Ensure padding doesn't affect width */
 }
 
@@ -92,8 +95,8 @@
     top: 50%;
     width: 0.5rem;
     height: 0.5rem;
-    border-right: 2px solid #6c757d;
-    border-bottom: 2px solid #6c757d;
+    border-right: 2px solid var(--text-color);
+    border-bottom: 2px solid var(--text-color);
     transform: translateY(-50%) rotate(45deg);
     margin-top: -0.1875rem;
     /* Fine-tune vertical alignment */
@@ -111,22 +114,22 @@
 }
 
 .custom-dropdown-trigger.disabled {
-    background-color: #e9ecef;
+    background-color: var(--card-bg);
     /* Match browser default disabled */
     cursor: not-allowed;
     color: #6c757d;
 }
 
 .custom-dropdown-trigger:not(.disabled):hover {
-    border-color: #adb5bd;
+    border-color: var(--glass-border);
 }
 
 /* Dropdown arrow styling - chevron to match native select */
 .custom-dropdown-arrow {
     width: 0.5rem;
     height: 0.5rem;
-    border-right: 2px solid #6c757d;
-    border-bottom: 2px solid #6c757d;
+    border-right: 2px solid var(--text-color);
+    border-bottom: 2px solid var(--text-color);
     transform: rotate(45deg);
     margin-left: 0.5rem;
     flex-shrink: 0;
@@ -134,7 +137,7 @@
 }
 
 .custom-dropdown-trigger.disabled .custom-dropdown-arrow {
-    border-color: #adb5bd;
+    border-color: var(--glass-border);
 }
 
 /* Dropdown menu */
@@ -144,7 +147,7 @@
     left: 0;
     right: 0;
     background-color: var(--card-bg);
-    border: 1px solid #ddd;
+    border: 1px solid var(--glass-border);
     border-radius: 0.375rem;
     z-index: 1000;
     max-height: 15.625rem;
@@ -182,7 +185,7 @@
     aspect-ratio: 2 / 3;
     object-fit: cover;
     border-radius: 0.25rem;
-    border: 1px solid #ddd;
+    border: 1px solid var(--glass-border);
 }
 
 .image-preview-wrapper {
@@ -197,10 +200,10 @@
     width: 100%;
     max-width: 10rem;
     aspect-ratio: 2 / 3;
-    border: 1px dashed #cbd5e1;
+    border: 1px dashed var(--glass-border);
     border-radius: 0.25rem;
-    color: #64748b;
-    background: #f8fafc;
+    color: var(--text-color);
+    background: var(--input-bg);
     font-size: 0.85rem;
     text-align: center;
     padding: 0.75rem;
@@ -210,7 +213,7 @@
 .entry-mode-toggle {
     display: flex;
     gap: 0.625rem;
-    background: #f1f3f5;
+    background: var(--input-bg);
     padding: 0.3125rem;
     border-radius: 0.5rem;
 }
@@ -223,7 +226,7 @@
     border-radius: 0.375rem;
     cursor: pointer;
     font-weight: 600;
-    color: #666;
+    color: var(--text-color);
     transition: all 0.2s ease;
 }
 
@@ -259,9 +262,9 @@
 .cancel-btn {
     flex: 1;
     padding: 1rem;
-    background-color: #f8f9fa;
-    color: #333;
-    border: 1px solid #ddd;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border: 1px solid var(--glass-border);
     border-radius: 0.375rem;
     font-size: 1.1rem;
     cursor: pointer;
@@ -285,7 +288,7 @@
 
 .form-group select.order-dropdown {
     padding: 0.2rem 0.5rem;
-    border: 1px solid #ccc;
+    border: 1px solid var(--glass-border);
     border-radius: 4px;
     background-color: var(--card-bg);
     font-size: 0.9rem;
@@ -300,7 +303,7 @@
     /* Increased gap for better spacing */
     cursor: pointer;
     font-size: 1rem;
-    color: #333;
+    color: var(--text-color);
     padding: 0.125rem 0;
     /* Slight visual breathing room */
 }
@@ -319,8 +322,8 @@
 }
 
 .cancel-btn:hover {
-    background-color: #e2e6ea;
-    border-color: #ccc;
+    background-color: var(--card-bg);
+    border-color: var(--glass-border);
 }
 
 .submit-btn:hover {
@@ -340,8 +343,8 @@
     font-family: inherit;
     font-size: 1rem;
     line-height: 1.45;
-    color: #1f2937;
-    background: #fffdf7;
+    color: var(--text-color);
+    background: var(--input-bg);
     letter-spacing: 0;
     white-space: pre-wrap;
 }
@@ -359,84 +362,10 @@
 }
 
 /* Dark Mode Support */
-body.dark-mode .add-book-card {
-    background: #1f2937;
-    color: #e5e7eb;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-}
-
-body.dark-mode .add-book-card h2 {
-    color: #f3f4f6;
-}
-
-body.dark-mode .form-group label {
-    color: #d1d5db;
-}
-
-body.dark-mode .form-group input[type="text"],
-body.dark-mode .form-group input[type="number"],
-body.dark-mode .form-group select,
-body.dark-mode .form-group textarea {
-    background-color: #374151;
-    color: #f9fafb;
-    border-color: #4b5563;
-}
-
-body.dark-mode .form-group input::placeholder,
-body.dark-mode .form-group textarea::placeholder {
-    color: #9ca3af;
-}
-
-body.dark-mode .checkbox-label {
-    color: #d1d5db !important;
-}
 
 /* Custom Dropdown Dark Mode */
-body.dark-mode .custom-dropdown-trigger {
-    background-color: #374151;
-    color: #f9fafb;
-    border-color: #4b5563;
-}
-
-body.dark-mode .custom-dropdown-trigger.disabled {
-    background-color: #1f2937;
-    color: #6b7280;
-    border-color: #374151;
-}
-
-body.dark-mode .custom-dropdown-arrow {
-    border-color: #9ca3af;
-}
-
-body.dark-mode .custom-dropdown-trigger.disabled .custom-dropdown-arrow {
-    border-color: #4b5563;
-}
-
-body.dark-mode .custom-dropdown-menu {
-    background-color: #374151;
-    border-color: #4b5563;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-}
-
-body.dark-mode .custom-dropdown-menu>div {
-    color: #f9fafb;
-    border-bottom-color: #4b5563;
-}
-
-body.dark-mode .custom-dropdown-menu>div:hover {
-    background-color: #4b5563 !important;
-}
 
 /* Keep yellow background for "+ Add New Subject" in dark mode */
-body.dark-mode .custom-dropdown-menu>div:first-child {
-    background-color: #fbbf24 !important;
-    color: #1f2937 !important;
-    border-bottom-color: #f59e0b !important;
-}
-
-body.dark-mode .custom-dropdown-menu>div:first-child:hover {
-    background-color: #f59e0b !important;
-}
 
 /* Add New Subject option - Light Mode */
 .add-subject-option {
@@ -450,15 +379,6 @@ body.dark-mode .custom-dropdown-menu>div:first-child:hover {
 }
 
 /* Add New Subject option - Dark Mode */
-body.dark-mode .add-subject-option {
-    background-color: #fbbf24 !important;
-    color: #1f2937 !important;
-    border-bottom-color: #f59e0b !important;
-}
-
-body.dark-mode .add-subject-option:hover {
-    background-color: #f59e0b !important;
-}
 
 /* Regular subject options - Light Mode */
 .subject-option {
@@ -470,32 +390,9 @@ body.dark-mode .add-subject-option:hover {
 }
 
 /* Regular subject options - Dark Mode */
-body.dark-mode .subject-option {
-    color: #f9fafb;
-    border-bottom-color: #4b5563;
-}
-
-body.dark-mode .subject-option:hover {
-    background-color: #4b5563;
-}
-
-body.dark-mode .form-group textarea.syllabus-notepad {
-    color: #f9fafb;
-    background: #374151;
-}
-
-body.dark-mode .programming-solution-toggle-group {
-    background: rgba(45, 212, 191, 0.1);
-    border-color: rgba(45, 212, 191, 0.24);
-}
-
-body.dark-mode .img-preview-placeholder {
-    color: #cbd5e1;
-    background: #374151;
-    border-color: #64748b;
-}
 
 @media (max-width: 48rem) {
+
     .form-row,
     .form-row-two,
     .cover-form-row {

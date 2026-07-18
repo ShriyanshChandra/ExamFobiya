@@ -90,7 +90,7 @@ const AddBook = () => {
                 } else if (bookToEdit.section) {
                     loadedSections = [bookToEdit.section];
                 }
-                
+
                 // Normalize older 'Books' labels to 'Spotlight' labels for the UI
                 loadedSections = loadedSections.map(s => {
                     if (s === 'BCA Books') return 'BCA Spotlight';
@@ -98,7 +98,7 @@ const AddBook = () => {
                     if (s === 'PGDCA Books') return 'PGDCA Spotlight';
                     return s;
                 });
-                
+
                 // Remove duplicates just in case a book had both
                 setSections([...new Set(loadedSections)]);
                 setSectionOrders(bookToEdit.sectionOrders || {});
@@ -216,7 +216,7 @@ const AddBook = () => {
                 return prev.filter(s => s !== value);
             }
         });
-        
+
         setSectionOrders(prev => {
             if (checked) {
                 let relevantBooks = [];
@@ -231,7 +231,7 @@ const AddBook = () => {
                 }
                 const currentBookInList = isEditMode ? relevantBooks.some(b => b.id.toString() === id) : false;
                 const maxAllowedOrder = Math.max(1, currentBookInList ? relevantBooks.length : relevantBooks.length + 1);
-                
+
                 // Find first available spot
                 let assigned = 1;
                 for (let i = 1; i <= maxAllowedOrder; i++) {
@@ -363,7 +363,7 @@ const AddBook = () => {
 
     const renderSectionCheckbox = (value, label, disabled = false) => {
         const isChecked = sections.includes(value);
-        
+
         let relevantBooks = [];
         if (value === 'Best Seller' || value === 'New Arrivals' || value === 'General Books') {
             relevantBooks = books;
@@ -381,13 +381,13 @@ const AddBook = () => {
 
         const handleOrderChange = (e) => {
             const newOrder = Number(e.target.value);
-            
-            const isTaken = books.some(b => 
-                b.id.toString() !== id && 
-                b.sections?.includes(value) && 
+
+            const isTaken = books.some(b =>
+                b.id.toString() !== id &&
+                b.sections?.includes(value) &&
                 b.sectionOrders?.[value] === newOrder
             );
-            
+
             if (isTaken) {
                 showAlertModal({
                     title: 'Position Taken',
@@ -396,7 +396,7 @@ const AddBook = () => {
                 });
                 return;
             }
-            
+
             setSectionOrders(prev => ({ ...prev, [value]: newOrder }));
         };
 
@@ -415,9 +415,9 @@ const AddBook = () => {
                 {isChecked && !disabled && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <span style={{ fontSize: '0.9rem', color: 'var(--text-color, #555)', fontWeight: 'normal' }}>Order:</span>
-                        <select 
-                            className="order-dropdown" 
-                            value={sectionOrders[value] || ''} 
+                        <select
+                            className="order-dropdown"
+                            value={sectionOrders[value] || ''}
                             onChange={handleOrderChange}
                         >
                             <option value="" disabled>Category Order</option>

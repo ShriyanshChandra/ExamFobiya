@@ -1047,7 +1047,7 @@
 .solution-form-field>span {
     display: block;
     margin-bottom: 0.45rem;
-    color: #334155;
+    color: var(--text-color);
     font-weight: 700;
 }
 
@@ -1060,10 +1060,10 @@
 .solution-form-field textarea {
     width: 100%;
     padding: 0.68rem 0.82rem;
-    border: 1px solid #d9dee7;
+    border: 1px solid var(--glass-border);
     border-radius: 0.5rem;
-    background-color: var(--card-bg);
-    color: #172033;
+    background-color: var(--input-bg);
+    color: var(--text-color);
     font-size: 1rem;
     box-sizing: border-box;
 }
@@ -1079,7 +1079,7 @@
     max-height: 34rem;
     border: 1px solid #cbd5e1;
     border-radius: 0.5rem;
-    background: #f8fafc;
+    background: var(--input-bg);
     overflow: hidden;
     --solution-editor-line-height: 1.65rem;
     --solution-editor-font-size: 1.08rem;
@@ -1165,9 +1165,9 @@
 }
 
 .solution-cancel-btn {
-    background: #f8fafc;
-    color: #172033;
-    border: 1px solid #d9dee7;
+    background: var(--input-bg);
+    color: var(--text-color);
+    border: 1px solid var(--glass-border);
 }
 
 .solution-submit-btn {

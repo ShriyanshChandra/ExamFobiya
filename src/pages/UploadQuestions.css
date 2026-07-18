@@ -24,7 +24,7 @@
 
 .uq-subtitle {
     text-align: center;
-    color: #666;
+    color: var(--text-color);
     font-size: 0.95rem;
     margin-bottom: 2rem;
     line-height: 1.5;
@@ -32,7 +32,7 @@
 
 .uq-hint {
     font-size: 0.82rem;
-    color: #888;
+    color: var(--text-color);
     margin-top: 0.3125rem;
     margin-bottom: 0;
 }
@@ -50,7 +50,7 @@
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 600;
-    color: #444;
+    color: var(--text-color);
     font-size: 0.95rem;
 }
 
@@ -67,8 +67,8 @@
     top: 50%;
     width: 0.5rem;
     height: 0.5rem;
-    border-right: 2px solid #6c757d;
-    border-bottom: 2px solid #6c757d;
+    border-right: 2px solid var(--text-color);
+    border-bottom: 2px solid var(--text-color);
     transform: translateY(-60%) rotate(45deg);
     pointer-events: none;
 }
@@ -76,16 +76,17 @@
 .uq-select-wrapper select {
     width: 100%;
     padding: 0.6875rem 2.25rem 0.6875rem 0.875rem;
-    border: 1px solid #ddd;
+    border: 1px solid var(--glass-border);
     border-radius: 0.5rem;
     font-size: 1rem;
     appearance: none;
     -webkit-appearance: none;
-    background-color: var(--card-bg);
+    -moz-appearance: none;
+    background-color: var(--input-bg);
     cursor: pointer;
     transition: border-color 0.2s, box-shadow 0.2s;
     box-sizing: border-box;
-    color: #333;
+    color: var(--text-color);
 }
 
 .uq-select-wrapper select:focus {
@@ -95,7 +96,7 @@
 }
 
 .uq-select-wrapper select:disabled {
-    background-color: #f5f5f5;
+    background-color: var(--input-bg);
     cursor: not-allowed;
     opacity: 0.6;
 }
@@ -132,12 +133,14 @@
     grid-row: 1;
     grid-column: 2;
     padding: 0.5625rem 0.75rem;
-    border: 1px solid #ddd;
+    border: 1px solid var(--glass-border);
     border-radius: 0.5rem;
     font-size: 0.88rem;
     box-sizing: border-box;
     transition: border-color 0.2s;
     min-width: 0;
+    background-color: var(--input-bg);
+    color: var(--text-color);
 }
 
 /* Month select: row 1, col 3 */
@@ -146,19 +149,21 @@
     grid-column: 3;
     width: 8.5rem;
     padding: 0.5625rem 0.625rem;
-    border: 1px solid #ddd;
+    border: 1px solid var(--glass-border);
     border-radius: 0.5rem;
     font-size: 0.88rem;
     appearance: none;
     -webkit-appearance: none;
-    background-color: var(--card-bg);
-    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath fill='%236c757d' d='M0 2.5l5 5 5-5z'/%3E%3C/svg%3E");
+    -moz-appearance: none;
+    background-color: var(--input-bg);
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236c757d%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
     background-repeat: no-repeat;
-    background-position: right 0.625rem center;
+    background-position: right 0.7rem top 50%;
+    background-size: 0.65rem auto;
     cursor: pointer;
     transition: border-color 0.2s;
     box-sizing: border-box;
-    color: #333;
+    color: var(--text-color);
 }
 
 /* Year select: row 1, col 4 */
@@ -167,19 +172,21 @@
     grid-column: 4;
     width: 7rem;
     padding: 0.5625rem 0.625rem;
-    border: 1px solid #ddd;
+    border: 1px solid var(--glass-border);
     border-radius: 0.5rem;
     font-size: 0.88rem;
     appearance: none;
     -webkit-appearance: none;
-    background-color: var(--card-bg);
-    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath fill='%236c757d' d='M0 2.5l5 5 5-5z'/%3E%3C/svg%3E");
+    -moz-appearance: none;
+    background-color: var(--input-bg);
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236c757d%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
     background-repeat: no-repeat;
-    background-position: right 0.625rem center;
+    background-position: right 0.7rem top 50%;
+    background-size: 0.65rem auto;
     cursor: pointer;
     transition: border-color 0.2s;
     box-sizing: border-box;
-    color: #333;
+    color: var(--text-color);
 }
 
 /* Remove button: row 1, col 5 */
@@ -206,13 +213,15 @@
     grid-row: 2;
     grid-column: 2 / -1;
     padding: 0.5625rem 0.75rem;
-    border: 1px solid #ddd;
+    border: 1px solid var(--glass-border);
     border-radius: 0.5rem;
     font-size: 0.88rem;
     box-sizing: border-box;
     transition: border-color 0.2s;
     min-width: 0;
     width: 100%;
+    background-color: var(--input-bg);
+    color: var(--text-color);
 }
 
 .uq-month-select:focus,
@@ -231,7 +240,7 @@
 
 .uq-label-input::placeholder,
 .uq-url-input::placeholder {
-    color: #bbb;
+    color: var(--text-color);
     font-size: 0.84rem;
 }
 
@@ -300,9 +309,9 @@
 .uq-cancel-btn {
     flex: 1;
     padding: 0.95rem;
-    background-color: #f8f9fa;
-    color: #333;
-    border: 1px solid #ddd;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border: 1px solid var(--glass-border);
     border-radius: 0.5rem;
     font-size: 1.05rem;
     font-weight: bold;
@@ -311,60 +320,10 @@
 }
 
 .uq-cancel-btn:hover {
-    background-color: #e2e6ea;
+    background-color: var(--card-bg);
 }
 
 /* ===== DARK MODE ===== */
-body.dark-mode .uq-card {
-    background: #1f2937;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
-}
-
-body.dark-mode .uq-card h2 {
-    color: #f3f4f6;
-}
-
-body.dark-mode .uq-subtitle,
-body.dark-mode .uq-hint {
-    color: #9ca3af;
-}
-
-body.dark-mode .uq-form-group > label {
-    color: #d1d5db;
-}
-
-body.dark-mode .uq-select-wrapper select,
-body.dark-mode .uq-label-input,
-body.dark-mode .uq-url-input,
-body.dark-mode .uq-month-select,
-body.dark-mode .uq-year-select {
-    background-color: #374151;
-    color: #f9fafb;
-    border-color: #4b5563;
-}
-
-body.dark-mode .uq-select-wrapper select:disabled {
-    background-color: #2d3748;
-}
-
-body.dark-mode .uq-remove-btn {
-    background: #3b2222;
-    color: #f87171;
-}
-
-body.dark-mode .uq-remove-btn:hover:not(:disabled) {
-    background: #4b2626;
-}
-
-body.dark-mode .uq-cancel-btn {
-    background-color: #374151;
-    color: #e5e7eb;
-    border-color: #4b5563;
-}
-
-body.dark-mode .uq-cancel-btn:hover {
-    background-color: #4b5563;
-}
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 37.5rem) {

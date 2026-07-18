@@ -11,6 +11,7 @@ const Questions = () => {
   const [results, setResults] = useState([]);
   const [searched, setSearched] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [viewingPdf, setViewingPdf] = useState(null);
 
   const [filters, setFilters] = useState({
     course: "",
@@ -25,6 +26,24 @@ const Questions = () => {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const formatQuestionDate = (pdf) => [pdf.month, pdf.year].filter(Boolean).join(' ');
+
+  const getEmbedUrl = (url) => {
+    if (!url) return "";
+    if (url.includes("drive.google.com")) {
+      return url.replace(/\/view.*$/, "/preview");
+    }
+    return url;
+  };
+
+  const getDownloadUrl = (url) => {
+    if (!url) return "";
+    // Extract file ID from typical Drive URLs (file/d/ID or open?id=ID)
+    const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+    if (match && match[1]) {
+      return `https://drive.google.com/uc?export=download&id=${match[1]}`;
+    }
+    return url;
+  };
 
   useSEO({
     title: 'Previous Year Questions',
@@ -73,6 +92,23 @@ const Questions = () => {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.state, questionPdfs]);
+
+  // Lock background scrolling when the PDF viewer is open
+  React.useEffect(() => {
+    if (viewingPdf) {
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, [viewingPdf]);
 
   const handleSearch = () => {
     const hasActiveFilters = Object.values(filters).some(Boolean);
@@ -276,14 +312,26 @@ const Questions = () => {
                       </button>
                       </>
                     )}
-                    <a
-                      href={pdf.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="pdf-card-open-row"
-                    >
-                      Open PDF
-                    </a>
+                    <div className="pdf-user-actions">
+                      <button
+                        type="button"
+                        className="pdf-action-btn pdf-view-btn"
+                        onClick={(e) => { e.stopPropagation(); setViewingPdf(pdf); }}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        View
+                      </button>
+                      <a
+                        href={getDownloadUrl(pdf.url)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="pdf-action-btn pdf-download-btn"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        Download
+                      </a>
+                    </div>
                   </div>
 
                 </div>
@@ -309,6 +357,23 @@ const Questions = () => {
         confirmLabel={deleting ? "Deleting..." : "Yes, Delete"}
         variant="danger"
       />
+
+      {viewingPdf && (
+        <div className="pdf-viewer-modal-overlay" onClick={() => setViewingPdf(null)}>
+          <div className="pdf-viewer-modal-content" onClick={e => e.stopPropagation()}>
+            <div className="pdf-viewer-header">
+              <h3>PDF Preview</h3>
+              <button className="pdf-viewer-close-btn" onClick={() => setViewingPdf(null)}>&times;</button>
+            </div>
+            <iframe 
+              src={getEmbedUrl(viewingPdf.url)} 
+              title="PDF Viewer"
+              className="pdf-iframe"
+              allow="autoplay"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
