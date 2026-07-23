@@ -6,15 +6,7 @@
  *  All theme color tokens live here.
  *  To add a new theme:
  *    1. Copy any [data-theme='...'] block below.
- *    2. Change the selector to your new theme name.
- *    3. Adjust the variable values.
- *    4. Register the theme name in ThemeContext.jsx
- *       and Navbar.jsx (theme menu).
- *
- * ═══════════════════════════════════════════════════
- */
-
-/* ─── Light Theme (Default) ─── */
+ *    2. Change the selector to your new t/* ─── Light Theme (Default) ─── */
 :root {
   --primary-color: #2575fc;
   --secondary-color: #1e40af;
@@ -22,8 +14,8 @@
   --background-color: #f4f7f6;
   --text-color: #000000;
   --white: #ffffff;
-  --glass-bg: rgba(255, 255, 255, 0.1);
-  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-bg: rgba(255, 255, 255, 0.68);
+  --glass-border: rgba(255, 255, 255, 0.4);
   --border-adaptive: rgba(0, 0, 0, 0.2);
   --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.1);
   --shadow-md: 0 8px 15px rgba(0, 0, 0, 0.1);
@@ -70,7 +62,7 @@
   --background-color: #121212;
   --text-color: #e0e0e0;
   --white: #1e1e1e;
-  --glass-bg: rgba(0, 0, 0, 0.3);
+  --glass-bg: rgba(20, 26, 39, 0.88);
   --glass-border: rgba(255, 255, 255, 0.1);
   --border-adaptive: rgba(255, 255, 255, 0.2);
   --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.3);
@@ -118,7 +110,7 @@
   --background-color: #f4ebd8;
   --text-color: #4e342e;
   --white: #e8dcc8;
-  --glass-bg: rgba(141, 110, 99, 0.1);
+  --glass-bg: rgba(232, 220, 200, 0.88);
   --glass-border: rgba(141, 110, 99, 0.2);
   --border-adaptive: rgba(78, 52, 46, 0.2);
   --shadow-sm: 0 4px 6px rgba(78, 52, 46, 0.1);
@@ -139,7 +131,7 @@
   --background-color: #e7f5ff;
   --text-color: #134e4a;
   --white: #f0fdfa;
-  --glass-bg: rgba(8, 145, 178, 0.08);
+  --glass-bg: rgba(240, 253, 250, 0.88);
   --glass-border: rgba(8, 145, 178, 0.15);
   --border-adaptive: rgba(20, 78, 74, 0.2);
   --shadow-sm: 0 4px 6px rgba(22, 78, 99, 0.1);
@@ -160,7 +152,7 @@
   --background-color: #e8f5e9;
   --text-color: #2e1d16;
   --white: #f7f3e8;
-  --glass-bg: rgba(230, 204, 178, 0.08);
+  --glass-bg: rgba(243, 234, 221, 0.88);
   --glass-border: rgba(230, 204, 178, 0.15);
   --border-adaptive: rgba(5, 150, 105, 0.2);
   --shadow-sm: 0 4px 6px rgba(5, 150, 105, 0.1);
@@ -173,7 +165,6 @@
   --font-family: 'Nunito', sans-serif;
 }
 
-
 /* ─── Midnight Theme (AMOLED Dark) ─── */
 [data-theme='midnight'] {
   --primary-color: #818cf8;
@@ -182,7 +173,7 @@
   --background-color: #000000;
   --text-color: #e2e8f0;
   --white: #0a0a14;
-  --glass-bg: rgba(129, 140, 248, 0.06);
+  --glass-bg: rgba(10, 10, 20, 0.88);
   --glass-border: rgba(129, 140, 248, 0.12);
   --border-adaptive: rgba(226, 232, 240, 0.15);
   --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.5);
@@ -195,7 +186,6 @@
   --font-family: 'Nunito', sans-serif;
 }
 
-
 /* ─── Nord Theme ─── */
 [data-theme='nord'] {
   --primary-color: #5e81ac;
@@ -204,7 +194,7 @@
   --background-color: #eceff4;
   --text-color: #2e3440;
   --white: #e5e9f0;
-  --glass-bg: rgba(94, 129, 172, 0.08);
+  --glass-bg: rgba(229, 233, 240, 0.88);
   --glass-border: rgba(94, 129, 172, 0.15);
   --border-adaptive: rgba(46, 52, 64, 0.2);
   --shadow-sm: 0 4px 6px rgba(46, 52, 64, 0.1);
