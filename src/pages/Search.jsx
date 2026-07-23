@@ -169,7 +169,7 @@ function Search({ searchQuery }) {
   if (!searchQuery) {
     return (
       <div className="search-results-page">
-        <div className="search-header-container">
+        <div className="search-header-container container">
           <h1 style={{ marginBottom: "15px" }}>Search</h1>
           <p className="search-summary-text" style={{ margin: 0 }}>Type something in the navbar to begin your search.</p>
         </div>
@@ -179,7 +179,7 @@ function Search({ searchQuery }) {
 
   return (
     <div className="search-results-page">
-      <div className="search-header-container">
+      <div className="search-header-container container">
         <h1 style={{ marginBottom: "15px", textAlign: "center" }}>Search Results</h1>
         <p className="search-summary-text" style={{ margin: 0, padding: 0, background: "transparent", backdropFilter: "none", boxShadow: "none" }}>
           Showing results for: "{searchQuery}"<br />

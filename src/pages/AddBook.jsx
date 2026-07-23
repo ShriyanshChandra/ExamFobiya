@@ -566,7 +566,7 @@ const AddBook = () => {
 
     return (
         <div className="add-book-container">
-            <div className="add-book-card">
+            <div className="add-book-card container">
                 <h2>{isEditMode ? 'Edit Book' : 'Add New Book'}</h2>
                 <form onSubmit={handleSubmit}>
                     <div className="form-row form-row-two">

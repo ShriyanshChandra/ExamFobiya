@@ -104,7 +104,7 @@ const UploadQuestions = () => {
 
     return (
         <div className="uq-container">
-            <div className="uq-card">
+            <div className="uq-card container">
                 <h2>Upload Question PDFs</h2>
                 <p className="uq-subtitle">
                     Select the course and subject, then paste the Google Drive sharing links.

@@ -351,7 +351,7 @@ const ProgrammingSolutions = () => {
   // ── List / search view (/programming-solutions) ───────────────────────────
   return (
     <div className="questions-container">
-      <div className="questions-content">
+      <div className="questions-content container">
         <h2>Programming Solutions</h2>
 
 

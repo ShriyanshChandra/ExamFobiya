@@ -60,7 +60,7 @@ const Home = () => {
       </section>
 
       <section className="home-intro-strip">
-        <div className="intro-card">
+        <div className="intro-card container">
           <div className="section-icon-bg">
             <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
           </div>
@@ -71,7 +71,7 @@ const Home = () => {
             </p>
           </div>
         </div>
-        <div className="intro-card">
+        <div className="intro-card container">
           <div className="section-icon-bg">
             <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
           </div>
@@ -87,7 +87,7 @@ const Home = () => {
       <NewArrivals limit={3} />
       <BestSeller limit={3} />
 
-      <section className="course-browse-strip">
+      <section className="course-browse-strip container">
         <div className="course-browse-header">
           <div>
             <span className="section-kicker">Browse by course</span>

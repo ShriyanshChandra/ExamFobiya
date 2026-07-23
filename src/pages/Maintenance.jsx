@@ -9,7 +9,7 @@ const Maintenance = () => {
     }, []);
     return (
         <div className="maintenance-container">
-            <div className="maintenance-card">
+            <div className="maintenance-card container">
                 <div className="maintenance-animation">
                     {/* Replace the src path below with your downloaded .lottie URL */}
                     <DotLottieReact

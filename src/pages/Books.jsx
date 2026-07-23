@@ -106,7 +106,7 @@ function Books() {
 
   return (
     <div className="books-page">
-      <div className="books-content">
+      <div className="books-content container">
         {loading && <Loader text="Loading library..." size={150} />}
 
         <div className="books-hero">

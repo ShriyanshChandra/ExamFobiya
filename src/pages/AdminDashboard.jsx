@@ -176,7 +176,7 @@ const AdminDashboard = () => {
 
     return (
         <div className="admin-dashboard-container">
-            <div className="dashboard-content-wrapper">
+            <div className="dashboard-content-wrapper container">
                 <div className="dashboard-hero">
                     <div className="dashboard-hero-copy">
                         <span className="dashboard-eyebrow">Admin dashboard</span>

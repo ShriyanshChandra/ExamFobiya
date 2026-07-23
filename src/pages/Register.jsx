@@ -155,7 +155,7 @@ const Register = () => {
         <div className="register-container">
             {error && <div className="register-error-message">{error}</div>}
 
-            <div className="register-card">
+            <div className="register-card container">
                 <h2>{step === 'form' ? 'Create Account' : 'Verify Email'}</h2>
 
                 {step === 'form' ? (

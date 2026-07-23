@@ -172,7 +172,7 @@ const Questions = () => {
 
   return (
     <div className="questions-container">
-      <div className="questions-content">
+      <div className="questions-content container">
         <h2>Previous Year Questions</h2>
 
 

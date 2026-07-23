@@ -167,7 +167,7 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true, checkAccountExist
     };
 
     return (
-        <div className="login-card">
+        <div className="login-card container">
             <h2>{step === 'login' ? title : "Forgot Password"}</h2>
             
             {localError && <div className="register-error-message" style={{color: 'red', marginBottom: '10px'}}>{localError}</div>}
