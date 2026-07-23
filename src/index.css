@@ -37,23 +37,58 @@ code {
   display: inline-block;
 }
 
+/* ═══════════════════════════════════════════════════
+ *  THEMED OPAQUE CONTAINER SYSTEM
+ * ═══════════════════════════════════════════════════ */
+
+/* Default Light Theme */
 .container {
-  background: rgba(255, 255, 255, 0.18) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.25) !important;
-  border-radius: 15px !important;
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15) !important;
-  isolation: isolate;
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-  will-change: backdrop-filter;
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 1.25rem !important;
+  box-shadow: 0 16px 36px -10px rgba(37, 117, 252, 0.09), 0 4px 12px rgba(15, 23, 42, 0.03) !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
+/* Dark Theme */
 [data-theme='dark'] .container,
-[data-theme='midnight'] .container,
 body.dark-mode .container {
-  background: rgba(15, 23, 42, 0.45) !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37) !important;
+  background: #1e293b !important;
+  border: 1px solid #334155 !important;
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Midnight Theme */
+[data-theme='midnight'] .container {
+  background: #0f0f1a !important;
+  border: 1px solid #1e1e36 !important;
+  box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.75), 0 0 24px rgba(129, 140, 248, 0.08) !important;
+}
+
+/* Vintage Theme */
+[data-theme='vintage'] .container {
+  background: #e8dcc8 !important;
+  border: 1px solid #bcaaa4 !important;
+  box-shadow: 0 16px 36px -10px rgba(62, 39, 35, 0.12) !important;
+}
+
+/* Ocean Theme */
+[data-theme='ocean'] .container {
+  background: #f0fdfa !important;
+  border: 1px solid #bfe7f6 !important;
+  box-shadow: 0 16px 36px -10px rgba(8, 145, 178, 0.1) !important;
+}
+
+/* Forest Theme */
+[data-theme='forest'] .container {
+  background: #f3eadd !important;
+  border: 1px solid #d7ccc8 !important;
+  box-shadow: 0 16px 36px -10px rgba(5, 150, 105, 0.1) !important;
+}
+
+/* Nord Theme */
+[data-theme='nord'] .container {
+  background: #e5e9f0 !important;
+  border: 1px solid #d8dee9 !important;
+  box-shadow: 0 16px 36px -10px rgba(46, 52, 64, 0.1) !important;
 }

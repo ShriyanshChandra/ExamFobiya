@@ -303,16 +303,11 @@
 .best-sellers,
 .book-category-section,
 .explore-section {
-  background: rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px); /* Safari */
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 15px;
-  box-shadow: 0 20px 40px color-mix(in srgb, var(--secondary-color) 10%, transparent);
-  isolation: isolate;
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-  will-change: backdrop-filter;
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-adaptive, #e2e8f0);
+  border-radius: 1.25rem;
+  box-shadow: 0 16px 36px -10px color-mix(in srgb, var(--secondary-color) 12%, transparent);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease, border-color 0.3s ease;
 }
 
 [data-theme='dark'] .intro-card,
@@ -320,15 +315,61 @@
 [data-theme='dark'] .new-arrivals,
 [data-theme='dark'] .best-sellers,
 [data-theme='dark'] .book-category-section,
-[data-theme='dark'] .explore-section,
+[data-theme='dark'] .explore-section {
+  background: #1e293b;
+  border: 1px solid #334155;
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.5);
+}
+
 [data-theme='midnight'] .intro-card,
 [data-theme='midnight'] .course-browse-strip,
 [data-theme='midnight'] .new-arrivals,
 [data-theme='midnight'] .best-sellers,
 [data-theme='midnight'] .book-category-section,
 [data-theme='midnight'] .explore-section {
-  background: rgba(15, 23, 42, 0.45);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: #0f0f1a;
+  border: 1px solid #1e1e36;
+  box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.75);
+}
+
+[data-theme='vintage'] .intro-card,
+[data-theme='vintage'] .course-browse-strip,
+[data-theme='vintage'] .new-arrivals,
+[data-theme='vintage'] .best-sellers,
+[data-theme='vintage'] .book-category-section,
+[data-theme='vintage'] .explore-section {
+  background: #e8dcc8;
+  border: 1px solid #bcaaa4;
+}
+
+[data-theme='ocean'] .intro-card,
+[data-theme='ocean'] .course-browse-strip,
+[data-theme='ocean'] .new-arrivals,
+[data-theme='ocean'] .best-sellers,
+[data-theme='ocean'] .book-category-section,
+[data-theme='ocean'] .explore-section {
+  background: #f0fdfa;
+  border: 1px solid #bfe7f6;
+}
+
+[data-theme='forest'] .intro-card,
+[data-theme='forest'] .course-browse-strip,
+[data-theme='forest'] .new-arrivals,
+[data-theme='forest'] .best-sellers,
+[data-theme='forest'] .book-category-section,
+[data-theme='forest'] .explore-section {
+  background: #f3eadd;
+  border: 1px solid #d7ccc8;
+}
+
+[data-theme='nord'] .intro-card,
+[data-theme='nord'] .course-browse-strip,
+[data-theme='nord'] .new-arrivals,
+[data-theme='nord'] .best-sellers,
+[data-theme='nord'] .book-category-section,
+[data-theme='nord'] .explore-section {
+  background: #e5e9f0;
+  border: 1px solid #d8dee9;
 }
 
 .intro-card {
@@ -651,25 +692,18 @@
   overflow-x: auto;
   overflow-y: hidden;
   gap: var(--home-shelf-gap);
-  padding-bottom: 0.75rem;
+  padding-bottom: 0.875rem;
   scroll-snap-type: x mandatory;
   scroll-padding-inline: 0.875rem;
-  scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--primary-color) 35%, transparent) transparent;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   align-items: stretch;
 }
 
 .home-book-shelf.is-scrollable::-webkit-scrollbar {
-  height: 6px;
-}
-
-.home-book-shelf.is-scrollable::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.home-book-shelf.is-scrollable::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--primary-color) 35%, transparent);
-  border-radius: 10px;
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .home-book-shelf.is-compact .book-card {
