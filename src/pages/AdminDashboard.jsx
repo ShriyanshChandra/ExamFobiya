@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { fetchAnalyticsData } from '../services/AnalyticsService';
+import { fetchAnalyticsData, fetchApiKeysStatus, triggerApiKeyPing } from '../services/AnalyticsService';
 import { fetchRecentClientErrors, toggleErrorResolved } from '../services/ErrorLoggerService';
 import Loader from '../components/Loader';
 import ConfirmationModal from '../components/ConfirmationModal';
@@ -21,11 +21,28 @@ const AdminDashboard = () => {
     const [confirmResolveTarget, setConfirmResolveTarget] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const [apiKeysData, setApiKeysData] = useState({ lastPingFormatted: 'Never', keys: [] });
+    const [loadingApiKeys, setLoadingApiKeys] = useState(true);
+    const [pingingKeyId, setPingingKeyId] = useState(null);
+    const [pingFeedback, setPingFeedback] = useState(null);
+
+    const loadApiKeysStatus = async () => {
+        try {
+            const data = await fetchApiKeysStatus();
+            setApiKeysData(data);
+        } catch (err) {
+            console.error("Failed to load API keys status:", err);
+        } finally {
+            setLoadingApiKeys(false);
+        }
+    };
+
     useEffect(() => {
         const loadDashboardData = async () => {
             const data = await fetchAnalyticsData();
             setStats(data);
             setLoading(false);
+            loadApiKeysStatus();
 
             try {
                 const errors = await fetchRecentClientErrors(50);
@@ -39,6 +56,29 @@ const AdminDashboard = () => {
 
         loadDashboardData();
     }, []);
+
+    const handlePingKey = async (targetId) => {
+        setPingingKeyId(targetId);
+        setPingFeedback(null);
+        try {
+            await triggerApiKeyPing(targetId);
+            setPingFeedback({
+                type: 'success',
+                message: targetId === 'all' ? 'Successfully pinged all API keys.' : `Successfully pinged API key.`
+            });
+            await loadApiKeysStatus();
+        } catch (err) {
+            console.error("Failed to ping API key:", err);
+            setPingFeedback({
+                type: 'error',
+                message: err.message || 'Failed to ping API key.'
+            });
+        } finally {
+            setPingingKeyId(null);
+            setTimeout(() => setPingFeedback(null), 5000);
+        }
+    };
+
 
     const onRequestToggleResolved = (err) => {
         setConfirmResolveTarget({
@@ -231,7 +271,90 @@ const AdminDashboard = () => {
                         </div>
                     </section>
 
+                    {/* API Key Health & Status Section */}
+                    <section className="chart-container api-keys-section">
+                        <div className="chart-header api-keys-header">
+                            <div>
+                                <span className="chart-kicker api-kicker">Security & Infrastructure</span>
+                                <h4 className="chart-title">API Keys Health & Auto-Keepalive</h4>
+                            </div>
+                            <button
+                                className="ping-all-btn"
+                                disabled={pingingKeyId !== null}
+                                onClick={() => handlePingKey('all')}
+                            >
+                                {pingingKeyId === 'all' ? 'Testing All Keys...' : 'Ping All API Keys'}
+                            </button>
+                        </div>
+
+                        {pingFeedback && (
+                            <div className={`ping-feedback-banner ${pingFeedback.type}`}>
+                                {pingFeedback.message}
+                            </div>
+                        )}
+
+                        {loadingApiKeys ? (
+                            <div className="api-keys-loading">Loading API Key statuses...</div>
+                        ) : apiKeysData.keys.length === 0 ? (
+                            <div className="api-keys-empty">No API keys registered.</div>
+                        ) : (
+                            <div className="api-keys-grid">
+                                {apiKeysData.keys.map((keyItem) => {
+                                    const isPinging = pingingKeyId === keyItem.id || pingingKeyId === 'all';
+                                    const isLive = keyItem.status === 'active';
+                                    const isError = keyItem.status === 'error';
+                                    const isUnconfigured = keyItem.status === 'unconfigured';
+
+                                    return (
+                                        <div key={keyItem.id} className={`api-key-card status-${keyItem.status}`}>
+                                            <div className="api-key-card-header">
+                                                <div className="api-key-info">
+                                                    <h5 className="api-key-name">{keyItem.name}</h5>
+                                                    <span className="api-key-env">Env: {keyItem.envVar}</span>
+                                                </div>
+                                                <div className={`api-status-badge status-${keyItem.status}`}>
+                                                    <span className="status-dot"></span>
+                                                    <span className="status-label">
+                                                        {isLive ? 'Live & Active' : isError ? 'Error / Inactive' : isUnconfigured ? 'Unconfigured' : 'Untested'}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div className="api-key-details">
+                                                <div className="api-detail-row">
+                                                    <span className="detail-label">Masked Key:</span>
+                                                    <code className="detail-value key-code">{keyItem.maskedKey}</code>
+                                                </div>
+                                                <div className="api-detail-row">
+                                                    <span className="detail-label">Last Checked:</span>
+                                                    <span className="detail-value">{keyItem.lastChecked}</span>
+                                                </div>
+                                                {keyItem.lastError && (
+                                                    <div className="api-detail-row error-msg-row">
+                                                        <span className="detail-label">Last Error:</span>
+                                                        <span className="detail-value error-text">{keyItem.lastError}</span>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            <div className="api-key-actions">
+                                                <button
+                                                    className="test-ping-btn"
+                                                    disabled={isPinging || isUnconfigured}
+                                                    onClick={() => handlePingKey(keyItem.id)}
+                                                >
+                                                    {isPinging ? 'Testing...' : 'Test & Ping Key'}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </section>
+
                     {/* Error Log Section */}
+
                     <section className="chart-container error-log-section">
                         <div className="chart-header error-log-header">
                             <div>

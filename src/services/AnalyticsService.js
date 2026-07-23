@@ -32,3 +32,36 @@ export const fetchAnalyticsData = async () => {
         return DEFAULT_ANALYTICS;
     }
 };
+
+export const fetchApiKeysStatus = async () => {
+    try {
+        const response = await fetch(getApiUrl('/api/admin/api-keys-status'));
+        if (!response.ok) {
+            throw new Error('Failed to fetch API keys status.');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching API keys status:', error);
+        return {
+            lastPingAt: null,
+            lastPingFormatted: 'Never',
+            keys: []
+        };
+    }
+};
+
+export const triggerApiKeyPing = async (target = 'all') => {
+    const response = await fetch(getApiUrl('/api/admin/keepalive-ping'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ target })
+    });
+
+    if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.message || errData.error || 'Failed to ping API key.');
+    }
+
+    return await response.json();
+};
+

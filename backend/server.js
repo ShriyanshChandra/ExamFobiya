@@ -3,7 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
-const admin = require('firebase-admin');
+const { initializeApp, cert, getApps } = require('firebase-admin/app');
+const { getAuth } = require('firebase-admin/auth');
 const { getFirestore } = require('firebase-admin/firestore');
 
 // Initialize Firebase Admin SDK
@@ -23,9 +24,11 @@ try {
         throw new Error("CRITICAL: FIREBASE_SERVICE_ACCOUNT environment variable is missing.");
     }
     
-    admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
-    });
+    if (!getApps().length) {
+        initializeApp({
+            credential: cert(serviceAccount)
+        });
+    }
 } catch (error) {
     console.error("Firebase Admin Initialization Error. Server shutting down for security.", error);
     process.exit(1);
@@ -46,7 +49,8 @@ const findUserByEmail = async (email) => {
     const normalizedEmail = rawEmail.toLowerCase();
 
     try {
-        const authUser = await admin.auth().getUserByEmail(normalizedEmail);
+        const authUser = await getAuth().getUserByEmail(normalizedEmail);
+
         return { exists: true, source: 'auth', authUser };
     } catch (error) {
         if (error.code !== 'auth/user-not-found') {
@@ -372,12 +376,13 @@ app.post('/api/reset-password', async (req, res) => {
         }
 
         // Fetch user using email
-        const userRecord = await admin.auth().getUserByEmail(normalizedEmail);
+        const userRecord = await getAuth().getUserByEmail(normalizedEmail);
         
         // Update user's password
-        await admin.auth().updateUser(userRecord.uid, {
+        await getAuth().updateUser(userRecord.uid, {
             password: newPassword
         });
+
 
         // Delete valid OTP to prevent reuse
         await otpDocRef.delete();
@@ -452,11 +457,196 @@ app.get('/api/admin/analytics', async (req, res) => {
 
 
 
+// --- Automated API Keep-Alive Service ---
+const TWENTY_FIVE_DAYS_MS = 25 * 24 * 60 * 60 * 1000;
+
+const sendBrevoKeepAlivePing = async () => {
+    const apiKey = process.env.EMAIL_PASS;
+    const senderEmail = process.env.SENDER_EMAIL || process.env.EMAIL_USER;
+
+    if (!apiKey) {
+        console.warn('[Keep-Alive] Skipping Brevo ping: EMAIL_PASS environment variable not set.');
+        return { success: false, reason: 'EMAIL_PASS missing' };
+    }
+
+    const data = JSON.stringify({
+        sender: { email: senderEmail, name: 'ExamFobiya System' },
+        to: [{ email: senderEmail }],
+        subject: 'ExamFobiya API Keep-Alive Heartbeat',
+        textContent: `Automated Keep-Alive Ping triggered at ${new Date().toISOString()} to prevent Brevo API key inactivity deactivation.`
+    });
+
+    const options = {
+        hostname: 'api.brevo.com',
+        port: 443,
+        path: '/v3/smtp/email',
+        method: 'POST',
+        headers: {
+            'api-key': apiKey,
+            'Content-Type': 'application/json',
+            'Content-Length': Buffer.byteLength(data)
+        }
+    };
+
+    return new Promise((resolve) => {
+        const https = require('https');
+        const req = https.request(options, (res) => {
+            let body = '';
+            res.on('data', chunk => body += chunk);
+            res.on('end', () => {
+                if (res.statusCode >= 200 && res.statusCode < 300) {
+                    console.log('[Keep-Alive] Brevo API ping successful.');
+                    resolve({ success: true, statusCode: res.statusCode });
+                } else {
+                    console.error('[Keep-Alive] Brevo API ping error:', body);
+                    resolve({ success: false, statusCode: res.statusCode, error: body });
+                }
+            });
+        });
+        req.on('error', (err) => {
+            console.error('[Keep-Alive] Brevo API network error:', err.message);
+            resolve({ success: false, error: err.message });
+        });
+        req.write(data);
+        req.end();
+    });
+};
+
+const sendGeminiKeepAlivePing = async () => {
+    const geminiKey = process.env.GEMINI_API_KEY;
+    if (!geminiKey) {
+        console.warn('[Keep-Alive] Skipping Gemini ping: GEMINI_API_KEY environment variable not set.');
+        return { success: false, reason: 'GEMINI_API_KEY missing' };
+    }
+
+    try {
+        const { GoogleGenerativeAI } = require('@google/generative-ai');
+        const genAI = new GoogleGenerativeAI(geminiKey);
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        await model.generateContent("Keep alive check");
+        console.log('[Keep-Alive] Gemini API ping successful.');
+        return { success: true };
+    } catch (err) {
+        console.error('[Keep-Alive] Gemini API ping error:', err.message);
+        return { success: false, error: err.message };
+    }
+};
+
+const maskApiKey = (keyStr) => {
+    if (!keyStr) return 'Not Configured';
+    if (keyStr.length <= 10) return keyStr.substring(0, 3) + '...';
+    return keyStr.substring(0, 8) + '...' + keyStr.substring(keyStr.length - 4);
+};
+
+const checkAndRunKeepAlivePings = async (force = false, target = 'all') => {
+    try {
+        const db = getFirestore();
+        const docRef = db.collection('system_status').doc('api_keepalive');
+        const docSnap = await docRef.get();
+        const now = Date.now();
+        const existingData = docSnap.exists ? docSnap.data() : {};
+
+        if (!force && docSnap.exists) {
+            const lastPingAt = docSnap.data().lastPingAt || 0;
+            if (now - lastPingAt < TWENTY_FIVE_DAYS_MS) {
+                const daysRemaining = Math.round((TWENTY_FIVE_DAYS_MS - (now - lastPingAt)) / (24 * 60 * 60 * 1000));
+                console.log(`[Keep-Alive] Next scheduled API ping in ~${daysRemaining} days.`);
+                return { skipped: true, daysRemaining };
+            }
+        }
+
+        console.log(`[Keep-Alive] Executing API keep-alive pings (target: ${target})...`);
+        let brevoResult = existingData.brevoStatus || null;
+        let geminiResult = existingData.geminiStatus || null;
+
+        if (target === 'all' || target === 'brevo') {
+            brevoResult = await sendBrevoKeepAlivePing();
+        }
+        if (target === 'all' || target === 'gemini') {
+            geminiResult = await sendGeminiKeepAlivePing();
+        }
+
+        const statusRecord = {
+            lastPingAt: now,
+            lastPingFormatted: new Date(now).toLocaleString('en-US'),
+            brevoStatus: brevoResult,
+            geminiStatus: geminiResult,
+            updatedAt: new Date().toISOString()
+        };
+
+        await docRef.set(statusRecord, { merge: true });
+        console.log('[Keep-Alive] Keep-alive status recorded in Firestore.');
+        return statusRecord;
+    } catch (err) {
+        console.error('[Keep-Alive] Error during keep-alive routine:', err);
+        return { error: err.message };
+    }
+};
+
+// GET API Keys Status Route
+app.get('/api/admin/api-keys-status', async (req, res) => {
+    try {
+        const db = getFirestore();
+        const docRef = db.collection('system_status').doc('api_keepalive');
+        const docSnap = await docRef.get();
+        const data = docSnap.exists ? docSnap.data() : {};
+
+        const brevoKey = process.env.EMAIL_PASS;
+        const geminiKey = process.env.GEMINI_API_KEY;
+
+        const brevoStatus = data.brevoStatus || null;
+        const geminiStatus = data.geminiStatus || null;
+
+        const keys = [
+            {
+                id: 'brevo',
+                name: 'Brevo Email Infrastructure API',
+                envVar: 'EMAIL_PASS',
+                configured: !!brevoKey,
+                maskedKey: maskApiKey(brevoKey),
+                status: !brevoKey ? 'unconfigured' : (brevoStatus?.success ? 'active' : (brevoStatus ? 'error' : 'untested')),
+                lastChecked: data.lastPingFormatted || (data.lastPingAt ? new Date(data.lastPingAt).toLocaleString('en-US') : 'Never'),
+                lastError: brevoStatus?.error || brevoStatus?.reason || null
+            },
+            {
+                id: 'gemini',
+                name: 'Google Gemini AI API',
+                envVar: 'GEMINI_API_KEY',
+                configured: !!geminiKey,
+                maskedKey: maskApiKey(geminiKey),
+                status: !geminiKey ? 'unconfigured' : (geminiStatus?.success ? 'active' : (geminiStatus ? 'error' : 'untested')),
+                lastChecked: data.lastPingFormatted || (data.lastPingAt ? new Date(data.lastPingAt).toLocaleString('en-US') : 'Never'),
+                lastError: geminiStatus?.error || geminiStatus?.reason || null
+            }
+        ];
+
+        res.status(200).json({
+            lastPingAt: data.lastPingAt || null,
+            lastPingFormatted: data.lastPingFormatted || 'Never',
+            keys
+        });
+    } catch (err) {
+        console.error('Error getting API keys status:', err);
+        res.status(500).json({ error: 'Failed to retrieve API key statuses.' });
+    }
+});
+
 // AI Suggestions Route
 app.post('/api/ai/suggestions', aiController.generateSuggestions);
 
 // AI Question Parsing Route
 app.post('/api/ai/parse-questions', aiController.parseQuestions);
+
+// Manual Keep-Alive Ping Trigger Route
+app.post('/api/admin/keepalive-ping', async (req, res) => {
+    try {
+        const { target = 'all' } = req.body || {};
+        const result = await checkAndRunKeepAlivePings(true, target);
+        res.status(200).json({ message: 'Keep-alive ping process completed', result });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to run keep-alive ping', message: err.message });
+    }
+});
 
 app.get('/', (req, res) => {
     res.send('ExamFobiya Backend is running');
@@ -465,4 +655,10 @@ app.get('/', (req, res) => {
 // Start Server
 app.listen(PORT, HOST, () => {
     console.log(`Server running on http://${HOST}:${PORT}`);
+    // Run initial Keep-Alive check on server startup
+    checkAndRunKeepAlivePings();
+    // Schedule check every 24 hours
+    setInterval(() => checkAndRunKeepAlivePings(), 24 * 60 * 60 * 1000);
 });
+
+
