@@ -7,8 +7,8 @@ import "./NewArrivals.css";
 const NewArrivals = ({ limit }) => {
   const { getBooksBySection } = useBooks();
   const newArrivals = getBooksBySection("New Arrivals");
-  const isCompact = typeof limit === "number";
-  const visibleBooks = isCompact ? newArrivals.slice(0, limit) : newArrivals;
+  const hasOverflow = typeof limit === "number" && newArrivals.length > limit;
+  const visibleBooks = newArrivals;
 
   return (
     <section className="new-arrivals container">
@@ -25,7 +25,7 @@ const NewArrivals = ({ limit }) => {
       {newArrivals.length === 0 ? (
         <p>No new arrivals at the moment.</p>
       ) : (
-        <div className={`book-grid home-book-shelf ${isCompact ? "is-compact" : "is-scrollable"}`}>
+        <div className={`book-grid home-book-shelf ${hasOverflow ? "is-scrollable" : "is-compact"}`}>
           {visibleBooks.map((book, index) => (
             <BookCard key={book.id} book={book} index={index} />
           ))}

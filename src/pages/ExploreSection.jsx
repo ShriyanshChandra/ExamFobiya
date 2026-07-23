@@ -5,7 +5,8 @@ import './ExploreSection.css';
 
 const ExploreSection = () => {
     const { books } = useBooks();
-    const visibleBooks = books.slice(0, 5);
+    const hasOverflow = books.length > 5;
+    const visibleBooks = books;
 
     return (
         <section className="explore-section container">
@@ -19,7 +20,7 @@ const ExploreSection = () => {
                 </div>
                 <Link to="/books" className="browse-all-link">View all books</Link>
             </div>
-            <div className="book-grid home-book-shelf is-compact">
+            <div className={`book-grid home-book-shelf ${hasOverflow ? 'is-scrollable' : 'is-compact'}`}>
                 {visibleBooks.map((book, index) => (
                     <BookCard key={book.id} book={book} index={index} />
                 ))}

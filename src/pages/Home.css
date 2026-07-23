@@ -605,9 +605,8 @@
 
 .home-book-shelf {
   --home-shelf-columns: 5;
-  --home-shelf-gap: 1.5rem;
-  --home-shelf-card-width: min(16rem,
-      calc((100% - (var(--home-shelf-gap) * (var(--home-shelf-columns) - 1))) / var(--home-shelf-columns)));
+  --home-shelf-gap: 1.25rem;
+  --home-shelf-card-width: calc((100% - (var(--home-shelf-gap) * (var(--home-shelf-columns) - 1))) / var(--home-shelf-columns));
   padding: 0.875rem;
   width: 100%;
   margin: 0;
@@ -617,7 +616,6 @@
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   box-sizing: border-box;
-  overflow: hidden;
 }
 
 .home-book-shelf.is-compact {
@@ -625,7 +623,6 @@
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: var(--home-shelf-gap);
   padding: 0.875rem;
-  overflow: visible;
 }
 
 .home-book-shelf.is-scrollable {
@@ -634,22 +631,25 @@
   overflow-x: auto;
   overflow-y: hidden;
   gap: var(--home-shelf-gap);
-  padding-bottom: 0.625rem;
-  scroll-snap-type: x proximity;
+  padding-bottom: 0.75rem;
+  scroll-snap-type: x mandatory;
   scroll-padding-inline: 0.875rem;
-  scrollbar-width: none;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--primary-color) 35%, transparent) transparent;
   align-items: stretch;
 }
 
-.home-book-shelf.is-compact::-webkit-scrollbar,
 .home-book-shelf.is-scrollable::-webkit-scrollbar {
-  display: none;
+  height: 6px;
 }
 
-.home-book-shelf.is-compact::-webkit-scrollbar-thumb,
+.home-book-shelf.is-scrollable::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 .home-book-shelf.is-scrollable::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--primary-color) 28%, transparent);
-  border-radius: 62.4375rem;
+  background: color-mix(in srgb, var(--primary-color) 35%, transparent);
+  border-radius: 10px;
 }
 
 .home-book-shelf.is-compact .book-card {
@@ -660,6 +660,7 @@
 
 .home-book-shelf.is-scrollable .book-card {
   flex: 0 0 var(--home-shelf-card-width);
+  min-width: var(--home-shelf-card-width);
   max-width: var(--home-shelf-card-width);
   scroll-snap-align: start;
 }

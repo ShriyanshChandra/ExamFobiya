@@ -9,8 +9,8 @@ const BookCategorySection = ({ title, section, category, limit }) => {
     const sectionBooks = getBooksBySection(section);
     // Filter by category to ensure no cross-category books appear due to stale section tags
     const books = category ? sectionBooks.filter(book => book.category === category) : sectionBooks;
-    const isCompact = typeof limit === 'number';
-    const visibleBooks = isCompact ? books.slice(0, limit) : books;
+    const hasOverflow = typeof limit === 'number' && books.length > limit;
+    const visibleBooks = books;
 
     return (
         <section className="book-category-section container">
@@ -33,7 +33,7 @@ const BookCategorySection = ({ title, section, category, limit }) => {
             {books.length === 0 ? (
                 <p>No books available for {section} at the moment.</p>
             ) : (
-                <div className={`book-grid home-book-shelf ${isCompact ? 'is-compact' : 'is-scrollable'}`}>
+                <div className={`book-grid home-book-shelf ${hasOverflow ? 'is-scrollable' : 'is-compact'}`}>
                     {visibleBooks.map((book, index) => (
                         <BookCard key={book.id} book={book} index={index} />
                     ))}
