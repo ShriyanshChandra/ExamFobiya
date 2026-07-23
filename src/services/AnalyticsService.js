@@ -1,4 +1,5 @@
 import { getApiUrl } from '../utils/api';
+import { auth } from '../firebase';
 
 const DEFAULT_ANALYTICS = {
     totalBooks: 0,
@@ -10,9 +11,22 @@ const DEFAULT_ANALYTICS = {
     programmingData: []
 };
 
+const getAuthHeaders = async () => {
+    const user = auth.currentUser;
+    if (!user) return {};
+    try {
+        const token = await user.getIdToken();
+        return { 'Authorization': `Bearer ${token}` };
+    } catch (err) {
+        console.error('Failed to get auth token:', err);
+        return {};
+    }
+};
+
 export const fetchAnalyticsData = async () => {
     try {
-        const response = await fetch(getApiUrl('/api/admin/analytics'));
+        const headers = await getAuthHeaders();
+        const response = await fetch(getApiUrl('/api/admin/analytics'), { headers });
 
         if (!response.ok) {
             throw new Error('Failed to fetch analytics data.');
@@ -35,7 +49,8 @@ export const fetchAnalyticsData = async () => {
 
 export const fetchApiKeysStatus = async () => {
     try {
-        const response = await fetch(getApiUrl('/api/admin/api-keys-status'));
+        const headers = await getAuthHeaders();
+        const response = await fetch(getApiUrl('/api/admin/api-keys-status'), { headers });
         if (!response.ok) {
             throw new Error('Failed to fetch API keys status.');
         }
@@ -51,9 +66,13 @@ export const fetchApiKeysStatus = async () => {
 };
 
 export const triggerApiKeyPing = async (target = 'all') => {
+    const authHeaders = await getAuthHeaders();
     const response = await fetch(getApiUrl('/api/admin/keepalive-ping'), {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json',
+            ...authHeaders
+        },
         body: JSON.stringify({ target })
     });
 
@@ -64,4 +83,5 @@ export const triggerApiKeyPing = async (target = 'all') => {
 
     return await response.json();
 };
+
 

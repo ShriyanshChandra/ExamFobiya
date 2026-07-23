@@ -44,6 +44,32 @@ const HOST = process.env.HOST || (process.env.NODE_ENV === 'production' ? '0.0.0
 app.use(cors());
 app.use(express.json());
 
+// Authentication middleware for admin routes
+// Verifies Firebase ID token and checks admin role in Firestore
+const verifyAdminToken = async (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'Unauthorized: No authentication token provided.' });
+    }
+
+    const idToken = authHeader.split('Bearer ')[1];
+    try {
+        const decodedToken = await getAuth().verifyIdToken(idToken);
+        const userDoc = await getFirestore().collection('users').doc(decodedToken.uid).get();
+
+        if (!userDoc.exists || userDoc.data().role !== 'admin') {
+            return res.status(403).json({ error: 'Forbidden: Admin access required.' });
+        }
+
+        req.adminUser = { uid: decodedToken.uid, email: decodedToken.email, role: 'admin' };
+        next();
+    } catch (error) {
+        console.error('Admin auth verification failed:', error.message);
+        return res.status(401).json({ error: 'Unauthorized: Invalid or expired token.' });
+    }
+};
+
+
 const findUserByEmail = async (email) => {
     const rawEmail = email.trim();
     const normalizedEmail = rawEmail.toLowerCase();
@@ -394,7 +420,7 @@ app.post('/api/reset-password', async (req, res) => {
     }
 });
 
-app.get('/api/admin/analytics', async (req, res) => {
+app.get('/api/admin/analytics', verifyAdminToken, async (req, res) => {
     try {
         const database = getFirestore();
         const [booksSnapshot, questionPdfsSnapshot] = await Promise.all([
@@ -540,8 +566,8 @@ const sendGeminiKeepAlivePing = async () => {
 
 const maskApiKey = (keyStr) => {
     if (!keyStr) return 'Not Configured';
-    if (keyStr.length <= 10) return keyStr.substring(0, 3) + '...';
-    return keyStr.substring(0, 8) + '...' + keyStr.substring(keyStr.length - 4);
+    if (keyStr.length <= 8) return keyStr.substring(0, 2) + '...' + keyStr.substring(keyStr.length - 2);
+    return keyStr.substring(0, 4) + '...' + keyStr.substring(keyStr.length - 4);
 };
 
 const checkAndRunKeepAlivePings = async (force = false, target = 'all') => {
@@ -590,7 +616,7 @@ const checkAndRunKeepAlivePings = async (force = false, target = 'all') => {
 };
 
 // GET API Keys Status Route
-app.get('/api/admin/api-keys-status', async (req, res) => {
+app.get('/api/admin/api-keys-status', verifyAdminToken, async (req, res) => {
     try {
         const db = getFirestore();
         const docRef = db.collection('system_status').doc('api_keepalive');
@@ -644,7 +670,8 @@ app.post('/api/ai/suggestions', aiController.generateSuggestions);
 app.post('/api/ai/parse-questions', aiController.parseQuestions);
 
 // Manual Keep-Alive Ping Trigger Route
-app.post('/api/admin/keepalive-ping', async (req, res) => {
+app.post('/api/admin/keepalive-ping', verifyAdminToken, async (req, res) => {
+
     try {
         const { target = 'all' } = req.body || {};
         const result = await checkAndRunKeepAlivePings(true, target);
