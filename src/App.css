@@ -1,7 +1,7 @@
-/* Apply Nunito font globally */
+/* Apply theme font family globally */
 * {
   box-sizing: border-box;
-  font-family: 'Nunito', sans-serif;
+  font-family: var(--font-family, 'Quicksand', sans-serif);
 }
 
 /* Preserve Henny Penny for elements that specifically need it */
@@ -58,7 +58,7 @@ html {
 }
 
 body {
-  font-family: 'Nunito', sans-serif;
+  font-family: var(--font-family, 'Quicksand', sans-serif);
   margin: 0;
   padding: 0;
   background-color: transparent !important;

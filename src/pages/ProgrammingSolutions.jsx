@@ -382,6 +382,8 @@ const ProgrammingSolutions = () => {
         <div className="search-section">
           <div className="search-input-wrapper">
             <input
+              id="prog-solutions-search-input"
+              name="search"
               type="text"
               placeholder="Search by subject, course or language..."
               value={searchQuery}
@@ -412,9 +414,9 @@ const ProgrammingSolutions = () => {
         {showFilters && (
           <div className="questions-filters-panel">
             <div className="questions-filter-grid">
-              <label className="questions-filter-field">
+              <label className="questions-filter-field" htmlFor="prog-solutions-course-filter">
                 <span>Course</span>
-                <select value={filters.course} onChange={(e) => handleFilterChange("course", e.target.value)}>
+                <select id="prog-solutions-course-filter" name="course" value={filters.course} onChange={(e) => handleFilterChange("course", e.target.value)}>
                   <option value="">All courses</option>
                   {uniqueCourses.map((course) => (
                     <option key={course} value={course}>{course}</option>
@@ -422,9 +424,9 @@ const ProgrammingSolutions = () => {
                 </select>
               </label>
 
-              <label className="questions-filter-field">
+              <label className="questions-filter-field" htmlFor="prog-solutions-subject-filter">
                 <span>Subject</span>
-                <select value={filters.subject} onChange={(e) => handleFilterChange("subject", e.target.value)}>
+                <select id="prog-solutions-subject-filter" name="subject" value={filters.subject} onChange={(e) => handleFilterChange("subject", e.target.value)}>
                   <option value="">All subjects</option>
                   {uniqueSubjects.map((subject) => (
                     <option key={subject} value={subject}>{subject}</option>
@@ -432,9 +434,9 @@ const ProgrammingSolutions = () => {
                 </select>
               </label>
 
-              <label className="questions-filter-field">
+              <label className="questions-filter-field" htmlFor="prog-solutions-language-filter">
                 <span>Language</span>
-                <select value={filters.language} onChange={(e) => handleFilterChange("language", e.target.value)}>
+                <select id="prog-solutions-language-filter" name="language" value={filters.language} onChange={(e) => handleFilterChange("language", e.target.value)}>
                   <option value="">All languages</option>
                   {uniqueLanguages.map((language) => (
                     <option key={language} value={language}>{language}</option>

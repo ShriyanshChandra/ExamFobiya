@@ -1,7 +1,7 @@
 .books-page {
   padding: 2rem 0 3.5rem;
   background: transparent;
-  font-family: 'Nunito', sans-serif;
+  font-family: var(--font-family);
 }
 
 .books-content {

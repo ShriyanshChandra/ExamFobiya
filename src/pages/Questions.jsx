@@ -192,6 +192,8 @@ const Questions = () => {
         <div className="search-section">
           <div className="search-input-wrapper">
             <input
+              id="questions-search-input"
+              name="search"
               type="text"
               placeholder="Search by subject, course or label..."
               value={searchQuery}
@@ -220,9 +222,11 @@ const Questions = () => {
         {showFilters && (
           <div className="questions-filters-panel">
             <div className="questions-filter-grid">
-              <label className="questions-filter-field">
+              <label className="questions-filter-field" htmlFor="questions-course-filter">
                 <span>Course</span>
                 <select
+                  id="questions-course-filter"
+                  name="course"
                   value={filters.course}
                   onChange={(e) => handleFilterChange('course', e.target.value)}
                 >
@@ -233,9 +237,11 @@ const Questions = () => {
                 </select>
               </label>
 
-              <label className="questions-filter-field">
+              <label className="questions-filter-field" htmlFor="questions-year-filter">
                 <span>Year</span>
                 <select
+                  id="questions-year-filter"
+                  name="year"
                   value={filters.year}
                   onChange={(e) => handleFilterChange('year', e.target.value)}
                 >
@@ -246,9 +252,11 @@ const Questions = () => {
                 </select>
               </label>
 
-              <label className="questions-filter-field">
+              <label className="questions-filter-field" htmlFor="questions-subject-filter">
                 <span>Subject</span>
                 <select
+                  id="questions-subject-filter"
+                  name="subject"
                   value={filters.subject}
                   onChange={(e) => handleFilterChange('subject', e.target.value)}
                 >

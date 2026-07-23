@@ -174,6 +174,7 @@ const AccountPanel = ({ user, updateUsername }) => {
                             <div className="settings-username-edit">
                                 <input
                                     id="settings-username-input"
+                                    name="username"
                                     className="settings-username-input"
                                     type="text"
                                     value={draftUsername}
@@ -404,6 +405,8 @@ const ResetPasswordPanel = ({ user, checkAccountExists }) => {
                         <label htmlFor="settings-otp-input">Verification Code</label>
                         <input
                             id="settings-otp-input"
+                            name="otp"
+                            autoComplete="one-time-code"
                             type="text"
                             value={otp}
                             onChange={e => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
@@ -449,6 +452,8 @@ const ResetPasswordPanel = ({ user, checkAccountExists }) => {
                         <div className="settings-pass-wrapper">
                             <input
                                 id="settings-new-pass"
+                                name="newPassword"
+                                autoComplete="new-password"
                                 type={showPass ? 'text' : 'password'}
                                 value={newPass}
                                 onChange={e => setNewPass(e.target.value)}
@@ -471,6 +476,8 @@ const ResetPasswordPanel = ({ user, checkAccountExists }) => {
                         <div className="settings-pass-wrapper">
                             <input
                                 id="settings-confirm-pass"
+                                name="confirmPassword"
+                                autoComplete="new-password"
                                 type={showPass ? 'text' : 'password'}
                                 value={confirmPass}
                                 onChange={e => setConfirmPass(e.target.value)}

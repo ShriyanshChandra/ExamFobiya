@@ -20,7 +20,10 @@ const ExploreSection = () => {
                 </div>
                 <Link to="/books" className="browse-all-link">View all books</Link>
             </div>
-            <div className={`book-grid home-book-shelf ${hasOverflow ? 'is-scrollable' : 'is-compact'}`}>
+            <div 
+                className={`book-grid home-book-shelf ${hasOverflow ? 'is-scrollable' : 'is-compact'}`}
+                style={{ '--shelf-count': visibleBooks.length }}
+            >
                 {visibleBooks.map((book, index) => (
                     <BookCard key={book.id} book={book} index={index} />
                 ))}

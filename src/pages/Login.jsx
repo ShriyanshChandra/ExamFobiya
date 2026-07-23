@@ -177,8 +177,11 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true, checkAccountExist
                 <>
                     <form onSubmit={handleSubmit}>
                         <div className="form-group">
-                            <label>Email:</label>
+                            <label htmlFor={`login-email-${role}`}>Email:</label>
                             <input
+                                id={`login-email-${role}`}
+                                name="email"
+                                autoComplete="username"
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
@@ -187,8 +190,11 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true, checkAccountExist
                             />
                         </div>
                         <div className="form-group">
-                            <label>Password:</label>
+                            <label htmlFor={`login-password-${role}`}>Password:</label>
                             <input
+                                id={`login-password-${role}`}
+                                name="password"
+                                autoComplete="current-password"
                                 type={showPassword ? "text" : "password"}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
@@ -200,6 +206,7 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true, checkAccountExist
                             <input
                                 type="checkbox"
                                 id={`show-pass-login-${role}`}
+                                name="showPassword"
                                 checked={showPassword}
                                 onChange={() => setShowPassword(!showPassword)}
                             />
@@ -226,8 +233,11 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true, checkAccountExist
                 <form onSubmit={handleSendOtp}>
                     <p style={{marginBottom: '15px', color: '#555', fontSize: '0.9rem'}}>Enter your email address and we'll send you a verification code to reset your password.</p>
                     <div className="form-group">
-                        <label>Email:</label>
+                        <label htmlFor={`reset-email-${role}`}>Email:</label>
                         <input
+                            id={`reset-email-${role}`}
+                            name="resetEmail"
+                            autoComplete="email"
                             type="email"
                             value={resetEmail}
                             onChange={(e) => setResetEmail(e.target.value)}
@@ -248,8 +258,11 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true, checkAccountExist
                 <form onSubmit={handleVerifyOtp}>
                     <p style={{marginBottom: '15px', color: '#555', fontSize: '0.9rem'}}>We've sent a 6-digit code to <strong>{resetEmail}</strong>. Enter it below.</p>
                     <div className="form-group">
-                        <label>OTP Code:</label>
+                        <label htmlFor={`reset-otp-${role}`}>OTP Code:</label>
                         <input
+                            id={`reset-otp-${role}`}
+                            name="otp"
+                            autoComplete="one-time-code"
                             type="text"
                             value={enteredOtp}
                             onChange={(e) => setEnteredOtp(e.target.value)}
@@ -284,8 +297,11 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true, checkAccountExist
                 <form onSubmit={handleResetPassword}>
                     <p style={{marginBottom: '15px', color: '#555', fontSize: '0.9rem'}}>Create a new password for your account.</p>
                     <div className="form-group">
-                        <label>New Password:</label>
+                        <label htmlFor={`new-password-${role}`}>New Password:</label>
                         <input
+                            id={`new-password-${role}`}
+                            name="newPassword"
+                            autoComplete="new-password"
                             type={showPassword ? "text" : "password"}
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
@@ -294,8 +310,11 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true, checkAccountExist
                         />
                     </div>
                     <div className="form-group">
-                        <label>Confirm Password:</label>
+                        <label htmlFor={`confirm-password-${role}`}>Confirm Password:</label>
                         <input
+                            id={`confirm-password-${role}`}
+                            name="confirmPassword"
+                            autoComplete="new-password"
                             type={showPassword ? "text" : "password"}
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
@@ -307,6 +326,7 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true, checkAccountExist
                         <input
                             type="checkbox"
                             id={`show-pass-reset-${role}`}
+                            name="showPasswordReset"
                             checked={showPassword}
                             onChange={() => setShowPassword(!showPassword)}
                         />

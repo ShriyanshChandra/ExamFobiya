@@ -2,10 +2,19 @@
     content: '';
     display: block;
     width: 22rem;
+    max-width: 100%;
     height: 0.25rem;
     border-radius: 62.4375rem;
     margin-top: 0.625rem;
     background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+}
+
+.book-category-section h2[data-section="New Arrivals"]::after {
+    background: linear-gradient(90deg, #36d1dc, #5b86e5);
+}
+
+.book-category-section h2[data-section="Best Seller"]::after {
+    background: linear-gradient(90deg, #f12711, #f5af19);
 }
 
 .book-category-section h2[data-section="BCA Books"]::after {

@@ -305,6 +305,8 @@ const Navbar = ({ setSearchQuery }) => {
           {/* Search Bar */}
           <div className={`search-container ${showMobileSearch ? "active" : ""}`}>
             <input
+              id="site-search-input"
+              name="search"
               type="text"
               placeholder="Search..."
               className="search-input"

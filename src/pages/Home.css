@@ -1,5 +1,5 @@
 .home-container {
-  font-family: 'Nunito', sans-serif;
+  font-family: var(--font-family);
   padding-bottom: 3.75rem;
 }
 
@@ -679,14 +679,7 @@
   box-sizing: border-box;
 }
 
-.home-book-shelf.is-compact {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: var(--home-shelf-gap);
-  padding: 0.875rem;
-}
-
-.home-book-shelf.is-scrollable {
+.home-book-shelf {
   display: flex;
   flex-wrap: nowrap;
   overflow-x: auto;
@@ -700,19 +693,13 @@
   align-items: stretch;
 }
 
-.home-book-shelf.is-scrollable::-webkit-scrollbar {
+.home-book-shelf::-webkit-scrollbar {
   display: none;
   width: 0;
   height: 0;
 }
 
-.home-book-shelf.is-compact .book-card {
-  flex: none;
-  width: 100%;
-  max-width: 100%;
-}
-
-.home-book-shelf.is-scrollable .book-card {
+.home-book-shelf .book-card {
   flex: 0 0 var(--home-shelf-card-width);
   min-width: var(--home-shelf-card-width);
   max-width: var(--home-shelf-card-width);
@@ -920,21 +907,8 @@
     --home-shelf-gap: 0.75rem;
     --home-shelf-card-width: calc((100% - var(--home-shelf-gap)) / 2);
     padding: 0.75rem;
-  }
-
-  .home-book-shelf.is-compact {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .home-book-shelf.is-scrollable {
     padding-bottom: 0.625rem;
-  }
-
-  .home-book-shelf.is-scrollable .book-card {
-    flex-basis: var(--home-shelf-card-width);
-    flex-grow: 0;
-    flex-shrink: 0;
-    max-width: var(--home-shelf-card-width);
+    scroll-padding-inline: 0.75rem;
   }
 }
 
@@ -1006,8 +980,7 @@
     --home-shelf-card-width: 100%;
   }
 
-  .home-book-shelf.is-compact .book-card,
-  .home-book-shelf.is-scrollable .book-card {
+  .home-book-shelf .book-card {
     flex-basis: 100%;
     max-width: 100%;
   }

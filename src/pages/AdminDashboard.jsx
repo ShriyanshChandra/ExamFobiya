@@ -237,7 +237,7 @@ const AdminDashboard = () => {
             )
         },
         {
-            label: 'Solutions',
+            label: 'Programming Solutions',
             value: stats.totalProgrammingSolutions,
             accentClass: 'accent-secondary',
             iconClass: 'icon-secondary',
@@ -287,7 +287,7 @@ const AdminDashboard = () => {
                         <div className="segmented-bars-wrapper">
                             {renderSegmentedBar(stats.genreData, 'Books')}
                             {renderSegmentedBar(stats.questionsData, 'Questions')}
-                            {renderSegmentedBar(stats.programmingData, 'Solutions')}
+                            {renderSegmentedBar(stats.programmingData, 'Programming Solutions')}
                         </div>
                     </section>
 

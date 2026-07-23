@@ -3,7 +3,7 @@
     background: transparent;
     min-height: 100vh;
     color: #333;
-    font-family: 'Nunito', sans-serif;
+    font-family: var(--font-family);
 }
 
 .dashboard-content-wrapper {

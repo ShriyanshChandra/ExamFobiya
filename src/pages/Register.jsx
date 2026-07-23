@@ -161,8 +161,11 @@ const Register = () => {
                 {step === 'form' ? (
                     <form onSubmit={handleSendOtp}>
                         <div className="form-group">
-                            <label>Email:</label>
+                            <label htmlFor="register-email">Email:</label>
                             <input
+                                id="register-email"
+                                name="email"
+                                autoComplete="email"
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
@@ -172,8 +175,11 @@ const Register = () => {
                         </div>
 
                         <div className="form-group">
-                            <label>Password:</label>
+                            <label htmlFor="register-password">Password:</label>
                             <input
+                                id="register-password"
+                                name="password"
+                                autoComplete="new-password"
                                 type={showPassword ? "text" : "password"}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
@@ -183,8 +189,11 @@ const Register = () => {
                         </div>
 
                         <div className="form-group">
-                            <label>Confirm Password:</label>
+                            <label htmlFor="register-confirm-password">Confirm Password:</label>
                             <input
+                                id="register-confirm-password"
+                                name="confirmPassword"
+                                autoComplete="new-password"
                                 type={showPassword ? "text" : "password"}
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -197,6 +206,7 @@ const Register = () => {
                             <input
                                 type="checkbox"
                                 id="show-pass"
+                                name="showPassword"
                                 checked={showPassword}
                                 onChange={() => setShowPassword(!showPassword)}
                             />
@@ -215,8 +225,11 @@ const Register = () => {
                         </p>
 
                         <div className="form-group">
-                            <label>Enter OTP Code:</label>
+                            <label htmlFor="register-otp">Enter OTP Code:</label>
                             <input
+                                id="register-otp"
+                                name="otp"
+                                autoComplete="one-time-code"
                                 type="text"
                                 value={enteredOtp}
                                 onChange={(e) => setEnteredOtp(e.target.value)}

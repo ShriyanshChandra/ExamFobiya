@@ -13,7 +13,7 @@
 
 body {
   margin: 0;
-  font-family: var(--font-family);
+  font-family: var(--font-family, 'Quicksand', sans-serif);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--background-color);

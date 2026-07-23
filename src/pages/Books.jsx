@@ -128,9 +128,9 @@ function Books() {
               <strong>{filteredBooks.length}</strong> {filteredBooks.length === 1 ? "book" : "books"} available
             </div>
 
-            <label className="books-sort">
+            <label className="books-sort" htmlFor="books-sort-select">
               <span>Sort by</span>
-              <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+              <select id="books-sort-select" name="sortBy" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
                 <option value="title-asc">Title A-Z</option>
                 <option value="title-desc">Title Z-A</option>
                 <option value="category">Category</option>
@@ -139,9 +139,11 @@ function Books() {
           </div>
 
           <div className="books-toolbar-main">
-            <label className="books-search">
+            <label className="books-search" htmlFor="books-search-input">
               <span>Search</span>
               <input
+                id="books-search-input"
+                name="search"
                 type="search"
                 placeholder="Search by title, author, or category"
                 value={searchTerm}

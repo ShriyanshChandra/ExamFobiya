@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
 /*
  * ═══════════════════════════════════════════════════
  *  THEME DEFINITIONS
@@ -6,7 +8,10 @@
  *  All theme color tokens live here.
  *  To add a new theme:
  *    1. Copy any [data-theme='...'] block below.
- *    2. Change the selector to your new t/* ─── Light Theme (Default) ─── */
+ *    2. Change the selector to your new theme.
+ */
+
+/* ─── Light Theme (Default) ─── */
 :root {
   --primary-color: #2575fc;
   --secondary-color: #1e40af;
@@ -24,7 +29,7 @@
   --card-bg: #ffffff;
   --input-bg: rgba(255, 255, 255, 0.1);
   --input-text: #333;
-  --font-family: 'Nunito', sans-serif;
+  --font-family: 'Quicksand', sans-serif;
 
   /* Dashboard tokens */
   --dashboard-wrapper-bg: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(248, 250, 252, 0.56));
@@ -72,7 +77,7 @@
   --card-bg: #1e1e1e;
   --input-bg: rgba(255, 255, 255, 0.05);
   --input-text: #e0e0e0;
-  --font-family: 'Nunito', sans-serif;
+  --font-family: 'Quicksand', sans-serif;
 
   /* Dashboard tokens */
   --dashboard-wrapper-bg: linear-gradient(180deg, rgba(14, 18, 28, 0.54), rgba(16, 20, 30, 0.66));
@@ -120,7 +125,7 @@
   --card-bg: #e8dcc8;
   --input-bg: rgba(141, 110, 99, 0.1);
   --input-text: #4e342e;
-  --font-family: 'Georgia', 'Times New Roman', serif;
+  --font-family: 'Quicksand', sans-serif;
 }
 
 /* ─── Ocean Theme ─── */
@@ -141,7 +146,7 @@
   --card-bg: #f0fdfa;
   --input-bg: rgba(8, 145, 178, 0.08);
   --input-text: #134e4a;
-  --font-family: 'Nunito', sans-serif;
+  --font-family: 'Quicksand', sans-serif;
 }
 
 /* ─── Forest Theme ─── */
@@ -162,7 +167,7 @@
   --card-bg: #f3eadd;
   --input-bg: rgba(5, 150, 105, 0.06);
   --input-text: #2e1d16;
-  --font-family: 'Nunito', sans-serif;
+  --font-family: 'Quicksand', sans-serif;
 }
 
 /* ─── Midnight Theme (AMOLED Dark) ─── */
@@ -183,7 +188,7 @@
   --card-bg: #0a0a14;
   --input-bg: rgba(129, 140, 248, 0.06);
   --input-text: #e2e8f0;
-  --font-family: 'Nunito', sans-serif;
+  --font-family: 'Quicksand', sans-serif;
 }
 
 /* ─── Nord Theme ─── */
@@ -204,7 +209,7 @@
   --card-bg: #e5e9f0;
   --input-bg: rgba(94, 129, 172, 0.08);
   --input-text: #2e3440;
-  --font-family: 'Nunito', sans-serif;
+  --font-family: 'Quicksand', sans-serif;
 }
 
 /*
