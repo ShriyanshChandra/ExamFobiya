@@ -50,15 +50,25 @@
     position: absolute;
     top: 1rem;
     right: 1rem;
-    background: none;
-    border: none;
-    font-size: 1.8rem;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    font-size: 1.4rem;
     cursor: pointer;
     color: var(--secondary-color);
-    transition: transform 0.2s;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 0.125rem;
+    transition: all 0.2s ease;
 }
 
 .confirmation-modal .close-btn:hover {
+    background: var(--secondary-color);
+    color: #ffffff;
+    border-color: var(--secondary-color);
     transform: scale(1.1);
 }
 

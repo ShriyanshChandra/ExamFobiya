@@ -36,29 +36,26 @@
     top: 0.9375rem;
     right: 0.9375rem;
     background: rgba(255, 255, 255, 0.9);
-    /* Semi-transparent background */
-    border: 1px solid #eee;
-    font-size: 1.5rem;
-    color: #666;
+    border: 1px solid #ddd;
+    font-size: 1.4rem;
+    color: #1e293b;
     cursor: pointer;
     z-index: 20;
-    /* Ensure on top */
-    width: 2rem;
-    height: 2rem;
+    width: 2.2rem;
+    height: 2.2rem;
     border-radius: 50%;
-    /* Circle */
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-bottom: 0.1875rem;
-    /* Visual alignment for X */
-    transition: all 0.2s;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding-bottom: 0.125rem;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .modal-close-btn:hover {
-    color: #000;
-    background-color: var(--card-bg);
+    color: #ffffff;
+    background-color: #0f172a;
+    border-color: #0f172a;
     transform: scale(1.1);
 }
 
@@ -375,68 +372,131 @@
 }
 
 /* =========================================
-   Dark Mode Support
+   Dark, Midnight & Nord Theme Support
    ========================================= */
 
+[data-theme='dark'] .book-details-modal-content,
+[data-theme='midnight'] .book-details-modal-content,
+[data-theme='nord'] .book-details-modal-content,
 body.dark-mode .book-details-modal-content {
-    background-color: #1f2937 !important;
-    /* Force dark background */
-    color: #f3f4f6 !important;
-    border: 1px solid #374151 !important;
+    background-color: var(--card-bg, #0a0a14) !important;
+    color: #f8fafc !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
 }
 
+[data-theme='dark'] .modal-close-btn,
+[data-theme='midnight'] .modal-close-btn,
+[data-theme='nord'] .modal-close-btn,
 body.dark-mode .modal-close-btn {
-    color: #e5e7eb;
-    background: rgba(31, 41, 55, 0.9);
-    /* Dark background */
-    border-color: #4b5563;
+    color: #f8fafc !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    border-color: rgba(255, 255, 255, 0.25) !important;
 }
 
+[data-theme='dark'] .modal-close-btn:hover,
+[data-theme='midnight'] .modal-close-btn:hover,
+[data-theme='nord'] .modal-close-btn:hover,
 body.dark-mode .modal-close-btn:hover {
-    color: #fff;
-    background: #374151;
+    color: #0f172a !important;
+    background: #ffffff !important;
+    border-color: #ffffff !important;
+    transform: scale(1.1);
 }
 
+[data-theme='dark'] .modal-left-section,
+[data-theme='midnight'] .modal-left-section,
+[data-theme='nord'] .modal-left-section,
 body.dark-mode .modal-left-section {
-    border-right-color: #374151;
+    border-right-color: rgba(255, 255, 255, 0.12);
 }
 
+[data-theme='dark'] .modal-book-title,
+[data-theme='midnight'] .modal-book-title,
+[data-theme='nord'] .modal-book-title,
 body.dark-mode .modal-book-title {
-    color: #f9fafb;
+    color: #ffffff !important;
 }
 
+[data-theme='dark'] .topics-heading,
+[data-theme='midnight'] .topics-heading,
+[data-theme='nord'] .topics-heading,
 body.dark-mode .topics-heading {
-    color: #f9fafb;
-    border-bottom-color: #374151;
+    color: #ffffff !important;
+    border-bottom-color: rgba(255, 255, 255, 0.2) !important;
 }
 
+[data-theme='dark'] .modal-book-price,
+[data-theme='midnight'] .modal-book-price,
+[data-theme='nord'] .modal-book-price,
 body.dark-mode .modal-book-price {
-    color: #60a5fa;
-    /* Lighter blue for dark mode */
+    color: var(--accent-color, #22d3ee) !important;
 }
 
+[data-theme='dark'] .topics-list-container,
+[data-theme='dark'] .topics-list-container *,
+[data-theme='dark'] .rich-text-content,
+[data-theme='dark'] .rich-text-content *,
+[data-theme='dark'] .syllabus-topic-page-list,
+[data-theme='dark'] .syllabus-topic-page-row,
+[data-theme='dark'] .syllabus-topic-text,
+[data-theme='dark'] .syllabus-topic-page-number,
+[data-theme='dark'] .syllabus-plain-text,
+[data-theme='dark'] .topic-level-0,
+[data-theme='dark'] .topic-level-1,
+[data-theme='dark'] .topic-level-2,
+[data-theme='midnight'] .topics-list-container,
+[data-theme='midnight'] .topics-list-container *,
+[data-theme='midnight'] .rich-text-content,
+[data-theme='midnight'] .rich-text-content *,
+[data-theme='midnight'] .syllabus-topic-page-list,
+[data-theme='midnight'] .syllabus-topic-page-row,
+[data-theme='midnight'] .syllabus-topic-text,
+[data-theme='midnight'] .syllabus-topic-page-number,
+[data-theme='midnight'] .syllabus-plain-text,
+[data-theme='midnight'] .topic-level-0,
+[data-theme='midnight'] .topic-level-1,
+[data-theme='midnight'] .topic-level-2,
+[data-theme='nord'] .topics-list-container,
+[data-theme='nord'] .topics-list-container *,
+[data-theme='nord'] .rich-text-content,
+[data-theme='nord'] .rich-text-content *,
+[data-theme='nord'] .syllabus-topic-page-list,
+[data-theme='nord'] .syllabus-topic-page-row,
+[data-theme='nord'] .syllabus-topic-text,
+[data-theme='nord'] .syllabus-topic-page-number,
+[data-theme='nord'] .syllabus-plain-text,
+[data-theme='nord'] .topic-level-0,
+[data-theme='nord'] .topic-level-1,
+[data-theme='nord'] .topic-level-2,
 body.dark-mode .topics-list-container,
-body.dark-mode .topics-list-container li,
-body.dark-mode .rich-text-content {
-    color: #e5e7eb;
+body.dark-mode .topics-list-container *,
+body.dark-mode .rich-text-content,
+body.dark-mode .rich-text-content *,
+body.dark-mode .syllabus-topic-page-list,
+body.dark-mode .syllabus-topic-page-row,
+body.dark-mode .syllabus-topic-text,
+body.dark-mode .syllabus-topic-page-number,
+body.dark-mode .syllabus-plain-text,
+body.dark-mode .topic-level-0,
+body.dark-mode .topic-level-1,
+body.dark-mode .topic-level-2 {
+    color: #f1f5f9 !important;
 }
 
 [data-theme='dark'] .syllabus-topic-page-leader,
-[data-theme='dark'] .syllabus-topic-page-number,
-body.dark-mode .syllabus-topic-page-leader,
-body.dark-mode .syllabus-topic-page-number {
-    color: #cbd5e1;
-    border-bottom-color: #cbd5e1;
-}
-
-/* Force dark mode colors on rich text children */
-body.dark-mode .rich-text-content * {
-    color: #e5e7eb !important;
+[data-theme='midnight'] .syllabus-topic-page-leader,
+[data-theme='nord'] .syllabus-topic-page-leader,
+body.dark-mode .syllabus-topic-page-leader {
+    color: rgba(241, 245, 249, 0.4) !important;
+    border-bottom-color: rgba(241, 245, 249, 0.3) !important;
 }
 
 /* Mobile adjustments in dark mode */
 @media (max-width: 48rem) {
+    [data-theme='dark'] .modal-left-section,
+    [data-theme='midnight'] .modal-left-section,
+    [data-theme='nord'] .modal-left-section,
     body.dark-mode .modal-left-section {
-        border-bottom-color: #374151;
+        border-bottom-color: rgba(255, 255, 255, 0.12);
     }
 }
