@@ -1,0 +1,22 @@
+# ExamFobiya
+
+> Your ultimate destination for BCA, DCA, and PGDCA course materials, books, previous year questions, and programming solutions.
+
+## About
+
+ExamFobiya is an educational platform providing free study materials for university computer science courses including BCA (Bachelor of Computer Applications), DCA (Diploma in Computer Applications), and PGDCA (Post Graduate Diploma in Computer Applications). The platform offers textbooks, previous year question papers, and programming solutions to help students prepare for their exams.
+
+## Pages
+
+- [Home](https://www.examfobiya.com/)
+- [Books](https://www.examfobiya.com/books)
+- [Previous Year Questions](https://www.examfobiya.com/questions)
+- [Programming Solutions](https://www.examfobiya.com/programming-solutions)
+- [About Us](https://www.examfobiya.com/about)
+- [Terms of Service](https://www.examfobiya.com/terms)
+- [Privacy Policy](https://www.examfobiya.com/privacy)
+
+## Contact
+
+- Email: examfobiya@gmail.com
+- Website: [https://www.examfobiya.com](https://www.examfobiya.com)
