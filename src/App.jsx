@@ -11,6 +11,8 @@ import { AuthProvider } from "./context/AuthContext";
 import { BookProvider } from "./context/BookContext";
 import { QuestionProvider } from "./context/QuestionContext";
 
+import PWAInstallBanner from "./components/PWAInstallBanner";
+
 import "@fontsource/nunito";
 
 import './App.css'; 
@@ -115,6 +117,7 @@ function App() {
                   </ErrorBoundary>
                 </main>
                 <Footer />
+                <PWAInstallBanner />
               </Router>
             </QuestionProvider>
           </BookProvider>

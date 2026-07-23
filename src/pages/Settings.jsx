@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { getApiUrl } from '../utils/api';
 import { useNavigate } from 'react-router-dom';
 import useSEO from '../utils/useSEO';
+import { usePWAInstall } from '../utils/usePWAInstall';
 import './Settings.css';
 
 /* ─── SVG Icons ───────────────────────────────────────────────── */
@@ -75,6 +76,15 @@ const IconEdit = () => (
         stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+    </svg>
+);
+
+const IconDownload = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="7 10 12 15 17 10" />
+        <line x1="12" y1="15" x2="12" y2="3" />
     </svg>
 );
 
@@ -505,10 +515,92 @@ const ResetPasswordPanel = ({ user, checkAccountExists }) => {
     );
 };
 
+/* ─── App Install Panel ───────────────────────────────────────── */
+const AppInstallPanel = () => {
+    const { isInstalled, installApp } = usePWAInstall();
+    const [installNotice, setInstallNotice] = useState('');
+
+    const handleInstallClick = async () => {
+        setInstallNotice('');
+        const status = await installApp();
+
+        if (status === 'no_prompt') {
+            setInstallNotice('To complete installation on your browser: Tap your browser menu (3 dots) and select "Add to Home Screen" or "Install App".');
+        } else if (status === 'accepted') {
+            setInstallNotice('App installation accepted!');
+        }
+    };
+
+    return (
+        <div className="settings-panel">
+            <div className="settings-panel-header">
+                <h2>Application Installation</h2>
+                <p>
+                    Install ExamFobiya on your device for fast access, offline study materials, and a fullscreen app experience.
+                </p>
+            </div>
+
+            <div className="settings-app-showcase">
+                <div className="settings-app-card">
+                    <div className="settings-app-header">
+                        <div className="settings-app-icon-wrapper">
+                            <img
+                                src="/logo192.png"
+                                alt="ExamFobiya App Icon"
+                                className="settings-app-icon"
+                            />
+                        </div>
+                        <div className="settings-app-details">
+                            <span className="settings-app-name">ExamFobiya App</span>
+                            <span className="settings-app-tagline">
+                                {isInstalled
+                                    ? 'App is currently installed and active on this device.'
+                                    : 'Available for instant installation on Android, iOS, and Desktop.'}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div className="settings-app-features">
+                        <span className="settings-feature-chip">Offline Access</span>
+                        <span className="settings-feature-chip">Fast Launch</span>
+                        <span className="settings-feature-chip">Fullscreen Mode</span>
+                        <span className="settings-feature-chip">No App Store Needed</span>
+                    </div>
+
+                    <div className="settings-app-action-area">
+                        {isInstalled ? (
+                            <div className="settings-installed-badge">
+                                <IconCheck /> App Installed & Ready
+                            </div>
+                        ) : (
+                            <>
+                                <button
+                                    type="button"
+                                    className="settings-install-btn"
+                                    onClick={handleInstallClick}
+                                >
+                                    <IconDownload /> Install Application
+                                </button>
+
+                                {installNotice && (
+                                    <div className="settings-install-notice">
+                                        <span>{installNotice}</span>
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 /* ─── Nav items ───────────────────────────────────────────────── */
 const MENU_ITEMS = [
-    { id: 'account',        label: 'Account',       icon: <IconUser /> },
+    { id: 'account',        label: 'Account',        icon: <IconUser /> },
     { id: 'reset-password', label: 'Reset Password', icon: <IconLock /> },
+    { id: 'app-install',    label: 'Install App',    icon: <IconDownload /> },
 ];
 
 /* ─── Main Settings Page ──────────────────────────────────────── */
@@ -570,6 +662,9 @@ const Settings = () => {
                     )}
                     {activeSection === 'reset-password' && (
                         <ResetPasswordPanel user={user} checkAccountExists={checkAccountExists} />
+                    )}
+                    {activeSection === 'app-install' && (
+                        <AppInstallPanel />
                     )}
                 </main>
 
