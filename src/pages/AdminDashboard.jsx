@@ -250,7 +250,7 @@ const AdminDashboard = () => {
     ]), [stats]);
 
     if (loading) {
-        return <Loader text="Loading Dashboard..." size={150} />;
+        return <Loader text="Loading Dashboard..." size={150} fullScreen />;
     }
 
     return (
