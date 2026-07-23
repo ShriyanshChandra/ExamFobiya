@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { fetchAnalyticsData } from '../services/AnalyticsService';
 import { fetchRecentClientErrors, toggleErrorResolved } from '../services/ErrorLoggerService';
 import Loader from '../components/Loader';
+import ConfirmationModal from '../components/ConfirmationModal';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
@@ -16,7 +17,8 @@ const AdminDashboard = () => {
     const [clientErrors, setClientErrors] = useState([]);
     const [loadingErrors, setLoadingErrors] = useState(true);
     const [expandedErrorId, setExpandedErrorId] = useState(null);
-    const [errorFilter, setErrorFilter] = useState('all'); // 'all', 'unresolved', 'resolved'
+    const [errorView, setErrorView] = useState('active'); // 'active' (unresolved) or 'history' (resolved)
+    const [confirmResolveTarget, setConfirmResolveTarget] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -38,7 +40,19 @@ const AdminDashboard = () => {
         loadDashboardData();
     }, []);
 
-    const handleToggleResolved = async (errorId, currentResolved) => {
+    const onRequestToggleResolved = (err) => {
+        setConfirmResolveTarget({
+            id: err.id,
+            currentResolved: err.resolved,
+            message: err.message
+        });
+    };
+
+    const handleConfirmToggleResolved = async () => {
+        if (!confirmResolveTarget) return;
+        const { id: errorId, currentResolved } = confirmResolveTarget;
+        setConfirmResolveTarget(null);
+
         const newStatus = !currentResolved;
         // Optimistic UI update
         setClientErrors(prev =>
@@ -59,15 +73,20 @@ const AdminDashboard = () => {
         setExpandedErrorId(prev => prev === errorId ? null : errorId);
     };
 
-    const filteredErrors = useMemo(() => {
-        if (errorFilter === 'unresolved') return clientErrors.filter(e => !e.resolved);
-        if (errorFilter === 'resolved') return clientErrors.filter(e => e.resolved);
-        return clientErrors;
-    }, [clientErrors, errorFilter]);
-
     const unresolvedCount = useMemo(() => {
         return clientErrors.filter(e => !e.resolved).length;
     }, [clientErrors]);
+
+    const resolvedCount = useMemo(() => {
+        return clientErrors.filter(e => e.resolved).length;
+    }, [clientErrors]);
+
+    const displayedErrors = useMemo(() => {
+        if (errorView === 'history') {
+            return clientErrors.filter(e => e.resolved);
+        }
+        return clientErrors.filter(e => !e.resolved);
+    }, [clientErrors, errorView]);
 
     const SEGMENT_COLORS = [
         'var(--primary-color)', 'var(--secondary-color)', 'var(--accent-color)',
@@ -220,7 +239,7 @@ const AdminDashboard = () => {
                                     <span className="chart-kicker error-kicker">Error Monitor</span>
                                     {unresolvedCount > 0 && (
                                         <span className="error-unresolved-badge">
-                                            {unresolvedCount} Unresolved
+                                            {unresolvedCount} Active
                                         </span>
                                     )}
                                 </div>
@@ -229,35 +248,29 @@ const AdminDashboard = () => {
 
                             <div className="error-filter-pills">
                                 <button
-                                    className={`filter-btn ${errorFilter === 'all' ? 'active' : ''}`}
-                                    onClick={() => setErrorFilter('all')}
+                                    className={`filter-btn ${errorView === 'active' ? 'active' : ''}`}
+                                    onClick={() => setErrorView('active')}
                                 >
-                                    All ({clientErrors.length})
+                                    Active Errors ({unresolvedCount})
                                 </button>
                                 <button
-                                    className={`filter-btn ${errorFilter === 'unresolved' ? 'active' : ''}`}
-                                    onClick={() => setErrorFilter('unresolved')}
+                                    className={`filter-btn ${errorView === 'history' ? 'active' : ''}`}
+                                    onClick={() => setErrorView('history')}
                                 >
-                                    Unresolved ({unresolvedCount})
-                                </button>
-                                <button
-                                    className={`filter-btn ${errorFilter === 'resolved' ? 'active' : ''}`}
-                                    onClick={() => setErrorFilter('resolved')}
-                                >
-                                    Resolved ({clientErrors.length - unresolvedCount})
+                                    History ({resolvedCount})
                                 </button>
                             </div>
                         </div>
 
                         {loadingErrors ? (
                             <div className="error-log-loading">Loading error logs...</div>
-                        ) : filteredErrors.length === 0 ? (
+                        ) : displayedErrors.length === 0 ? (
                             <div className="error-log-empty">
-                                <p>No {errorFilter !== 'all' ? errorFilter : ''} client errors recorded.</p>
+                                <p>{errorView === 'history' ? 'No resolved error history available.' : 'No active client errors recorded.'}</p>
                             </div>
                         ) : (
                             <div className="error-list-wrapper">
-                                {filteredErrors.map((err) => {
+                                {displayedErrors.map((err) => {
                                     const isExpanded = expandedErrorId === err.id;
                                     return (
                                         <div key={err.id} className={`error-item-card ${err.resolved ? 'is-resolved' : 'is-unresolved'}`}>
@@ -279,7 +292,7 @@ const AdminDashboard = () => {
                                                 <div className="error-actions-group">
                                                     <button
                                                         className={`resolve-toggle-btn ${err.resolved ? 'btn-resolved' : 'btn-unresolved'}`}
-                                                        onClick={() => handleToggleResolved(err.id, err.resolved)}
+                                                        onClick={() => onRequestToggleResolved(err)}
                                                     >
                                                         {err.resolved ? '✓ Resolved' : 'Mark Resolved'}
                                                     </button>
@@ -329,6 +342,21 @@ const AdminDashboard = () => {
                     </section>
                 </div>
             </div>
+
+            <ConfirmationModal
+                isOpen={!!confirmResolveTarget}
+                onClose={() => setConfirmResolveTarget(null)}
+                onConfirm={handleConfirmToggleResolved}
+                title={confirmResolveTarget?.currentResolved ? 'Reopen Error Log' : 'Mark Error as Resolved'}
+                message={
+                    confirmResolveTarget?.currentResolved
+                        ? 'Are you sure you want to move this error back to active errors?'
+                        : 'Are you sure you want to mark this error as resolved? It will be moved to History.'
+                }
+                variant={confirmResolveTarget?.currentResolved ? 'yellow' : 'approve'}
+                confirmLabel={confirmResolveTarget?.currentResolved ? 'Yes, Reopen' : 'Yes, Mark Resolved'}
+                cancelLabel="Cancel"
+            />
         </div>
     );
 };

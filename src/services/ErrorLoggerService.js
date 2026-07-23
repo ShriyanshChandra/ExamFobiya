@@ -4,7 +4,22 @@ import { collection, addDoc, getDocs, updateDoc, doc, query, orderBy, limit, ser
 const recentErrorsSet = new Set();
 
 /**
+ * Checks whether a given URL or hostname corresponds to a localhost environment
+ */
+const isLocalhostUrl = (urlStr) => {
+    if (!urlStr) return false;
+    const lowerUrl = String(urlStr).toLowerCase();
+    return (
+        lowerUrl.includes('localhost') ||
+        lowerUrl.includes('127.0.0.1') ||
+        lowerUrl.includes('::1') ||
+        lowerUrl.includes('0.0.0.0')
+    );
+};
+
+/**
  * Logs a client-side error to Firebase Firestore under 'client_errors'
+ * Excludes all localhost / local development errors.
  */
 export const logErrorToFirebase = async (errorPayload) => {
     try {
@@ -13,11 +28,20 @@ export const logErrorToFirebase = async (errorPayload) => {
             stack = '',
             componentStack = '',
             type = 'unhandled_error',
-            url = window.location.href
+            url = typeof window !== 'undefined' ? window.location.href : ''
         } = errorPayload || {};
 
+        const currentUrl = url || (typeof window !== 'undefined' ? window.location.href : '');
+        const currentHost = typeof window !== 'undefined' ? window.location.hostname : '';
+
+        // Exclude localhost errors from error collection & logging
+        if (isLocalhostUrl(currentUrl) || isLocalhostUrl(currentHost)) {
+            console.log('[ErrorLogger] Skipping error logging for localhost:', message);
+            return;
+        }
+
         // Generate deduplication key (hash of message + url)
-        const dedupKey = `${message}:${url}`;
+        const dedupKey = `${message}:${currentUrl}`;
         if (recentErrorsSet.has(dedupKey)) {
             return; // Skip duplicate error spam
         }
@@ -37,8 +61,8 @@ export const logErrorToFirebase = async (errorPayload) => {
             stack: String(stack).slice(0, 2000),
             componentStack: String(componentStack).slice(0, 2000),
             type,
-            url: String(url).slice(0, 500),
-            userAgent: navigator.userAgent,
+            url: String(currentUrl).slice(0, 500),
+            userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
             userId: auth.currentUser?.uid || 'anonymous',
             userEmail: auth.currentUser?.email || 'anonymous',
             resolved: false,
@@ -55,19 +79,21 @@ export const logErrorToFirebase = async (errorPayload) => {
 };
 
 /**
- * Fetches recent logged client errors from Firebase
+ * Fetches recent logged client errors from Firebase, excluding localhost errors
  */
 export const fetchRecentClientErrors = async (maxResults = 50) => {
     try {
         const errorsRef = collection(db, 'client_errors');
         const q = query(errorsRef, orderBy('createdAt', 'desc'), limit(maxResults));
         const snapshot = await getDocs(q);
-        return snapshot.docs.map(d => ({
-            id: d.id,
-            ...d.data(),
-            resolved: d.data().resolved || false,
-            date: d.data().date || (d.data().createdAt ? new Date(d.data().createdAt).toLocaleString() : 'N/A')
-        }));
+        return snapshot.docs
+            .map(d => ({
+                id: d.id,
+                ...d.data(),
+                resolved: d.data().resolved || false,
+                date: d.data().date || (d.data().createdAt ? new Date(d.data().createdAt).toLocaleString() : 'N/A')
+            }))
+            .filter(err => !isLocalhostUrl(err.url));
     } catch (err) {
         console.error('[ErrorLogger] Failed to fetch client errors:', err);
         return [];
