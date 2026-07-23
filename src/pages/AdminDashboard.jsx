@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { fetchAnalyticsData } from '../services/AnalyticsService';
+import { fetchRecentClientErrors, toggleErrorResolved } from '../services/ErrorLoggerService';
 import Loader from '../components/Loader';
 import './AdminDashboard.css';
 
@@ -12,17 +13,61 @@ const AdminDashboard = () => {
         totalProgrammingSolutions: 0,
         programmingData: []
     });
+    const [clientErrors, setClientErrors] = useState([]);
+    const [loadingErrors, setLoadingErrors] = useState(true);
+    const [expandedErrorId, setExpandedErrorId] = useState(null);
+    const [errorFilter, setErrorFilter] = useState('all'); // 'all', 'unresolved', 'resolved'
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const loadStats = async () => {
+        const loadDashboardData = async () => {
             const data = await fetchAnalyticsData();
             setStats(data);
             setLoading(false);
+
+            try {
+                const errors = await fetchRecentClientErrors(50);
+                setClientErrors(errors);
+            } catch (err) {
+                console.error("Failed to load client errors:", err);
+            } finally {
+                setLoadingErrors(false);
+            }
         };
 
-        loadStats();
+        loadDashboardData();
     }, []);
+
+    const handleToggleResolved = async (errorId, currentResolved) => {
+        const newStatus = !currentResolved;
+        // Optimistic UI update
+        setClientErrors(prev =>
+            prev.map(item => item.id === errorId ? { ...item, resolved: newStatus } : item)
+        );
+
+        try {
+            await toggleErrorResolved(errorId, newStatus);
+        } catch (err) {
+            // Revert state on error
+            setClientErrors(prev =>
+                prev.map(item => item.id === errorId ? { ...item, resolved: currentResolved } : item)
+            );
+        }
+    };
+
+    const toggleExpandError = (errorId) => {
+        setExpandedErrorId(prev => prev === errorId ? null : errorId);
+    };
+
+    const filteredErrors = useMemo(() => {
+        if (errorFilter === 'unresolved') return clientErrors.filter(e => !e.resolved);
+        if (errorFilter === 'resolved') return clientErrors.filter(e => e.resolved);
+        return clientErrors;
+    }, [clientErrors, errorFilter]);
+
+    const unresolvedCount = useMemo(() => {
+        return clientErrors.filter(e => !e.resolved).length;
+    }, [clientErrors]);
 
     const SEGMENT_COLORS = [
         'var(--primary-color)', 'var(--secondary-color)', 'var(--accent-color)',
@@ -166,6 +211,122 @@ const AdminDashboard = () => {
                             {renderSegmentedBar(stats.programmingData, 'Solutions')}
                         </div>
                     </section>
+
+                    {/* Error Log Section */}
+                    <section className="chart-container error-log-section">
+                        <div className="chart-header error-log-header">
+                            <div>
+                                <div className="error-title-wrapper">
+                                    <span className="chart-kicker error-kicker">Error Monitor</span>
+                                    {unresolvedCount > 0 && (
+                                        <span className="error-unresolved-badge">
+                                            {unresolvedCount} Unresolved
+                                        </span>
+                                    )}
+                                </div>
+                                <h4 className="chart-title">Client Error Logs</h4>
+                            </div>
+
+                            <div className="error-filter-pills">
+                                <button
+                                    className={`filter-btn ${errorFilter === 'all' ? 'active' : ''}`}
+                                    onClick={() => setErrorFilter('all')}
+                                >
+                                    All ({clientErrors.length})
+                                </button>
+                                <button
+                                    className={`filter-btn ${errorFilter === 'unresolved' ? 'active' : ''}`}
+                                    onClick={() => setErrorFilter('unresolved')}
+                                >
+                                    Unresolved ({unresolvedCount})
+                                </button>
+                                <button
+                                    className={`filter-btn ${errorFilter === 'resolved' ? 'active' : ''}`}
+                                    onClick={() => setErrorFilter('resolved')}
+                                >
+                                    Resolved ({clientErrors.length - unresolvedCount})
+                                </button>
+                            </div>
+                        </div>
+
+                        {loadingErrors ? (
+                            <div className="error-log-loading">Loading error logs...</div>
+                        ) : filteredErrors.length === 0 ? (
+                            <div className="error-log-empty">
+                                <p>No {errorFilter !== 'all' ? errorFilter : ''} client errors recorded.</p>
+                            </div>
+                        ) : (
+                            <div className="error-list-wrapper">
+                                {filteredErrors.map((err) => {
+                                    const isExpanded = expandedErrorId === err.id;
+                                    return (
+                                        <div key={err.id} className={`error-item-card ${err.resolved ? 'is-resolved' : 'is-unresolved'}`}>
+                                            <div className="error-item-main">
+                                                <div className="error-meta">
+                                                    <span className="error-date-badge">{err.date}</span>
+                                                    <span className={`error-type-badge ${err.type || 'error'}`}>{err.type || 'Error'}</span>
+                                                </div>
+
+                                                <div className="error-message-box">
+                                                    <div className="error-message-text">{err.message}</div>
+                                                    {err.url && (
+                                                        <div className="error-url-text">
+                                                            <span>URL:</span> {err.url}
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                <div className="error-actions-group">
+                                                    <button
+                                                        className={`resolve-toggle-btn ${err.resolved ? 'btn-resolved' : 'btn-unresolved'}`}
+                                                        onClick={() => handleToggleResolved(err.id, err.resolved)}
+                                                    >
+                                                        {err.resolved ? '✓ Resolved' : 'Mark Resolved'}
+                                                    </button>
+
+                                                    {(err.stack || err.componentStack) && (
+                                                        <button
+                                                            className="details-toggle-btn"
+                                                            onClick={() => toggleExpandError(err.id)}
+                                                        >
+                                                            {isExpanded ? 'Hide Details' : 'View Stack'}
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {isExpanded && (
+                                                <div className="error-details-drawer">
+                                                    {err.userEmail && err.userEmail !== 'anonymous' && (
+                                                        <div className="error-detail-field">
+                                                            <strong>User:</strong> {err.userEmail} ({err.userId})
+                                                        </div>
+                                                    )}
+                                                    {err.userAgent && (
+                                                        <div className="error-detail-field">
+                                                            <strong>User Agent:</strong> {err.userAgent}
+                                                        </div>
+                                                    )}
+                                                    {err.stack && (
+                                                        <div className="error-stack-block">
+                                                            <div className="stack-title">Stack Trace:</div>
+                                                            <pre>{err.stack}</pre>
+                                                        </div>
+                                                    )}
+                                                    {err.componentStack && (
+                                                        <div className="error-stack-block">
+                                                            <div className="stack-title">Component Stack:</div>
+                                                            <pre>{err.componentStack}</pre>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </section>
                 </div>
             </div>
         </div>
@@ -173,3 +334,4 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+

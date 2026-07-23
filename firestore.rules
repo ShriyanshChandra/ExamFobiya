@@ -52,5 +52,11 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
+
+    // CLIENT ERROR LOGGING: Any client can log errors, Admin can view/manage
+    match /client_errors/{errorId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
   }
 }

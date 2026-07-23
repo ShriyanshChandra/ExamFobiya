@@ -10,6 +10,7 @@ const PrivacyPolicy = () => {
                 'Account information such as your email address, username, and authentication details when you create or use an account.',
                 'Verification and recovery information, including OTP codes and related email data, when you register or reset your password.',
                 'Usage and technical information such as page visits, device/browser context, performance metrics, and aggregated traffic insights collected through our own tracking endpoint and Vercel analytics tooling.',
+                'Diagnostic error logs, including runtime JavaScript errors, exception stack traces, page URLs, and browser context captured automatically to diagnose crashes and ensure website stability.',
                 'Local device data such as saved theme preferences and temporary form data stored in your browser for convenience.'
             ]
         },
@@ -18,14 +19,14 @@ const PrivacyPolicy = () => {
             points: [
                 'To create and manage accounts, authenticate users, and secure access to protected areas of the website.',
                 'To send OTP emails for verification and password recovery.',
-                'To operate, improve, monitor, and protect the website, including measuring traffic and performance.',
+                'To operate, improve, monitor, and protect the website, including diagnosing application crashes, resolving bugs, and measuring traffic and performance.',
                 'To respond to support requests, enforce our terms, and comply with applicable law.'
             ]
         },
         {
             title: '3. Services and Providers We Use',
             points: [
-                'Firebase Authentication, Firestore, and related Google Firebase services to manage accounts and application data.',
+                'Firebase Authentication, Firestore, and related Google Firebase services to manage accounts, application data, and diagnostic error logs.',
                 'Vercel Analytics and Vercel Speed Insights to understand website usage and performance.',
                 'Brevo email infrastructure, through our backend, to deliver verification and password reset emails.'
             ]

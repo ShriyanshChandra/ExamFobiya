@@ -27,4 +27,4 @@ src/pages/old_pages
 backend/serviceAccountKey.json
 .agents/AGENTS.md
 
-
+firestore.rules

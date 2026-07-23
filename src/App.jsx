@@ -3,6 +3,8 @@ import React, { useEffect, useState, Suspense } from "react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ErrorBoundary from "./components/ErrorBoundary";
+import GlobalErrorMonitor from "./components/GlobalErrorMonitor";
 import Home from "./pages/Home";
 import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
@@ -13,25 +15,42 @@ import "@fontsource/nunito";
 
 import './App.css'; 
 
-// Lazy-loaded pages — these pull in heavy libraries (DotLottie, pdfjs-dist, mammoth, etc.)
-// and/or are admin-only / rarely visited, so they are split into separate chunks.
-const Books = React.lazy(() => import("./pages/Books"));
-const Login = React.lazy(() => import("./pages/Login"));
-const Register = React.lazy(() => import("./pages/Register"));
-const Questions = React.lazy(() => import("./pages/Questions"));
-const Search = React.lazy(() => import("./pages/Search"));
-const Welcome = React.lazy(() => import("./pages/Welcome"));
-const AdminDashboard = React.lazy(() => import("./pages/AdminDashboard"));
-const AddBook = React.lazy(() => import("./pages/AddBook"));
-const UploadQuestions = React.lazy(() => import("./pages/UploadQuestions"));
-const EditQuestionPdf = React.lazy(() => import("./pages/EditQuestionPdf"));
-const AboutUs = React.lazy(() => import("./pages/About_us"));
-const TermsAndConditions = React.lazy(() => import("./pages/TermsAndConditions"));
-const PrivacyPolicy = React.lazy(() => import("./pages/PrivacyPolicy"));
-const Maintenance = React.lazy(() => import("./pages/Maintenance"));
-const Settings = React.lazy(() => import("./pages/Settings"));
-const ProgrammingSolutions = React.lazy(() => import("./pages/ProgrammingSolutions"));
-const AddProgrammingSolution = React.lazy(() => import("./pages/AddProgrammingSolution"));
+// Helper to auto-retry dynamic imports if a new deployment changed chunk hashes
+const lazyWithRetry = (componentImport) =>
+  React.lazy(async () => {
+    const pageHasBeenRefreshed = window.sessionStorage.getItem('chunk_retry_refreshed');
+    try {
+      const component = await componentImport();
+      window.sessionStorage.removeItem('chunk_retry_refreshed');
+      return component;
+    } catch (error) {
+      if (!pageHasBeenRefreshed) {
+        window.sessionStorage.setItem('chunk_retry_refreshed', 'true');
+        window.location.reload();
+        return { default: () => null };
+      }
+      throw error;
+    }
+  });
+
+// Lazy-loaded pages with auto-reload protection on stale chunks
+const Books = lazyWithRetry(() => import("./pages/Books"));
+const Login = lazyWithRetry(() => import("./pages/Login"));
+const Register = lazyWithRetry(() => import("./pages/Register"));
+const Questions = lazyWithRetry(() => import("./pages/Questions"));
+const Search = lazyWithRetry(() => import("./pages/Search"));
+const Welcome = lazyWithRetry(() => import("./pages/Welcome"));
+const AdminDashboard = lazyWithRetry(() => import("./pages/AdminDashboard"));
+const AddBook = lazyWithRetry(() => import("./pages/AddBook"));
+const UploadQuestions = lazyWithRetry(() => import("./pages/UploadQuestions"));
+const EditQuestionPdf = lazyWithRetry(() => import("./pages/EditQuestionPdf"));
+const AboutUs = lazyWithRetry(() => import("./pages/About_us"));
+const TermsAndConditions = lazyWithRetry(() => import("./pages/TermsAndConditions"));
+const PrivacyPolicy = lazyWithRetry(() => import("./pages/PrivacyPolicy"));
+const Maintenance = lazyWithRetry(() => import("./pages/Maintenance"));
+const Settings = lazyWithRetry(() => import("./pages/Settings"));
+const ProgrammingSolutions = lazyWithRetry(() => import("./pages/ProgrammingSolutions"));
+const AddProgrammingSolution = lazyWithRetry(() => import("./pages/AddProgrammingSolution"));
 
 // Lightweight CSS-only fallback (avoids importing DotLottie in the main bundle)
 const SuspenseFallback = () => (
@@ -56,50 +75,52 @@ function ScrollToTop() {
 function App() {
   const [searchQuery, setSearchQuery] = useState("");
 
-
-
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <BookProvider>
-          <QuestionProvider>
-            <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-              <ScrollToTop />
-              <Navbar setSearchQuery={setSearchQuery} />
-              {/* Ensure this div is transparent so the background shows through */}
-              <main className="p-6" style={{ paddingTop: "4rem" }}>
-                <Suspense fallback={<SuspenseFallback />}>
-                  <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/books" element={<Books searchQuery={searchQuery} />} />
-                    <Route path="/questions" element={<Questions />} />
-                    <Route path="/search" element={<Search searchQuery={searchQuery} />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/welcome" element={<ProtectedRoute><Welcome /></ProtectedRoute>} />
-                    <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-                    <Route path="/programming-solutions" element={<ProgrammingSolutions />} />
-                    <Route path="/programming-solutions/:id" element={<ProgrammingSolutions />} />
-                    <Route path="/add-programming-solution" element={<ProtectedRoute requiredRole="admin"><AddProgrammingSolution /></ProtectedRoute>} />
-                    <Route path="/edit-programming-solution/:bookId/:solutionId" element={<ProtectedRoute requiredRole="admin"><AddProgrammingSolution /></ProtectedRoute>} />
-                    <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
-                    <Route path="/add-book" element={<ProtectedRoute requiredRole="admin"><AddBook /></ProtectedRoute>} />
-                    <Route path="/edit-book/:id" element={<ProtectedRoute requiredRole="admin"><AddBook /></ProtectedRoute>} />
-                    <Route path="/upload-questions" element={<ProtectedRoute requiredRole="admin"><UploadQuestions /></ProtectedRoute>} />
-                    <Route path="/edit-question-pdf" element={<ProtectedRoute requiredRole="admin"><EditQuestionPdf /></ProtectedRoute>} />
-                    <Route path="/about" element={<AboutUs />} />
-                    <Route path="/terms" element={<TermsAndConditions />} />
-                    <Route path="/privacy" element={<PrivacyPolicy />} />
-                    <Route path="/maintenance" element={<Maintenance />} />
-                  </Routes>
-                </Suspense>
-              </main>
-              <Footer />
-            </Router>
-          </QuestionProvider>
-        </BookProvider>
-      </AuthProvider>
-    </ThemeProvider>
+    <GlobalErrorMonitor>
+      <ThemeProvider>
+        <AuthProvider>
+          <BookProvider>
+            <QuestionProvider>
+              <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+                <ScrollToTop />
+                <Navbar setSearchQuery={setSearchQuery} />
+                {/* Ensure this div is transparent so the background shows through */}
+                <main className="p-6" style={{ paddingTop: "4rem" }}>
+                  <ErrorBoundary>
+                    <Suspense fallback={<SuspenseFallback />}>
+                      <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/books" element={<Books searchQuery={searchQuery} />} />
+                        <Route path="/questions" element={<Questions />} />
+                        <Route path="/search" element={<Search searchQuery={searchQuery} />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
+                        <Route path="/welcome" element={<ProtectedRoute><Welcome /></ProtectedRoute>} />
+                        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+                        <Route path="/programming-solutions" element={<ProgrammingSolutions />} />
+                        <Route path="/programming-solutions/:id" element={<ProgrammingSolutions />} />
+                        <Route path="/add-programming-solution" element={<ProtectedRoute requiredRole="admin"><AddProgrammingSolution /></ProtectedRoute>} />
+                        <Route path="/edit-programming-solution/:bookId/:solutionId" element={<ProtectedRoute requiredRole="admin"><AddProgrammingSolution /></ProtectedRoute>} />
+                        <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
+                        <Route path="/add-book" element={<ProtectedRoute requiredRole="admin"><AddBook /></ProtectedRoute>} />
+                        <Route path="/edit-book/:id" element={<ProtectedRoute requiredRole="admin"><AddBook /></ProtectedRoute>} />
+                        <Route path="/upload-questions" element={<ProtectedRoute requiredRole="admin"><UploadQuestions /></ProtectedRoute>} />
+                        <Route path="/edit-question-pdf" element={<ProtectedRoute requiredRole="admin"><EditQuestionPdf /></ProtectedRoute>} />
+                        <Route path="/about" element={<AboutUs />} />
+                        <Route path="/terms" element={<TermsAndConditions />} />
+                        <Route path="/privacy" element={<PrivacyPolicy />} />
+                        <Route path="/maintenance" element={<Maintenance />} />
+                      </Routes>
+                    </Suspense>
+                  </ErrorBoundary>
+                </main>
+                <Footer />
+              </Router>
+            </QuestionProvider>
+          </BookProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </GlobalErrorMonitor>
   );
 }
 
