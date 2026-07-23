@@ -78,7 +78,7 @@ export function PWAInstallBanner() {
                 />
                 <div className="pwa-install-text-info">
                     <span className="pwa-install-title">Install ExamFobiya</span>
-                    <span className="pwa-install-subtitle">Fast & offline access on Android</span>
+                    <span className="pwa-install-subtitle">Fast & offline access on your device</span>
                 </div>
             </div>
             <div className="pwa-install-actions">

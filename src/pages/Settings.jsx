@@ -555,7 +555,7 @@ const AppInstallPanel = () => {
                             <span className="settings-app-tagline">
                                 {isInstalled
                                     ? 'App is currently installed and active on this device.'
-                                    : 'Available for instant installation on Android, iOS, and Desktop.'}
+                                    : 'Available for instant installation on any device.'}
                             </span>
                         </div>
                     </div>
