@@ -466,7 +466,7 @@ const sendBrevoKeepAlivePing = async () => {
 
     if (!apiKey) {
         console.warn('[Keep-Alive] Skipping Brevo ping: EMAIL_PASS environment variable not set.');
-        return { success: false, reason: 'EMAIL_PASS missing' };
+        return { success: false, reason: 'EMAIL_PASS missing in environment' };
     }
 
     const data = JSON.stringify({
@@ -498,8 +498,13 @@ const sendBrevoKeepAlivePing = async () => {
                     console.log('[Keep-Alive] Brevo API ping successful.');
                     resolve({ success: true, statusCode: res.statusCode });
                 } else {
-                    console.error('[Keep-Alive] Brevo API ping error:', body);
-                    resolve({ success: false, statusCode: res.statusCode, error: body });
+                    let errMsg = body;
+                    try {
+                        const parsed = JSON.parse(body);
+                        errMsg = parsed.message || body;
+                    } catch (e) {}
+                    console.error('[Keep-Alive] Brevo API ping error:', errMsg);
+                    resolve({ success: false, statusCode: res.statusCode, error: errMsg });
                 }
             });
         });
@@ -516,7 +521,7 @@ const sendGeminiKeepAlivePing = async () => {
     const geminiKey = process.env.GEMINI_API_KEY;
     if (!geminiKey) {
         console.warn('[Keep-Alive] Skipping Gemini ping: GEMINI_API_KEY environment variable not set.');
-        return { success: false, reason: 'GEMINI_API_KEY missing' };
+        return { success: false, reason: 'GEMINI_API_KEY missing in environment' };
     }
 
     try {
@@ -531,6 +536,7 @@ const sendGeminiKeepAlivePing = async () => {
         return { success: false, error: err.message };
     }
 };
+
 
 const maskApiKey = (keyStr) => {
     if (!keyStr) return 'Not Configured';

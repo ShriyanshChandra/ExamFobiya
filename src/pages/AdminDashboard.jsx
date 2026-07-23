@@ -61,11 +61,30 @@ const AdminDashboard = () => {
         setPingingKeyId(targetId);
         setPingFeedback(null);
         try {
-            await triggerApiKeyPing(targetId);
-            setPingFeedback({
-                type: 'success',
-                message: targetId === 'all' ? 'Successfully pinged all API keys.' : `Successfully pinged API key.`
-            });
+            const res = await triggerApiKeyPing(targetId);
+            const statusRecord = res.result || {};
+            const brevo = statusRecord.brevoStatus;
+            const gemini = statusRecord.geminiStatus;
+
+            let failedKeys = [];
+            if ((targetId === 'all' || targetId === 'brevo') && brevo && !brevo.success) {
+                failedKeys.push(`Brevo: ${brevo.error || brevo.reason || 'Failed'}`);
+            }
+            if ((targetId === 'all' || targetId === 'gemini') && gemini && !gemini.success) {
+                failedKeys.push(`Gemini: ${gemini.error || gemini.reason || 'Failed'}`);
+            }
+
+            if (failedKeys.length > 0) {
+                setPingFeedback({
+                    type: 'error',
+                    message: `Ping issue: ${failedKeys.join(' | ')}`
+                });
+            } else {
+                setPingFeedback({
+                    type: 'success',
+                    message: targetId === 'all' ? 'All API key pings completed successfully.' : 'API key ping completed successfully.'
+                });
+            }
             await loadApiKeysStatus();
         } catch (err) {
             console.error("Failed to ping API key:", err);
@@ -75,9 +94,10 @@ const AdminDashboard = () => {
             });
         } finally {
             setPingingKeyId(null);
-            setTimeout(() => setPingFeedback(null), 5000);
+            setTimeout(() => setPingFeedback(null), 8000);
         }
     };
+
 
 
     const onRequestToggleResolved = (err) => {
