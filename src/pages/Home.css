@@ -303,12 +303,32 @@
 .best-sellers,
 .book-category-section,
 .explore-section {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px); /* Safari */
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px); /* Safari */
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 15px;
   box-shadow: 0 20px 40px color-mix(in srgb, var(--secondary-color) 10%, transparent);
+  isolation: isolate;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: backdrop-filter;
+}
+
+[data-theme='dark'] .intro-card,
+[data-theme='dark'] .course-browse-strip,
+[data-theme='dark'] .new-arrivals,
+[data-theme='dark'] .best-sellers,
+[data-theme='dark'] .book-category-section,
+[data-theme='dark'] .explore-section,
+[data-theme='midnight'] .intro-card,
+[data-theme='midnight'] .course-browse-strip,
+[data-theme='midnight'] .new-arrivals,
+[data-theme='midnight'] .best-sellers,
+[data-theme='midnight'] .book-category-section,
+[data-theme='midnight'] .explore-section {
+  background: rgba(15, 23, 42, 0.45);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
 .intro-card {
