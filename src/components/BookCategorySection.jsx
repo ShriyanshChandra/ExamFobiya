@@ -27,8 +27,34 @@ const BookCategorySection = ({
 
     const displayLinkText = linkText || (category ? `View ${category} books` : "View course books");
 
+    const handleSectionMouseEnter = (e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+            const relX = e.clientX - rect.left;
+            const relY = e.clientY - rect.top;
+
+            const distLeft = relX;
+            const distRight = rect.width - relX;
+            const distTop = relY;
+            const distBottom = rect.height - relY;
+
+            const minDist = Math.min(distLeft, distRight, distTop, distBottom);
+
+            let edgeX = (relX / rect.width) * 100;
+            let edgeY = (relY / rect.height) * 100;
+
+            if (minDist === distLeft) edgeX = 0;
+            else if (minDist === distRight) edgeX = 100;
+            else if (minDist === distTop) edgeY = 0;
+            else if (minDist === distBottom) edgeY = 100;
+
+            e.currentTarget.style.setProperty('--edge-x', `${edgeX}%`);
+            e.currentTarget.style.setProperty('--edge-y', `${edgeY}%`);
+        }
+    };
+
     return (
-        <section className={className}>
+        <section className={className} onMouseEnter={handleSectionMouseEnter}>
             <div className="section-icon-bg">
                 {icon || defaultIcon}
             </div>

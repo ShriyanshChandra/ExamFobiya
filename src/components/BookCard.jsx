@@ -32,6 +32,32 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit, onSaveClick }) => {
         return url;
     }, [book.image]);
 
+    const handleCardMouseEnter = (e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+            const relX = e.clientX - rect.left;
+            const relY = e.clientY - rect.top;
+
+            const distLeft = relX;
+            const distRight = rect.width - relX;
+            const distTop = relY;
+            const distBottom = rect.height - relY;
+
+            const minDist = Math.min(distLeft, distRight, distTop, distBottom);
+
+            let edgeX = (relX / rect.width) * 100;
+            let edgeY = (relY / rect.height) * 100;
+
+            if (minDist === distLeft) edgeX = 0;
+            else if (minDist === distRight) edgeX = 100;
+            else if (minDist === distTop) edgeY = 0;
+            else if (minDist === distBottom) edgeY = 100;
+
+            e.currentTarget.style.setProperty('--card-mouse-x', `${edgeX}%`);
+            e.currentTarget.style.setProperty('--card-mouse-y', `${edgeY}%`);
+        }
+    };
+
     return (
         <>
             <motion.div
@@ -40,6 +66,7 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit, onSaveClick }) => {
                 tabIndex={0}
                 onClick={openDetails}
                 onKeyDown={handleCardKeyDown}
+                onMouseEnter={handleCardMouseEnter}
                 initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: Math.min(index * 0.03, 0.5) }}

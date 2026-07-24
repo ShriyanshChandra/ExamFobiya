@@ -129,6 +129,22 @@ const Navbar = ({ setSearchQuery }) => {
     navigate('/settings');
   };
 
+  const handleNavMouseEnter = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    if (rect.width > 0) {
+      const xPercent = ((e.clientX - rect.left) / rect.width) * 100;
+      e.currentTarget.style.setProperty('--hover-x', `${xPercent}%`);
+    }
+  };
+
+  const handleNavMouseLeave = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    if (rect.width > 0) {
+      const xPercent = ((e.clientX - rect.left) / rect.width) * 100;
+      e.currentTarget.style.setProperty('--hover-x', `${xPercent}%`);
+    }
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-container">
@@ -173,15 +189,15 @@ const Navbar = ({ setSearchQuery }) => {
 
         {/* Navigation Links - Centered */}
         <ul className={isOpen ? "nav-menu active" : "nav-menu"}>
-          <li><Link to="/" onClick={() => setIsOpen(false)}>Home</Link></li>
-          <li><Link to="/books" onClick={() => setIsOpen(false)}>Books</Link></li>
-          <li><Link to="/questions" onClick={() => setIsOpen(false)}>Questions</Link></li>
-          <li><Link to="/programming-solutions" onClick={() => setIsOpen(false)}>Programming Solutions</Link></li>
-          <li><Link to="/about" onClick={() => setIsOpen(false)}>About Us</Link></li>
+          <li><Link to="/" onMouseEnter={handleNavMouseEnter} onMouseLeave={handleNavMouseLeave} onClick={() => setIsOpen(false)}>Home</Link></li>
+          <li><Link to="/books" onMouseEnter={handleNavMouseEnter} onMouseLeave={handleNavMouseLeave} onClick={() => setIsOpen(false)}>Books</Link></li>
+          <li><Link to="/questions" onMouseEnter={handleNavMouseEnter} onMouseLeave={handleNavMouseLeave} onClick={() => setIsOpen(false)}>Questions</Link></li>
+          <li><Link to="/programming-solutions" onMouseEnter={handleNavMouseEnter} onMouseLeave={handleNavMouseLeave} onClick={() => setIsOpen(false)}>Programming Solutions</Link></li>
+          <li><Link to="/about" onMouseEnter={handleNavMouseEnter} onMouseLeave={handleNavMouseLeave} onClick={() => setIsOpen(false)}>About Us</Link></li>
           {(user?.role === 'admin') && (
             <>
               <li className="nav-separator" aria-hidden="true">|</li>
-              <li><Link to="/admin" onClick={() => setIsOpen(false)}>Dashboard</Link></li>
+              <li><Link to="/admin" onMouseEnter={handleNavMouseEnter} onMouseLeave={handleNavMouseLeave} onClick={() => setIsOpen(false)}>Dashboard</Link></li>
             </>
           )}
 
