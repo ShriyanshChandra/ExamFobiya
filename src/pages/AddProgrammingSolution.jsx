@@ -31,11 +31,17 @@ const AddProgrammingSolution = () => {
     const [solutionTitle, setSolutionTitle] = useState('');
     const [solutionLanguage, setSolutionLanguage] = useState('');
     const [solutionDescription, setSolutionDescription] = useState('');
+    const [solutionInput, setSolutionInput] = useState('');
     const [solutionCode, setSolutionCode] = useState('');
+    const [solutionOutput, setSolutionOutput] = useState('');
     const [saving, setSaving] = useState(false);
     const [alertModal, setAlertModal] = useState(null);
+    const inputLineNumberRef = useRef(null);
     const lineNumberRef = useRef(null);
+    const outputLineNumberRef = useRef(null);
+    const solutionInputLineCount = Math.max(solutionInput.split('\n').length, 1);
     const solutionCodeLineCount = Math.max(solutionCode.split('\n').length, 1);
+    const solutionOutputLineCount = Math.max(solutionOutput.split('\n').length, 1);
     const isEditing = Boolean(bookId && solutionId);
 
     const availableCourses = useMemo(() => {
@@ -84,7 +90,9 @@ const AddProgrammingSolution = () => {
         setSolutionTitle(existingSolution.title || '');
         setSolutionLanguage(existingSolution.language || '');
         setSolutionDescription(existingSolution.description || '');
+        setSolutionInput(existingSolution.input || '');
         setSolutionCode(existingSolution.code || '');
+        setSolutionOutput(existingSolution.output || '');
     }, [books, bookId, solutionId, isEditing, loading]);
 
     const handleCourseChange = (event) => {
@@ -93,7 +101,9 @@ const AddProgrammingSolution = () => {
         setSolutionTitle('');
         setSolutionLanguage('');
         setSolutionDescription('');
+        setSolutionInput('');
         setSolutionCode('');
+        setSolutionOutput('');
     };
 
     const handleBookChange = (event) => {
@@ -108,24 +118,28 @@ const AddProgrammingSolution = () => {
             setSolutionTitle(existingSolution.title || '');
             setSolutionLanguage(existingSolution.language || '');
             setSolutionDescription(existingSolution.description || '');
+            setSolutionInput(existingSolution.input || '');
             setSolutionCode(existingSolution.code || '');
+            setSolutionOutput(existingSolution.output || '');
         } else {
             setSolutionTitle('');
             setSolutionLanguage('');
             setSolutionDescription('');
+            setSolutionInput('');
             setSolutionCode('');
+            setSolutionOutput('');
         }
     };
 
-    const handleSolutionCodeKeyDown = (event) => {
+    const handleEditorKeyDown = (setter) => (event) => {
         if (event.key !== 'Tab') return;
 
         event.preventDefault();
 
         const { selectionStart, selectionEnd, value } = event.target;
-        const updatedCode = `${value.slice(0, selectionStart)}\t${value.slice(selectionEnd)}`;
+        const updatedValue = `${value.slice(0, selectionStart)}\t${value.slice(selectionEnd)}`;
 
-        setSolutionCode(updatedCode);
+        setter(updatedValue);
 
         requestAnimationFrame(() => {
             event.target.selectionStart = selectionStart + 1;
@@ -133,9 +147,9 @@ const AddProgrammingSolution = () => {
         });
     };
 
-    const handleSolutionCodeScroll = (event) => {
-        if (lineNumberRef.current) {
-            lineNumberRef.current.scrollTop = event.target.scrollTop;
+    const handleEditorScroll = (ref) => (event) => {
+        if (ref.current) {
+            ref.current.scrollTop = event.target.scrollTop;
         }
     };
 
@@ -157,7 +171,9 @@ const AddProgrammingSolution = () => {
             title: solutionTitle.trim(),
             language: solutionLanguage.trim(),
             description: solutionDescription.trim(),
-            code: solutionCode
+            input: solutionInput,
+            code: solutionCode,
+            output: solutionOutput
         };
 
         try {
@@ -280,6 +296,27 @@ const AddProgrammingSolution = () => {
                     </label>
 
                     <label className="solution-form-field">
+                        <span>Input</span>
+                        <div className="solution-code-editor solution-io-editor">
+                            <div className="solution-editor-lines" ref={inputLineNumberRef} aria-hidden="true">
+                                {Array.from({ length: solutionInputLineCount }, (_, index) => (
+                                    <span key={index}>{index + 1}</span>
+                                ))}
+                            </div>
+                            <textarea
+                                className="solution-code-input"
+                                value={solutionInput}
+                                onChange={(event) => setSolutionInput(event.target.value)}
+                                onKeyDown={handleEditorKeyDown(setSolutionInput)}
+                                onScroll={handleEditorScroll(inputLineNumberRef)}
+                                wrap="off"
+                                placeholder="Enter sample input (optional) ..."
+                                spellCheck="false"
+                            />
+                        </div>
+                    </label>
+
+                    <label className="solution-form-field">
                         <span>Solution Code <strong>*</strong></span>
                         <div className="solution-code-editor">
                             <div className="solution-editor-lines" ref={lineNumberRef} aria-hidden="true">
@@ -291,12 +328,33 @@ const AddProgrammingSolution = () => {
                                 className="solution-code-input"
                                 value={solutionCode}
                                 onChange={(event) => setSolutionCode(event.target.value)}
-                                onKeyDown={handleSolutionCodeKeyDown}
-                                onScroll={handleSolutionCodeScroll}
+                                onKeyDown={handleEditorKeyDown(setSolutionCode)}
+                                onScroll={handleEditorScroll(lineNumberRef)}
                                 wrap="off"
                                 placeholder="Write/paste your code here ..."
                                 spellCheck="false"
                                 required
+                            />
+                        </div>
+                    </label>
+
+                    <label className="solution-form-field">
+                        <span>Output</span>
+                        <div className="solution-code-editor solution-io-editor">
+                            <div className="solution-editor-lines" ref={outputLineNumberRef} aria-hidden="true">
+                                {Array.from({ length: solutionOutputLineCount }, (_, index) => (
+                                    <span key={index}>{index + 1}</span>
+                                ))}
+                            </div>
+                            <textarea
+                                className="solution-code-input"
+                                value={solutionOutput}
+                                onChange={(event) => setSolutionOutput(event.target.value)}
+                                onKeyDown={handleEditorKeyDown(setSolutionOutput)}
+                                onScroll={handleEditorScroll(outputLineNumberRef)}
+                                wrap="off"
+                                placeholder="Enter expected output (optional) ..."
+                                spellCheck="false"
                             />
                         </div>
                     </label>
