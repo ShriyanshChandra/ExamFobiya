@@ -24,15 +24,14 @@
   max-width: 100rem;
   margin: 0 auto;
   padding: 4.5rem 3rem;
-  border-radius: 2.25rem;
+  border-radius: 2.25rem !important;
   text-align: center;
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--secondary-color) 94%, transparent), color-mix(in srgb, var(--primary-color) 90%, transparent)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+    linear-gradient(135deg, #1e1b4b, #312e81) !important;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: 0 24px 60px color-mix(in srgb, var(--secondary-color) 28%, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 24px 60px rgba(30, 27, 75, 0.35) !important;
 }
 
 .about-eyebrow,
@@ -73,10 +72,12 @@
 
 .about-stat-card {
   padding: 1.2rem 1rem;
-  border-radius: 1.25rem;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border-radius: 1.25rem !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 8px 24px rgba(0, 0, 0, 0.15) !important;
 }
 
 .about-stat-value {
@@ -84,13 +85,15 @@
   margin-bottom: 0.35rem;
   font-size: 1.35rem;
   font-weight: 800;
-  color: #ffffff;
+  color: #ffffff !important;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 
 .about-stat-label {
   display: block;
   font-size: 0.92rem;
-  color: rgba(255, 255, 255, 0.76);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9) !important;
 }
 
 /* Content Wrapper */
@@ -370,14 +373,13 @@
   max-width: 100rem;
   margin: 0 auto;
   padding: 3.4rem 2.5rem;
-  border-radius: 2rem;
+  border-radius: 2rem !important;
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--secondary-color) 90%, transparent), color-mix(in srgb, var(--primary-color) 84%, transparent)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0));
+    linear-gradient(135deg, #1e1b4b, #312e81) !important;
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 24px 56px color-mix(in srgb, var(--primary-color) 20%, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 24px 56px rgba(30, 27, 75, 0.35) !important;
   text-align: left;
 }
 
@@ -498,10 +500,18 @@
   color: var(--text-color);
 }
 
+:is([data-theme='dark'], [data-theme='midnight']) .about-hero-inner,
+:is([data-theme='dark'], [data-theme='midnight']) .legal-hero-inner,
+:is(body.dark-mode, body.midnight-mode) .about-hero-inner,
+:is(body.dark-mode, body.midnight-mode) .legal-hero-inner {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.94)) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
 :is([data-theme='dark'], [data-theme='midnight']) .about-content-wrapper,
 :is(body.dark-mode, body.midnight-mode) .about-content-wrapper {
-  background: rgba(6, 10, 18, 0.78);
-  border-color: rgba(148, 163, 184, 0.18);
+  background: rgba(6, 10, 18, 0.78) !important;
+  border-color: rgba(148, 163, 184, 0.18) !important;
   box-shadow: 0 28px 60px rgba(0, 0, 0, 0.42);
 }
 
@@ -519,8 +529,8 @@
 :is(body.dark-mode, body.midnight-mode) .legal-intro-card,
 :is(body.dark-mode, body.midnight-mode) .legal-card,
 :is(body.dark-mode, body.midnight-mode) .legal-contact-card {
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.9), rgba(9, 14, 26, 0.94));
-  border-color: rgba(148, 163, 184, 0.18);
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.9), rgba(9, 14, 26, 0.94)) !important;
+  border-color: rgba(148, 163, 184, 0.18) !important;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.34);
 }
 
@@ -597,6 +607,129 @@
 :is([data-theme='dark'], [data-theme='midnight']) .legal-link,
 :is(body.dark-mode, body.midnight-mode) .legal-link {
   color: var(--accent-color);
+}
+
+/* ── Vintage theme — About Us & Legal pages ── */
+
+[data-theme='vintage'] .about-hero-inner,
+[data-theme='vintage'] .legal-hero-inner {
+  background:
+    linear-gradient(135deg, rgba(62, 39, 35, 0.96), rgba(93, 64, 55, 0.94)) !important;
+  border-color: rgba(141, 110, 99, 0.3) !important;
+}
+
+[data-theme='vintage'] .about-content-wrapper {
+  background: linear-gradient(180deg, rgba(232, 220, 200, 0.94), rgba(244, 235, 216, 0.98)) !important;
+  border-color: rgba(141, 110, 99, 0.15) !important;
+  box-shadow: 0 24px 60px rgba(78, 52, 46, 0.08);
+}
+
+[data-theme='vintage'] .about-mission-copy,
+[data-theme='vintage'] .about-mission-panel,
+[data-theme='vintage'] .about-course-card,
+[data-theme='vintage'] .about-feature-item,
+[data-theme='vintage'] .legal-intro-card,
+[data-theme='vintage'] .legal-card,
+[data-theme='vintage'] .legal-contact-card {
+  background: rgba(244, 235, 216, 0.85) !important;
+  border-color: rgba(141, 110, 99, 0.18) !important;
+  box-shadow: 0 18px 40px rgba(78, 52, 46, 0.08);
+}
+
+[data-theme='vintage'] .about-feature-item:hover {
+  background: rgba(217, 119, 6, 0.12) !important;
+  border-color: rgba(217, 119, 6, 0.3) !important;
+}
+
+/* ── Ocean theme — About Us & Legal pages ── */
+
+[data-theme='ocean'] .about-hero-inner,
+[data-theme='ocean'] .legal-hero-inner {
+  background:
+    linear-gradient(135deg, rgba(22, 78, 99, 0.96), rgba(14, 116, 144, 0.94)) !important;
+  border-color: rgba(8, 145, 178, 0.3) !important;
+}
+
+[data-theme='ocean'] .about-content-wrapper {
+  background: linear-gradient(180deg, rgba(240, 253, 250, 0.94), rgba(231, 245, 255, 0.98)) !important;
+  border-color: rgba(8, 145, 178, 0.12) !important;
+  box-shadow: 0 24px 60px rgba(22, 78, 99, 0.08);
+}
+
+[data-theme='ocean'] .about-mission-copy,
+[data-theme='ocean'] .about-mission-panel,
+[data-theme='ocean'] .about-course-card,
+[data-theme='ocean'] .about-feature-item,
+[data-theme='ocean'] .legal-intro-card,
+[data-theme='ocean'] .legal-card,
+[data-theme='ocean'] .legal-contact-card {
+  background: rgba(240, 253, 250, 0.85) !important;
+  border-color: rgba(8, 145, 178, 0.15) !important;
+  box-shadow: 0 18px 40px rgba(22, 78, 99, 0.08);
+}
+
+[data-theme='ocean'] .about-feature-item:hover {
+  background: rgba(8, 145, 178, 0.1) !important;
+  border-color: rgba(8, 145, 178, 0.3) !important;
+}
+
+/* ── Forest theme — About Us & Legal pages ── */
+
+[data-theme='forest'] .about-hero-inner,
+[data-theme='forest'] .legal-hero-inner {
+  background:
+    linear-gradient(135deg, rgba(6, 78, 59, 0.96), rgba(4, 120, 87, 0.92)) !important;
+  border-color: rgba(5, 150, 105, 0.25) !important;
+}
+
+[data-theme='forest'] .about-content-wrapper {
+  background: linear-gradient(180deg, rgba(243, 234, 221, 0.94), rgba(232, 245, 233, 0.98)) !important;
+  border-color: rgba(5, 150, 105, 0.12) !important;
+  box-shadow: 0 24px 60px rgba(5, 150, 105, 0.08);
+}
+
+[data-theme='forest'] .about-mission-copy,
+[data-theme='forest'] .about-mission-panel,
+[data-theme='forest'] .about-course-card,
+[data-theme='forest'] .about-feature-item,
+[data-theme='forest'] .legal-intro-card,
+[data-theme='forest'] .legal-card,
+[data-theme='forest'] .legal-contact-card {
+  background: rgba(243, 234, 221, 0.85) !important;
+  border-color: rgba(5, 150, 105, 0.15) !important;
+  box-shadow: 0 18px 40px rgba(5, 150, 105, 0.08);
+}
+
+[data-theme='forest'] .about-feature-item:hover {
+  background: rgba(5, 150, 105, 0.1) !important;
+  border-color: rgba(5, 150, 105, 0.3) !important;
+}
+
+/* ── Nord theme — About Us & Legal pages ── */
+
+[data-theme='nord'] .about-hero-inner,
+[data-theme='nord'] .legal-hero-inner {
+  background:
+    linear-gradient(135deg, rgba(46, 52, 64, 0.96), rgba(76, 86, 106, 0.94)) !important;
+  border-color: rgba(94, 129, 172, 0.3) !important;
+}
+
+[data-theme='nord'] .about-content-wrapper {
+  background: linear-gradient(180deg, rgba(229, 233, 240, 0.94), rgba(216, 222, 233, 0.98)) !important;
+  border-color: rgba(94, 129, 172, 0.15) !important;
+  box-shadow: 0 24px 60px rgba(46, 52, 64, 0.08);
+}
+
+[data-theme='nord'] .about-mission-copy,
+[data-theme='nord'] .about-mission-panel,
+[data-theme='nord'] .about-course-card,
+[data-theme='nord'] .about-feature-item,
+[data-theme='nord'] .legal-intro-card,
+[data-theme='nord'] .legal-card,
+[data-theme='nord'] .legal-contact-card {
+  background: rgba(229, 233, 240, 0.85) !important;
+  border-color: rgba(94, 129, 172, 0.18) !important;
+  box-shadow: 0 18px 40px rgba(46, 52, 64, 0.08);
 }
 
 /* Responsive Design */

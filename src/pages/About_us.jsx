@@ -55,15 +55,15 @@ export default function AboutUs() {
           </p>
 
           <div className="about-hero-stats">
-            <div className="about-stat-card container">
+            <div className="about-stat-card">
               <span className="about-stat-value">3</span>
               <span className="about-stat-label">courses covered</span>
             </div>
-            <div className="about-stat-card container">
+            <div className="about-stat-card">
               <span className="about-stat-value">Focused</span>
               <span className="about-stat-label">on academic needs</span>
             </div>
-            <div className="about-stat-card container">
+            <div className="about-stat-card">
               <span className="about-stat-value">Simple</span>
               <span className="about-stat-label">to browse and compare</span>
             </div>
@@ -73,7 +73,7 @@ export default function AboutUs() {
 
       <div className="about-content-wrapper container">
         <section className="about-mission-section">
-          <div className="about-mission-copy container">
+          <div className="about-mission-copy">
             <p className="about-section-kicker">Our mission</p>
             <h2 className="about-section-title">Make exam preparation feel organized, not overwhelming.</h2>
             <p className="about-mission-text">
@@ -81,7 +81,7 @@ export default function AboutUs() {
             </p>
           </div>
 
-          <div className="about-mission-panel container">
+          <div className="about-mission-panel">
             <p className="about-panel-label">What we care about</p>
             <ul className="about-mission-points">
               <li>Useful resources over clutter</li>

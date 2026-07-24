@@ -1123,4 +1123,49 @@ body.dark-mode .detail-value {
     color: #e2e8f0;
 }
 
+/* Midnight (AMOLED) theme — API Keys section */
+[data-theme='midnight'] .api-key-card {
+    background: rgba(10, 10, 20, 0.85);
+    border-color: rgba(129, 140, 248, 0.15);
+}
 
+[data-theme='midnight'] .api-key-name {
+    color: #e2e8f0;
+}
+
+[data-theme='midnight'] .api-key-env {
+    background: rgba(129, 140, 248, 0.1);
+    color: #a5b4fc;
+}
+
+[data-theme='midnight'] .detail-label {
+    color: #94a3b8;
+}
+
+[data-theme='midnight'] .detail-value {
+    color: #e2e8f0;
+}
+
+[data-theme='midnight'] .key-code {
+    background: rgba(129, 140, 248, 0.12);
+    color: #818cf8;
+}
+
+[data-theme='midnight'] .test-ping-btn {
+    background: rgba(129, 140, 248, 0.1);
+    color: #a5b4fc;
+    border-color: rgba(129, 140, 248, 0.25);
+}
+
+[data-theme='midnight'] .test-ping-btn:hover:not(:disabled) {
+    background: #818cf8;
+    color: #0a0a14;
+    border-color: #818cf8;
+}
+
+[data-theme='midnight'] .api-status-badge.status-unconfigured,
+[data-theme='midnight'] .api-status-badge.status-untested {
+    background: rgba(129, 140, 248, 0.1);
+    color: #94a3b8;
+    border-color: rgba(129, 140, 248, 0.2);
+}

@@ -1265,6 +1265,203 @@
     box-shadow: 0 4px 20px rgba(45, 212, 191, 0.25), 0 1px 4px rgba(0, 0, 0, 0.35);
 }
 
+/* ── Midnight (AMOLED) theme overrides ── */
+
+[data-theme='midnight'] .solution-code-block {
+    background: #08081a;
+    color: #e2e8f0;
+}
+
+[data-theme='midnight'] .solution-line-number {
+    color: #7c83a8;
+    border-right-color: rgba(129, 140, 248, 0.15);
+}
+
+[data-theme='midnight'] .solution-form-field input,
+[data-theme='midnight'] .solution-form-field select,
+[data-theme='midnight'] .solution-form-field textarea {
+    background: #0a0a14;
+    color: #e2e8f0;
+    border-color: rgba(129, 140, 248, 0.2);
+}
+
+[data-theme='midnight'] .solution-code-editor {
+    background: #0a0a1a;
+    border-color: rgba(129, 140, 248, 0.2);
+}
+
+[data-theme='midnight'] .solution-editor-lines {
+    color: #a5b0d0;
+    background: transparent;
+    border-right-color: rgba(129, 140, 248, 0.15);
+}
+
+[data-theme='midnight'] .solution-code-input {
+    color: #e2e8f0 !important;
+    caret-color: #e2e8f0;
+}
+
+[data-theme='midnight'] .solution-copy-btn {
+    background: rgba(34, 211, 238, 0.12);
+    color: #22d3ee;
+    border: 1px solid rgba(34, 211, 238, 0.25);
+    box-shadow: 0 2px 12px rgba(34, 211, 238, 0.1), 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme='midnight'] .solution-copy-btn:hover {
+    background: rgba(34, 211, 238, 0.25);
+    color: #67e8f9;
+    border-color: rgba(34, 211, 238, 0.45);
+    box-shadow: 0 4px 20px rgba(34, 211, 238, 0.2), 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* ── Vintage theme overrides ── */
+
+[data-theme='vintage'] .solution-code-block {
+    background: #f5edd6;
+    color: #4e342e;
+    border-color: rgba(141, 110, 99, 0.25);
+}
+
+[data-theme='vintage'] .solution-line-number {
+    color: #8d6e63;
+    border-right-color: rgba(141, 110, 99, 0.2);
+}
+
+[data-theme='vintage'] .solution-code-editor {
+    background: #f0e6ce;
+    border-color: rgba(141, 110, 99, 0.3);
+}
+
+[data-theme='vintage'] .solution-editor-lines {
+    color: #8d6e63;
+    background: rgba(141, 110, 99, 0.06);
+    border-right-color: rgba(141, 110, 99, 0.2);
+}
+
+[data-theme='vintage'] .solution-code-input {
+    color: #3e2723 !important;
+    caret-color: #3e2723;
+}
+
+[data-theme='vintage'] .solution-form-field input,
+[data-theme='vintage'] .solution-form-field select,
+[data-theme='vintage'] .solution-form-field textarea {
+    background: #f0e6ce;
+    color: #4e342e;
+    border-color: rgba(141, 110, 99, 0.3);
+}
+
+[data-theme='vintage'] .solution-copy-btn {
+    background: rgba(230, 81, 0, 0.1);
+    color: #bf360c;
+    border: 1px solid rgba(230, 81, 0, 0.2);
+}
+
+[data-theme='vintage'] .solution-copy-btn:hover {
+    background: rgba(230, 81, 0, 0.18);
+    color: #e65100;
+    border-color: rgba(230, 81, 0, 0.35);
+}
+
+/* ── Ocean theme overrides ── */
+
+[data-theme='ocean'] .solution-code-block {
+    background: #e6fbf7;
+    color: #134e4a;
+    border-color: rgba(8, 145, 178, 0.18);
+}
+
+[data-theme='ocean'] .solution-line-number {
+    color: #0891b2;
+    border-right-color: rgba(8, 145, 178, 0.15);
+}
+
+[data-theme='ocean'] .solution-code-editor {
+    background: #e0f7f3;
+    border-color: rgba(8, 145, 178, 0.25);
+}
+
+[data-theme='ocean'] .solution-editor-lines {
+    color: #0891b2;
+    background: rgba(8, 145, 178, 0.04);
+    border-right-color: rgba(8, 145, 178, 0.15);
+}
+
+[data-theme='ocean'] .solution-code-input {
+    color: #134e4a !important;
+    caret-color: #134e4a;
+}
+
+[data-theme='ocean'] .solution-form-field input,
+[data-theme='ocean'] .solution-form-field select,
+[data-theme='ocean'] .solution-form-field textarea {
+    background: #e0f7f3;
+    color: #134e4a;
+    border-color: rgba(8, 145, 178, 0.25);
+}
+
+[data-theme='ocean'] .solution-copy-btn {
+    background: rgba(8, 145, 178, 0.1);
+    color: #0e7490;
+    border: 1px solid rgba(8, 145, 178, 0.2);
+}
+
+[data-theme='ocean'] .solution-copy-btn:hover {
+    background: rgba(8, 145, 178, 0.18);
+    color: #0891b2;
+    border-color: rgba(8, 145, 178, 0.35);
+}
+
+/* ── Forest theme overrides ── */
+
+[data-theme='forest'] .solution-code-block {
+    background: #f0eadd;
+    color: #2e1d16;
+    border-color: rgba(5, 150, 105, 0.18);
+}
+
+[data-theme='forest'] .solution-line-number {
+    color: #059669;
+    border-right-color: rgba(5, 150, 105, 0.15);
+}
+
+[data-theme='forest'] .solution-code-editor {
+    background: #eae3d4;
+    border-color: rgba(5, 150, 105, 0.25);
+}
+
+[data-theme='forest'] .solution-editor-lines {
+    color: #059669;
+    background: rgba(5, 150, 105, 0.04);
+    border-right-color: rgba(5, 150, 105, 0.15);
+}
+
+[data-theme='forest'] .solution-code-input {
+    color: #2e1d16 !important;
+    caret-color: #2e1d16;
+}
+
+[data-theme='forest'] .solution-form-field input,
+[data-theme='forest'] .solution-form-field select,
+[data-theme='forest'] .solution-form-field textarea {
+    background: #eae3d4;
+    color: #2e1d16;
+    border-color: rgba(5, 150, 105, 0.25);
+}
+
+[data-theme='forest'] .solution-copy-btn {
+    background: rgba(5, 150, 105, 0.1);
+    color: #047857;
+    border: 1px solid rgba(5, 150, 105, 0.2);
+}
+
+[data-theme='forest'] .solution-copy-btn:hover {
+    background: rgba(5, 150, 105, 0.18);
+    color: #059669;
+    border-color: rgba(5, 150, 105, 0.35);
+}
+
 /* Desktop Layout using Grid */
 .solution-result-card {
     display: grid !important;
