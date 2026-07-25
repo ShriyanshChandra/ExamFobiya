@@ -89,7 +89,9 @@ const ProgrammingSolutions = () => {
         book.category?.toLowerCase().includes(q) ||
         solution.title?.toLowerCase().includes(q) ||
         solution.language?.toLowerCase().includes(q) ||
-        solution.description?.toLowerCase().includes(q)
+        solution.description?.toLowerCase().includes(q) ||
+        solution.input?.toLowerCase().includes(q) ||
+        solution.output?.toLowerCase().includes(q)
       );
 
       const matchesCourse = !activeFilters.course || book.category === activeFilters.course;
@@ -301,6 +303,18 @@ const ProgrammingSolutions = () => {
               </div>
 
               {solution.description && <p className="solution-description">{solution.description}</p>}
+              {solution.input && (
+                <div className="solution-io-preview solution-input-preview" style={{ padding: "0 1.25rem 0.75rem" }}>
+                  <span className="solution-io-label">Input:</span>
+                  <pre className="solution-io-block">{solution.input}</pre>
+                </div>
+              )}
+              {solution.output && (
+                <div className="solution-io-preview solution-output-preview" style={{ padding: "0 1.25rem 0.75rem" }}>
+                  <span className="solution-io-label">Output:</span>
+                  <pre className="solution-io-block">{solution.output}</pre>
+                </div>
+              )}
 
               <div className="solution-code-shell">
                 <button
@@ -477,6 +491,18 @@ const ProgrammingSolutions = () => {
                     )}
                     {solution.description && (
                       <p className="solution-description solution-inline-description">{solution.description}</p>
+                    )}
+                    {solution.input && (
+                      <div className="solution-io-preview solution-input-preview">
+                        <span className="solution-io-label">Input:</span>
+                        <pre className="solution-io-block">{solution.input}</pre>
+                      </div>
+                    )}
+                    {solution.output && (
+                      <div className="solution-io-preview solution-output-preview">
+                        <span className="solution-io-label">Output:</span>
+                        <pre className="solution-io-block">{solution.output}</pre>
+                      </div>
                     )}
                   </div>
 

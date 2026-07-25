@@ -15,7 +15,11 @@
   text-decoration: none;
   border-radius: 0.3125rem;
   font-weight: bold;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  flex-shrink: 0;
   border: none;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;

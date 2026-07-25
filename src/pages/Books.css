@@ -27,6 +27,12 @@
 
 .books-hero-copy {
   max-width: 47.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.add-book-action {
+  flex-shrink: 0;
 }
 
 .books-eyebrow {
@@ -67,6 +73,8 @@
   justify-content: center;
   padding: 0.85rem 1.4rem;
   border-radius: 1rem;
+  white-space: nowrap;
+  flex-shrink: 0;
   background: linear-gradient(135deg, var(--primary-color), var(--secondary-color), var(--accent-color), var(--primary-color));
   background-size: 300% 300%;
   animation: btnGradientFlow 6s ease infinite;
@@ -406,6 +414,29 @@ body:not(.dark-mode) .category-chip:not(.active) {
   color: #dc3545;
 }
 
+@media screen and (max-width: 64rem) {
+  .books-hero {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.25rem;
+  }
+
+  .books-hero-copy {
+    flex: 1 1 auto;
+    max-width: 100%;
+  }
+
+  .add-book-action {
+    flex-shrink: 0;
+  }
+
+  .add-book-btn {
+    white-space: nowrap;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+  }
+}
+
 @media screen and (max-width: 48rem) {
   .books-page {
     padding: 1rem 0 2.5rem;
@@ -418,7 +449,18 @@ body:not(.dark-mode) .category-chip:not(.active) {
     border-radius: 1.5rem;
   }
 
-  .books-hero,
+  .books-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.875rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .books-hero-copy {
+    flex: none;
+    width: 100%;
+  }
+
   .books-toolbar-top {
     flex-direction: column;
     align-items: stretch;

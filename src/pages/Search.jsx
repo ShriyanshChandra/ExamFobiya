@@ -104,7 +104,9 @@ function Search({ searchQuery }) {
           (book.category && book.category.toLowerCase().includes(q)) ||
           (solution.title && solution.title.toLowerCase().includes(q)) ||
           (solution.language && solution.language.toLowerCase().includes(q)) ||
-          (solution.description && solution.description.toLowerCase().includes(q));
+          (solution.description && solution.description.toLowerCase().includes(q)) ||
+          (solution.input && solution.input.toLowerCase().includes(q)) ||
+          (solution.output && solution.output.toLowerCase().includes(q));
         if (matches) {
           rows.push({ book, solution, rowId: `${book.id}__${solution.id}` });
         }
@@ -308,6 +310,18 @@ function Search({ searchQuery }) {
                   )}
                   {solution.description && (
                     <p className="solution-description solution-inline-description">{solution.description}</p>
+                  )}
+                  {solution.input && (
+                    <div className="solution-io-preview solution-input-preview">
+                      <span className="solution-io-label">Input:</span>
+                      <pre className="solution-io-block">{solution.input}</pre>
+                    </div>
+                  )}
+                  {solution.output && (
+                    <div className="solution-io-preview solution-output-preview">
+                      <span className="solution-io-label">Output:</span>
+                      <pre className="solution-io-block">{solution.output}</pre>
+                    </div>
                   )}
                 </div>
 
