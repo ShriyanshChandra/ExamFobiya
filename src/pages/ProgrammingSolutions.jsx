@@ -133,6 +133,7 @@ const ProgrammingSolutions = () => {
   }, [location.state, flatRows]);
 
   const handleSearch = () => {
+    setSelectedLanguage(""); // Clear active language tab filter when searching via search bar
     const hasActiveFilters = Object.values(filters).some(Boolean);
     const q = searchQuery.trim();
 
@@ -142,7 +143,7 @@ const ProgrammingSolutions = () => {
       return;
     }
 
-    setResults(applySearchAndFilters(searchQuery, filters, selectedLanguage));
+    setResults(applySearchAndFilters(searchQuery, filters, ""));
     setSearched(true);
   };
 
@@ -159,13 +160,14 @@ const ProgrammingSolutions = () => {
   const clearFilters = () => {
     const resetFilters = { course: "", language: "", subject: "" };
     setFilters(resetFilters);
+    setSelectedLanguage("");
     if (searched) {
       const hasQuery = searchQuery.trim();
       if (!hasQuery) {
         setResults([]);
         setSearched(false);
       } else {
-        setResults(applySearchAndFilters(searchQuery, resetFilters, selectedLanguage));
+        setResults(applySearchAndFilters(searchQuery, resetFilters, ""));
       }
     }
   };
@@ -376,7 +378,7 @@ const ProgrammingSolutions = () => {
                 key={lang}
                 type="button"
                 className={`lang-tab-pill${selectedLanguage === lang ? ' active' : ''}`}
-                onClick={() => setSelectedLanguage(lang)}
+                onClick={() => setSelectedLanguage((prev) => (prev === lang ? "" : lang))}
               >
                 {lang}
               </button>
