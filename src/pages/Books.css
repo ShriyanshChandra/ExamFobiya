@@ -197,36 +197,122 @@
   margin-bottom: 1.625rem;
 }
 
-.category-chip {
-  text-align: center;
-  padding: 0.625rem 1rem;
+.category-chip,
+.semester-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 4.5rem;
+  height: 2.25rem;
+  padding: 0 1.25rem;
+  border-radius: 62.5rem;
+  border: 1.5px solid var(--glass-border);
   background: var(--input-bg);
   color: var(--text-color);
-  border: 1px solid var(--glass-border);
-  border-radius: 62.4375rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
   cursor: pointer;
-  font-weight: 700;
-  transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  overflow: hidden;
+  z-index: 0;
 }
 
-.category-chip:hover {
+.category-chip::before,
+.semester-chip::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent-color) 15%, transparent), rgba(255, 237, 74, 0.08));
+  transition: opacity 0.28s ease;
+  z-index: -1;
+}
+
+.category-chip:hover,
+.semester-chip:hover {
+  border-color: color-mix(in srgb, var(--accent-color) 50%, transparent);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--accent-color) 12%, transparent);
+}
+
+.category-chip:hover::before,
+.semester-chip:hover::before {
+  opacity: 1;
+}
+
+.category-chip.active,
+.semester-chip.active {
+  background: var(--primary-color) !important;
+  color: var(--white) !important;
+  border-color: var(--primary-color) !important;
+  font-weight: 800;
+  box-shadow: 0 4px 15px color-mix(in srgb, var(--primary-color) 35%, transparent) !important;
   transform: translateY(-1px);
-  border-color: color-mix(in srgb, var(--primary-color) 40%, transparent);
 }
 
-.category-chip.active {
-  background: var(--accent-color);
-  color: var(--secondary-color);
-  border-color: transparent;
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent-color) 40%, transparent);
+.category-chip.active:hover,
+.semester-chip.active:hover {
+  box-shadow:
+    0 6px 24px color-mix(in srgb, var(--accent-color) 45%, transparent),
+    0 0 0 4px color-mix(in srgb, var(--accent-color) 18%, transparent) !important;
+  transform: translateY(-3px);
+}
+
+.category-chip:active,
+.semester-chip:active {
+  transform: translateY(0) scale(0.97);
 }
 
 /* Light Theme Border Polish */
 :root:not([data-theme='dark']):not([data-theme='midnight']) .category-chip:not(.active),
-body:not(.dark-mode) .category-chip:not(.active) {
+[data-theme='light'] .category-chip:not(.active),
+body:not(.dark-mode) .category-chip:not(.active),
+:root:not([data-theme='dark']):not([data-theme='midnight']) .semester-chip:not(.active),
+[data-theme='light'] .semester-chip:not(.active),
+body:not(.dark-mode) .semester-chip:not(.active) {
   border: 1.5px solid #cbd5e1 !important;
   background: #f8fafc !important;
   color: #334155 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+
+:root:not([data-theme='dark']):not([data-theme='midnight']) .category-chip:not(.active):hover,
+[data-theme='light'] .category-chip:not(.active):hover,
+body:not(.dark-mode) .category-chip:not(.active):hover,
+:root:not([data-theme='dark']):not([data-theme='midnight']) .semester-chip:not(.active):hover,
+[data-theme='light'] .semester-chip:not(.active):hover,
+body:not(.dark-mode) .semester-chip:not(.active):hover {
+  border-color: var(--primary-color) !important;
+  background: #ffffff !important;
+  color: var(--primary-color) !important;
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--primary-color) 20%, transparent) !important;
+}
+
+/* Dark Theme Adjustments */
+[data-theme='dark'] .category-chip,
+[data-theme='dark'] .semester-chip {
+  border-color: color-mix(in srgb, var(--accent-color) 18%, transparent);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme='dark'] .category-chip:hover,
+[data-theme='dark'] .semester-chip:hover {
+  border-color: color-mix(in srgb, var(--accent-color) 45%, transparent);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--accent-color) 10%, transparent);
+}
+
+[data-theme='dark'] .category-chip.active,
+[data-theme='dark'] .semester-chip.active {
+  background: linear-gradient(135deg, var(--accent-color), #f5c800) !important;
+  color: var(--secondary-color) !important;
+  box-shadow:
+    0 4px 22px color-mix(in srgb, var(--accent-color) 30%, transparent),
+    0 0 0 3px color-mix(in srgb, var(--accent-color) 10%, transparent) !important;
 }
 
 /* ── Semester filter ────────────────────────────────────────── */
@@ -268,31 +354,6 @@ body:not(.dark-mode) .category-chip:not(.active) {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-}
-
-.semester-chip {
-  padding: 0.45rem 0.875rem;
-  background: var(--input-bg);
-  color: var(--text-color);
-  border: 1px solid color-mix(in srgb, var(--primary-color) 22%, transparent);
-  border-radius: 62.4375rem;
-  cursor: pointer;
-  font-weight: 700;
-  font-size: 0.875rem;
-  transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
-}
-
-.semester-chip:hover {
-  transform: translateY(-1px);
-  border-color: color-mix(in srgb, var(--primary-color) 45%, transparent);
-  box-shadow: 0 4px 10px color-mix(in srgb, var(--primary-color) 10%, transparent);
-}
-
-.semester-chip.active {
-  background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-  color: #fff;
-  border-color: transparent;
-  box-shadow: 0 6px 16px color-mix(in srgb, var(--secondary-color) 28%, transparent);
 }
 
 /* ─────────────────────────────────────────────────────────── */
