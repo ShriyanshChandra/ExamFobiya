@@ -26,14 +26,14 @@ const Welcome = () => {
             }
         }, 100); // Speed of typing
 
-        // Redirect after 3 seconds (total wait time, overlaps with typing)
+        // Redirect after welcome typing animation completes
         const redirectTimer = setTimeout(() => {
             if (user?.role === 'admin') {
                 navigate('/admin');
             } else {
                 navigate('/');
             }
-        }, 3000);
+        }, 2500);
 
         return () => {
             clearInterval(typingInterval);
