@@ -2,4 +2,18 @@
 User-agent: *
 Disallow:
 
+User-agent: Googlebot
+Allow: /logo.svg
+Allow: /logo512.png
+Allow: /logo192.png
+Allow: /favicon.ico
+Allow: /favicon-48x48.png
+
+User-agent: Googlebot-Image
+Allow: /logo.svg
+Allow: /logo512.png
+Allow: /logo192.png
+Allow: /favicon.ico
+Allow: /favicon-48x48.png
+
 Sitemap: https://www.examfobiya.com/sitemap.xml
