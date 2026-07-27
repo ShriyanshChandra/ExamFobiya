@@ -88,6 +88,41 @@
       }
     </script>
 
+    <!-- Site Navigation Structured Data for Google Navbar Link Order (JSON-LD) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "ItemList",
+        "name": "Site Navigation Menu",
+        "itemListElement": [
+          {
+            "@type": "SiteNavigationElement",
+            "position": 1,
+            "name": "Books",
+            "url": "https://www.examfobiya.com/books"
+          },
+          {
+            "@type": "SiteNavigationElement",
+            "position": 2,
+            "name": "Questions",
+            "url": "https://www.examfobiya.com/questions"
+          },
+          {
+            "@type": "SiteNavigationElement",
+            "position": 3,
+            "name": "Programming Solutions",
+            "url": "https://www.examfobiya.com/programming-solutions"
+          },
+          {
+            "@type": "SiteNavigationElement",
+            "position": 4,
+            "name": "About Us",
+            "url": "https://www.examfobiya.com/about"
+          }
+        ]
+      }
+    </script>
+
     <!-- Google Analytics (GA4) - Deferred until interaction -->
     <script>
       window.dataLayer = window.dataLayer || [];
