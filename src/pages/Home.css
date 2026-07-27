@@ -98,38 +98,17 @@
   color: rgba(255, 255, 255, 0.4);
   top: -10%;
   animation: fall linear infinite;
+  will-change: transform;
 }
 
 @keyframes fall {
   0% {
-    transform: translateY(-5vh) rotate(0deg);
+    transform: translateY(-10vh) rotate(var(--start-rot, 0deg));
   }
   100% {
-    transform: translateY(110vh) rotate(360deg);
+    transform: translateY(115vh) rotate(var(--end-rot, 360deg));
   }
 }
-
-@keyframes fall-reverse {
-  0% {
-    transform: translateY(-5vh) rotate(0deg);
-  }
-  100% {
-    transform: translateY(110vh) rotate(-360deg);
-  }
-}
-
-.book-1 { left: 10%; width: 40px; height: 40px; animation-duration: 12s; animation-delay: 0s; opacity: 0.2; animation-name: fall; }
-.book-2 { left: 25%; width: 24px; height: 24px; animation-duration: 15s; animation-delay: 2s; opacity: 0.1; animation-name: fall-reverse; }
-.book-3 { left: 40%; width: 64px; height: 64px; animation-duration: 18s; animation-delay: 1s; opacity: 0.3; animation-name: fall; }
-.book-4 { left: 55%; width: 32px; height: 32px; animation-duration: 11s; animation-delay: 4s; opacity: 0.15; animation-name: fall-reverse; }
-.book-5 { left: 70%; width: 48px; height: 48px; animation-duration: 14s; animation-delay: 0s; opacity: 0.25; animation-name: fall; }
-.book-6 { left: 85%; width: 20px; height: 20px; animation-duration: 16s; animation-delay: 3s; opacity: 0.1; animation-name: fall-reverse; }
-.book-7 { left: 15%; width: 56px; height: 56px; animation-duration: 13s; animation-delay: 5s; opacity: 0.2; animation-name: fall-reverse; }
-.book-8 { left: 35%; width: 28px; height: 28px; animation-duration: 17s; animation-delay: 1s; opacity: 0.15; animation-name: fall; }
-.book-9 { left: 50%; width: 36px; height: 36px; animation-duration: 12s; animation-delay: 6s; opacity: 0.2; animation-name: fall-reverse; }
-.book-10 { left: 65%; width: 44px; height: 44px; animation-duration: 15s; animation-delay: 2s; opacity: 0.25; animation-name: fall; }
-.book-11 { left: 80%; width: 32px; height: 32px; animation-duration: 14s; animation-delay: 7s; opacity: 0.1; animation-name: fall-reverse; }
-.book-12 { left: 95%; width: 60px; height: 60px; animation-duration: 19s; animation-delay: 4s; opacity: 0.3; animation-name: fall; }
 
 .hero-content {
   position: relative;

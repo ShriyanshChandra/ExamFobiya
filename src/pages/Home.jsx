@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import useSEO from "../utils/useSEO";
 import "./Home.css";
@@ -12,6 +13,40 @@ const Home = () => {
     description: 'ExamFobiya — Your ultimate destination for BCA, DCA, and PGDCA books, previous year questions, and programming solutions.',
     path: '/'
   });
+
+  const fallingBooksData = useMemo(() => {
+    const totalBooks = 24;
+    return Array.from({ length: totalBooks }, (_, i) => {
+      // Distribute evenly across width buckets (2% to 97%) with random jitter
+      const baseSegment = (i / (totalBooks - 1)) * 95; // 0% to 95%
+      const jitter = (Math.random() * 5 - 2.5); // +/- 2.5% random offset
+      const left = Math.max(1, Math.min(97, baseSegment + jitter));
+      
+      const size = 18 + Math.random() * 47; // Random size (18px - 65px)
+      const duration = 8 + Math.random() * 15; // Random fall duration (8s - 23s)
+      const delay = -Math.random() * 20; // Random start delay (negative for scattered initial positions)
+      const opacity = 0.08 + Math.random() * 0.27; // Random opacity
+      const blur = (Math.random() * 3.5).toFixed(1); // Random blur (0px - 3.5px)
+      const startRot = Math.floor(Math.random() * 360); // Random initial rotation angle
+      const rotDelta = (Math.random() > 0.5 ? 1 : -1) * (180 + Math.random() * 540); // Random rotation direction & speed
+      const endRot = startRot + rotDelta;
+
+      return {
+        id: i,
+        style: {
+          left: `${left.toFixed(2)}%`,
+          width: `${size.toFixed(1)}px`,
+          height: `${size.toFixed(1)}px`,
+          animationDuration: `${duration.toFixed(2)}s`,
+          animationDelay: `${delay.toFixed(2)}s`,
+          opacity: opacity.toFixed(2),
+          filter: `blur(${blur}px)`,
+          '--start-rot': `${startRot}deg`,
+          '--end-rot': `${endRot.toFixed(0)}deg`
+        }
+      };
+    });
+  }, []);
 
   const handleCardMouseEnter = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -50,8 +85,18 @@ const Home = () => {
 
           {/* Falling Books */}
           <div className="falling-books">
-            {[...Array(12)].map((_, i) => (
-              <svg key={i} className={`falling-book book-${i + 1}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="3" strokeLinejoin="round">
+            {fallingBooksData.map((book) => (
+              <svg
+                key={book.id}
+                className="falling-book"
+                style={book.style}
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 100 100"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="3"
+                strokeLinejoin="round"
+              >
                 {/* Left cover */}
                 <path d="M50 85 L10 70 L10 20 L50 35 Z" fill="currentColor" fillOpacity="0.2"/>
                 {/* Right cover */}
