@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, useNavigate } from "react-router-dom";
 import React, { useEffect, useState, Suspense } from "react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -10,7 +10,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { BookProvider } from "./context/BookContext";
 import { QuestionProvider } from "./context/QuestionContext";
-import { subscribeToMaintenanceMode } from "./services/SystemSettingsService";
+import { subscribeToMaintenanceMode, fetchMaintenanceMode } from "./services/SystemSettingsService";
 
 import PWAInstallBanner from "./components/PWAInstallBanner";
 
@@ -77,23 +77,51 @@ function ScrollToTop() {
 }
 
 function MaintenanceGuard({ children }) {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [isMaintenance, setIsMaintenance] = useState(false);
 
   useEffect(() => {
+    // Initial quick fetch
+    fetchMaintenanceMode().then(active => setIsMaintenance(!!active)).catch(() => {});
+
+    // Real-time Firestore listener
     const unsubscribe = subscribeToMaintenanceMode((active) => {
-      setIsMaintenance(active);
+      setIsMaintenance(!!active);
     });
-    return () => unsubscribe();
+
+    // 8-second polling backup for PWA / offline recovery
+    const pollInterval = setInterval(() => {
+      fetchMaintenanceMode().then(active => setIsMaintenance(!!active)).catch(() => {});
+    }, 8000);
+
+    return () => {
+      unsubscribe();
+      clearInterval(pollInterval);
+    };
   }, []);
 
-  const isAdmin = user?.role === 'admin';
-  const isAllowedPath = location.pathname === '/login' || location.pathname === '/admin' || location.pathname === '/maintenance';
+  useEffect(() => {
+    if (loading) return;
 
-  if (isMaintenance && !isAdmin && !isAllowedPath) {
-    return <Navigate to="/maintenance" replace />;
-  }
+    const isAdmin = user?.role === 'admin';
+    const currentPath = location.pathname;
+
+    if (isMaintenance && !isAdmin) {
+      if (currentPath !== '/maintenance' && currentPath !== '/login' && currentPath !== '/admin') {
+        console.log('[MaintenanceGuard] Maintenance is ON. Redirecting user to /maintenance');
+        navigate('/maintenance', { replace: true });
+      }
+    } else if (!isMaintenance) {
+      if (currentPath === '/maintenance') {
+        console.log('[MaintenanceGuard] Maintenance is OFF. Restoring navigation to home');
+        navigate('/', { replace: true });
+      }
+    }
+  }, [isMaintenance, user, loading, location.pathname, navigate]);
+
+  const isAdmin = user?.role === 'admin';
 
   return (
     <>
