@@ -372,12 +372,11 @@
 }
 
 /* =========================================
-   Dark, Midnight & Nord Theme Support
+   Dark & Midnight Theme Support
    ========================================= */
 
 [data-theme='dark'] .book-details-modal-content,
 [data-theme='midnight'] .book-details-modal-content,
-[data-theme='nord'] .book-details-modal-content,
 body.dark-mode .book-details-modal-content {
     background-color: var(--card-bg, #0a0a14) !important;
     color: #f8fafc !important;
@@ -386,7 +385,6 @@ body.dark-mode .book-details-modal-content {
 
 [data-theme='dark'] .modal-close-btn,
 [data-theme='midnight'] .modal-close-btn,
-[data-theme='nord'] .modal-close-btn,
 body.dark-mode .modal-close-btn {
     color: #f8fafc !important;
     background: rgba(255, 255, 255, 0.15) !important;
@@ -395,7 +393,6 @@ body.dark-mode .modal-close-btn {
 
 [data-theme='dark'] .modal-close-btn:hover,
 [data-theme='midnight'] .modal-close-btn:hover,
-[data-theme='nord'] .modal-close-btn:hover,
 body.dark-mode .modal-close-btn:hover {
     color: #0f172a !important;
     background: #ffffff !important;
@@ -405,21 +402,18 @@ body.dark-mode .modal-close-btn:hover {
 
 [data-theme='dark'] .modal-left-section,
 [data-theme='midnight'] .modal-left-section,
-[data-theme='nord'] .modal-left-section,
 body.dark-mode .modal-left-section {
     border-right-color: rgba(255, 255, 255, 0.12);
 }
 
 [data-theme='dark'] .modal-book-title,
 [data-theme='midnight'] .modal-book-title,
-[data-theme='nord'] .modal-book-title,
 body.dark-mode .modal-book-title {
     color: #ffffff !important;
 }
 
 [data-theme='dark'] .topics-heading,
 [data-theme='midnight'] .topics-heading,
-[data-theme='nord'] .topics-heading,
 body.dark-mode .topics-heading {
     color: #ffffff !important;
     border-bottom-color: rgba(255, 255, 255, 0.2) !important;
@@ -427,7 +421,6 @@ body.dark-mode .topics-heading {
 
 [data-theme='dark'] .modal-book-price,
 [data-theme='midnight'] .modal-book-price,
-[data-theme='nord'] .modal-book-price,
 body.dark-mode .modal-book-price {
     color: var(--accent-color, #22d3ee) !important;
 }
@@ -456,18 +449,6 @@ body.dark-mode .modal-book-price {
 [data-theme='midnight'] .topic-level-0,
 [data-theme='midnight'] .topic-level-1,
 [data-theme='midnight'] .topic-level-2,
-[data-theme='nord'] .topics-list-container,
-[data-theme='nord'] .topics-list-container *,
-[data-theme='nord'] .rich-text-content,
-[data-theme='nord'] .rich-text-content *,
-[data-theme='nord'] .syllabus-topic-page-list,
-[data-theme='nord'] .syllabus-topic-page-row,
-[data-theme='nord'] .syllabus-topic-text,
-[data-theme='nord'] .syllabus-topic-page-number,
-[data-theme='nord'] .syllabus-plain-text,
-[data-theme='nord'] .topic-level-0,
-[data-theme='nord'] .topic-level-1,
-[data-theme='nord'] .topic-level-2,
 body.dark-mode .topics-list-container,
 body.dark-mode .topics-list-container *,
 body.dark-mode .rich-text-content,
@@ -485,7 +466,6 @@ body.dark-mode .topic-level-2 {
 
 [data-theme='dark'] .syllabus-topic-page-leader,
 [data-theme='midnight'] .syllabus-topic-page-leader,
-[data-theme='nord'] .syllabus-topic-page-leader,
 body.dark-mode .syllabus-topic-page-leader {
     color: rgba(241, 245, 249, 0.4) !important;
     border-bottom-color: rgba(241, 245, 249, 0.3) !important;
@@ -495,8 +475,78 @@ body.dark-mode .syllabus-topic-page-leader {
 @media (max-width: 48rem) {
     [data-theme='dark'] .modal-left-section,
     [data-theme='midnight'] .modal-left-section,
-    [data-theme='nord'] .modal-left-section,
     body.dark-mode .modal-left-section {
         border-bottom-color: rgba(255, 255, 255, 0.12);
+    }
+}
+
+/* =========================================
+   Nord Theme Modal Support (Navbar Blue text)
+   ========================================= */
+
+[data-theme='nord'] .book-details-modal-content {
+    background-color: var(--card-bg, #e5e9f0) !important;
+    color: #182848 !important;
+    border: 1px solid rgba(46, 52, 64, 0.15) !important;
+}
+
+[data-theme='nord'] .modal-close-btn {
+    color: #182848 !important;
+    background: rgba(46, 52, 64, 0.08) !important;
+    border-color: rgba(46, 52, 64, 0.2) !important;
+}
+
+[data-theme='nord'] .modal-close-btn:hover {
+    color: #ffffff !important;
+    background: #182848 !important;
+    border-color: #182848 !important;
+    transform: scale(1.1);
+}
+
+[data-theme='nord'] .modal-left-section {
+    border-right-color: rgba(46, 52, 64, 0.15);
+}
+
+[data-theme='nord'] .modal-book-title {
+    color: #182848 !important;
+}
+
+[data-theme='nord'] .topics-heading {
+    color: #182848 !important;
+    border-bottom-color: rgba(24, 40, 72, 0.2) !important;
+}
+
+[data-theme='nord'] .modal-book-price {
+    color: #5e81ac !important;
+}
+
+[data-theme='nord'] .topics-list-container,
+[data-theme='nord'] .topics-list-container *,
+[data-theme='nord'] .rich-text-content,
+[data-theme='nord'] .rich-text-content *,
+[data-theme='nord'] .syllabus-topic-page-list,
+[data-theme='nord'] .syllabus-topic-page-row,
+[data-theme='nord'] .syllabus-topic-text,
+[data-theme='nord'] .syllabus-topic-page-number,
+[data-theme='nord'] .syllabus-plain-text,
+[data-theme='nord'] .topic-level-0,
+[data-theme='nord'] .topic-level-1,
+[data-theme='nord'] .topic-level-2 {
+    color: #182848 !important;
+}
+
+[data-theme='nord'] .topic-level-1::before,
+[data-theme='nord'] .topic-level-2::before {
+    color: #182848 !important;
+}
+
+[data-theme='nord'] .syllabus-topic-page-leader {
+    color: rgba(24, 40, 72, 0.4) !important;
+    border-bottom-color: rgba(24, 40, 72, 0.3) !important;
+}
+
+@media (max-width: 48rem) {
+    [data-theme='nord'] .modal-left-section {
+        border-bottom-color: rgba(46, 52, 64, 0.15);
     }
 }

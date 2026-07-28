@@ -1,5 +1,5 @@
 import { db } from '../firebase';
-import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 
 /**
  * Fetches all registered users from Firestore ('users' collection)
@@ -45,7 +45,6 @@ export const fetchRegisteredUsers = async () => {
 
 export const updateUserRole = async (userId, newRole) => {
     try {
-        const userRef = doc(db, 'userId');
         await updateDoc(doc(db, 'users', userId), { role: newRole });
         return true;
     } catch (err) {
@@ -81,12 +80,10 @@ export const sendPasswordResetEmailToUser = async (userEmail) => {
     }
 
     try {
-        const headers = await getAuthHeaders();
-        const response = await fetch(getApiUrl('/api/admin/send-password-reset'), {
+        const response = await fetch(getApiUrl('/api/auth/send-password-reset'), {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                ...headers
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({ email })
         });
@@ -96,17 +93,54 @@ export const sendPasswordResetEmailToUser = async (userEmail) => {
             return { success: true, message: data.message || `Password reset email sent to ${email}` };
         } else {
             const errData = await response.json().catch(() => ({}));
-            throw new Error(errData.error || 'Server error while sending custom password reset email.');
+            const serverMsg = errData.error || errData.message || `Server returned error status (${response.status})`;
+            throw new Error(serverMsg);
         }
     } catch (backendErr) {
-        console.warn('Backend reset email API failed, attempting Firebase Auth fallback:', backendErr);
-        // Fallback to Firebase Client Auth SDK only if network/server unavailable
-        try {
-            await firebaseSendPasswordResetEmail(auth, email);
-            return { success: true, message: `Password reset email sent to ${email}` };
-        } catch (firebaseErr) {
-            console.error('Firebase Auth password reset failed:', firebaseErr);
-            throw new Error(firebaseErr.message?.replace('Firebase: ', '') || backendErr.message || 'Failed to send password reset email.');
+        console.error('Password reset email sending error:', backendErr);
+        throw new Error(backendErr.message || 'Failed to send password reset email.');
+    }
+};
+
+/**
+ * Deletes a user account via backend admin API or direct Firestore fallback
+ */
+export const deleteUserAccount = async (userId) => {
+    if (!userId) {
+        throw new Error('User ID is required.');
+    }
+
+    let backendErrorMsg = '';
+
+    try {
+        const headers = await getAuthHeaders();
+        const response = await fetch(getApiUrl('/api/admin/delete-user'), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...headers
+            },
+            body: JSON.stringify({ userId })
+        });
+
+        if (response.ok) {
+            return true;
         }
+
+        const errData = await response.json().catch(() => ({}));
+        backendErrorMsg = errData.error || errData.message || `Server error (${response.status})`;
+    } catch (err) {
+        console.warn('Backend delete-user API call failed, attempting Firestore fallback:', err);
+        backendErrorMsg = err.message;
+    }
+
+    // Direct Firestore deletion fallback
+    try {
+        const userRef = doc(db, 'users', userId);
+        await deleteDoc(userRef);
+        return true;
+    } catch (firestoreErr) {
+        console.error(`Firestore direct delete failed for user ${userId}:`, firestoreErr);
+        throw new Error(backendErrorMsg || firestoreErr.message || 'Failed to delete user account.');
     }
 };

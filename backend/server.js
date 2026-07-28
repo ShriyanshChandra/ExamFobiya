@@ -679,10 +679,37 @@ app.post('/api/admin/keepalive-ping', verifyAdminToken, async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: 'Failed to run keep-alive ping', message: err.message });
     }
+// Admin Delete User Account Route
+app.post('/api/admin/delete-user', verifyAdminToken, async (req, res) => {
+    const { userId } = req.body || {};
+
+    if (!userId) {
+        return res.status(400).json({ error: 'User ID is required' });
+    }
+
+    if (userId === req.adminUser.uid) {
+        return res.status(400).json({ error: 'You cannot delete your own admin account.' });
+    }
+
+    try {
+        // Delete user document from Firestore 'users' collection
+        await getFirestore().collection('users').doc(userId).delete();
+
+        // Delete user from Firebase Auth
+        try {
+            await getAuth().deleteUser(userId);
+        } catch (authErr) {
+            console.warn(`Auth user ${userId} delete warning:`, authErr.message);
+        }
+
+        res.status(200).json({ message: 'User account deleted successfully' });
+    } catch (err) {
+        console.error(`Failed to delete user ${userId}:`, err);
+        res.status(500).json({ error: 'Failed to delete user account: ' + err.message });
+    }
 });
 
-// Admin Password Reset Email Route
-app.post('/api/admin/send-password-reset', verifyAdminToken, async (req, res) => {
+const handleSendPasswordReset = async (req, res) => {
     const { email } = req.body;
     const normalizedEmail = email?.trim().toLowerCase();
 
@@ -699,7 +726,16 @@ app.post('/api/admin/send-password-reset', verifyAdminToken, async (req, res) =>
             handleCodeInApp: true
         };
 
-        const firebaseResetLink = await getAuth().generatePasswordResetLink(normalizedEmail, actionCodeSettings);
+        let firebaseResetLink = '';
+        try {
+            firebaseResetLink = await getAuth().generatePasswordResetLink(normalizedEmail, actionCodeSettings);
+        } catch (authErr) {
+            console.error('Firebase Auth error generating reset link:', authErr.message);
+            if (authErr.code === 'auth/user-not-found') {
+                return res.status(404).json({ error: `No registered Auth account found for email "${normalizedEmail}".` });
+            }
+            return res.status(400).json({ error: `Firebase Auth error: ${authErr.message}` });
+        }
 
         let oobCode = '';
         try {
@@ -716,6 +752,11 @@ app.post('/api/admin/send-password-reset', verifyAdminToken, async (req, res) =>
 
         const apiKey = process.env.EMAIL_PASS;
         const senderEmail = process.env.EMAIL_USER || process.env.SENDER_EMAIL || 'chandrashriyansh@gmail.com';
+
+        if (!apiKey) {
+            console.warn('EMAIL_PASS API key missing in environment');
+            return res.status(500).json({ error: 'Brevo EMAIL_PASS API key is not configured on the server.' });
+        }
 
         const htmlContent = `
 <!DOCTYPE html>
@@ -880,7 +921,10 @@ app.post('/api/admin/send-password-reset', verifyAdminToken, async (req, res) =>
         console.error('Error generating/sending password reset link:', error);
         res.status(500).json({ error: error.message || 'Failed to send password reset email.' });
     }
-});
+};
+
+app.post('/api/auth/send-password-reset', handleSendPasswordReset);
+app.post('/api/admin/send-password-reset', handleSendPasswordReset);
 
 app.get('/', (req, res) => {
     res.send('ExamFobiya Backend is running');
