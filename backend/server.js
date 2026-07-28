@@ -680,6 +680,31 @@ app.post('/api/admin/keepalive-ping', verifyAdminToken, async (req, res) => {
         res.status(500).json({ error: 'Failed to run keep-alive ping', message: err.message });
     }
 });
+// Admin Maintenance Mode Management Routes
+app.post('/api/admin/maintenance-mode', verifyAdminToken, async (req, res) => {
+    const { enabled } = req.body || {};
+    try {
+        await getFirestore().collection('stats').doc('system_settings').set({
+            maintenanceMode: !!enabled,
+            updatedAt: new Date().toISOString()
+        }, { merge: true });
+        res.status(200).json({ message: `Maintenance mode updated to ${!!enabled}`, maintenanceMode: !!enabled });
+    } catch (err) {
+        console.error('Failed to update maintenance mode:', err);
+        res.status(500).json({ error: 'Failed to update maintenance mode: ' + err.message });
+    }
+});
+
+app.get('/api/maintenance-mode', async (req, res) => {
+    try {
+        const docSnap = await getFirestore().collection('stats').doc('system_settings').get();
+        const maintenanceMode = docSnap.exists ? (docSnap.data().maintenanceMode || false) : false;
+        res.status(200).json({ maintenanceMode });
+    } catch (err) {
+        res.status(500).json({ maintenanceMode: false, error: err.message });
+    }
+});
+
 // Admin Delete User Account Route
 app.post('/api/admin/delete-user', verifyAdminToken, async (req, res) => {
     const { userId } = req.body || {};
