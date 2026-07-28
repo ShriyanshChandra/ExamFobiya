@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { fetchAnalyticsData, fetchApiKeysStatus, triggerApiKeyPing } from '../services/AnalyticsService';
 import { fetchRecentClientErrors, toggleErrorResolved } from '../services/ErrorLoggerService';
+import { fetchRegisteredUsers, updateUserRole, sendPasswordResetEmailToUser } from '../services/UserService';
 import Loader from '../components/Loader';
 import ConfirmationModal from '../components/ConfirmationModal';
 import './AdminDashboard.css';
@@ -26,6 +27,27 @@ const AdminDashboard = () => {
     const [pingingKeyId, setPingingKeyId] = useState(null);
     const [pingFeedback, setPingFeedback] = useState(null);
 
+    const [users, setUsers] = useState([]);
+    const [loadingUsers, setLoadingUsers] = useState(true);
+    const [userSearchQuery, setUserSearchQuery] = useState('');
+    const [userRoleFilter, setUserRoleFilter] = useState('all');
+    const [confirmRoleChangeTarget, setConfirmRoleChangeTarget] = useState(null);
+
+    const [openDropdownId, setOpenDropdownId] = useState(null);
+    const [confirmResetPasswordTarget, setConfirmResetPasswordTarget] = useState(null);
+    const [userFeedback, setUserFeedback] = useState(null);
+    const [sendingResetId, setSendingResetId] = useState(null);
+
+    useEffect(() => {
+        const handleOutsideClick = (e) => {
+            if (!e.target.closest('.action-dropdown-wrapper')) {
+                setOpenDropdownId(null);
+            }
+        };
+        document.addEventListener('click', handleOutsideClick);
+        return () => document.removeEventListener('click', handleOutsideClick);
+    }, []);
+
     const loadApiKeysStatus = async () => {
         try {
             const data = await fetchApiKeysStatus();
@@ -37,12 +59,24 @@ const AdminDashboard = () => {
         }
     };
 
+    const loadUsersData = async () => {
+        try {
+            const data = await fetchRegisteredUsers();
+            setUsers(data);
+        } catch (err) {
+            console.error("Failed to load users:", err);
+        } finally {
+            setLoadingUsers(false);
+        }
+    };
+
     useEffect(() => {
         const loadDashboardData = async () => {
             const data = await fetchAnalyticsData();
             setStats(data);
             setLoading(false);
             loadApiKeysStatus();
+            loadUsersData();
 
             try {
                 const errors = await fetchRecentClientErrors(50);
@@ -100,6 +134,47 @@ const AdminDashboard = () => {
 
 
 
+    const handleConfirmRoleChange = async () => {
+        if (!confirmRoleChangeTarget) return;
+        const { id: userId, currentRole } = confirmRoleChangeTarget;
+        setConfirmRoleChangeTarget(null);
+
+        const newRole = currentRole === 'admin' ? 'user' : 'admin';
+        // Optimistic UI update
+        setUsers(prev => prev.map(u => u.id === userId ? { ...u, role: newRole } : u));
+
+        try {
+            await updateUserRole(userId, newRole);
+        } catch (err) {
+            // Revert state on error
+            setUsers(prev => prev.map(u => u.id === userId ? { ...u, role: currentRole } : u));
+        }
+    };
+
+    const handleConfirmSendResetEmail = async () => {
+        if (!confirmResetPasswordTarget) return;
+        const { email, username } = confirmResetPasswordTarget;
+        setConfirmResetPasswordTarget(null);
+        setUserFeedback(null);
+        setSendingResetId(email);
+
+        try {
+            const result = await sendPasswordResetEmailToUser(email);
+            setUserFeedback({
+                type: 'success',
+                message: result.message || `Password reset email sent to "${username}" (${email}).`
+            });
+        } catch (err) {
+            setUserFeedback({
+                type: 'error',
+                message: err.message || 'Failed to send password reset email.'
+            });
+        } finally {
+            setSendingResetId(null);
+            setTimeout(() => setUserFeedback(null), 8000);
+        }
+    };
+
     const onRequestToggleResolved = (err) => {
         setConfirmResolveTarget({
             id: err.id,
@@ -147,6 +222,21 @@ const AdminDashboard = () => {
         }
         return clientErrors.filter(e => !e.resolved);
     }, [clientErrors, errorView]);
+
+    const filteredUsers = useMemo(() => {
+        const q = userSearchQuery.trim().toLowerCase();
+        return users.filter(u => {
+            const matchesQuery = !q || (
+                (u.username && u.username.toLowerCase().includes(q)) ||
+                (u.email && u.email.toLowerCase().includes(q))
+            );
+            const matchesRole = userRoleFilter === 'all' || u.role === userRoleFilter;
+            return matchesQuery && matchesRole;
+        });
+    }, [users, userSearchQuery, userRoleFilter]);
+
+    const adminUsersCount = useMemo(() => users.filter(u => u.role === 'admin').length, [users]);
+    const regularUsersCount = useMemo(() => users.filter(u => u.role === 'user').length, [users]);
 
     const SEGMENT_COLORS = [
         'var(--primary-color)', 'var(--secondary-color)', 'var(--accent-color)',
@@ -210,6 +300,20 @@ const AdminDashboard = () => {
 
     const summaryCards = useMemo(() => ([
         {
+            label: 'Total Users',
+            value: users.length,
+            accentClass: 'accent-accent',
+            iconClass: 'icon-accent',
+            icon: (
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+            )
+        },
+        {
             label: 'Total Books',
             value: stats.totalBooks,
             accentClass: 'accent-secondary',
@@ -247,7 +351,7 @@ const AdminDashboard = () => {
                 </span>
             )
         }
-    ]), [stats]);
+    ]), [stats, users]);
 
     if (loading) {
         return <Loader text="Loading Dashboard..." size={150} fullScreen />;
@@ -369,6 +473,153 @@ const AdminDashboard = () => {
                                         </div>
                                     );
                                 })}
+                            </div>
+                        )}
+                    </section>
+
+                    {/* Registered Users Section */}
+                    <section className="chart-container users-section">
+                        <div className="chart-header users-header">
+                            <div>
+                                <span className="chart-kicker users-kicker">User Management</span>
+                                <h4 className="chart-title">Registered Users & Access Roles</h4>
+                            </div>
+                            <div className="users-stat-badges">
+                                <span className="stat-pill total-pill">Total: {users.length}</span>
+                                <span className="stat-pill admin-pill">Admins: {adminUsersCount}</span>
+                                <span className="stat-pill user-pill">Users: {regularUsersCount}</span>
+                            </div>
+                        </div>
+
+                        {userFeedback && (
+                            <div className={`ping-feedback-banner ${userFeedback.type}`}>
+                                {userFeedback.message}
+                            </div>
+                        )}
+
+                        <div className="users-controls-bar">
+                            <div className="users-search-box">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                <input
+                                    type="text"
+                                    placeholder="Search by username or email..."
+                                    value={userSearchQuery}
+                                    onChange={(e) => setUserSearchQuery(e.target.value)}
+                                    className="users-search-input"
+                                />
+                            </div>
+
+                            <div className="users-filter-pills">
+                                <button
+                                    className={`filter-btn ${userRoleFilter === 'all' ? 'active' : ''}`}
+                                    onClick={() => setUserRoleFilter('all')}
+                                >
+                                    All Users ({users.length})
+                                </button>
+                                <button
+                                    className={`filter-btn ${userRoleFilter === 'admin' ? 'active' : ''}`}
+                                    onClick={() => setUserRoleFilter('admin')}
+                                >
+                                    Admins ({adminUsersCount})
+                                </button>
+                                <button
+                                    className={`filter-btn ${userRoleFilter === 'user' ? 'active' : ''}`}
+                                    onClick={() => setUserRoleFilter('user')}
+                                >
+                                    Standard Users ({regularUsersCount})
+                                </button>
+                            </div>
+                        </div>
+
+                        {loadingUsers ? (
+                            <div className="users-loading">Loading users list...</div>
+                        ) : filteredUsers.length === 0 ? (
+                            <div className="users-empty">No users found.</div>
+                        ) : (
+                            <div className="users-table-wrapper">
+                                <table className="users-table">
+                                    <thead>
+                                        <tr>
+                                            <th>User</th>
+                                            <th>Email</th>
+                                            <th>Role</th>
+                                            <th>Joined Date</th>
+                                            <th style={{ textAlign: 'right' }}>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {filteredUsers.map((u) => {
+                                            const isAdminRole = u.role === 'admin';
+                                            const initial = (u.username || u.email || 'U').charAt(0).toUpperCase();
+
+                                            return (
+                                                <tr key={u.id}>
+                                                    <td>
+                                                        <div className="user-cell-info">
+                                                            <div className={`user-avatar ${isAdminRole ? 'avatar-admin' : 'avatar-user'}`}>
+                                                                {initial}
+                                                            </div>
+                                                            <span className="user-name">{u.username}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="user-email-cell">{u.email}</td>
+                                                    <td>
+                                                        <span className={`user-role-badge role-${u.role}`}>
+                                                            <span className="role-dot"></span>
+                                                            {isAdminRole ? 'Admin' : 'User'}
+                                                        </span>
+                                                    </td>
+                                                    <td className="user-date-cell">{u.joinedDate}</td>
+                                                    <td style={{ textAlign: 'right' }}>
+                                                        <div className="action-dropdown-wrapper">
+                                                            <button
+                                                                type="button"
+                                                                className="action-dropdown-trigger"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    setOpenDropdownId(prev => prev === u.id ? null : u.id);
+                                                                }}
+                                                                aria-expanded={openDropdownId === u.id}
+                                                            >
+                                                                <span>Actions</span>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={`dropdown-chevron ${openDropdownId === u.id ? 'open' : ''}`}><polyline points="6 9 12 15 18 9"></polyline></svg>
+                                                            </button>
+
+                                                            {openDropdownId === u.id && (
+                                                                <div className="action-dropdown-menu">
+                                                                    <button
+                                                                        type="button"
+                                                                        className="dropdown-menu-item"
+                                                                        onClick={() => {
+                                                                            setOpenDropdownId(null);
+                                                                            setConfirmRoleChangeTarget({ id: u.id, username: u.username, currentRole: u.role });
+                                                                        }}
+                                                                    >
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                                                        <span>{isAdminRole ? 'Demote to User' : 'Promote to Admin'}</span>
+                                                                    </button>
+
+                                                                    <button
+                                                                        type="button"
+                                                                        className="dropdown-menu-item reset-password-item"
+                                                                        disabled={sendingResetId === u.email}
+                                                                        onClick={() => {
+                                                                            setOpenDropdownId(null);
+                                                                            setConfirmResetPasswordTarget({ id: u.id, username: u.username, email: u.email });
+                                                                        }}
+                                                                    >
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                                                        <span>{sendingResetId === u.email ? 'Sending Email...' : 'Send Reset Password Email'}</span>
+                                                                    </button>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
                             </div>
                         )}
                     </section>
@@ -498,6 +749,32 @@ const AdminDashboard = () => {
                 }
                 variant={confirmResolveTarget?.currentResolved ? 'yellow' : 'approve'}
                 confirmLabel={confirmResolveTarget?.currentResolved ? 'Yes, Reopen' : 'Yes, Mark Resolved'}
+                cancelLabel="Cancel"
+            />
+
+            <ConfirmationModal
+                isOpen={!!confirmRoleChangeTarget}
+                onClose={() => setConfirmRoleChangeTarget(null)}
+                onConfirm={handleConfirmRoleChange}
+                title={confirmRoleChangeTarget?.currentRole === 'admin' ? 'Revoke Admin Privileges' : 'Grant Admin Privileges'}
+                message={
+                    confirmRoleChangeTarget?.currentRole === 'admin'
+                        ? `Are you sure you want to change "${confirmRoleChangeTarget?.username}" from Admin to Standard User?`
+                        : `Are you sure you want to promote "${confirmRoleChangeTarget?.username}" to Admin?`
+                }
+                variant={confirmRoleChangeTarget?.currentRole === 'admin' ? 'yellow' : 'approve'}
+                confirmLabel={confirmRoleChangeTarget?.currentRole === 'admin' ? 'Yes, Demote' : 'Yes, Make Admin'}
+                cancelLabel="Cancel"
+            />
+
+            <ConfirmationModal
+                isOpen={!!confirmResetPasswordTarget}
+                onClose={() => setConfirmResetPasswordTarget(null)}
+                onConfirm={handleConfirmSendResetEmail}
+                title="Send Password Reset Email"
+                message={`Are you sure you want to send a password reset email to "${confirmResetPasswordTarget?.username}" (${confirmResetPasswordTarget?.email})? They will receive an email with a reset button and fallback link.`}
+                variant="approve"
+                confirmLabel="Send Reset Email"
                 cancelLabel="Cancel"
             />
         </div>

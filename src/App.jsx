@@ -53,6 +53,7 @@ const Maintenance = lazyWithRetry(() => import("./pages/Maintenance"));
 const Settings = lazyWithRetry(() => import("./pages/Settings"));
 const ProgrammingSolutions = lazyWithRetry(() => import("./pages/ProgrammingSolutions"));
 const AddProgrammingSolution = lazyWithRetry(() => import("./pages/AddProgrammingSolution"));
+const ResetPassword = lazyWithRetry(() => import("./pages/ResetPassword"));
 
 // Lightweight CSS-only fallback (avoids importing DotLottie in the main bundle)
 const SuspenseFallback = () => (
@@ -112,6 +113,7 @@ function App() {
                         <Route path="/terms" element={<TermsAndConditions />} />
                         <Route path="/privacy" element={<PrivacyPolicy />} />
                         <Route path="/maintenance" element={<Maintenance />} />
+                        <Route path="/reset-password" element={<ResetPassword />} />
                       </Routes>
                     </Suspense>
                   </ErrorBoundary>

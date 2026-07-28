@@ -681,6 +681,207 @@ app.post('/api/admin/keepalive-ping', verifyAdminToken, async (req, res) => {
     }
 });
 
+// Admin Password Reset Email Route
+app.post('/api/admin/send-password-reset', verifyAdminToken, async (req, res) => {
+    const { email } = req.body;
+    const normalizedEmail = email?.trim().toLowerCase();
+
+    if (!normalizedEmail) {
+        return res.status(400).json({ error: 'Email is required' });
+    }
+
+    try {
+        const reqOrigin = req.headers.origin || (req.headers.referer ? new URL(req.headers.referer).origin : null);
+        const appOrigin = (process.env.APP_URL || reqOrigin || 'http://localhost:5173').replace(/\/$/, '');
+
+        const actionCodeSettings = {
+            url: `${appOrigin}/reset-password`,
+            handleCodeInApp: true
+        };
+
+        const firebaseResetLink = await getAuth().generatePasswordResetLink(normalizedEmail, actionCodeSettings);
+
+        let oobCode = '';
+        try {
+            const parsedUrl = new URL(firebaseResetLink);
+            oobCode = parsedUrl.searchParams.get('oobCode') || '';
+        } catch (e) {
+            console.error('Error parsing firebaseResetLink URL:', e);
+        }
+
+        // Construct custom web app URL pointing to /reset-password page
+        const finalResetLink = oobCode
+            ? `${appOrigin}/reset-password?oobCode=${encodeURIComponent(oobCode)}&email=${encodeURIComponent(normalizedEmail)}`
+            : firebaseResetLink;
+
+        const apiKey = process.env.EMAIL_PASS;
+        const senderEmail = process.env.EMAIL_USER || process.env.SENDER_EMAIL || 'chandrashriyansh@gmail.com';
+
+        const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Reset Your Password - ExamFobiya</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1e293b;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f1f5f9; padding: 40px 16px;">
+        <tr>
+            <td align="center">
+                <!-- Main Email Container Card -->
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width: 580px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);">
+                    
+                    <!-- Top Brand Header Banner -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%); padding: 36px 40px; text-align: left;">
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                <tr>
+                                    <td>
+                                        <div style="display: inline-block; padding: 6px 14px; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 9999px; margin-bottom: 14px;">
+                                            <span style="color: #60a5fa; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;">⚡ EXAMFOBIYA SECURITY</span>
+                                        </div>
+                                        <h1 style="margin: 0 0 6px; font-size: 26px; line-height: 1.25; font-weight: 800; color: #ffffff; letter-spacing: -0.02em;">Password Reset</h1>
+                                        <p style="margin: 0; font-size: 14px; color: #94a3b8;">Official account security notification</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Body Content -->
+                    <tr>
+                        <td style="padding: 40px 40px 32px;">
+                            
+                            <!-- Admin Notice Callout Badge -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom: 28px;">
+                                <tr>
+                                    <td style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 14px; padding: 16px 20px;">
+                                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                            <tr>
+                                                <td width="28" valign="top" style="font-size: 20px; line-height: 1;">🛡️</td>
+                                                <td style="padding-left: 10px;">
+                                                    <p style="margin: 0 0 2px; font-size: 13px; font-weight: 700; color: #1e40af; text-transform: uppercase; letter-spacing: 0.05em;">Admin Initiated Reset</p>
+                                                    <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #1e3a8a;">
+                                                        This password reset was generated by an administrator for: <strong style="color: #0f172a; word-break: break-all;">${normalizedEmail}</strong>
+                                                    </p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6; color: #334155; font-weight: 500;">Hello,</p>
+                            <p style="margin: 0 0 28px; font-size: 15px; line-height: 1.6; color: #475569;">
+                                An administrator has requested a password reset for your ExamFobiya account. Please click the button below to set up a new password for your account:
+                            </p>
+
+                            <!-- Primary CTA Button -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 32px 0;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="${finalResetLink}" target="_blank" style="display: inline-block; padding: 16px 36px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff; text-decoration: none; font-weight: 700; font-size: 15px; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4); letter-spacing: 0.02em; transition: all 0.2s ease;">
+                                            🔐 Reset Password
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Fallback Link Section -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-top: 32px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px;">
+                                <tr>
+                                    <td>
+                                        <p style="margin: 0 0 8px; font-size: 13px; font-weight: 700; color: #334155;">If the button above does not work:</p>
+                                        <p style="margin: 0 0 8px; font-size: 13px; color: #64748b; line-height: 1.5;">Copy and paste the following link directly into your browser navigation bar:</p>
+                                        <div style="background-color: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 14px; word-break: break-all;">
+                                            <a href="${finalResetLink}" target="_blank" style="color: #2563eb; font-size: 13px; font-family: monospace, monospace; text-decoration: none;">${finalResetLink}</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Security Notice -->
+                            <p style="margin: 28px 0 0; font-size: 13px; line-height: 1.6; color: #94a3b8; text-align: center;">
+                                🔒 For security, this link is unique to your account. If you did not expect this reset, please notify your team administrator immediately.
+                            </p>
+
+                            <!-- Footer Divider & Signature -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-top: 32px; border-top: 1px solid #f1f5f9; padding-top: 24px;">
+                                <tr>
+                                    <td>
+                                        <p style="margin: 0 0 4px; font-size: 14px; color: #475569; font-weight: 600;">Best regards,</p>
+                                        <p style="margin: 0; font-size: 14px; color: #0f172a; font-weight: 700;">ExamFobiya Administration Team</p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+
+                    <!-- Bottom Footer -->
+                    <tr>
+                        <td style="background-color: #f8fafc; padding: 20px 40px; border-top: 1px solid #e2e8f0; text-align: center;">
+                            <p style="margin: 0; font-size: 12px; color: #94a3b8;">© ${new Date().getFullYear()} ExamFobiya. All rights reserved.</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>`;
+
+        const data = JSON.stringify({
+            sender: { email: senderEmail, name: 'ExamFobiya Admin' },
+            to: [{ email: normalizedEmail }],
+            subject: 'Password Reset Generated by Admin - ExamFobiya',
+            textContent: `Password Reset Request (Generated by Administrator) - ExamFobiya\n\nAdmin Notice: This password reset email has been generated directly by an Administrator for your account.\n\nClick the link below to reset your password:\n${finalResetLink}\n\nIf the link does not work, copy and paste this URL into your browser:\n${finalResetLink}`,
+            htmlContent
+        });
+
+        const options = {
+            hostname: 'api.brevo.com',
+            port: 443,
+            path: '/v3/smtp/email',
+            method: 'POST',
+            headers: {
+                'api-key': apiKey,
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(data)
+            }
+        };
+
+        const https = require('https');
+        const apiReq = https.request(options, (apiRes) => {
+            let responseData = '';
+            apiRes.on('data', (chunk) => { responseData += chunk; });
+            apiRes.on('end', () => {
+                if (apiRes.statusCode >= 200 && apiRes.statusCode < 300) {
+                    console.log(`Password reset email sent to ${normalizedEmail}`);
+                    res.status(200).json({ message: `Password reset email sent successfully to ${normalizedEmail}` });
+                } else {
+                    console.error('Brevo API Error:', responseData);
+                    res.status(500).json({ error: 'Failed to send reset email: ' + responseData });
+                }
+            });
+        });
+
+        apiReq.on('error', (error) => {
+            console.error('Network Error:', error);
+            res.status(500).json({ error: 'Failed to send reset email: ' + error.message });
+        });
+
+        apiReq.write(data);
+        apiReq.end();
+
+    } catch (error) {
+        console.error('Error generating/sending password reset link:', error);
+        res.status(500).json({ error: error.message || 'Failed to send password reset email.' });
+    }
+});
+
 app.get('/', (req, res) => {
     res.send('ExamFobiya Backend is running');
 });
