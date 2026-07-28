@@ -217,13 +217,13 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true, checkAccountExist
                         </button>
                     </form>
                     <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '15px' }}>
-                        <button type="button" onClick={() => setStep('email')} style={{ background: 'none', border: 'none', color: '#007bff', cursor: 'pointer', padding: 0, fontSize: '15px', fontWeight: '500' }}>
+                        <button type="button" onClick={() => setStep('email')} className="forgot-pass-btn">
                             Forgot Password?
                         </button>
                     </div>
                     {allowRegister && (
                         <p className="toggle-auth">
-                            Need an account? <Link to="/register" style={{ color: '#007bff' }}>Register</Link>
+                            Need an account? <Link to="/register" className="register-link">Register</Link>
                         </p>
                     )}
                 </>
@@ -231,7 +231,7 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true, checkAccountExist
 
             {step === 'email' && (
                 <form onSubmit={handleSendOtp}>
-                    <p style={{marginBottom: '15px', color: '#555', fontSize: '0.9rem'}}>Enter your email address and we'll send you a verification code to reset your password.</p>
+                    <p className="login-subtext">Enter your email address and we'll send you a verification code to reset your password.</p>
                     <div className="form-group">
                         <label htmlFor={`reset-email-${role}`}>Email:</label>
                         <input
@@ -248,7 +248,7 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true, checkAccountExist
                     <button type="submit" className="login-btn" disabled={loading}>
                         {loading ? 'Sending...' : 'Send Verification Code'}
                     </button>
-                    <button type="button" onClick={() => { setStep('login'); setLocalError(''); }} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', width: '100%', marginTop: '10px' }}>
+                    <button type="button" onClick={() => { setStep('login'); setLocalError(''); }} className="login-secondary-btn">
                         Cancel
                     </button>
                 </form>
@@ -256,7 +256,7 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true, checkAccountExist
 
             {step === 'otp' && (
                 <form onSubmit={handleVerifyOtp}>
-                    <p style={{marginBottom: '15px', color: '#555', fontSize: '0.9rem'}}>We've sent a 6-digit code to <strong>{resetEmail}</strong>. Enter it below.</p>
+                    <p className="login-subtext">We've sent a 6-digit code to <strong>{resetEmail}</strong>. Enter it below.</p>
                     <div className="form-group">
                         <label htmlFor={`reset-otp-${role}`}>OTP Code:</label>
                         <input
@@ -274,7 +274,7 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true, checkAccountExist
                     <button type="submit" className="login-btn">
                         Verify Code
                     </button>
-                    <p style={{ marginTop: '12px', marginBottom: '0', textAlign: 'center', color: '#555', fontSize: '0.9rem' }}>
+                    <p className="login-subtext" style={{ marginTop: '12px', marginBottom: '0', textAlign: 'center' }}>
                         {resendTimer > 0
                             ? `Resend available in ${formatResendTimer(resendTimer)}`
                             : 'Didn’t receive the code?'}
@@ -283,11 +283,11 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true, checkAccountExist
                         type="button"
                         onClick={handleResendOtp}
                         disabled={loading || resendTimer > 0}
-                        style={{ background: 'none', border: 'none', color: resendTimer > 0 ? '#999' : '#007bff', cursor: resendTimer > 0 ? 'not-allowed' : 'pointer', width: '100%', marginTop: '10px', fontWeight: '500' }}
+                        className="resend-code-btn"
                     >
                         {loading && resendTimer === 0 ? 'Sending...' : 'Resend Code'}
                     </button>
-                    <button type="button" onClick={() => { setStep('email'); setLocalError(''); }} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', width: '100%', marginTop: '10px' }}>
+                    <button type="button" onClick={() => { setStep('email'); setLocalError(''); }} className="login-secondary-btn">
                         Back
                     </button>
                 </form>
@@ -295,7 +295,7 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true, checkAccountExist
 
             {step === 'new-password' && (
                 <form onSubmit={handleResetPassword}>
-                    <p style={{marginBottom: '15px', color: '#555', fontSize: '0.9rem'}}>Create a new password for your account.</p>
+                    <p className="login-subtext">Create a new password for your account.</p>
                     <div className="form-group">
                         <label htmlFor={`new-password-${role}`}>New Password:</label>
                         <input
@@ -335,7 +335,7 @@ const LoginBox = ({ role, title, onAuth, allowRegister = true, checkAccountExist
                     <button type="submit" className="login-btn" disabled={loading}>
                         {loading ? 'Resetting...' : 'Reset Password'}
                     </button>
-                    <button type="button" onClick={() => { setStep('login'); setLocalError(''); setShowPassword(false); }} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', width: '100%', marginTop: '10px' }}>
+                    <button type="button" onClick={() => { setStep('login'); setLocalError(''); setShowPassword(false); }} className="login-secondary-btn">
                         Cancel
                     </button>
                 </form>
@@ -378,8 +378,8 @@ const Login = () => {
         <div className="login-container">
             {error && <div className="global-error-message">{error}</div>}
             <div className="login-boxes-wrapper">
-                <LoginBox role="admin" title="Admin Portal" onAuth={handleAuth} allowRegister={false} checkAccountExists={checkAccountExists} />
                 <LoginBox role="user" title="User Portal" onAuth={handleAuth} allowRegister={true} checkAccountExists={checkAccountExists} />
+                <LoginBox role="admin" title="Admin Portal" onAuth={handleAuth} allowRegister={false} checkAccountExists={checkAccountExists} />
             </div>
         </div>
     );
