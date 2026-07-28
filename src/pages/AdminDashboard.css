@@ -1864,3 +1864,228 @@ body.dark-mode .pagination-btn,
     border-color: rgba(129, 140, 248, 0.2);
     color: #e2e8f0;
 }
+
+/* System Controls & Data Exports Section */
+.system-kicker {
+    background: rgba(245, 158, 11, 0.12);
+    color: #d97706;
+}
+
+.system-controls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.25rem;
+    margin-top: 1rem;
+}
+
+.system-control-card {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1rem;
+    transition: all 0.25s ease;
+}
+
+.system-control-card.active-warning {
+    border-color: #f59e0b;
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.2);
+}
+
+.control-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.control-card-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+.control-card-desc {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.45;
+}
+
+.system-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.system-status-badge.status-normal {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+}
+
+.system-status-badge.status-normal .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #10b981;
+}
+
+.system-status-badge.status-active {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+}
+
+.system-status-badge.status-active .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #ef4444;
+    animation: pulseRed 1.5s infinite;
+}
+
+@keyframes pulseRed {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.maintenance-toggle-btn {
+    width: 100%;
+    padding: 0.65rem 1.25rem;
+    border-radius: 0.65rem;
+    font-weight: 700;
+    font-size: 0.875rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+    background: #0f172a;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+}
+
+.maintenance-toggle-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.25);
+}
+
+.maintenance-toggle-btn.btn-active {
+    background: #ef4444 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+}
+
+.maintenance-toggle-btn.btn-active:hover {
+    background: #dc2626 !important;
+}
+
+.control-card-actions-group {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.export-data-btn {
+    flex: 1;
+    min-width: 140px;
+    padding: 0.65rem 1rem;
+    border-radius: 0.65rem;
+    font-weight: 700;
+    font-size: 0.825rem;
+    cursor: pointer;
+    background: rgba(37, 99, 235, 0.1);
+    color: #2563eb;
+    border: 1px solid rgba(37, 99, 235, 0.25);
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.export-data-btn:hover {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.export-data-btn.analytics-export-btn {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+    border-color: rgba(16, 185, 129, 0.25);
+}
+
+.export-data-btn.analytics-export-btn:hover {
+    background: #10b981;
+    color: #ffffff;
+    border-color: #10b981;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.purge-errors-btn {
+    padding: 0.35rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.775rem;
+    font-weight: 700;
+    cursor: pointer;
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    transition: all 0.2s ease;
+}
+
+.purge-errors-btn:hover:not(:disabled) {
+    background: #ef4444;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.purge-errors-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Dark Theme Adjustments for System Controls */
+[data-theme='dark'] .system-control-card,
+body.dark-mode .system-control-card {
+    background: rgba(15, 23, 42, 0.6);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme='dark'] .control-card-title,
+body.dark-mode .control-card-title {
+    color: #f8fafc;
+}
+
+[data-theme='dark'] .control-card-desc,
+body.dark-mode .control-card-desc {
+    color: #94a3b8;
+}
+
+[data-theme='dark'] .system-kicker,
+body.dark-mode .system-kicker {
+    background: rgba(245, 158, 11, 0.18);
+    color: #fbbf24;
+}
+
+/* Midnight Theme Adjustments */
+[data-theme='midnight'] .system-control-card {
+    background: rgba(10, 10, 20, 0.7);
+    border-color: rgba(129, 140, 248, 0.15);
+}
+
+[data-theme='midnight'] .control-card-title {
+    color: #f1f5f9;
+}
+
+[data-theme='midnight'] .control-card-desc {
+    color: #a1a1aa;
+}

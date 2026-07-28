@@ -23,7 +23,7 @@ try {
     } else {
         throw new Error("CRITICAL: FIREBASE_SERVICE_ACCOUNT environment variable is missing.");
     }
-    
+
     if (!getApps().length) {
         initializeApp({
             credential: cert(serviceAccount)
@@ -167,11 +167,11 @@ app.post('/send-otp', async (req, res) => {
 
         // Generate secure 6 digit OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        
+
         // Save OTP to Firestore (expires in 10 minutes)
         await getFirestore().collection('otps').doc(normalizedEmail).set({
             code: otp,
-            expiresAt: Date.now() + 10 * 60 * 1000 
+            expiresAt: Date.now() + 10 * 60 * 1000
         });
 
         // Context: Using Brevo API v3 over HTTPs to avoid SMTP port/auth issues
@@ -183,7 +183,7 @@ app.post('/send-otp', async (req, res) => {
             to: [{ email: normalizedEmail }],
             subject: 'Your ExamFobiya Verification Code',
             textContent:
-`ExamFobiya Verification Code
+                `ExamFobiya Verification Code
 
 Hello,
 
@@ -342,7 +342,7 @@ app.post('/api/check-account-exists', async (req, res) => {
 app.post('/api/verify-otp', async (req, res) => {
     const normalizedEmail = req.body?.email?.trim().toLowerCase();
     const { otp } = req.body;
-    
+
     if (!normalizedEmail || !otp) {
         return res.status(400).json({ error: 'Email and OTP are required' });
     }
@@ -353,12 +353,12 @@ app.post('/api/verify-otp', async (req, res) => {
         if (!otpDoc.exists) {
             return res.status(400).json({ error: 'No OTP found for this email. Please request a new one.' });
         }
-        
+
         const otpData = otpDoc.data();
         if (otpData.code !== otp) {
             return res.status(400).json({ error: 'Invalid OTP code.' });
         }
-        
+
         if (Date.now() > otpData.expiresAt) {
             await otpDocRef.delete();
             return res.status(400).json({ error: 'OTP has expired. Please request a new one.' });
@@ -390,12 +390,12 @@ app.post('/api/reset-password', async (req, res) => {
         if (!otpDoc.exists) {
             return res.status(400).json({ error: 'No OTP found for this email. Please request a new one.' });
         }
-        
+
         const otpData = otpDoc.data();
         if (otpData.code !== otp) {
             return res.status(400).json({ error: 'Invalid OTP code.' });
         }
-        
+
         if (Date.now() > otpData.expiresAt) {
             await otpDocRef.delete();
             return res.status(400).json({ error: 'OTP has expired. Please request a new one.' });
@@ -403,7 +403,7 @@ app.post('/api/reset-password', async (req, res) => {
 
         // Fetch user using email
         const userRecord = await getAuth().getUserByEmail(normalizedEmail);
-        
+
         // Update user's password
         await getAuth().updateUser(userRecord.uid, {
             password: newPassword
@@ -528,7 +528,7 @@ const sendBrevoKeepAlivePing = async () => {
                     try {
                         const parsed = JSON.parse(body);
                         errMsg = parsed.message || body;
-                    } catch (e) {}
+                    } catch (e) { }
                     console.error('[Keep-Alive] Brevo API ping error:', errMsg);
                     resolve({ success: false, statusCode: res.statusCode, error: errMsg });
                 }
@@ -679,6 +679,7 @@ app.post('/api/admin/keepalive-ping', verifyAdminToken, async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: 'Failed to run keep-alive ping', message: err.message });
     }
+});
 // Admin Delete User Account Route
 app.post('/api/admin/delete-user', verifyAdminToken, async (req, res) => {
     const { userId } = req.body || {};

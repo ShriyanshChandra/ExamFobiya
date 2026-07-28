@@ -1,5 +1,5 @@
 import { db, auth } from '../firebase';
-import { collection, addDoc, getDocs, updateDoc, doc, query, orderBy, limit, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, getDocs, updateDoc, doc, query, orderBy, limit, serverTimestamp, writeBatch } from 'firebase/firestore';
 
 const recentErrorsSet = new Set();
 
@@ -110,6 +110,34 @@ export const toggleErrorResolved = async (errorId, newResolvedStatus) => {
         return true;
     } catch (err) {
         console.error('[ErrorLogger] Failed to update error resolved status:', err);
+        throw err;
+    }
+};
+
+/**
+ * Purges (deletes) resolved errors or all error logs from Firestore
+ */
+export const purgeErrorsFromFirebase = async (onlyResolved = true) => {
+    try {
+        const errorsRef = collection(db, 'client_errors');
+        const snapshot = await getDocs(errorsRef);
+        const batch = writeBatch(db);
+        let count = 0;
+
+        snapshot.docs.forEach(docSnap => {
+            const data = docSnap.data();
+            if (!onlyResolved || data.resolved) {
+                batch.delete(docSnap.ref);
+                count++;
+            }
+        });
+
+        if (count > 0) {
+            await batch.commit();
+        }
+        return count;
+    } catch (err) {
+        console.error('[ErrorLogger] Failed to purge error logs:', err);
         throw err;
     }
 };

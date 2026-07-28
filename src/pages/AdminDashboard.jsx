@@ -1,7 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { fetchAnalyticsData, fetchApiKeysStatus, triggerApiKeyPing } from '../services/AnalyticsService';
-import { fetchRecentClientErrors, toggleErrorResolved } from '../services/ErrorLoggerService';
+import { fetchRecentClientErrors, toggleErrorResolved, purgeErrorsFromFirebase } from '../services/ErrorLoggerService';
 import { fetchRegisteredUsers, updateUserRole, sendPasswordResetEmailToUser, deleteUserAccount } from '../services/UserService';
+import { fetchMaintenanceMode, setMaintenanceMode } from '../services/SystemSettingsService';
+import { exportToCSV } from '../utils/csvExporter';
 import Loader from '../components/Loader';
 import ConfirmationModal from '../components/ConfirmationModal';
 import './AdminDashboard.css';
@@ -20,7 +22,13 @@ const AdminDashboard = () => {
     const [expandedErrorId, setExpandedErrorId] = useState(null);
     const [errorView, setErrorView] = useState('active'); // 'active' (unresolved) or 'history' (resolved)
     const [confirmResolveTarget, setConfirmResolveTarget] = useState(null);
+    const [confirmPurgeErrorsTarget, setConfirmPurgeErrorsTarget] = useState(false);
+    const [purgingErrors, setPurgingErrors] = useState(false);
     const [loading, setLoading] = useState(true);
+
+    const [maintenanceMode, setMaintenanceModeState] = useState(false);
+    const [togglingMaintenance, setTogglingMaintenance] = useState(false);
+    const [confirmMaintenanceTarget, setConfirmMaintenanceTarget] = useState(false);
 
     const [apiKeysData, setApiKeysData] = useState({ lastPingFormatted: 'Never', keys: [] });
     const [loadingApiKeys, setLoadingApiKeys] = useState(true);
@@ -80,6 +88,8 @@ const AdminDashboard = () => {
             setLoading(false);
             loadApiKeysStatus();
             loadUsersData();
+
+            fetchMaintenanceMode().then(isMaint => setMaintenanceModeState(isMaint)).catch(() => {});
 
             try {
                 const errors = await fetchRecentClientErrors(50);
@@ -229,6 +239,91 @@ const AdminDashboard = () => {
             setClientErrors(prev =>
                 prev.map(item => item.id === errorId ? { ...item, resolved: currentResolved } : item)
             );
+        }
+    };
+
+    const handleToggleMaintenance = async () => {
+        setConfirmMaintenanceTarget(false);
+        setTogglingMaintenance(true);
+        setUserFeedback(null);
+        try {
+            const nextState = !maintenanceMode;
+            await setMaintenanceMode(nextState);
+            setMaintenanceModeState(nextState);
+            setUserFeedback({
+                type: 'success',
+                message: `System Maintenance Mode is now ${nextState ? 'ENABLED (active)' : 'DISABLED (normal operations)'}.`
+            });
+        } catch (err) {
+            setUserFeedback({
+                type: 'error',
+                message: 'Failed to update system maintenance mode.'
+            });
+        } finally {
+            setTogglingMaintenance(false);
+            setTimeout(() => setUserFeedback(null), 8000);
+        }
+    };
+
+    const handleConfirmPurgeErrors = async () => {
+        setConfirmPurgeErrorsTarget(false);
+        setPurgingErrors(true);
+        setUserFeedback(null);
+        try {
+            const count = await purgeErrorsFromFirebase(true);
+            setClientErrors(prev => prev.filter(e => !e.resolved));
+            setUserFeedback({
+                type: 'success',
+                message: `Successfully purged ${count} resolved error log(s).`
+            });
+        } catch (err) {
+            setUserFeedback({
+                type: 'error',
+                message: 'Failed to purge error logs.'
+            });
+        } finally {
+            setPurgingErrors(false);
+            setTimeout(() => setUserFeedback(null), 8000);
+        }
+    };
+
+    const handleExportUsersCSV = () => {
+        if (!users || users.length === 0) {
+            setUserFeedback({ type: 'error', message: 'No registered user data available to export.' });
+            setTimeout(() => setUserFeedback(null), 4000);
+            return;
+        }
+        const exportData = users.map(u => ({
+            'User ID': u.id,
+            'Username': u.username,
+            'Email Address': u.email,
+            'Account Role': u.role,
+            'Joined Date': u.joinedDate
+        }));
+        const success = exportToCSV('examfobiya_users_list', exportData);
+        if (success) {
+            setUserFeedback({ type: 'success', message: 'Exported registered users list to CSV.' });
+            setTimeout(() => setUserFeedback(null), 4000);
+        }
+    };
+
+    const handleExportAnalyticsCSV = () => {
+        const exportData = [
+            { Metric: 'Total Registered Users', Value: users.length },
+            { Metric: 'Admin Accounts Count', Value: adminUsersCount },
+            { Metric: 'Standard Users Count', Value: regularUsersCount },
+            { Metric: 'Total Books in Inventory', Value: stats.totalBooks },
+            { Metric: 'Total Question Papers / PDFs', Value: stats.totalQuestions },
+            { Metric: 'Total Programming Solutions', Value: stats.totalProgrammingSolutions },
+            { Metric: 'Active Client Errors', Value: clientErrors.filter(e => !e.resolved).length },
+            { Metric: 'Resolved Client Errors', Value: clientErrors.filter(e => e.resolved).length },
+            { Metric: 'System Maintenance Mode', Value: maintenanceMode ? 'ENABLED' : 'DISABLED' },
+            { Metric: 'Report Generated At', Value: new Date().toLocaleString() }
+        ];
+        const success = exportToCSV('examfobiya_analytics_report', exportData);
+        if (success) {
+            setUserFeedback({ type: 'success', message: 'Exported platform analytics report to CSV.' });
+            setTimeout(() => setUserFeedback(null), 4000);
         }
     };
 
@@ -516,6 +611,75 @@ const AdminDashboard = () => {
                         )}
                     </section>
 
+                    {/* System Maintenance & Data Exports Section */}
+                    <section className="chart-container system-controls-section">
+                        <div className="chart-header">
+                            <div>
+                                <span className="chart-kicker system-kicker">System Controls & Exports</span>
+                                <h4 className="chart-title">Maintenance Mode & Data Reports</h4>
+                            </div>
+                        </div>
+
+                        <div className="system-controls-grid">
+                            {/* Maintenance Toggle Card */}
+                            <div className={`system-control-card ${maintenanceMode ? 'active-warning' : ''}`}>
+                                <div className="control-card-info">
+                                    <div className="control-card-header">
+                                        <h5 className="control-card-title">System Maintenance Mode</h5>
+                                        <span className={`system-status-badge ${maintenanceMode ? 'status-active' : 'status-normal'}`}>
+                                            <span className="status-dot"></span>
+                                            {maintenanceMode ? 'Maintenance ACTIVE' : 'Normal Operations'}
+                                        </span>
+                                    </div>
+                                    <p className="control-card-desc">
+                                        When active, non-admin visitors are automatically redirected to the Maintenance page. Admins maintain full access.
+                                    </p>
+                                </div>
+                                <div className="control-card-action">
+                                    <button
+                                        type="button"
+                                        className={`maintenance-toggle-btn ${maintenanceMode ? 'btn-active' : ''}`}
+                                        disabled={togglingMaintenance}
+                                        onClick={() => setConfirmMaintenanceTarget(true)}
+                                    >
+                                        {togglingMaintenance ? 'Updating...' : maintenanceMode ? 'Turn OFF Maintenance Mode' : 'Turn ON Maintenance Mode'}
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* CSV Data Exports Card */}
+                            <div className="system-control-card">
+                                <div className="control-card-info">
+                                    <div className="control-card-header">
+                                        <h5 className="control-card-title">Data Exports & Reports</h5>
+                                        <span className="system-status-badge status-normal">
+                                            CSV Format
+                                        </span>
+                                    </div>
+                                    <p className="control-card-desc">
+                                        Export structured CSV reports for registered users or platform analytics.
+                                    </p>
+                                </div>
+                                <div className="control-card-actions-group">
+                                    <button
+                                        type="button"
+                                        className="export-data-btn"
+                                        onClick={handleExportUsersCSV}
+                                    >
+                                        Export Users List (CSV)
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="export-data-btn analytics-export-btn"
+                                        onClick={handleExportAnalyticsCSV}
+                                    >
+                                        Export Analytics Report (CSV)
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
                     {/* Registered Users Section */}
                     <section className="chart-container users-section">
                         <div className="chart-header users-header">
@@ -734,6 +898,16 @@ const AdminDashboard = () => {
                                 >
                                     History ({resolvedCount})
                                 </button>
+                                {resolvedCount > 0 && (
+                                    <button
+                                        type="button"
+                                        className="purge-errors-btn"
+                                        disabled={purgingErrors}
+                                        onClick={() => setConfirmPurgeErrorsTarget(true)}
+                                    >
+                                        {purgingErrors ? 'Purging...' : `Purge Resolved (${resolvedCount})`}
+                                    </button>
+                                )}
                             </div>
                         </div>
 
@@ -867,6 +1041,32 @@ const AdminDashboard = () => {
                 message={`Are you sure you want to permanently delete the account for "${confirmDeleteUserTarget?.username}" (${confirmDeleteUserTarget?.email})? This action cannot be undone.`}
                 variant="danger"
                 confirmLabel="Permanently Delete"
+                cancelLabel="Cancel"
+            />
+
+            <ConfirmationModal
+                isOpen={confirmPurgeErrorsTarget}
+                onClose={() => setConfirmPurgeErrorsTarget(false)}
+                onConfirm={handleConfirmPurgeErrors}
+                title="Purge Resolved Error Logs"
+                message={`Are you sure you want to permanently purge all (${resolvedCount}) resolved client error logs from Firebase Firestore? Active errors will remain.`}
+                variant="danger"
+                confirmLabel="Purge Resolved Errors"
+                cancelLabel="Cancel"
+            />
+
+            <ConfirmationModal
+                isOpen={confirmMaintenanceTarget}
+                onClose={() => setConfirmMaintenanceTarget(false)}
+                onConfirm={handleToggleMaintenance}
+                title={maintenanceMode ? 'Turn OFF Maintenance Mode' : 'Turn ON Maintenance Mode'}
+                message={
+                    maintenanceMode
+                        ? 'Are you sure you want to turn OFF Maintenance Mode and restore normal public access to the platform?'
+                        : 'Are you sure you want to turn ON Maintenance Mode? Regular users will be redirected to the Maintenance page until turned off.'
+                }
+                variant={maintenanceMode ? 'approve' : 'danger'}
+                confirmLabel={maintenanceMode ? 'Turn OFF Maintenance' : 'Turn ON Maintenance'}
                 cancelLabel="Cancel"
             />
         </div>
