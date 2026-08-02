@@ -43,6 +43,7 @@ const ProgrammingSolutions = () => {
   });
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const skipNextLangEffect = React.useRef(false);
 
   useSEO({
     title: 'Programming Solutions',
@@ -107,6 +108,10 @@ const ProgrammingSolutions = () => {
   useEffect(() => {
     if (id) return; // Don't run on detail view
     if (flatRows.length === 0) return;
+    if (skipNextLangEffect.current) {
+      skipNextLangEffect.current = false;
+      return;
+    }
     const filtered = applySearchAndFilters(searchQuery, filters, selectedLanguage);
     setResults(filtered);
     setSearched(true);
@@ -138,6 +143,7 @@ const ProgrammingSolutions = () => {
       // Clear the filter selection inputs after displaying results
       setFilters({ course: "", language: "", subject: "" });
       setShowFilters(false);
+      skipNextLangEffect.current = true;
       setSelectedLanguage("");
       setSearchQuery("");
 
