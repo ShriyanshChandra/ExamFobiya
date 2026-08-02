@@ -58,6 +58,12 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit, onSaveClick }) => {
         }
     };
 
+    const hasProgrammingSolution = Boolean(
+        book.hasProgrammingSolution ||
+        (Array.isArray(book.programmingSolutions) && book.programmingSolutions.length > 0) ||
+        (book.programmingSolution && Object.keys(book.programmingSolution).length > 0)
+    );
+
     return (
         <>
             <motion.div
@@ -72,7 +78,7 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit, onSaveClick }) => {
                 transition={{ duration: 0.3, delay: Math.min(index * 0.03, 0.5) }}
                 viewport={{ once: true }}
             >
-                {book.hasProgrammingSolution && (
+                {hasProgrammingSolution && (
                     <button
                         type="button"
                         className="book-code-btn"
@@ -80,8 +86,8 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit, onSaveClick }) => {
                             e.stopPropagation();
                             navigate('/programming-solutions', { 
                                 state: { 
-                                    initialSearch: book.title,
-                                    categoryFilter: book.category 
+                                    categoryFilter: book.category,
+                                    subjectFilter: book.title 
                                 } 
                             });
                         }}

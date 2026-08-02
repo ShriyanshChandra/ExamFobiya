@@ -38,6 +38,61 @@ export default function AboutUs() {
     }
   ];
 
+  const teamSections = [
+    {
+      category: 'Owner',
+      title: 'Leadership & Founder',
+      members: [
+        {
+          id: 'owner-placeholder',
+          name: 'Owner Profile',
+          role: 'Platform Leadership',
+          bio: 'Owner details and leadership profile will be announced soon.',
+          initials: 'EF',
+          tags: ['Leadership', 'ExamFobiya'],
+          socials: {
+            email: 'mailto:contact@examfobiya.com'
+          }
+        }
+      ]
+    },
+    {
+      category: 'Developers',
+      title: 'Engineering & Development',
+      members: [
+        {
+          id: 'shriyansh-chandra',
+          name: 'Shriyansh Chandra',
+          role: 'Lead Developer & Software Engineer',
+          bio: 'Architecting and building ExamFobiya to deliver a seamless, high-performance study resource discovery platform.',
+          initials: 'SC',
+          tags: ['Full-Stack Dev', 'React & Node.js', 'System Architecture'],
+          socials: {
+            website: 'https://portfolio-iota-murex-53.vercel.app/',
+            email: 'mailto:chandrashriyansh@gmail.com'
+          }
+        }
+      ]
+    },
+    {
+      category: 'Editor',
+      title: 'Editorial & Academic Content',
+      members: [
+        {
+          id: 'editor-placeholder',
+          name: 'Editorial Team',
+          role: 'Academic Content Editor',
+          bio: 'Editor profile and academic curation team details will be updated soon.',
+          initials: 'ED',
+          tags: ['Content Curation', 'Syllabus Review'],
+          socials: {
+            email: 'mailto:support@examfobiya.com'
+          }
+        }
+      ]
+    }
+  ];
+
   useSEO({
     title: 'About Us',
     description: 'Learn about ExamFobiya — a student resource platform for BCA, DCA, and PGDCA exam preparation materials and study guides.',
@@ -132,6 +187,72 @@ export default function AboutUs() {
             <p className="about-closing-text">
               Whether you are starting your semester or preparing for final exams, ExamFobiya is built to help you find the right material faster and study with more confidence.
             </p>
+          </div>
+        </section>
+
+        {/* Small compact section at bottom for Developer & Editor */}
+        <section className="about-compact-team-section">
+          <div className="about-compact-team-header">
+            <h3 className="about-compact-team-title">Meet Our Team</h3>
+          </div>
+
+          <div className="about-compact-team-grid">
+            <div className="about-compact-team-card">
+              <div className="about-compact-avatar">SC</div>
+              <div className="about-compact-info">
+                <h4 className="about-compact-name">Shriyansh Chandra</h4>
+                <p className="about-compact-role">Lead Developer & Software Engineer</p>
+              </div>
+              <div className="about-compact-socials">
+                <a href="https://portfolio-iota-murex-53.vercel.app/" target="_blank" rel="noopener noreferrer" aria-label="Portfolio Website" className="about-social-link">
+                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                  </svg>
+                </a>
+                <a href="mailto:chandrashriyansh@gmail.com" aria-label="Email Contact" className="about-social-link">
+                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                  </svg>
+                </a>
+              </div>
+            </div>
+
+            <div className="about-compact-team-card">
+              <div className="about-compact-avatar">BC</div>
+              <div className="about-compact-info">
+                <h4 className="about-compact-name">Bhavesh Chandra</h4>
+                <p className="about-compact-role">Software Engineer & Tester</p>
+              </div>
+              <div className="about-compact-socials">
+                <a href="https://www.instagram.com/_bhaxvsh/" target="_blank" rel="noopener noreferrer" aria-label="Instagram Profile" className="about-social-link">
+                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                  </svg>
+                </a>
+              </div>
+            </div>
+
+            <div className="about-compact-team-card">
+              <div className="about-compact-avatar">AC</div>
+              <div className="about-compact-info">
+                <h4 className="about-compact-name">Ansh Chandra</h4>
+                <p className="about-compact-role">Editor</p>
+              </div>
+              <div className="about-compact-socials">
+                <a href="https://www.instagram.com/_yours_truly_8055_/" target="_blank" rel="noopener noreferrer" aria-label="Instagram Profile" className="about-social-link">
+                  <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                  </svg>
+                </a>
+              </div>
+            </div>
           </div>
         </section>
       </div>

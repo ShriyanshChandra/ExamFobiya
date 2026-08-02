@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getApiUrl } from '../utils/api';
 import useSEO from '../utils/useSEO';
+import { db } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
 import './Login.css';
 
 const LoginBox = ({ role, title, onAuth, allowRegister = true, checkAccountExists }) => {
@@ -362,11 +364,29 @@ const Login = () => {
                 // Register
                 const username = email.split('@')[0];
                 await register(email, password, role, username);
-                navigate('/welcome');
+                if (role === 'admin') {
+                    navigate('/admin');
+                } else {
+                    navigate('/');
+                }
             } else {
                 // Login
-                await login(email, password);
-                navigate('/welcome');
+                const userCred = await login(email, password);
+                let targetRole = role;
+                try {
+                    const userDoc = await getDoc(doc(db, "users", userCred.user.uid));
+                    if (userDoc.exists() && userDoc.data()?.role) {
+                        targetRole = userDoc.data().role;
+                    }
+                } catch (e) {
+                    console.error("Error fetching user role on login:", e);
+                }
+
+                if (targetRole === 'admin') {
+                    navigate('/admin');
+                } else {
+                    navigate('/');
+                }
             }
         } catch (err) {
             console.error(err);

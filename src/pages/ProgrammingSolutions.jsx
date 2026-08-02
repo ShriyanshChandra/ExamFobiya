@@ -53,7 +53,7 @@ const ProgrammingSolutions = () => {
   // Books that have at least one programming solution
   const solutionBooks = useMemo(() => {
     return books
-      .filter((book) => book.hasProgrammingSolution)
+      .filter((book) => book.hasProgrammingSolution || normalizeSolutions(book).length > 0)
       .sort((a, b) => (a.title || "").localeCompare(b.title || ""));
   }, [books]);
 
@@ -115,16 +115,31 @@ const ProgrammingSolutions = () => {
 
   // Handle auto-search when redirected from a BookCard
   React.useEffect(() => {
-    if (location.state?.initialSearch && flatRows.length > 0) {
-      const q = location.state.initialSearch.trim();
-      let currentFilters = filters;
-      if (location.state.categoryFilter) {
-        currentFilters = { ...filters, course: location.state.categoryFilter };
-      }
+    const hasLocationData = Boolean(
+      location.state?.categoryFilter ||
+      location.state?.subjectFilter ||
+      location.state?.initialSearch
+    );
 
-      const filtered = applySearchAndFilters(q, currentFilters);
+    if (hasLocationData && flatRows.length > 0) {
+      const course = location.state.categoryFilter || "";
+      const subject = location.state.subjectFilter || location.state.initialSearch || "";
+
+      const tempFilters = {
+        course,
+        subject,
+        language: ""
+      };
+
+      const filtered = applySearchAndFilters("", tempFilters, "");
       setResults(filtered);
       setSearched(true);
+
+      // Clear the filter selection inputs after displaying results
+      setFilters({ course: "", language: "", subject: "" });
+      setShowFilters(false);
+      setSelectedLanguage("");
+      setSearchQuery("");
 
       // Clear the state so refreshing the page doesn't run it again
       window.history.replaceState({}, document.title);
@@ -160,16 +175,10 @@ const ProgrammingSolutions = () => {
   const clearFilters = () => {
     const resetFilters = { course: "", language: "", subject: "" };
     setFilters(resetFilters);
+    setSearchQuery("");
     setSelectedLanguage("");
-    if (searched) {
-      const hasQuery = searchQuery.trim();
-      if (!hasQuery) {
-        setResults([]);
-        setSearched(false);
-      } else {
-        setResults(applySearchAndFilters(searchQuery, resetFilters, ""));
-      }
-    }
+    setResults(applySearchAndFilters("", resetFilters, ""));
+    setSearched(true);
   };
 
   const copyText = async (textToCopy) => {

@@ -123,7 +123,7 @@
     position: absolute;
     top: 0.75rem;
     right: 0.75rem;
-    z-index: 2;
+    z-index: 4;
     width: 2.5rem;
     height: 2.5rem;
     border-radius: 50%;

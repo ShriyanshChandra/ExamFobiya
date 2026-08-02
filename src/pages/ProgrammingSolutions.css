@@ -915,7 +915,7 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
 .programming-solution-page {
     width: min(72rem, calc(100% - 2rem));
     margin: 0 auto;
-    padding: 2rem 0 3rem;
+    padding: 6rem 0 3rem;
     color: #172033;
 }
 
