@@ -70,7 +70,7 @@ const useSEO = ({ title, description, path = '/', image, type = 'website' }) => 
 
     // Cleanup: reset title when component unmounts
     return () => {
-      document.title = SITE_NAME;
+      document.title = `${SITE_NAME} - BCA, DCA & PGDCA Books & Study Materials`;
     };
   }, [title, description, path, image, type]);
 };

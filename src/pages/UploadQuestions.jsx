@@ -4,6 +4,7 @@ import pdfIcon from '../assets/pdf.png';
 import { useBooks } from '../context/BookContext';
 import { useQuestions } from '../context/QuestionContext';
 import ConfirmationModal from '../components/ConfirmationModal';
+import useSEO from '../utils/useSEO';
 import './UploadQuestions.css';
 
 const COURSES = ['BCA', 'DCA', 'PGDCA'];
@@ -28,6 +29,12 @@ const UploadQuestions = () => {
     const navigate = useNavigate();
     const { books } = useBooks();
     const { addQuestionPdfs } = useQuestions();
+
+    useSEO({
+        title: 'Upload Question Papers - Content Management',
+        description: 'Upload previous year question papers for BCA, DCA, and PGDCA courses on ExamFobiya.',
+        path: '/upload-questions'
+    });
 
     const [selectedCourse, setSelectedCourse] = useState('');
     const [selectedSubject, setSelectedSubject] = useState('');

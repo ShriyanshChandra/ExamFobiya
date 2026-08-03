@@ -9,7 +9,7 @@ import BookCategorySection from "../components/BookCategorySection";
 
 const Home = () => {
   useSEO({
-    title: '',
+    title: 'BCA, DCA & PGDCA Books & Study Materials',
     description: 'ExamFobiya — Your ultimate destination for BCA, DCA, and PGDCA books, previous year questions, and programming solutions.',
     path: '/'
   });

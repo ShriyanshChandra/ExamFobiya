@@ -2,11 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { verifyPasswordResetCode, confirmPasswordReset } from 'firebase/auth';
 import { auth } from '../firebase';
+import useSEO from '../utils/useSEO';
 import './ResetPassword.css';
 
 const ResetPassword = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
+
+    useSEO({
+        title: 'Reset Your Password - Account Recovery',
+        description: 'Reset your ExamFobiya account password securely. Enter a new password to regain access.',
+        path: '/reset-password'
+    });
 
     const oobCode = searchParams.get('oobCode');
     const emailParam = searchParams.get('email');

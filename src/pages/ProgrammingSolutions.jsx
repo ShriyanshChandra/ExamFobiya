@@ -46,7 +46,7 @@ const ProgrammingSolutions = () => {
   const skipNextLangEffect = React.useRef(false);
 
   useSEO({
-    title: 'Programming Solutions',
+    title: 'Programming Solutions for BCA, DCA & PGDCA',
     description: 'Access programming solutions with source code for BCA, DCA, and PGDCA courses. Search by subject, language, or course.',
     path: '/programming-solutions'
   });

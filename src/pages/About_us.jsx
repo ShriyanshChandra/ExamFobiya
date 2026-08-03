@@ -94,7 +94,7 @@ export default function AboutUs() {
   ];
 
   useSEO({
-    title: 'About Us',
+    title: 'About Us - Student Exam Prep Resource Platform',
     description: 'Learn about ExamFobiya — a student resource platform for BCA, DCA, and PGDCA exam preparation materials and study guides.',
     path: '/about'
   });

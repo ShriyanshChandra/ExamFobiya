@@ -25,7 +25,7 @@ function Books() {
   const canAddBook = user && user.role === "admin";
 
   useSEO({
-    title: 'Books Library',
+    title: 'Browse BCA, DCA & PGDCA Textbooks & Guides',
     description: 'Browse and discover BCA, DCA, and PGDCA textbooks. Filter by course, semester, and search by title or author.',
     path: '/books'
   });

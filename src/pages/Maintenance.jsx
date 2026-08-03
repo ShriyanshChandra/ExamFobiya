@@ -1,8 +1,15 @@
 import React, { useEffect } from 'react';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import useSEO from '../utils/useSEO';
 import './Maintenance.css';
 
 const Maintenance = () => {
+    useSEO({
+        title: 'Under Maintenance - We Will Be Back Soon',
+        description: 'ExamFobiya is currently undergoing maintenance. We will be back online shortly.',
+        path: '/maintenance'
+    });
+
     useEffect(() => {
         // Force the page to always use the Light Theme regardless of system preferences
         document.documentElement.setAttribute('data-theme', 'light');

@@ -49,7 +49,7 @@ function Search({ searchQuery }) {
   const formatQuestionDate = (pdf) => [pdf.month, pdf.year].filter(Boolean).join(' ');
 
   useSEO({
-    title: 'Search Results',
+    title: 'Search Books, Questions & Study Resources',
     description: 'Search across books, questions, and programming solutions on ExamFobiya.',
     path: '/search'
   });

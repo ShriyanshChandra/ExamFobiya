@@ -5,6 +5,7 @@ import { extractTextFromFile, formatToTopics } from '../utils/documentUtils';
 import './AddBook.css';
 import ConfirmationModal from '../components/ConfirmationModal';
 import Loader from '../components/Loader';
+import useSEO from '../utils/useSEO';
 
 const decodeHtmlForNotepad = (value) => {
     if (!value) return '';
@@ -115,6 +116,12 @@ const AddBook = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { id } = useParams();
+
+    useSEO({
+        title: 'Add or Edit Book - Content Management',
+        description: 'Add a new book or edit an existing textbook entry on ExamFobiya.',
+        path: '/add-book'
+    });
 
     const isEditMode = !!id;
 

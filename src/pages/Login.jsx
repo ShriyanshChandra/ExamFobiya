@@ -352,7 +352,7 @@ const Login = () => {
     const navigate = useNavigate();
 
     useSEO({
-        title: 'Login',
+        title: 'Log In to Access Your Study Materials',
         description: 'Sign in to your ExamFobiya account to save books, questions, and access personalized features.',
         path: '/login'
     });

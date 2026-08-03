@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useQuestions } from '../context/QuestionContext';
 import ConfirmationModal from '../components/ConfirmationModal';
+import useSEO from '../utils/useSEO';
 import './UploadQuestions.css';
 import '../components/RemoveBookModal.css'; // Reuse modal styles from RemoveBookModal
 
@@ -26,6 +27,12 @@ const EditQuestionPdf = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { updateQuestionPdf } = useQuestions();
+
+    useSEO({
+        title: 'Edit Question Paper - Content Management',
+        description: 'Edit question paper details including title, URL, and date on ExamFobiya.',
+        path: '/edit-question'
+    });
 
     // pdf data is passed via navigation state
     const pdf = location.state?.pdf;

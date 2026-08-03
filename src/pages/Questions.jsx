@@ -46,7 +46,7 @@ const Questions = () => {
   };
 
   useSEO({
-    title: 'Previous Year Questions',
+    title: 'BCA, DCA & PGDCA Previous Year Questions',
     description: 'Find previous year question papers for BCA, DCA, and PGDCA courses. Filter by course, year, and subject.',
     path: '/questions'
   });

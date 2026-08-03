@@ -22,7 +22,7 @@ const Register = () => {
     const navigate = useNavigate();
 
     useSEO({
-        title: 'Register',
+        title: 'Create Your Free Account for Exam Prep',
         description: 'Create a free ExamFobiya account to save your favorite books and question papers for easy access.',
         path: '/register'
     });

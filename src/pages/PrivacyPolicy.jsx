@@ -87,7 +87,7 @@ const PrivacyPolicy = () => {
     ];
 
     useSEO({
-        title: 'Privacy Policy',
+        title: 'Privacy Policy - How We Protect Your Data',
         description: 'Read how ExamFobiya collects, uses, and protects your personal information.',
         path: '/privacy'
     });

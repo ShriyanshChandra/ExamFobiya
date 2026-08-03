@@ -6,9 +6,16 @@ import { fetchMaintenanceMode, setMaintenanceMode } from '../services/SystemSett
 import { exportToCSV } from '../utils/csvExporter';
 import Loader from '../components/Loader';
 import ConfirmationModal from '../components/ConfirmationModal';
+import useSEO from '../utils/useSEO';
 import './AdminDashboard.css';
 
 const AdminDashboard = () => {
+    useSEO({
+        title: 'Admin Dashboard - Site Analytics & Management',
+        description: 'Admin dashboard for managing ExamFobiya content, users, and analytics.',
+        path: '/admin'
+    });
+
     const [stats, setStats] = useState({
         totalBooks: 0,
         genreData: [],

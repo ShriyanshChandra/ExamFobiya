@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useBooks } from '../context/BookContext';
 import ConfirmationModal from '../components/ConfirmationModal';
 import Loader from '../components/Loader';
+import useSEO from '../utils/useSEO';
 import './ProgrammingSolutions.css';
 
 const COURSES = ['BCA', 'DCA', 'PGDCA'];
@@ -26,6 +27,12 @@ const AddProgrammingSolution = () => {
     const { bookId, solutionId } = useParams();
     const { user } = useAuth();
     const { books, loading, addProgrammingSolution, updateProgrammingSolution } = useBooks();
+
+    useSEO({
+        title: 'Add Programming Solution - Code Management',
+        description: 'Add or edit programming solutions with source code for BCA, DCA, and PGDCA courses.',
+        path: '/add-solution'
+    });
     const [selectedCourse, setSelectedCourse] = useState('');
     const [selectedBookId, setSelectedBookId] = useState('');
     const [solutionTitle, setSolutionTitle] = useState('');

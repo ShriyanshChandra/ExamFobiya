@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import useSEO from '../utils/useSEO';
 import './Welcome.css';
 
 const Welcome = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
+
+    useSEO({
+        title: 'Welcome to Your Study Dashboard',
+        description: 'Welcome to ExamFobiya. Redirecting to your personalized study dashboard.',
+        path: '/welcome'
+    });
     const [text, setText] = useState('');
 
     // Determine the full text based on role
