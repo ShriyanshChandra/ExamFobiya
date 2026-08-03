@@ -156,7 +156,7 @@ const Register = () => {
             {error && <div className="register-error-message">{error}</div>}
 
             <div className="register-card container">
-                <h2>{step === 'form' ? 'Create Account' : 'Verify Email'}</h2>
+                <h1>{step === 'form' ? 'Create Account' : 'Verify Email'}</h1>
 
                 {step === 'form' ? (
                     <form onSubmit={handleSendOtp}>

@@ -632,6 +632,7 @@ const Settings = () => {
     return (
         <div className="settings-page">
             <div className="settings-shell container">
+                <h1 className="sr-only">Account Settings</h1>
 
                 {/* Left Aside */}
                 <aside className="settings-aside">

@@ -396,6 +396,7 @@ const Login = () => {
 
     return (
         <div className="login-container">
+            <h1 className="sr-only">Log In to ExamFobiya</h1>
             {error && <div className="global-error-message">{error}</div>}
             <div className="login-boxes-wrapper">
                 <LoginBox role="user" title="User Portal" onAuth={handleAuth} allowRegister={true} checkAccountExists={checkAccountExists} />

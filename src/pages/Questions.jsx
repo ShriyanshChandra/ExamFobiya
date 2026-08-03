@@ -173,7 +173,7 @@ const Questions = () => {
   return (
     <div className="questions-container">
       <div className="questions-content container">
-        <h2>Previous Year Questions</h2>
+        <h1>Previous Year Questions</h1>
 
 
         {/* Admin: Upload Questions button */}

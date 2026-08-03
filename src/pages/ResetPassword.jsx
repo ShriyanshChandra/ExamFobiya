@@ -79,6 +79,7 @@ const ResetPassword = () => {
     return (
         <div className="reset-password-container">
             <div className="reset-password-card">
+                <h1 className="sr-only">Reset Your Password</h1>
                 {verifyingCode ? (
                     <div className="reset-status-box">
                         <div className="reset-spinner"></div>

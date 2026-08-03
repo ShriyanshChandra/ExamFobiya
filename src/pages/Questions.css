@@ -17,7 +17,7 @@
   width: 95%;
 }
 
-.questions-content h2 {
+.questions-content h1 {
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
   color: var(--text-color);
@@ -233,7 +233,7 @@
     border-radius: 1.25rem;
   }
 
-  .questions-content h2 {
+  .questions-content h1 {
     font-size: 1.75rem;
   }
 
@@ -308,7 +308,7 @@
     width: 96%;
   }
 
-  .questions-content h2 {
+  .questions-content h1 {
     font-size: 1.5rem;
   }
 

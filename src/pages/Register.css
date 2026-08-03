@@ -26,7 +26,7 @@
 
 /* Removed dark mode override for card background to keep it white frosted */
 
-.register-card h2 {
+.register-card h1 {
     margin-bottom: 2rem;
 }
 
