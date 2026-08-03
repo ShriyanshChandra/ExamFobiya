@@ -61,11 +61,11 @@ export default function AboutUs() {
       title: 'Engineering & Development',
       members: [
         {
-          id: 'shriyansh-chandra',
-          name: 'Shriyansh Chandra',
+          id: 'shriyansh',
+          name: 'Shriyansh',
           role: 'Lead Developer & Software Engineer',
           bio: 'Architecting and building ExamFobiya to deliver a seamless, high-performance study resource discovery platform.',
-          initials: 'SC',
+          initials: 'S',
           tags: ['Full-Stack Dev', 'React & Node.js', 'System Architecture'],
           socials: {
             website: 'https://portfolio-iota-murex-53.vercel.app/',
@@ -198,9 +198,9 @@ export default function AboutUs() {
 
           <div className="about-compact-team-grid">
             <div className="about-compact-team-card">
-              <div className="about-compact-avatar">SC</div>
+              <div className="about-compact-avatar">S</div>
               <div className="about-compact-info">
-                <h4 className="about-compact-name">Shriyansh Chandra</h4>
+                <h4 className="about-compact-name">Shriyansh</h4>
                 <p className="about-compact-role">Lead Developer & Software Engineer</p>
               </div>
               <div className="about-compact-socials">
@@ -221,9 +221,9 @@ export default function AboutUs() {
             </div>
 
             <div className="about-compact-team-card">
-              <div className="about-compact-avatar">BC</div>
+              <div className="about-compact-avatar">B</div>
               <div className="about-compact-info">
-                <h4 className="about-compact-name">Bhavesh Chandra</h4>
+                <h4 className="about-compact-name">Bhavesh</h4>
                 <p className="about-compact-role">Software Engineer & Tester</p>
               </div>
               <div className="about-compact-socials">
@@ -238,9 +238,9 @@ export default function AboutUs() {
             </div>
 
             <div className="about-compact-team-card">
-              <div className="about-compact-avatar">AC</div>
+              <div className="about-compact-avatar">A</div>
               <div className="about-compact-info">
-                <h4 className="about-compact-name">Ansh Chandra</h4>
+                <h4 className="about-compact-name">Ansh</h4>
                 <p className="about-compact-role">Editor</p>
               </div>
               <div className="about-compact-socials">
