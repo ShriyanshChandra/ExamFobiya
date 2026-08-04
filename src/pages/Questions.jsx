@@ -397,12 +397,24 @@ const Questions = () => {
               <h3>PDF Preview</h3>
               <button className="pdf-viewer-close-btn" onClick={() => setViewingPdf(null)}>&times;</button>
             </div>
-            <iframe 
-              src={getEmbedUrl(viewingPdf.url)} 
-              title="PDF Viewer"
-              className="pdf-iframe"
-              allow="autoplay"
-            />
+            <div className="pdf-viewer-body">
+              {!user && (
+                <div 
+                  className="pdf-iframe-popout-blocker"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowLoginModal(true);
+                  }}
+                  title="Login required to open or download PDF"
+                />
+              )}
+              <iframe 
+                src={getEmbedUrl(viewingPdf.url)} 
+                title="PDF Viewer"
+                className="pdf-iframe"
+                allow="autoplay"
+              />
+            </div>
           </div>
         </div>
       )}
