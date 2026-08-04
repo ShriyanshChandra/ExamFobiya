@@ -19,6 +19,7 @@ function Books() {
   const [selectedSemester, setSelectedSemester] = useState(location.state?.semester || "All");
   const [searchTerm, setSearchTerm] = useState(location.state?.search || "");
   const [sortBy, setSortBy] = useState("title-asc");
+  const [hasSolutionsOnly, setHasSolutionsOnly] = useState(false);
 
   const categories = ["All", "BCA", "DCA", "PGDCA"];
   const semesters = ["All", "BCA 1st Semester", "BCA 2nd Semester", "BCA 3rd Semester", "BCA 4th Semester", "BCA 5th Semester", "BCA 6th Semester", "BCA 7th Semester", "BCA 8th Semester"];
@@ -44,7 +45,14 @@ function Books() {
         book.author?.toLowerCase().includes(normalizedSearch) ||
         book.category?.toLowerCase().includes(normalizedSearch);
 
-      return matchesCategory && matchesSemester && matchesSearch;
+      const hasSol = Boolean(
+        book.hasProgrammingSolution ||
+        (Array.isArray(book.programmingSolutions) && book.programmingSolutions.length > 0) ||
+        (book.programmingSolution && Object.keys(book.programmingSolution).length > 0)
+      );
+      const matchesSolution = !hasSolutionsOnly || hasSol;
+
+      return matchesCategory && matchesSemester && matchesSearch && matchesSolution;
     });
 
     return visibleBooks.sort((a, b) => {
@@ -65,7 +73,7 @@ function Books() {
 
       return a.title.localeCompare(b.title);
     });
-  }, [books, searchTerm, selectedCategory, selectedSemester, sortBy]);
+  }, [books, searchTerm, selectedCategory, selectedSemester, sortBy, hasSolutionsOnly]);
 
   const handleRemoveClick = (book) => {
     setBookToRemove(book);
@@ -100,6 +108,7 @@ function Books() {
   const resetFilters = () => {
     setSelectedCategory("All");
     setSelectedSemester("All");
+    setHasSolutionsOnly(false);
     setSearchTerm("");
     setSortBy("title-asc");
   };
@@ -131,14 +140,29 @@ function Books() {
               <strong>{filteredBooks.length}</strong> {filteredBooks.length === 1 ? "book" : "books"} available
             </div>
 
-            <label className="books-sort" htmlFor="books-sort-select">
-              <span>Sort by</span>
-              <select id="books-sort-select" name="sortBy" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-                <option value="title-asc">Title A-Z</option>
-                <option value="title-desc">Title Z-A</option>
-                <option value="category">Category</option>
-              </select>
-            </label>
+            <div className="books-toolbar-filters">
+              <label className="books-sort" htmlFor="books-solutions-filter">
+                <span>Solutions</span>
+                <select
+                  id="books-solutions-filter"
+                  name="solutionsFilter"
+                  value={hasSolutionsOnly ? "with-solutions" : "all"}
+                  onChange={(e) => setHasSolutionsOnly(e.target.value === "with-solutions")}
+                >
+                  <option value="all">All Books</option>
+                  <option value="with-solutions">With Programming Solutions</option>
+                </select>
+              </label>
+
+              <label className="books-sort" htmlFor="books-sort-select">
+                <span>Sort by</span>
+                <select id="books-sort-select" name="sortBy" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                  <option value="title-asc">Title A-Z</option>
+                  <option value="title-desc">Title Z-A</option>
+                  <option value="category">Category</option>
+                </select>
+              </label>
+            </div>
           </div>
 
           <div className="books-toolbar-main">
@@ -167,6 +191,14 @@ function Books() {
               {category}
             </button>
           ))}
+
+          <button
+            type="button"
+            onClick={() => setHasSolutionsOnly((prev) => !prev)}
+            className={`category-chip ${hasSolutionsOnly ? "active" : ""}`}
+          >
+            Programming Solutions
+          </button>
         </div>
 
         {selectedCategory === "BCA" && (

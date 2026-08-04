@@ -12,6 +12,7 @@ const Questions = () => {
   const [searched, setSearched] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [viewingPdf, setViewingPdf] = useState(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const [filters, setFilters] = useState({
     course: "",
@@ -167,6 +168,14 @@ const Questions = () => {
     } finally {
       setDeleting(false);
       setDeleteTarget(null);
+    }
+  };
+
+  const handleDownloadClick = (e) => {
+    e.stopPropagation();
+    if (!user) {
+      e.preventDefault();
+      setShowLoginModal(true);
     }
   };
 
@@ -331,11 +340,11 @@ const Questions = () => {
                         View
                       </button>
                       <a
-                        href={getDownloadUrl(pdf.url)}
-                        target="_blank"
+                        href={user ? getDownloadUrl(pdf.url) : '#'}
+                        target={user ? "_blank" : "_self"}
                         rel="noopener noreferrer"
                         className="pdf-action-btn pdf-download-btn"
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={handleDownloadClick}
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                         Download
@@ -365,6 +374,20 @@ const Questions = () => {
         message={`Are you sure you want to delete "${deleteTarget?.title}"? This action cannot be undone.`}
         confirmLabel={deleting ? "Deleting..." : "Yes, Delete"}
         variant="danger"
+      />
+
+      <ConfirmationModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onConfirm={() => {
+          setShowLoginModal(false);
+          navigate('/login');
+        }}
+        title="Login Required"
+        message="Please login to download question PDFs."
+        confirmLabel="Login"
+        cancelLabel="Cancel"
+        variant="approve"
       />
 
       {viewingPdf && (
