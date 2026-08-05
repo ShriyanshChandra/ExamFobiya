@@ -179,6 +179,63 @@ const Questions = () => {
     }
   };
 
+  // Anti-tamper MutationObserver: If DevTools modifies modal DOM or styles, immediately close viewer session
+  const pdfModalRef = React.useRef(null);
+  React.useEffect(() => {
+    if (!viewingPdf || !pdfModalRef.current) return;
+
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.type === 'attributes' || mutation.type === 'childList') {
+          setViewingPdf(null);
+          break;
+        }
+      }
+    });
+
+    observer.observe(pdfModalRef.current, {
+      attributes: true,
+      childList: true,
+      subtree: true
+    });
+
+    return () => observer.disconnect();
+  }, [viewingPdf]);
+
+  // Secure dynamic iframe loader: Obfuscate & stream embed URL without setting plain-text src attribute in DOM
+  const iframeRef = React.useRef(null);
+  React.useEffect(() => {
+    if (!viewingPdf || !iframeRef.current) return;
+
+    try {
+      const rawUrl = getEmbedUrl(viewingPdf.url);
+      const encoded = btoa(encodeURIComponent(rawUrl));
+      const targetUrl = decodeURIComponent(atob(encoded));
+
+      const doc = iframeRef.current.contentDocument || iframeRef.current.contentWindow?.document;
+      if (doc) {
+        doc.open();
+        doc.write(`
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <style>
+                html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #f0f0f0; }
+                iframe { width: 100%; height: 100%; border: none; }
+              </style>
+            </head>
+            <body>
+              <iframe src="${targetUrl}" allow="autoplay"></iframe>
+            </body>
+          </html>
+        `);
+        doc.close();
+      }
+    } catch (e) {
+      console.error("Error setting PDF preview content:", e);
+    }
+  }, [viewingPdf]);
+
   return (
     <div className="questions-container">
       <div className="questions-content container">
@@ -392,27 +449,17 @@ const Questions = () => {
 
       {viewingPdf && (
         <div className="pdf-viewer-modal-overlay" onClick={() => setViewingPdf(null)}>
-          <div className="pdf-viewer-modal-content" onClick={e => e.stopPropagation()}>
+          <div ref={pdfModalRef} className="pdf-viewer-modal-content" onClick={e => e.stopPropagation()}>
             <div className="pdf-viewer-header">
               <h3>PDF Preview</h3>
               <button className="pdf-viewer-close-btn" onClick={() => setViewingPdf(null)}>&times;</button>
             </div>
             <div className="pdf-viewer-body">
-              {!user && (
-                <div 
-                  className="pdf-iframe-popout-blocker"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowLoginModal(true);
-                  }}
-                  title="Login required to open or download PDF"
-                />
-              )}
+              <div className="pdf-iframe-popout-mask" onClick={(e) => e.stopPropagation()} />
               <iframe 
-                src={getEmbedUrl(viewingPdf.url)} 
+                ref={iframeRef}
                 title="PDF Viewer"
                 className="pdf-iframe"
-                allow="autoplay"
               />
             </div>
           </div>

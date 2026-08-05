@@ -838,17 +838,21 @@
   width: 100%;
   flex: 1;
   display: flex;
+  overflow: hidden;
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
 }
 
-.pdf-iframe-popout-blocker {
+.pdf-iframe-popout-mask {
   position: absolute;
   top: 0;
   right: 0;
-  width: 150px;
-  height: 65px;
-  z-index: 10;
-  cursor: pointer;
+  width: 75px;
+  height: 56px;
   background: transparent;
+  z-index: 10;
+  pointer-events: auto;
+  cursor: default;
 }
 
 .pdf-iframe {
@@ -857,11 +861,13 @@
   flex: 1;
   border: none;
   background: #f0f0f0;
-  border-bottom-left-radius: 1rem;
-  border-bottom-right-radius: 1rem;
 }
 
 @media (max-width: 48rem) {
+  .pdf-iframe-popout-mask {
+    width: 75px;
+    height: 56px;
+  }
   .pdf-viewer-modal-overlay {
     padding: 1rem;
   }
