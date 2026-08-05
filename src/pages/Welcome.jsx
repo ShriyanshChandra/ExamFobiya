@@ -9,7 +9,7 @@ const Welcome = () => {
     const navigate = useNavigate();
 
     useSEO({
-        title: 'Welcome to Your Study Dashboard',
+        title: 'Welcome to Your Exam Prep Study Dashboard',
         description: 'Welcome to ExamFobiya. Redirecting to your personalized study dashboard.',
         path: '/welcome'
     });

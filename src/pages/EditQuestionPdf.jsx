@@ -97,7 +97,7 @@ const EditQuestionPdf = () => {
     return (
         <div className="uq-container">
             <div className="uq-card">
-                <h2>Edit Question PDF</h2>
+                <h1>Edit Question PDF</h1>
                 <p className="uq-subtitle">
                     Editing PDF for <strong>{pdf.subject}</strong> ({pdf.course})
                 </p>

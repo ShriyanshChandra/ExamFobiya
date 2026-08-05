@@ -224,7 +224,7 @@ const AddProgrammingSolution = () => {
     return (
         <main className="programming-solution-page">
             <section className="solution-admin-card">
-                <h2>{isEditing ? 'Edit Programming Solution' : 'Add Programming Solution'}</h2>
+                <h1>{isEditing ? 'Edit Programming Solution' : 'Add Programming Solution'}</h1>
                 <p className="solution-admin-subtitle">
                     {isEditing
                         ? 'Update the selected subject solution.'
