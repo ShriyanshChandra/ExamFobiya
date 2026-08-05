@@ -38,15 +38,33 @@ function Search({ searchQuery }) {
   const [deleteSolutionTarget, setDeleteSolutionTarget] = useState(null);
   const [isDeletingSolution, setIsDeletingSolution] = useState(false);
 
-  // Modals for Question Removal
+  // Modals for Question Removal & Login
   const [deleteQuestionTarget, setDeleteQuestionTarget] = useState(null);
   const [isDeletingQuestion, setIsDeletingQuestion] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   // Pagination limits
   const [booksLimit, setBooksLimit] = useState(8);
   const [questionsLimit, setQuestionsLimit] = useState(7);
   const [solutionsLimit, setSolutionsLimit] = useState(7);
   const formatQuestionDate = (pdf) => [pdf.month, pdf.year].filter(Boolean).join(' ');
+
+  const getDownloadUrl = (url) => {
+    if (!url) return "";
+    const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+    if (match && match[1]) {
+      return `https://drive.google.com/uc?export=download&id=${match[1]}`;
+    }
+    return url;
+  };
+
+  const handleDownloadClick = (e) => {
+    e.stopPropagation();
+    if (!user) {
+      e.preventDefault();
+      setShowLoginModal(true);
+    }
+  };
 
   useSEO({
     title: 'Search Books, Questions & Study Resources',
@@ -261,12 +279,13 @@ function Search({ searchQuery }) {
                     </>
                   )}
                   <a
-                    href={pdf.url}
-                    target="_blank"
+                    href={user ? getDownloadUrl(pdf.url) : '#'}
+                    target={user ? "_blank" : "_self"}
                     rel="noopener noreferrer"
                     className="pdf-card-open-row"
+                    onClick={(e) => !user && (e.preventDefault(), setShowLoginModal(true))}
                   >
-                    Open PDF
+                    Download PDF
                   </a>
                 </div>
 
@@ -348,13 +367,15 @@ function Search({ searchQuery }) {
 
                 <button
                   type="button"
-                  className="pdf-card-open-row solution-toggle-btn"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    navigate(`/programming-solutions`);
-                  }}
+                  className="pdf-card-open-row solution-view-code-btn"
+                  onClick={() => navigate('/programming-solutions', {
+                    state: {
+                      categoryFilter: book.category,
+                      subjectFilter: book.title
+                    }
+                  })}
                 >
-                  View Solution
+                  View Code
                 </button>
               </div>
             ))}
@@ -381,13 +402,26 @@ function Search({ searchQuery }) {
         </div>
       )}
 
-      {isRemoveModalOpen && (
-        <RemoveBookModal
-          book={bookToRemove}
-          onClose={handleCloseModal}
-          onConfirm={handleConfirmRemove}
-        />
-      )}
+      <RemoveBookModal
+        isOpen={isRemoveModalOpen}
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmRemove}
+        book={bookToRemove}
+      />
+
+      <ConfirmationModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onConfirm={() => {
+          setShowLoginModal(false);
+          navigate('/login');
+        }}
+        title="Login Required"
+        message="Please login to download question PDFs."
+        confirmLabel="Login"
+        cancelLabel="Cancel"
+        variant="approve"
+      />
 
       <ConfirmationModal
         isOpen={!!deleteSolutionTarget}
