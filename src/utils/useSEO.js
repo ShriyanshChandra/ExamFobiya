@@ -15,9 +15,9 @@ const DEFAULT_IMAGE = `${SITE_URL}/logo512.png`;
  * @param {string} options.description - Page meta description
  * @param {string} options.path    - Route path, e.g. "/books"
  * @param {string} [options.image] - OG/Twitter image URL (defaults to logo)
- * @param {string} [options.type]  - OG type (defaults to "website")
+ * @param {boolean} [options.noindex=false] - Whether to exclude page from search engine index
  */
-const useSEO = ({ title, description, path = '/', image, type = 'website' }) => {
+const useSEO = ({ title, description, path = '/', image, type = 'website', noindex = false }) => {
   useEffect(() => {
     // --- Document title ---
     const fullTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
@@ -48,6 +48,9 @@ const useSEO = ({ title, description, path = '/', image, type = 'website' }) => 
     const pageUrl = `${SITE_URL}/${path.replace(/^\//, '')}`;
     const pageImage = image || DEFAULT_IMAGE;
 
+    // --- Robots indexing directive ---
+    setMeta('name', 'robots', noindex ? 'noindex, nofollow' : 'index, follow');
+
     // --- Meta description ---
     setMeta('name', 'description', description);
 
@@ -72,7 +75,7 @@ const useSEO = ({ title, description, path = '/', image, type = 'website' }) => 
     return () => {
       document.title = `${SITE_NAME} - BCA, DCA & PGDCA Books & Study Materials`;
     };
-  }, [title, description, path, image, type]);
+  }, [title, description, path, image, type, noindex]);
 };
 
 export default useSEO;

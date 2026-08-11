@@ -12,7 +12,8 @@ const ResetPassword = () => {
     useSEO({
         title: 'Reset Your Password - Account Recovery',
         description: 'Reset your ExamFobiya account password securely. Enter a new password to regain access.',
-        path: '/reset-password'
+        path: '/reset-password',
+        noindex: true
     });
 
     const oobCode = searchParams.get('oobCode');

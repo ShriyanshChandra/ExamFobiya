@@ -69,7 +69,8 @@ function Search({ searchQuery }) {
   useSEO({
     title: 'Search Books, Questions & Study Resources',
     description: 'Search across books, questions, and programming solutions on ExamFobiya.',
-    path: '/search'
+    path: '/search',
+    noindex: true
   });
 
   // Reset limits when search changes

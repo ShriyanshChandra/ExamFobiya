@@ -13,7 +13,8 @@ const AdminDashboard = () => {
     useSEO({
         title: 'Admin Dashboard - Site Analytics & Management',
         description: 'Admin dashboard for managing ExamFobiya content, users, and analytics.',
-        path: '/admin'
+        path: '/admin',
+        noindex: true
     });
 
     const [stats, setStats] = useState({

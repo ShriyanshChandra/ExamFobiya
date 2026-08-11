@@ -31,7 +31,8 @@ const EditQuestionPdf = () => {
     useSEO({
         title: 'Edit Question Paper - Content Management',
         description: 'Edit question paper details including title, URL, and date on ExamFobiya.',
-        path: '/edit-question'
+        path: '/edit-question',
+        noindex: true
     });
 
     // pdf data is passed via navigation state

@@ -7,7 +7,8 @@ const Maintenance = () => {
     useSEO({
         title: 'Under Maintenance - We Will Be Back Soon',
         description: 'ExamFobiya is currently undergoing maintenance. We will be back online shortly.',
-        path: '/maintenance'
+        path: '/maintenance',
+        noindex: true
     });
 
     useEffect(() => {

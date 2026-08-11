@@ -31,7 +31,8 @@ const AddProgrammingSolution = () => {
     useSEO({
         title: 'Add Programming Solution - Code Management',
         description: 'Add or edit programming solutions with source code for BCA, DCA, and PGDCA courses.',
-        path: '/add-solution'
+        path: '/add-solution',
+        noindex: true
     });
     const [selectedCourse, setSelectedCourse] = useState('');
     const [selectedBookId, setSelectedBookId] = useState('');

@@ -1,19 +1,28 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+# Allowed pages: Main page, Navbar links, and Login
+Allow: /$
+Allow: /books
+Allow: /questions
+Allow: /programming-solutions
+Allow: /about
+Allow: /login
 
-User-agent: Googlebot
-Allow: /logo.svg
-Allow: /logo512.png
-Allow: /logo192.png
-Allow: /favicon.ico
-Allow: /favicon-48x48.png
-
-User-agent: Googlebot-Image
-Allow: /logo.svg
-Allow: /logo512.png
-Allow: /logo192.png
-Allow: /favicon.ico
-Allow: /favicon-48x48.png
+# Disallow internal, admin, user account, and non-navigational pages
+Disallow: /admin
+Disallow: /add-book
+Disallow: /edit-book/
+Disallow: /upload-questions
+Disallow: /edit-question-pdf
+Disallow: /add-programming-solution
+Disallow: /edit-programming-solution/
+Disallow: /welcome
+Disallow: /settings
+Disallow: /search
+Disallow: /register
+Disallow: /reset-password
+Disallow: /privacy
+Disallow: /terms
+Disallow: /maintenance
 
 Sitemap: https://www.examfobiya.com/sitemap.xml

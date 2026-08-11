@@ -33,7 +33,8 @@ const UploadQuestions = () => {
     useSEO({
         title: 'Upload Question Papers - Content Management',
         description: 'Upload previous year question papers for BCA, DCA, and PGDCA courses on ExamFobiya.',
-        path: '/upload-questions'
+        path: '/upload-questions',
+        noindex: true
     });
 
     const [selectedCourse, setSelectedCourse] = useState('');

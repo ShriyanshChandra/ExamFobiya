@@ -120,7 +120,8 @@ const AddBook = () => {
     useSEO({
         title: 'Add or Edit Book - Content Management',
         description: 'Add a new book or edit an existing textbook entry on ExamFobiya.',
-        path: '/add-book'
+        path: '/add-book',
+        noindex: true
     });
 
     const isEditMode = !!id;

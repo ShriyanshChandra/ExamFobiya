@@ -11,7 +11,8 @@ const Welcome = () => {
     useSEO({
         title: 'Welcome to Your Exam Prep Study Dashboard',
         description: 'Welcome to ExamFobiya. Redirecting to your personalized study dashboard.',
-        path: '/welcome'
+        path: '/welcome',
+        noindex: true
     });
     const [text, setText] = useState('');
 
