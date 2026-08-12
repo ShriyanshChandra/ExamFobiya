@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { db } from '../firebase';
 import { collection, onSnapshot, addDoc, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { notifyIndexNow } from '../services/IndexNowService';
 
 const BookContext = createContext();
 
@@ -28,6 +29,7 @@ export const BookProvider = ({ children }) => {
     const addBook = async (newBook) => {
         try {
             await addDoc(collection(db, 'books'), newBook);
+            notifyIndexNow(['/books']);
         } catch (error) {
             console.error("Error adding book:", error);
             throw error;
@@ -37,6 +39,7 @@ export const BookProvider = ({ children }) => {
     const removeBook = async (id) => {
         try {
             await deleteDoc(doc(db, 'books', id));
+            notifyIndexNow(['/books']);
         } catch (error) {
             console.error("Error deleting book:", error);
         }
@@ -45,6 +48,7 @@ export const BookProvider = ({ children }) => {
     const updateBook = async (id, updates) => {
         try {
             await updateDoc(doc(db, 'books', id), updates);
+            notifyIndexNow(['/books']);
         } catch (error) {
             console.error("Error updating book:", error);
             throw error;
@@ -68,6 +72,7 @@ export const BookProvider = ({ children }) => {
                 hasProgrammingSolution: true,
                 programmingSolutions: [...existing, newSolution]
             });
+            notifyIndexNow(['/programming-solutions', `/programming-solutions/${bookId}`]);
             return newSolution.id;
         } catch (error) {
             console.error("Error adding programming solution:", error);
@@ -81,6 +86,7 @@ export const BookProvider = ({ children }) => {
             const existing = book?.programmingSolutions || [];
             const updated = existing.map(s => s.id === solutionId ? { ...s, ...updates } : s);
             await updateDoc(doc(db, 'books', bookId), { programmingSolutions: updated });
+            notifyIndexNow(['/programming-solutions', `/programming-solutions/${bookId}`]);
         } catch (error) {
             console.error("Error updating programming solution:", error);
             throw error;
@@ -96,6 +102,7 @@ export const BookProvider = ({ children }) => {
                 programmingSolutions: updated,
                 hasProgrammingSolution: updated.length > 0
             });
+            notifyIndexNow(['/programming-solutions', `/programming-solutions/${bookId}`]);
         } catch (error) {
             console.error("Error deleting programming solution:", error);
             throw error;

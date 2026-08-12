@@ -191,7 +191,7 @@ function Search({ searchQuery }) {
     return (
       <div className="search-results-page">
         <div className="search-header-container container">
-          <h1 style={{ marginBottom: "15px" }}>Search</h1>
+          <h1 style={{ marginBottom: "15px" }}>Search Books, Questions & Solutions</h1>
           <p className="search-summary-text" style={{ margin: 0 }}>Type something in the navbar to begin your search.</p>
         </div>
       </div>

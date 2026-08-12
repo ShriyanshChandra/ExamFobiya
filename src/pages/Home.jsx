@@ -116,7 +116,7 @@ const Home = () => {
 
         <div className="hero-content">
           <h1>
-            Welcome to <span className="brand-name">ExamFobiya</span>
+            <span className="brand-name">ExamFobiya</span> - BCA, DCA & PGDCA Study Materials
           </h1>
           <p>
             Simplify your BCA, DCA, and PGDCA exam preparation with curated books, detailed syllabus indexes, and solved question sets.

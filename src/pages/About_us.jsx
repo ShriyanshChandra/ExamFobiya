@@ -104,7 +104,7 @@ export default function AboutUs() {
       <div className="about-hero-section">
         <div className="about-hero-inner container">
           <p className="about-eyebrow">About ExamFobiya</p>
-          <h1 className="about-hero-title">A cleaner, calmer way to find the right study material.</h1>
+          <h1 className="about-hero-title">About ExamFobiya - Your BCA, DCA & PGDCA Study Companion</h1>
           <p className="about-hero-subtitle">
             We help PGDCA, DCA, and BCA students discover useful books, clear indexes, and exam-focused resources without the usual confusion.
           </p>

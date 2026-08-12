@@ -952,6 +952,42 @@ const handleSendPasswordReset = async (req, res) => {
 app.post('/api/auth/send-password-reset', handleSendPasswordReset);
 app.post('/api/admin/send-password-reset', handleSendPasswordReset);
 
+// ── IndexNow: notify search engines of content changes ────────────────────────
+const INDEXNOW_KEY = process.env.INDEXNOW_KEY || 'c3b77bf259f243af99818667d9215013';
+const INDEXNOW_HOST = 'www.examfobiya.com';
+
+app.post('/api/indexnow/notify', async (req, res) => {
+    const { urls } = req.body;
+    if (!urls || !Array.isArray(urls) || urls.length === 0) {
+        return res.status(400).json({ error: 'urls array is required' });
+    }
+
+    try {
+        const response = await fetch('https://api.indexnow.org/indexnow', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json; charset=utf-8' },
+            body: JSON.stringify({
+                host: INDEXNOW_HOST,
+                key: INDEXNOW_KEY,
+                keyLocation: `https://${INDEXNOW_HOST}/${INDEXNOW_KEY}.txt`,
+                urlList: urls.slice(0, 10000) // IndexNow allows up to 10,000 URLs per batch
+            })
+        });
+
+        if (response.ok || response.status === 202) {
+            console.log(`IndexNow: submitted ${urls.length} URL(s)`);
+            return res.json({ success: true, submitted: urls.length });
+        }
+
+        const text = await response.text();
+        console.warn(`IndexNow responded ${response.status}: ${text}`);
+        return res.status(response.status).json({ error: text });
+    } catch (err) {
+        console.error('IndexNow notification error:', err.message);
+        return res.status(500).json({ error: 'Failed to notify IndexNow' });
+    }
+});
+
 app.get('/', (req, res) => {
     res.send('ExamFobiya Backend is running');
 });

@@ -239,7 +239,7 @@ const Questions = () => {
   return (
     <div className="questions-container">
       <div className="questions-content container">
-        <h1>Previous Year Questions</h1>
+        <h1>BCA, DCA & PGDCA Previous Year Questions</h1>
 
 
         {/* Admin: Upload Questions button */}

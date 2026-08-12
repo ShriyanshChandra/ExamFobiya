@@ -121,7 +121,7 @@ function Books() {
         <div className="books-hero">
           <div className="books-hero-copy">
             <span className="books-eyebrow">Library</span>
-            <h1>Browse books with less scrolling and faster discovery.</h1>
+            <h1>Browse BCA, DCA & PGDCA Books</h1>
           </div>
 
           {canAddBook && (

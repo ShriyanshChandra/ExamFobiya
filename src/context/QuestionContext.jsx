@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { db } from '../firebase';
 import { collection, collectionGroup, onSnapshot, addDoc, deleteDoc, doc, updateDoc, writeBatch, setDoc, getDocs } from 'firebase/firestore';
+import { notifyIndexNow } from '../services/IndexNowService';
 
 const QuestionContext = createContext();
 
@@ -73,6 +74,7 @@ export const QuestionProvider = ({ children }) => {
             // Reference to the specific subject's question subcollection
             const questionsRef = collection(db, 'courses', course, 'subjects', subject, 'questions');
             await addDoc(questionsRef, newQuestion);
+            notifyIndexNow(['/questions']);
         } catch (error) {
             console.error("Error adding question:", error);
             throw error;
@@ -216,6 +218,7 @@ export const QuestionProvider = ({ children }) => {
                 });
             });
             await batch.commit();
+            notifyIndexNow(['/questions']);
         } catch (error) {
             console.error('Error saving question PDFs:', error);
             throw error;
