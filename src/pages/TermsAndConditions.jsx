@@ -14,8 +14,9 @@ const TermsAndConditions = () => {
         {
             title: '2. Description of the Service',
             points: [
-                'ExamFobiya provides information and resources related to books, study materials, indexes, and questions for academic use.',
-                'We may update, remove, suspend, or change parts of the website at any time.'
+                'ExamFobiya provides information and resources related to books, study materials, indexes, programming solutions, question links, and academic reference content.',
+                'Some features may help administrators add or parse academic content, including AI-assisted parsing or suggestions, but users and administrators remain responsible for reviewing accuracy before relying on that output.',
+                'We may update, remove, suspend, or change parts of the website, content, links, or features at any time.'
             ]
         },
         {
@@ -29,8 +30,9 @@ const TermsAndConditions = () => {
         {
             title: '4. Acceptable Use',
             points: [
-                'You agree not to misuse the website, interfere with its operation, attempt unauthorized access, scrape protected data, upload unlawful content, or use the service for fraud or abuse.',
-                'You also agree not to use the website in a way that infringes the rights of other users, publishers, authors, or third parties.'
+                'You agree not to misuse the website, interfere with its operation, attempt unauthorized access, scrape protected data, upload or submit unlawful content, overload service endpoints, or use the service for fraud or abuse.',
+                'You also agree not to use the website in a way that infringes the rights of other users, publishers, authors, institutions, or third parties.',
+                'Automated access, bulk copying, reverse engineering, vulnerability probing, and attempts to bypass authentication or role-based access controls are not permitted without our written permission.'
             ]
         },
         {
@@ -38,40 +40,50 @@ const TermsAndConditions = () => {
             points: [
                 'The website design, branding, text, and original site content are owned by or licensed to ExamFobiya unless otherwise stated.',
                 'Books, author names, cover images, questions, and related materials may belong to their respective owners.',
-                'If any third-party rights holder believes content should be reviewed or removed, they may contact us.'
+                'Question PDF links, programming solutions, book indexes, and other academic materials are provided for informational or educational reference and may include third-party content or links.',
+                'If any third-party rights holder believes content should be reviewed or removed, they may contact us with enough detail to identify the material.'
             ]
         },
         {
             title: '6. Educational and Informational Use',
             points: [
                 'ExamFobiya is intended to help users discover and navigate study resources; it does not guarantee academic results, availability of any specific title, or uninterrupted access to all content.',
-                'Users should independently confirm suitability, syllabus relevance, and any publisher restrictions before relying on listed materials.'
+                'Users should independently confirm suitability, syllabus relevance, question accuracy, solution correctness, and any publisher or institutional restrictions before relying on listed materials.',
+                'ExamFobiya is not affiliated with any university, publisher, or examination authority unless expressly stated.'
             ]
         },
         {
             title: '7. Third-Party Services',
             points: [
-                'Parts of the website rely on third-party infrastructure and services, including Firebase, Vercel, and email delivery providers.',
+                'Parts of the website rely on third-party infrastructure and services, including Firebase, Vercel, Brevo email infrastructure, Google Gemini AI services, and any external links or hosted files referenced from the website.',
                 'Your use of features delivered through those services may also be affected by their technical and legal terms.'
             ]
         },
         {
-            title: '8. Disclaimers and Limitation of Liability',
+            title: '8. User Accounts, Saved Items, and Admin Actions',
+            points: [
+                'Account features may allow users to save books, saved questions, preferences, or related account settings.',
+                'Administrators may add, edit, remove, or organize books, questions, programming solutions, users, maintenance settings, and other platform data through protected admin tools.',
+                'We are not responsible for loss of saved preferences, temporary drafts, linked files, or user-submitted/admin-submitted content caused by bugs, service downtime, content removal, or account restrictions.'
+            ]
+        },
+        {
+            title: '9. Disclaimers and Limitation of Liability',
             points: [
                 'The website is provided on an as-is and as-available basis to the extent permitted by applicable law.',
-                'We do not promise that the website will always be error-free, secure, or continuously available.',
+                'We do not promise that the website, listed content, linked files, AI-generated output, or third-party services will always be accurate, error-free, secure, or continuously available.',
                 'To the extent permitted by applicable law, ExamFobiya will not be liable for indirect, incidental, special, or consequential damages arising from the use of or inability to use the website.'
             ]
         },
         {
-            title: '9. Termination',
+            title: '10. Termination',
             points: [
                 'We may suspend or terminate access if we reasonably believe a user has violated these terms, created risk, or abused the platform.',
                 'You may stop using the service at any time.'
             ]
         },
         {
-            title: '10. Changes to These Terms',
+            title: '11. Changes to These Terms',
             points: [
                 'We may revise these Terms and Conditions from time to time. Continued use of the website after updates means you accept the revised version.'
             ]
@@ -94,7 +106,7 @@ const TermsAndConditions = () => {
                     <p className="about-hero-subtitle legal-hero-subtitle">
                         These terms explain the basic rules for using ExamFobiya and the limits of the service we provide.
                     </p>
-                    <p className="legal-meta">Last updated: April 9, 2026</p>
+                    <p className="legal-meta">Last updated: August 17, 2026</p>
                 </div>
             </div>
 
