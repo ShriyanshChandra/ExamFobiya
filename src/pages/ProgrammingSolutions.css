@@ -106,6 +106,37 @@
     transform: translateY(0) scale(0.97);
 }
 
+.results-show-more-btn {
+    align-self: center;
+    margin-top: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid color-mix(in srgb, var(--accent-color) 38%, transparent);
+    border-radius: 62.5rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: var(--white);
+    font-size: 0.95rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 10px 22px color-mix(in srgb, var(--primary-color) 22%, transparent);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.results-show-more-btn:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--accent-color) 65%, transparent);
+    box-shadow: 0 14px 30px color-mix(in srgb, var(--primary-color) 32%, transparent);
+}
+
+.results-show-more-btn:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--accent-color) 35%, transparent);
+    outline-offset: 0.1875rem;
+}
+
+[data-theme='dark'] .results-show-more-btn,
+[data-theme='midnight'] .results-show-more-btn {
+    color: #f8fafc;
+}
+
 /* Light theme explicit border polish */
 :root:not([data-theme='dark']):not([data-theme='midnight']) .lang-tab-pill:not(.active),
 [data-theme='light'] .lang-tab-pill:not(.active),
@@ -1389,6 +1420,12 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
 
 /* ── Midnight (AMOLED) theme overrides ── */
 
+[data-theme='midnight'] .solution-description,
+[data-theme='midnight'] .solution-inline-description {
+    color: #cbd5e1;
+    opacity: 1;
+}
+
 [data-theme='midnight'] .solution-code-block {
     background: #08081a;
     color: #e2e8f0;
@@ -1582,6 +1619,307 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
     background: rgba(5, 150, 105, 0.18);
     color: #059669;
     border-color: rgba(5, 150, 105, 0.35);
+}
+
+/* ── "How to Run This Code" instructions box ── */
+
+.run-instructions-box {
+    margin: 0;
+    border-top: 1px solid rgba(15, 23, 42, 0.1);
+}
+
+.run-instructions-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.75rem 1.25rem;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: var(--font-family);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    transition: opacity 0.2s ease;
+    text-decoration: none;
+}
+
+.run-instructions-toggle:hover {
+    opacity: 0.75;
+    text-decoration: underline;
+}
+
+.run-instructions-toggle-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.15rem;
+    height: 1.15rem;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: #ffffff;
+    font-size: 0.68rem;
+    font-weight: 800;
+    font-style: italic;
+    font-family: Georgia, 'Times New Roman', serif;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.run-instructions-content {
+    padding: 0 1.25rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+}
+
+.run-option {
+    background: color-mix(in srgb, var(--text-color) 4%, var(--card-bg));
+    border: 1px solid var(--border-adaptive, rgba(0, 0, 0, 0.1));
+    border-radius: 0.6rem;
+    padding: 1rem 1.1rem;
+}
+
+.run-option-title {
+    margin: 0 0 0.25rem;
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: var(--secondary-color);
+    letter-spacing: 0.01em;
+}
+
+.run-option-device-hint {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 0.6rem;
+    font-style: italic;
+}
+
+.run-steps {
+    margin: 0;
+    padding-left: 1.35rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.run-steps li {
+    font-size: 0.84rem;
+    font-weight: 500;
+    line-height: 1.55;
+    color: var(--text-color);
+    opacity: 0.85;
+}
+
+.run-steps li::marker {
+    font-weight: 800;
+    color: var(--primary-color);
+}
+
+.run-download-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.3rem 0.75rem;
+    border-radius: 0.35rem;
+    background: var(--primary-color);
+    color: #ffffff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition: background 0.2s ease, transform 0.15s ease;
+    vertical-align: middle;
+}
+
+.run-download-btn:hover {
+    background: var(--secondary-color);
+    transform: translateY(-1px);
+}
+
+.run-inline-link {
+    color: var(--primary-color);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: opacity 0.2s ease;
+}
+
+.run-inline-link:hover {
+    opacity: 0.7;
+}
+
+/* ── Dark theme overrides for run instructions ── */
+
+[data-theme='dark'] .run-instructions-box {
+    border-top-color: rgba(255, 255, 255, 0.12);
+}
+
+[data-theme='dark'] .run-instructions-toggle {
+    color: #60a5fa;
+}
+
+[data-theme='dark'] .run-instructions-toggle-icon {
+    background: #60a5fa;
+}
+
+[data-theme='dark'] .run-option {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme='dark'] .run-option-title {
+    color: #93c5fd;
+}
+
+[data-theme='dark'] .run-option-device-hint {
+    color: #94a3b8;
+}
+
+[data-theme='dark'] .run-steps li {
+    color: #cbd5e1;
+}
+
+[data-theme='dark'] .run-download-btn {
+    background: #3b82f6;
+    color: #ffffff;
+}
+
+[data-theme='dark'] .run-download-btn:hover {
+    background: #2563eb;
+}
+
+/* ── Midnight theme overrides for run instructions ── */
+
+[data-theme='midnight'] .run-instructions-box {
+    border-top-color: rgba(129, 140, 248, 0.15);
+}
+
+[data-theme='midnight'] .run-instructions-toggle {
+    color: #818cf8;
+}
+
+[data-theme='midnight'] .run-instructions-toggle-icon {
+    background: #818cf8;
+}
+
+[data-theme='midnight'] .run-option {
+    background: rgba(129, 140, 248, 0.05);
+    border-color: rgba(129, 140, 248, 0.12);
+}
+
+[data-theme='midnight'] .run-option-title {
+    color: #a5b4fc;
+}
+
+[data-theme='midnight'] .run-option-device-hint {
+    color: #8b9cc0;
+}
+
+[data-theme='midnight'] .run-steps li {
+    color: #c7d2e8;
+}
+
+[data-theme='midnight'] .run-download-btn {
+    background: #6366f1;
+}
+
+[data-theme='midnight'] .run-download-btn:hover {
+    background: #4f46e5;
+}
+
+/* ── Vintage theme overrides for run instructions ── */
+
+[data-theme='vintage'] .run-instructions-box {
+    border-top-color: rgba(141, 110, 99, 0.2);
+}
+
+[data-theme='vintage'] .run-instructions-toggle {
+    color: #6d4c41;
+}
+
+[data-theme='vintage'] .run-instructions-toggle-icon {
+    background: #6d4c41;
+}
+
+[data-theme='vintage'] .run-option {
+    background: rgba(141, 110, 99, 0.05);
+    border-color: rgba(141, 110, 99, 0.15);
+}
+
+[data-theme='vintage'] .run-option-title {
+    color: #5d4037;
+}
+
+[data-theme='vintage'] .run-download-btn {
+    background: #8d6e63;
+}
+
+[data-theme='vintage'] .run-download-btn:hover {
+    background: #6d4c41;
+}
+
+/* ── Ocean theme overrides for run instructions ── */
+
+[data-theme='ocean'] .run-instructions-box {
+    border-top-color: rgba(8, 145, 178, 0.15);
+}
+
+[data-theme='ocean'] .run-instructions-toggle {
+    color: #0891b2;
+}
+
+[data-theme='ocean'] .run-instructions-toggle-icon {
+    background: #0891b2;
+}
+
+[data-theme='ocean'] .run-option {
+    background: rgba(8, 145, 178, 0.04);
+    border-color: rgba(8, 145, 178, 0.12);
+}
+
+[data-theme='ocean'] .run-option-title {
+    color: #0e7490;
+}
+
+[data-theme='ocean'] .run-download-btn {
+    background: #0891b2;
+}
+
+[data-theme='ocean'] .run-download-btn:hover {
+    background: #0e7490;
+}
+
+/* ── Forest theme overrides for run instructions ── */
+
+[data-theme='forest'] .run-instructions-box {
+    border-top-color: rgba(5, 150, 105, 0.15);
+}
+
+[data-theme='forest'] .run-instructions-toggle {
+    color: #059669;
+}
+
+[data-theme='forest'] .run-instructions-toggle-icon {
+    background: #059669;
+}
+
+[data-theme='forest'] .run-option {
+    background: rgba(5, 150, 105, 0.04);
+    border-color: rgba(5, 150, 105, 0.12);
+}
+
+[data-theme='forest'] .run-option-title {
+    color: #047857;
+}
+
+[data-theme='forest'] .run-download-btn {
+    background: #059669;
+}
+
+[data-theme='forest'] .run-download-btn:hover {
+    background: #047857;
 }
 
 /* Desktop Layout using Grid */

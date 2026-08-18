@@ -7,6 +7,146 @@ import Loader from "../components/Loader";
 import useSEO from "../utils/useSEO";
 import "./ProgrammingSolutions.css";
 
+// Returns language-specific instructions for running a code solution
+const getRunInstructions = (language) => {
+  const lang = (language || "").toLowerCase();
+
+  const compilerMap = {
+    c: { name: "C", compiler: "C compiler (e.g. GCC)", ext: ".c", compileCmd: "gcc program.c -o program", runCmd: "./program (or program.exe on Windows)", onlineNote: "C compiler", vsExt: "C/C++ by Microsoft", fileHint: 'a file named "program.c"', installHint: "Install GCC (MinGW on Windows, Xcode Command Line Tools on macOS, or build-essential on Linux)." },
+    "c++": { name: "C++", compiler: "C++ compiler (e.g. G++)", ext: ".cpp", compileCmd: "g++ program.cpp -o program", runCmd: "./program (or program.exe on Windows)", onlineNote: "C++ compiler", vsExt: "C/C++ by Microsoft", fileHint: 'a file named "program.cpp"', installHint: "Install G++ (MinGW on Windows, Xcode Command Line Tools on macOS, or build-essential on Linux)." },
+    "c#": { name: "C#", compiler: ".NET SDK", ext: ".cs", compileCmd: "dotnet run", runCmd: "", onlineNote: "C# compiler", vsExt: "C# Dev Kit by Microsoft", fileHint: 'a C# project or a file named "Program.cs"', installHint: { text: "Install the .NET SDK from", linkText: "dotnet.microsoft.com", linkUrl: "https://dotnet.microsoft.com/download" } },
+    java: { name: "Java", compiler: "Java JDK", ext: ".java", compileCmd: "javac Main.java", runCmd: "java Main", onlineNote: "Java compiler", vsExt: "Extension Pack for Java by Microsoft", fileHint: 'a file matching the public class name (e.g. "Main.java")', installHint: { text: "Install the Java JDK from", linkText: "oracle.com", linkUrl: "https://www.oracle.com/java/technologies/downloads/" } },
+    python: { name: "Python", compiler: "Python interpreter", ext: ".py", compileCmd: "", runCmd: "python program.py (or python3 program.py on macOS/Linux)", onlineNote: "Python compiler", vsExt: "Python by Microsoft", fileHint: 'a file named "program.py"', installHint: { text: "Install Python from", linkText: "python.org", linkUrl: "https://www.python.org/downloads/" } },
+  };
+
+  const info = compilerMap[lang] || compilerMap.java;
+
+  const option1Steps = [
+    `Go to any online compiler website.`,
+    `Make sure you have selected the ${info.onlineNote} from the language options.`,
+    `Copy the code solution from above and paste it directly into the online compiler's editor.`,
+    `Click the "Run" button to execute the code.`,
+  ];
+
+  const option2Steps = [
+    { text: "Download and install VS Code from here:", linkText: "Download VS Code", linkUrl: "https://code.visualstudio.com/" },
+    `Open VS Code, go to the Extensions tab (Ctrl+Shift+X or Cmd+Shift+X on Mac) and install the "${info.vsExt}" extension.`,
+    info.installHint,
+    `Open a folder in VS Code and create ${info.fileHint}.`,
+    `Copy the code solution from above and paste it into the file.`,
+  ];
+
+  if (lang === "python") {
+    option2Steps.push(`Open the integrated terminal (Ctrl+\` or Cmd+\` on Mac) and run: ${info.runCmd}`);
+  } else if (lang === "c#") {
+    option2Steps.push(`Open the integrated terminal (Ctrl+\` or Cmd+\` on Mac) and run: ${info.compileCmd}`);
+  } else {
+    option2Steps.push(`Open the integrated terminal (Ctrl+\` or Cmd+\` on Mac) and compile: ${info.compileCmd}`);
+    if (info.runCmd) {
+      option2Steps.push(`Run the compiled program: ${info.runCmd}`);
+    }
+  }
+
+  const option3Steps = [];
+  option3Steps.push(info.installHint);
+  option3Steps.push(`Open your terminal (Command Prompt, PowerShell, or Terminal).`);
+  option3Steps.push(`Navigate to the folder containing your code file using the cd command.`);
+  option3Steps.push(`Create ${info.fileHint} and paste the code into it using any text editor.`);
+
+  if (lang === "python") {
+    option3Steps.push(`Run the program: ${info.runCmd}`);
+  } else if (lang === "c#") {
+    option3Steps.push(`Create a new console project: dotnet new console -o MyApp`);
+    option3Steps.push(`Navigate into the project folder: cd MyApp`);
+    option3Steps.push(`Replace the code in Program.cs with the solution code.`);
+    option3Steps.push(`Run the project: ${info.compileCmd}`);
+  } else {
+    option3Steps.push(`Compile the code: ${info.compileCmd}`);
+    if (info.runCmd) {
+      option3Steps.push(`Run the compiled program: ${info.runCmd}`);
+    }
+  }
+
+  return { option1Steps, option2Steps, option3Steps, langName: info.name };
+};
+
+// Renders a step that may be a plain string or an object with { text, linkText, linkUrl }
+const renderStep = (step) => {
+  if (typeof step === "object" && step.linkUrl) {
+    return (
+      <>
+        {step.text}{" "}
+        <a
+          href={step.linkUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="run-inline-link"
+        >
+          {step.linkText}
+        </a>
+      </>
+    );
+  }
+  return step;
+};
+
+const RunInstructionsBox = ({ language }) => {
+  const [expanded, setExpanded] = useState(false);
+  const { option1Steps, option2Steps, option3Steps } = getRunInstructions(language);
+
+  return (
+    <div className="run-instructions-box">
+      <span
+        className="run-instructions-toggle"
+        onClick={() => setExpanded((prev) => !prev)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setExpanded((prev) => !prev); } }}
+        aria-expanded={expanded}
+      >
+        <span className="run-instructions-toggle-icon">i</span>
+        <span>How to Run This Code</span>
+      </span>
+
+      {expanded && (
+        <div className="run-instructions-content">
+          <div className="run-option">
+            <h4 className="run-option-title">Option 1: Using Online Compilers</h4>
+            <span className="run-option-device-hint">Works on Android, PC and Desktop</span>
+            <ol className="run-steps">
+              {option1Steps.map((step, i) => (
+                <li key={i}>{renderStep(step)}</li>
+              ))}
+            </ol>
+          </div>
+
+          <div className="run-option">
+            <h4 className="run-option-title">Option 2: Using VS Code</h4>
+            <span className="run-option-device-hint">Only for PC / Desktop</span>
+            <ol className="run-steps">
+              {option2Steps.map((step, i) => (
+                <li key={i}>{renderStep(step)}</li>
+              ))}
+            </ol>
+          </div>
+
+          <div className="run-option">
+            <h4 className="run-option-title">Option 3: Using Terminal</h4>
+            <span className="run-option-device-hint">Only for PC / Desktop</span>
+            <ol className="run-steps">
+              {option3Steps.map((step, i) => (
+                <li key={i}>{renderStep(step)}</li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const RESULTS_BATCH_SIZE = 7;
+
 // Normalises old single-solution books into a 1-item array so all rendering
 // code can work uniformly with the new programmingSolutions array format.
 const normalizeSolutions = (book) => {
@@ -30,6 +170,7 @@ const ProgrammingSolutions = () => {
   const [selectedLanguage, setSelectedLanguage] = useState("C");
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState([]);
+  const [visibleResultCount, setVisibleResultCount] = useState(RESULTS_BATCH_SIZE);
   const [searched, setSearched] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   // copyStatus holds the detailCopyKey of the solution whose code was just copied
@@ -81,6 +222,11 @@ const ProgrammingSolutions = () => {
   const uniqueLanguages = [...new Set(flatRows.map((r) => r.solution.language).filter(Boolean))].sort((a, b) => a.localeCompare(b));
   const uniqueSubjects = [...new Set(solutionBooks.map((b) => b.title).filter(Boolean))].sort((a, b) => a.localeCompare(b));
 
+  const setSearchResults = (nextResults) => {
+    setResults(nextResults);
+    setVisibleResultCount(RESULTS_BATCH_SIZE);
+  };
+
   const applySearchAndFilters = (query = searchQuery, activeFilters = filters, langTab = selectedLanguage) => {
     const q = query.trim().toLowerCase();
 
@@ -113,7 +259,7 @@ const ProgrammingSolutions = () => {
       return;
     }
     const filtered = applySearchAndFilters(searchQuery, filters, selectedLanguage);
-    setResults(filtered);
+    setSearchResults(filtered);
     setSearched(true);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedLanguage, flatRows]);
@@ -137,7 +283,7 @@ const ProgrammingSolutions = () => {
       };
 
       const filtered = applySearchAndFilters("", tempFilters, "");
-      setResults(filtered);
+      setSearchResults(filtered);
       setSearched(true);
 
       // Clear the filter selection inputs after displaying results
@@ -159,12 +305,12 @@ const ProgrammingSolutions = () => {
     const q = searchQuery.trim();
 
     if (!q && !hasActiveFilters) {
-      setResults([]);
+      setSearchResults([]);
       setSearched(false);
       return;
     }
 
-    setResults(applySearchAndFilters(searchQuery, filters, ""));
+    setSearchResults(applySearchAndFilters(searchQuery, filters, ""));
     setSearched(true);
   };
 
@@ -172,7 +318,7 @@ const ProgrammingSolutions = () => {
     setFilters((prev) => {
       const nextFilters = { ...prev, [key]: value };
       if (searched) {
-        setResults(applySearchAndFilters(searchQuery, nextFilters, selectedLanguage));
+        setSearchResults(applySearchAndFilters(searchQuery, nextFilters, selectedLanguage));
       }
       return nextFilters;
     });
@@ -183,7 +329,7 @@ const ProgrammingSolutions = () => {
     setFilters(resetFilters);
     setSearchQuery("");
     setSelectedLanguage("");
-    setResults(applySearchAndFilters("", resetFilters, ""));
+    setSearchResults(applySearchAndFilters("", resetFilters, ""));
     setSearched(true);
   };
 
@@ -234,6 +380,8 @@ const ProgrammingSolutions = () => {
   );
 
   const activeFilterCount = Object.values(filters).filter(Boolean).length;
+  const visibleResults = results.slice(0, visibleResultCount);
+  const remainingResults = Math.max(results.length - visibleResultCount, 0);
 
   const handleDeleteSolution = async () => {
     if (!deleteTarget) return;
@@ -361,6 +509,8 @@ const ProgrammingSolutions = () => {
                   </code>
                 </pre>
               </div>
+
+              <RunInstructionsBox language={solution.language} />
             </section>
           );
         })}
@@ -490,7 +640,7 @@ const ProgrammingSolutions = () => {
             <p className="no-results">No programming solutions found for "{searchQuery}".</p>
           ) : (
             <div className="pdf-results-list">
-              {results.map(({ book, solution, rowId }) => (
+              {visibleResults.map(({ book, solution, rowId }) => (
                 <div key={rowId} className={`pdf-result-card-row solution-result-card ${expandedRowIds.has(rowId) ? "expanded" : ""}`}>
                   <div className="pdf-row-info">
                     <span className="pdf-card-course">{book.category || book.semester || "All"}</span>
@@ -582,10 +732,21 @@ const ProgrammingSolutions = () => {
                           </code>
                         </pre>
                       </div>
+
+                      <RunInstructionsBox language={solution.language} />
                     </div>
                   </div>
                 </div>
               ))}
+              {remainingResults > 0 && (
+                <button
+                  type="button"
+                  className="results-show-more-btn"
+                  onClick={() => setVisibleResultCount((count) => Math.min(count + RESULTS_BATCH_SIZE, results.length))}
+                >
+                  Show More
+                </button>
+              )}
             </div>
           )
         )}

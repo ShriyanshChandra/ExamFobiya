@@ -441,6 +441,37 @@
   margin-top: 1.5rem;
 }
 
+.results-show-more-btn {
+  align-self: center;
+  margin-top: 0.75rem;
+  padding: 0.75rem 1.5rem;
+  border: 1px solid color-mix(in srgb, var(--accent-color) 38%, transparent);
+  border-radius: 62.5rem;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: var(--white);
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--primary-color) 22%, transparent);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.results-show-more-btn:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent-color) 65%, transparent);
+  box-shadow: 0 14px 30px color-mix(in srgb, var(--primary-color) 32%, transparent);
+}
+
+.results-show-more-btn:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent-color) 35%, transparent);
+  outline-offset: 0.1875rem;
+}
+
+[data-theme='dark'] .results-show-more-btn,
+[data-theme='midnight'] .results-show-more-btn {
+  color: #f8fafc;
+}
+
 .pdf-result-card-row {
   background: var(--input-bg);
   border: 1px solid rgba(100, 100, 100, 0.2);

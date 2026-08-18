@@ -6,9 +6,12 @@ import ConfirmationModal from "../components/ConfirmationModal";
 import useSEO from "../utils/useSEO";
 import "./Questions.css";
 
+const RESULTS_BATCH_SIZE = 7;
+
 const Questions = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState([]);
+  const [visibleResultCount, setVisibleResultCount] = useState(RESULTS_BATCH_SIZE);
   const [searched, setSearched] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [viewingPdf, setViewingPdf] = useState(null);
@@ -27,6 +30,11 @@ const Questions = () => {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const formatQuestionDate = (pdf) => [pdf.month, pdf.year].filter(Boolean).join(' ');
+
+  const setSearchResults = (nextResults) => {
+    setResults(nextResults);
+    setVisibleResultCount(RESULTS_BATCH_SIZE);
+  };
 
   const getEmbedUrl = (url) => {
     if (!url) return "";
@@ -85,7 +93,7 @@ const Questions = () => {
       }
 
       const filtered = applySearchAndFilters(q, currentFilters);
-      setResults(filtered);
+      setSearchResults(filtered);
       setSearched(true);
 
       // Clear the state so refreshing the page doesn't run it again
@@ -116,13 +124,13 @@ const Questions = () => {
     const q = searchQuery.trim();
 
     if (!q && !hasActiveFilters) {
-      setResults([]);
+      setSearchResults([]);
       setSearched(false);
       return;
     }
 
     const filtered = applySearchAndFilters(searchQuery, filters);
-    setResults(filtered);
+    setSearchResults(filtered);
     setSearched(true);
   };
 
@@ -132,7 +140,7 @@ const Questions = () => {
 
       if (searched) {
         const filtered = applySearchAndFilters(searchQuery, nextFilters);
-        setResults(filtered);
+        setSearchResults(filtered);
       }
 
       return nextFilters;
@@ -146,16 +154,18 @@ const Questions = () => {
     if (searched) {
       const hasQuery = searchQuery.trim();
       if (!hasQuery) {
-        setResults([]);
+        setSearchResults([]);
         setSearched(false);
       } else {
-        setResults(applySearchAndFilters(searchQuery, resetFilters));
+        setSearchResults(applySearchAndFilters(searchQuery, resetFilters));
       }
     }
   };
 
 
   const activeFilterCount = Object.values(filters).filter(Boolean).length;
+  const visibleResults = results.slice(0, visibleResultCount);
+  const remainingResults = Math.max(results.length - visibleResultCount, 0);
 
   const handleDeleteQuestion = async () => {
     if (!deleteTarget) return;
@@ -350,7 +360,7 @@ const Questions = () => {
           ) : (
             <div className="pdf-results-list">
 
-              {results.map(pdf => (
+              {visibleResults.map(pdf => (
                 <div key={pdf.id} className="pdf-result-card-row">
                   
                   {/* Left Side: Information */}
@@ -411,6 +421,15 @@ const Questions = () => {
 
                 </div>
               ))}
+              {remainingResults > 0 && (
+                <button
+                  type="button"
+                  className="results-show-more-btn"
+                  onClick={() => setVisibleResultCount((count) => Math.min(count + RESULTS_BATCH_SIZE, results.length))}
+                >
+                  Show More
+                </button>
+              )}
             </div>
           )
         )}
