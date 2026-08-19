@@ -1,0 +1,90 @@
+.back-to-top-btn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: var(--primary-color, #2575fc);
+  color: #ffffff;
+  border: 1px solid color-mix(in srgb, var(--primary-color, #2575fc) 40%, transparent);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--primary-color, #2575fc) 35%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(12px) scale(0.9);
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease, background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  outline: none;
+}
+
+.back-to-top-btn.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.back-to-top-btn:hover {
+  transform: translateY(-4px) scale(1.05);
+  background: var(--accent-color, #ffd700);
+  color: var(--surface-text, #111827);
+  border-color: var(--accent-color, #ffd700);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--accent-color, #ffd700) 40%, transparent);
+}
+
+.back-to-top-btn:active {
+  transform: translateY(0) scale(0.95);
+}
+
+.back-to-top-btn:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--accent-color, #ffd700) 50%, transparent);
+  outline-offset: 3px;
+}
+
+.back-to-top-icon {
+  width: 1.35rem;
+  height: 1.35rem;
+  transition: transform 0.2s ease;
+}
+
+.back-to-top-btn:hover .back-to-top-icon {
+  transform: translateY(-2px);
+}
+
+/* Theme Adaptations */
+[data-theme='dark'] .back-to-top-btn,
+body.dark-mode .back-to-top-btn {
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme='midnight'] .back-to-top-btn {
+  background: #1e1b4b;
+  border-color: rgba(129, 140, 248, 0.3);
+  color: #818cf8;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme='midnight'] .back-to-top-btn:hover {
+  background: #22d3ee;
+  color: #0a0a14;
+  border-color: #22d3ee;
+  box-shadow: 0 8px 26px rgba(34, 211, 238, 0.4);
+}
+
+/* Mobile Screens */
+@media (max-width: 48rem) {
+  .back-to-top-btn {
+    bottom: 1.5rem;
+    right: 1.25rem;
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .back-to-top-icon {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}

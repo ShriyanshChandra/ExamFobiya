@@ -13,6 +13,7 @@ import { QuestionProvider } from "./context/QuestionContext";
 import { subscribeToMaintenanceMode, fetchMaintenanceMode } from "./services/SystemSettingsService";
 
 import PWAInstallBanner from "./components/PWAInstallBanner";
+import BackToTop from "./components/BackToTop";
 
 import "@fontsource/nunito";
 
@@ -200,6 +201,7 @@ function App() {
                     </ErrorBoundary>
                   </main>
                   <Footer />
+                  <BackToTop />
                   <PWAInstallBanner />
                 </MaintenanceGuard>
               </Router>
