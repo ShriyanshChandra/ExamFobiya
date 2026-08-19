@@ -163,7 +163,7 @@ const UploadQuestions = () => {
                         <label>
                             Question PDF Links <span className="uq-required">*</span>
                         </label>
-                        <p className="uq-hint">Paste Google Drive sharing links below. Add a title to identify each PDF.</p>
+                        <p className="uq-hint">Paste Google Drive sharing links below. Add a Label / Description (e.g. Main Exam, Mid Term, Unit 1), Month, and Year to identify each PDF.</p>
 
                         <div className="uq-pdf-list">
                             {pdfLinks.map((pdf, index) => (
@@ -175,7 +175,7 @@ const UploadQuestions = () => {
                                     <input
                                         type="text"
                                         className="uq-label-input"
-                                        placeholder="Title of PDF"
+                                        placeholder="Label / Description (e.g. Main Exam)"
                                         value={pdf.label}
                                         onChange={(e) => handleLinkChange(index, 'label', e.target.value)}
                                     />
