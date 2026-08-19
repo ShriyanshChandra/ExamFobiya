@@ -141,19 +141,6 @@ function Books() {
             </div>
 
             <div className="books-toolbar-filters">
-              <label className="books-sort" htmlFor="books-solutions-filter">
-                <span>Solutions</span>
-                <select
-                  id="books-solutions-filter"
-                  name="solutionsFilter"
-                  value={hasSolutionsOnly ? "with-solutions" : "all"}
-                  onChange={(e) => setHasSolutionsOnly(e.target.value === "with-solutions")}
-                >
-                  <option value="all">All Books</option>
-                  <option value="with-solutions">With Programming Solutions</option>
-                </select>
-              </label>
-
               <label className="books-sort" htmlFor="books-sort-select">
                 <span>Sort by</span>
                 <select id="books-sort-select" name="sortBy" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
@@ -185,8 +172,8 @@ function Books() {
             <button
               key={category}
               type="button"
-              onClick={() => handleCategorySelect(category)}
-              className={`category-chip ${selectedCategory === category ? "active" : ""}`}
+              onClick={() => { handleCategorySelect(category); setHasSolutionsOnly(false); }}
+              className={`category-chip ${!hasSolutionsOnly && selectedCategory === category ? "active" : ""}`}
             >
               {category}
             </button>

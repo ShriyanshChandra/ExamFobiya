@@ -109,14 +109,21 @@ body.dark-mode .container {
 .login-btn,
 .submit-btn,
 .solution-submit-btn,
+.search-btn,
+.auth-btn,
+.auth-btn-link,
 .questions-search-btn,
 .filter-count,
 .question-save-btn.saved,
+.lang-tab-pill.active,
+.category-chip.active,
+.semester-chip.active,
 .pdf-card-course,
 .pdf-view-btn,
 .pdf-edit-btn,
 .settings-btn--primary,
 .settings-username-actions .settings-btn--primary,
+.modal-actions .confirm-btn.yellow,
 .solution-back-link {
   color: var(--on-accent);
 }

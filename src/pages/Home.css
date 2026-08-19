@@ -12,7 +12,7 @@
   align-items: center;
   text-align: center;
   color: white;
-  background-color: var(--surface-text);
+  background-color: var(--secondary-color);
   border-radius: 0 0 3.125rem 3.125rem;
   overflow: hidden;
   margin-bottom: 3rem;
@@ -23,7 +23,7 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background-color: var(--surface-text); /* Deep dark blue */
+  background-color: var(--secondary-color); /* Deep dark blue */
   overflow: hidden;
 }
 

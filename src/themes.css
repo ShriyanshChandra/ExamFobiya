@@ -71,7 +71,7 @@
   --background-color: #121212;
   --text-color: #e0e0e0;
   --text-muted: #b8c4d4;
-  --surface-text: #f8fafc;
+  --surface-text: #111827;
   --on-accent: #111827;
   --white: #1e1e1e;
   --surface-bg: var(--card-bg);
@@ -194,7 +194,7 @@
   --background-color: #000000;
   --text-color: #e2e8f0;
   --text-muted: #b7c4dc;
-  --surface-text: #f1f5f9;
+  --surface-text: #0a0a14;
   --on-accent: #0a0a14;
   --white: #0a0a14;
   --surface-bg: var(--card-bg);

@@ -152,19 +152,27 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
     box-shadow: 0 4px 12px color-mix(in srgb, var(--primary-color) 20%, transparent) !important;
 }
 
-/* Dark theme adjustments */
-[data-theme='dark'] .lang-tab-pill {
+/* Dark & Midnight theme adjustments */
+:is([data-theme='dark'], [data-theme='midnight']) .lang-tab-pill {
     border-color: color-mix(in srgb, var(--accent-color) 18%, transparent);
     background: rgba(255, 255, 255, 0.04);
 }
 
-[data-theme='dark'] .lang-tab-pill:hover {
+:is([data-theme='dark'], [data-theme='midnight']) .lang-tab-pill:hover {
     border-color: color-mix(in srgb, var(--accent-color) 45%, transparent);
     box-shadow: 0 6px 20px color-mix(in srgb, var(--accent-color) 10%, transparent);
 }
 
 [data-theme='dark'] .lang-tab-pill.active {
     background: linear-gradient(135deg, var(--accent-color), #f5c800);
+    color: var(--surface-text);
+    box-shadow:
+        0 4px 22px color-mix(in srgb, var(--accent-color) 30%, transparent),
+        0 0 0 3px color-mix(in srgb, var(--accent-color) 10%, transparent);
+}
+
+[data-theme='midnight'] .lang-tab-pill.active {
+    background: linear-gradient(135deg, var(--accent-color), #06b6d4);
     color: var(--surface-text);
     box-shadow:
         0 4px 22px color-mix(in srgb, var(--accent-color) 30%, transparent),
@@ -625,11 +633,7 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-.solution-result-card {
-    display: block;
-    text-align: left;
-    overflow: hidden;
-}
+
 
 .solution-row-main {
     display: flex;
@@ -709,14 +713,14 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
     text-align: left;
 }
 
-[data-theme='dark'] .question-save-btn {
+:is([data-theme='dark'], [data-theme='midnight']) .question-save-btn {
     background: color-mix(in srgb, var(--accent-color) 10%, transparent);
     border-color: color-mix(in srgb, var(--accent-color) 28%, transparent);
     color: #f3f4f6;
 }
 
-[data-theme='dark'] .question-save-btn:hover,
-[data-theme='dark'] .question-save-btn.saved {
+:is([data-theme='dark'], [data-theme='midnight']) .question-save-btn:hover,
+:is([data-theme='dark'], [data-theme='midnight']) .question-save-btn.saved {
     background: var(--accent-color);
     border-color: color-mix(in srgb, var(--accent-color) 90%, transparent);
     color: var(--surface-text);
@@ -752,14 +756,7 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
     border-radius: 1.25rem;
 }
 
-.solution-result-card > .pdf-card-label-row {
-    display: block;
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: var(--text-color);
-    text-align: left;
-    margin-top: 0.85rem;
-}
+
 
 .pdf-row-actions {
     display: flex;
@@ -1040,6 +1037,8 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
     margin: 0;
     padding: 0 1.25rem 1.25rem;
     white-space: pre-wrap;
+    font-size: 0.85rem;
+    font-family: "Fira Code", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
 }
 
 .solution-io-preview {
@@ -1633,7 +1632,6 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
 
 .run-instructions-box {
     margin: 0;
-    border-top: 1px solid rgba(15, 23, 42, 0.1);
 }
 
 .run-instructions-toggle {
@@ -1930,39 +1928,84 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
     background: #047857;
 }
 
-/* Desktop Layout using Grid */
+/* Sectioned Layout */
 .solution-result-card {
-    display: grid !important;
-    grid-template-columns: 1fr auto;
-    grid-template-rows: auto auto auto;
-    grid-template-areas:
-        "info actions"
-        "text btn"
-        "panel panel";
-    align-items: flex-start;
-    gap: 0.85rem 1rem;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    text-align: left;
+    overflow: hidden;
 }
 
-.solution-result-card .pdf-row-info {
-    grid-area: info;
+.solution-section {
+    padding: 0;
 }
 
-.solution-result-card .solution-text-content {
-    grid-area: text;
+/* Section 1: Meta row (course, subject, language + admin actions) */
+.solution-section-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.solution-meta-left {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    flex-wrap: wrap;
     min-width: 0;
 }
 
-.solution-result-card .pdf-row-actions {
-    grid-area: actions;
+.solution-meta-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
 }
 
-.solution-result-card .solution-toggle-btn {
-    grid-area: btn;
-    align-self: flex-start;
+.solution-lang-pill {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.625rem;
+    border-radius: 1rem;
+    background: color-mix(in srgb, var(--accent-color) 15%, transparent);
+    color: var(--accent-color);
+    border: 1px solid color-mix(in srgb, var(--accent-color) 30%, transparent);
+    white-space: nowrap;
+}
+
+/* Horizontal divider between sections */
+.solution-section-divider {
+    border: none;
+    border-top: 1px solid color-mix(in srgb, var(--text-color) 12%, transparent);
+    margin: 0.85rem 0;
+}
+
+/* Section 2: Details (topic, description, input, output) */
+.solution-section-details {
+    text-align: left;
+}
+
+.solution-section-details .pdf-card-label-row {
+    display: block;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
+
+.solution-section-details .solution-inline-description {
+    margin-top: 0;
+}
+
+/* Section 3: View solution action */
+.solution-section-action {
+    text-align: center;
 }
 
 .solution-result-card .solution-inline-panel {
-    grid-area: panel;
     margin-top: 0;
 }
 
@@ -1983,41 +2026,34 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
 }
 
 @media (max-width: 37.5rem) {
-    /* Mobile Layout using Flex */
+    /* Mobile Layout adjustments for sectioned cards */
     .solution-result-card {
         display: flex !important;
         flex-direction: column;
         gap: 0;
     }
 
-    .solution-result-card .pdf-row-info {
-        order: 1;
-        margin-bottom: 0.75rem;
-        width: 100%;
+    .solution-section-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.625rem;
     }
 
-    .solution-result-card .solution-text-content {
-        order: 2;
-        width: 100%;
-        margin-bottom: 0.85rem;
+    .solution-meta-left {
+        gap: 0.5rem;
     }
 
-    .solution-result-card .pdf-row-actions {
-        order: 3;
+    .solution-meta-actions {
         width: 100%;
-        justify-content: flex-start;
-        margin-bottom: 0.85rem;
-        display: flex;
         gap: 0.75rem;
     }
 
-    .solution-result-card .pdf-row-actions .pdf-edit-btn {
+    .solution-meta-actions .pdf-edit-btn {
         flex: 1;
         text-align: center;
     }
 
     .solution-result-card .solution-toggle-btn {
-        order: 4;
         width: 100%;
         text-align: center;
         display: block;
@@ -2025,9 +2061,8 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
         background: color-mix(in srgb, var(--accent-color) 12%, transparent);
         border-radius: 0.375rem;
     }
-    
+
     .solution-result-card .solution-inline-panel {
-        order: 5;
         width: 100%;
     }
 

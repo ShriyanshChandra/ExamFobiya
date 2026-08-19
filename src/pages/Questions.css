@@ -565,14 +565,14 @@
   text-align: left;
 }
 
-[data-theme='dark'] .question-save-btn {
+:is([data-theme='dark'], [data-theme='midnight']) .question-save-btn {
   background: color-mix(in srgb, var(--accent-color) 10%, transparent);
   border-color: color-mix(in srgb, var(--accent-color) 28%, transparent);
   color: #f3f4f6;
 }
 
-[data-theme='dark'] .question-save-btn:hover,
-[data-theme='dark'] .question-save-btn.saved {
+:is([data-theme='dark'], [data-theme='midnight']) .question-save-btn:hover,
+:is([data-theme='dark'], [data-theme='midnight']) .question-save-btn.saved {
   background: var(--accent-color);
   border-color: color-mix(in srgb, var(--accent-color) 90%, transparent);
   color: var(--surface-text);
@@ -592,11 +592,12 @@
   flex-wrap: wrap;
 }
 
-.pdf-card-subject {
-  font-size: 0.92rem;
-  font-weight: 600;
-  color: var(--text-color);
-  opacity: 0.7;
+.pdf-card-subject,
+.pdf-row-info-header .pdf-card-subject {
+  font-size: 1.15rem !important;
+  font-weight: 700 !important;
+  color: var(--text-color) !important;
+  opacity: 1 !important;
 }
 
 .pdf-card-course {
@@ -608,11 +609,14 @@
   border-radius: 1.25rem;
 }
 
-.pdf-card-label-row {
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: var(--text-color);
+.pdf-card-label-row,
+.pdf-row-info-body .pdf-card-label-row {
+  font-size: 0.825rem !important;
+  font-weight: 400 !important;
+  color: var(--text-muted) !important;
+  opacity: 0.85 !important;
   text-align: left;
+  line-height: 1.5;
 }
 
 .pdf-row-actions {
@@ -731,8 +735,9 @@
     flex: 1;
   }
 
-  .pdf-card-subject {
-    font-size: 0.95rem;
+  .pdf-card-subject,
+  .pdf-row-info-header .pdf-card-subject {
+    font-size: 1.05rem !important;
   }
 }
 

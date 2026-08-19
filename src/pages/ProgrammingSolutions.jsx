@@ -145,7 +145,8 @@ const RunInstructionsBox = ({ language }) => {
   );
 };
 
-const RESULTS_BATCH_SIZE = 7;
+const INITIAL_RESULTS_COUNT = 7;
+const RESULTS_BATCH_SIZE = 10;
 
 // Normalises old single-solution books into a 1-item array so all rendering
 // code can work uniformly with the new programmingSolutions array format.
@@ -170,7 +171,7 @@ const ProgrammingSolutions = () => {
   const [selectedLanguage, setSelectedLanguage] = useState("C");
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState([]);
-  const [visibleResultCount, setVisibleResultCount] = useState(RESULTS_BATCH_SIZE);
+  const [visibleResultCount, setVisibleResultCount] = useState(INITIAL_RESULTS_COUNT);
   const [searched, setSearched] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   // copyStatus holds the detailCopyKey of the solution whose code was just copied
@@ -224,7 +225,7 @@ const ProgrammingSolutions = () => {
 
   const setSearchResults = (nextResults) => {
     setResults(nextResults);
-    setVisibleResultCount(RESULTS_BATCH_SIZE);
+    setVisibleResultCount(INITIAL_RESULTS_COUNT);
   };
 
   const applySearchAndFilters = (query = searchQuery, activeFilters = filters, langTab = selectedLanguage) => {
@@ -642,17 +643,37 @@ const ProgrammingSolutions = () => {
             <div className="pdf-results-list">
               {visibleResults.map(({ book, solution, rowId }) => (
                 <div key={rowId} className={`pdf-result-card-row solution-result-card ${expandedRowIds.has(rowId) ? "expanded" : ""}`}>
-                  <div className="pdf-row-info">
-                    <span className="pdf-card-course">{book.category || book.semester || "All"}</span>
-                    <div className="pdf-row-details">
-                      <div className="pdf-card-top-row">
-                        <span className="pdf-card-subject">{book.title}</span>
-                        {solution.language && <span className="pdf-card-subject">| {solution.language}</span>}
-                      </div>
+                  {/* Section 1: Course, Subject, Language + Edit/Delete */}
+                  <div className="solution-section solution-section-meta">
+                    <div className="solution-meta-left">
+                      <span className="pdf-card-course">{book.category || book.semester || "All"}</span>
+                      <span className="pdf-card-subject">{book.title}</span>
+                      {solution.language && <span className="solution-lang-pill">{solution.language}</span>}
                     </div>
+                    {user?.role === "admin" && (
+                      <div className="solution-meta-actions">
+                        <button
+                          type="button"
+                          className="pdf-edit-btn"
+                          onClick={() => navigate(`/edit-programming-solution/${book.id}/${solution.id}`)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          className="pdf-edit-btn solution-delete-btn"
+                          onClick={() => setDeleteTarget({ bookId: book.id, solutionId: solution.id, title: solution.title || book.title })}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
                   </div>
 
-                  <div className="solution-text-content">
+                  <hr className="solution-section-divider" />
+
+                  {/* Section 2: Topic, Description, Input, Output */}
+                  <div className="solution-section solution-section-details">
                     {solution.title && (
                       <span className="pdf-card-label-row">{solution.title}</span>
                     )}
@@ -673,43 +694,27 @@ const ProgrammingSolutions = () => {
                     )}
                   </div>
 
-                  <div className="pdf-row-actions">
-                    {user?.role === "admin" && (
-                      <>
-                      <button
-                        type="button"
-                        className="pdf-edit-btn"
-                        onClick={() => navigate(`/edit-programming-solution/${book.id}/${solution.id}`)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        type="button"
-                        className="pdf-edit-btn solution-delete-btn"
-                        onClick={() => setDeleteTarget({ bookId: book.id, solutionId: solution.id, title: solution.title || book.title })}
-                      >
-                        Delete
-                      </button>
-                      </>
-                    )}
+                  <hr className="solution-section-divider" />
+
+                  {/* Section 3: View Solution button */}
+                  <div className="solution-section solution-section-action">
+                    <button
+                      type="button"
+                      className="pdf-card-open-row solution-toggle-btn"
+                      onClick={() => setExpandedRowIds((prev) => {
+                        const next = new Set(prev);
+                        if (next.has(rowId)) { next.delete(rowId); } else { next.add(rowId); }
+                        return next;
+                      })}
+                      aria-expanded={expandedRowIds.has(rowId)}
+                    >
+                      {expandedRowIds.has(rowId) ? "Hide Solution" : "View Solution"}
+                    </button>
                   </div>
 
-                  <button
-                    type="button"
-                    className="pdf-card-open-row solution-toggle-btn"
-                    onClick={() => setExpandedRowIds((prev) => {
-                      const next = new Set(prev);
-                      if (next.has(rowId)) { next.delete(rowId); } else { next.add(rowId); }
-                      return next;
-                    })}
-                    aria-expanded={expandedRowIds.has(rowId)}
-                  >
-                    {expandedRowIds.has(rowId) ? "Hide Solution" : "View Solution"}
-                  </button>
-
+                  {/* Expanded inline panel (outside the 3 sections) */}
                   <div className="solution-inline-panel" aria-hidden={!expandedRowIds.has(rowId)}>
                     <div className="solution-inline-content">
-
                       <div className="solution-code-shell">
                         <button
                           type="button"
