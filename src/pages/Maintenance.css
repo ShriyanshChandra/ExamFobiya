@@ -21,7 +21,7 @@
     text-align: center;
     max-width: 31.25rem;
     width: 90%;
-    border: 1px solid var(--glass-border);
+    border: 1px solid var(--surface-border);
 }
 
 .maintenance-animation {
@@ -53,7 +53,7 @@
 
 .maintenance-footer {
     font-size: 0.9rem;
-    color: var(--secondary-color);
+    color: var(--surface-text);
     opacity: 0.8;
     font-weight: 600;
 }

@@ -14,36 +14,34 @@
     overflow-y: auto;
 }
 
-.frosted-modal {
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+.solid-modal {
+    background: var(--card-bg);
+    border: 1px solid var(--border-adaptive);
     padding: 2rem;
     border-radius: 1rem;
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
     width: 90%;
     max-width: 31.25rem;
-    color: #fff;
+    color: var(--text-color);
     animation: fadeIn 0.3s ease;
     text-align: center;
 }
 
-/* Ensure text is readable on frosted bg if it's over dark or light */
-.frosted-modal h2 {
+/* Solid elevated surface keeps modal content readable in every theme. */
+.solid-modal h2 {
     margin-bottom: 1.25rem;
-    color: var(--secondary-color);
+    color: var(--surface-text);
     /* Dark text for contrast if overlay is light, or adjust based on theme */
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    text-shadow: none;
 }
 
 /* Dark mode handling or generic dark text */
 .book-info {
-    background: rgba(255, 255, 255, 0.5);
+    background: color-mix(in srgb, var(--primary-color) 8%, var(--card-bg));
     padding: 0.9375rem;
     border-radius: 0.5rem;
     margin-bottom: 1.25rem;
-    color: #333;
+    color: var(--text-color);
     text-align: center;
 }
 
@@ -60,7 +58,7 @@
     gap: 0.625rem;
     font-size: 1.1rem;
     cursor: pointer;
-    color: var(--secondary-color);
+    color: var(--surface-text);
     /* Dark Blue */
     font-weight: 600;
 }
@@ -71,7 +69,7 @@
     accent-color: var(--accent-color);
 }
 
-.frosted-modal .modal-actions {
+.solid-modal .modal-actions {
     display: flex;
     justify-content: center;
     gap: 0.9375rem;
@@ -80,7 +78,7 @@
 .cancel-btn {
     background: transparent;
     border: 1px solid var(--secondary-color);
-    color: var(--secondary-color);
+    color: var(--surface-text);
     padding: 0.5rem 1.25rem;
     border-radius: 0.5rem;
     cursor: pointer;
@@ -135,7 +133,23 @@
 .confirmation-message {
     font-size: 1.2rem;
     margin-bottom: 1.875rem;
-    color: var(--secondary-color);
+    color: var(--surface-text);
     /* Dark Blue */
     line-height: 1.5;
+}
+
+[data-theme='dark'] .solid-modal h2,
+[data-theme='dark'] .solid-modal .checkbox-option,
+[data-theme='dark'] .solid-modal .cancel-btn,
+[data-theme='dark'] .confirmation-message,
+[data-theme='midnight'] .solid-modal h2,
+[data-theme='midnight'] .solid-modal .checkbox-option,
+[data-theme='midnight'] .solid-modal .cancel-btn,
+[data-theme='midnight'] .confirmation-message {
+    color: var(--text-color);
+}
+
+[data-theme='dark'] .solid-modal .cancel-btn,
+[data-theme='midnight'] .solid-modal .cancel-btn {
+    border-color: var(--surface-border);
 }

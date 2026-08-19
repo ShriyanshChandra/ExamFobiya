@@ -63,7 +63,7 @@ const RemoveBookModal = ({ book, onClose, onConfirm }) => {
 
     return (
         <div className="modal-overlay">
-            <div className="frosted-modal">
+            <div className="solid-modal">
                 <h2>{isConfirming ? "Confirm Removal" : "Remove Book"}</h2>
 
                 {!isConfirming ? (

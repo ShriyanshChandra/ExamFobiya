@@ -7,10 +7,8 @@
     max-width: 100rem;
     margin: 0 auto;
     text-align: center;
-    background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid var(--glass-border);
+    background: var(--surface-bg);
+    border: 1px solid var(--surface-border);
     border-radius: 1.875rem;
     padding: 3.75rem 2.5rem;
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
@@ -51,7 +49,7 @@
     height: 2.25rem;
     padding: 0 1.25rem;
     border-radius: 62.5rem;
-    border: 1.5px solid var(--glass-border);
+    border: 1.5px solid var(--surface-border);
     background: var(--input-bg);
     color: var(--text-color);
     font-size: 0.85rem;
@@ -59,8 +57,6 @@
     letter-spacing: 0.02em;
     cursor: pointer;
     transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
     overflow: hidden;
     z-index: 0;
 }
@@ -169,7 +165,7 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
 
 [data-theme='dark'] .lang-tab-pill.active {
     background: linear-gradient(135deg, var(--accent-color), #f5c800);
-    color: var(--secondary-color);
+    color: var(--surface-text);
     box-shadow:
         0 4px 22px color-mix(in srgb, var(--accent-color) 30%, transparent),
         0 0 0 3px color-mix(in srgb, var(--accent-color) 10%, transparent);
@@ -263,7 +259,7 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
 
 .questions-search-btn {
     background-color: var(--accent-color);
-    color: var(--secondary-color);
+    color: var(--surface-text);
     border: none;
     width: 2.5rem;
     height: 2.5rem;
@@ -318,7 +314,7 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
     padding: 0 0.375rem;
     border-radius: 62.4375rem;
     background: var(--accent-color);
-    color: var(--secondary-color);
+    color: var(--surface-text);
     font-size: 0.8rem;
     display: inline-flex;
     align-items: center;
@@ -332,8 +328,6 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 1.375rem;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     box-shadow: 0 16px 32px rgba(0, 0, 0, 0.08);
 }
 
@@ -700,7 +694,7 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
 .question-save-btn.saved {
     background: var(--accent-color);
     border-color: color-mix(in srgb, var(--accent-color) 92%, transparent);
-    color: var(--secondary-color);
+    color: var(--surface-text);
 }
 
 .question-save-btn.saved svg {
@@ -725,7 +719,7 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
 [data-theme='dark'] .question-save-btn.saved {
     background: var(--accent-color);
     border-color: color-mix(in srgb, var(--accent-color) 90%, transparent);
-    color: var(--secondary-color);
+    color: var(--surface-text);
 }
 
 .pdf-row-details {
@@ -753,7 +747,7 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
     font-size: 0.75rem;
     font-weight: 700;
     background: var(--accent-color);
-    color: var(--secondary-color);
+    color: var(--surface-text);
     padding: 0.25rem 0.75rem;
     border-radius: 1.25rem;
 }
@@ -924,7 +918,7 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
 /* Admin edit button on PDF cards */
 .pdf-edit-btn {
     background: var(--accent-color);
-    color: var(--secondary-color);
+    color: var(--surface-text);
     border: none;
     border-radius: 0.375rem;
     padding: 0.375rem 1rem;
@@ -965,7 +959,7 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
 .solution-header h1,
 .solution-empty-state h1 {
     margin: 0.75rem 0 0.65rem;
-    color: var(--secondary-color);
+    color: var(--surface-text);
     font-size: clamp(1.8rem, 4vw, 3rem);
     line-height: 1.1;
     letter-spacing: 0;
@@ -997,7 +991,7 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
     padding: 0.55rem 0.85rem;
     border-radius: 0.5rem;
     background: #fff7cf;
-    color: var(--secondary-color);
+    color: var(--surface-text);
     text-decoration: none;
     font-weight: 800;
     border: 1px solid rgba(243, 183, 0, 0.32);
@@ -1038,7 +1032,7 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
 .solution-description,
 .solution-admin-subtitle,
 .solution-form-hint {
-    color: #475569;
+    color: var(--text-muted);
     line-height: 1.5;
 }
 
@@ -1067,7 +1061,7 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
     margin: 0;
     padding: 0.55rem 0.8rem;
     background: color-mix(in srgb, var(--text-color) 6%, var(--card-bg));
-    border: 1px solid var(--border-adaptive, var(--glass-border));
+    border: 1px solid var(--border-adaptive, var(--surface-border));
     border-radius: 0.375rem;
     font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
     font-size: 0.85rem;
@@ -1102,8 +1096,6 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
     font-size: 0.76rem;
     font-weight: 900;
     cursor: pointer;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
     box-shadow: 0 2px 12px rgba(15, 118, 110, 0.15), 0 1px 3px rgba(0, 0, 0, 0.08);
     transition: background 0.2s, box-shadow 0.2s, border-color 0.2s, color 0.2s;
 }
@@ -1136,7 +1128,7 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
     overflow-x: auto;
     background: color-mix(in srgb, var(--text-color) 4%, var(--card-bg));
     color: var(--text-color);
-    border: 1px solid var(--glass-border);
+    border: 1px solid var(--surface-border);
     border-radius: 0.5rem;
     font-size: 0.92rem;
     line-height: 1.6;
@@ -1160,7 +1152,7 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
     color: color-mix(in srgb, var(--text-color) 60%, transparent);
     text-align: right;
     user-select: none;
-    border-right: 1px solid var(--glass-border);
+    border-right: 1px solid var(--surface-border);
 }
 
 .solution-line-text {
@@ -1194,7 +1186,7 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
 .solution-form-field textarea {
     width: 100%;
     padding: 0.68rem 0.82rem;
-    border: 1px solid var(--glass-border);
+    border: 1px solid var(--surface-border);
     border-radius: 0.5rem;
     background-color: var(--input-bg);
     color: var(--text-color);
@@ -1205,7 +1197,7 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
 .solution-form-field select {
     width: 100%;
     padding: 0.68rem 2.5rem 0.68rem 0.82rem;
-    border: 1px solid var(--glass-border);
+    border: 1px solid var(--surface-border);
     border-radius: 0.5rem;
     background-color: var(--input-bg);
     background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
@@ -1297,13 +1289,13 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
     letter-spacing: inherit;
     font-variant-ligatures: inherit;
     background: transparent !important;
-    color: #1e293b !important;
+    color: var(--text-color) !important;
     border: none !important;
     border-radius: 0;
     box-shadow: none !important;
     outline: none !important;
     box-sizing: border-box;
-    caret-color: #1e293b;
+    caret-color: var(--text-color);
     white-space: pre;
     overflow-wrap: normal;
     word-break: normal;
@@ -1330,12 +1322,12 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
 .solution-cancel-btn {
     background: var(--input-bg);
     color: var(--text-color);
-    border: 1px solid var(--glass-border);
+    border: 1px solid var(--surface-border);
 }
 
 .solution-submit-btn {
     background: var(--accent-color);
-    color: var(--secondary-color);
+    color: var(--surface-text);
     border: none;
 }
 
@@ -1345,6 +1337,14 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
     background: #1f2937;
     border-color: rgba(255, 255, 255, 0.14);
     box-shadow: 0 18px 40px rgba(0, 0, 0, 0.34);
+}
+
+[data-theme='midnight'] .solution-code-card,
+[data-theme='midnight'] .solution-empty-state,
+[data-theme='midnight'] .solution-admin-card {
+    background: #0f0f1a;
+    border-color: rgba(129, 140, 248, 0.22);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.58);
 }
 
 [data-theme='dark'] .solution-header h1,
@@ -1361,13 +1361,21 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
     color: #cbd5e1;
 }
 
+[data-theme='midnight'] .solution-header h1,
+[data-theme='midnight'] .solution-empty-state h1,
+[data-theme='midnight'] .solution-code-header h2,
+[data-theme='midnight'] .solution-admin-card h2,
+[data-theme='midnight'] .solution-form-field>span {
+    color: #f1f5f9;
+}
+
 [data-theme='dark'] .solution-io-label {
     color: var(--accent-color, #ffd700);
 }
 
 [data-theme='dark'] .solution-back-link {
     background: var(--accent-color);
-    color: var(--secondary-color);
+    color: var(--surface-text);
 }
 
 [data-theme='dark'] .solution-code-block {
@@ -1390,7 +1398,7 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
 
 [data-theme='dark'] .solution-code-editor {
     background: #1f2433;
-    border-color: #475569;
+    border-color: var(--text-muted);
 }
 
 [data-theme='dark'] .solution-editor-lines {
@@ -1684,7 +1692,7 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
     margin: 0 0 0.25rem;
     font-size: 0.88rem;
     font-weight: 800;
-    color: var(--secondary-color);
+    color: var(--surface-text);
     letter-spacing: 0.01em;
 }
 
@@ -1692,7 +1700,7 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
     display: block;
     font-size: 0.75rem;
     font-weight: 600;
-    color: #64748b;
+    color: var(--text-muted);
     margin-bottom: 0.6rem;
     font-style: italic;
 }

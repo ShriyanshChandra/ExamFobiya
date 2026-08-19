@@ -11,20 +11,18 @@
 
 
 .register-card {
-    background: rgba(255, 255, 255, 0.65);
+    background: var(--card-bg);
     padding: 2.5rem;
     border-radius: 1rem;
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    border: 1px solid var(--surface-border);
     width: 100%;
     max-width: 28.125rem;
     text-align: center;
-    color: #333;
+    color: var(--text-color);
 }
 
-/* Removed dark mode override for card background to keep it white frosted */
+/* Theme-aware opaque card surface. */
 
 .register-card h1 {
     margin-bottom: 2rem;
@@ -57,7 +55,7 @@
 [data-theme='dark'] .form-group input {
     background: #333;
     color: #fff;
-    border-color: #555;
+    border-color: var(--text-muted);
 }
 
 /* Checkbox Style */
@@ -92,17 +90,22 @@
     /* Increase weight */
     cursor: pointer;
     font-size: 1rem;
-    color: #333;
+    color: var(--text-color);
     /* Default dark */
     line-height: 1;
     /* Match vertically */
 }
 
-/* Dark Mode Overrides Removed to maintain White Frosted Box look */
+/* Dark Mode Overrides Removed to maintain opaque card surface look */
 /* Checkbox text color override removed as white box implies dark text */
 [data-theme='dark'] .checkbox-group label {
-    color: #333 !important;
+    color: var(--text-color) !important;
     /* Keep dark text on white box */
+    text-shadow: none;
+}
+
+[data-theme='midnight'] .checkbox-group label {
+    color: var(--text-color) !important;
     text-shadow: none;
 }
 
@@ -130,7 +133,7 @@
     padding: 0.8rem;
     background-color: var(--accent-color);
     /* Theme accent color */
-    color: #333;
+    color: var(--text-color);
     /* Dark text for contrast on yellow */
     border: none;
     border-radius: 0.5rem;
@@ -149,7 +152,7 @@
 .redirect-login {
     margin-top: 1.5rem;
     font-size: 0.95rem;
-    color: #333;
+    color: var(--text-color);
     /* Default text color */
 }
 
@@ -160,7 +163,7 @@
     text-align: center;
     margin-bottom: 1.25rem;
     font-size: 0.95rem;
-    color: #555;
+    color: var(--text-muted);
     line-height: 1.5;
 }
 

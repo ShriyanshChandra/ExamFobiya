@@ -202,7 +202,7 @@ function Search({ searchQuery }) {
     <div className="search-results-page">
       <div className="search-header-container container">
         <h1 style={{ marginBottom: "15px", textAlign: "center" }}>Search Results</h1>
-        <p className="search-summary-text" style={{ margin: 0, padding: 0, background: "transparent", backdropFilter: "none", boxShadow: "none" }}>
+        <p className="search-summary-text" style={{ margin: 0, padding: 0, background: "transparent", boxShadow: "none" }}>
           Showing results for: "{searchQuery}"<br />
           <span style={{ fontSize: '0.9rem', marginTop: '5px', display: 'block' }}>
             Found {filteredBooks.length} Books, {filteredQuestions.length} Questions &amp; {filteredSolutions.length} Solutions

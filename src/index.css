@@ -105,6 +105,22 @@ body.dark-mode .container {
   box-shadow: 0 16px 36px -10px rgba(46, 52, 64, 0.1) !important;
 }
 
+/* Keep labels readable when controls use the accent background. */
+.login-btn,
+.submit-btn,
+.solution-submit-btn,
+.questions-search-btn,
+.filter-count,
+.question-save-btn.saved,
+.pdf-card-course,
+.pdf-view-btn,
+.pdf-edit-btn,
+.settings-btn--primary,
+.settings-username-actions .settings-btn--primary,
+.solution-back-link {
+  color: var(--on-accent);
+}
+
 /* Global Animations */
 @keyframes btnGradientFlow {
   0% { background-position: 0% 50%; }

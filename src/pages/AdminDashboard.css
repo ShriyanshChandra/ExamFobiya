@@ -2,15 +2,13 @@
     padding: 2rem 0 3.5rem;
     background: transparent;
     min-height: 100vh;
-    color: #333;
+    color: var(--text-color);
     font-family: var(--font-family);
 }
 
 .dashboard-content-wrapper {
     padding: 2.25rem;
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(248, 250, 252, 0.56));
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.24);
     border-radius: 2rem;
     box-shadow: 0 30px 60px rgba(31, 38, 135, 0.12);
@@ -69,8 +67,6 @@
 .stats-card {
     position: relative;
     background: rgba(255, 255, 255, 0.72);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.34);
     border-radius: 1.5rem;
     padding: 1.25rem;
@@ -189,8 +185,6 @@
 
 .chart-container {
     background: rgba(255, 255, 255, 0.72);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.34);
     border-radius: 1.5rem;
     padding: 1.5rem;
@@ -509,7 +503,7 @@ body.dark-mode .stats-value {
 }
 
 [data-theme='midnight'] .stats-trend.muted {
-    color: #64748b;
+    color: var(--text-muted);
 }
 
 /* Dark theme — Segmented bars */
@@ -521,7 +515,7 @@ body.dark-mode .segmented-bar-label {
 [data-theme='dark'] .segmented-bar-empty,
 body.dark-mode .segmented-bar-empty {
     background: rgba(255, 255, 255, 0.06);
-    color: #64748b;
+    color: var(--text-muted);
 }
 
 [data-theme='dark'] .segmented-legend-name,
@@ -541,7 +535,7 @@ body.dark-mode .segmented-legend-value {
 
 [data-theme='midnight'] .segmented-bar-empty {
     background: rgba(129, 140, 248, 0.06);
-    color: #64748b;
+    color: var(--text-muted);
 }
 
 [data-theme='midnight'] .segmented-legend-name {
@@ -630,7 +624,7 @@ body.dark-mode .segmented-legend-value {
 .error-log-empty {
     padding: 3rem 1.5rem;
     text-align: center;
-    color: #64748b;
+    color: var(--text-muted);
     font-weight: 600;
 }
 
@@ -683,7 +677,7 @@ body.dark-mode .segmented-legend-value {
 .error-date-badge {
     font-size: 0.78rem;
     font-weight: 700;
-    color: #64748b;
+    color: var(--text-muted);
 }
 
 .error-type-badge {
@@ -693,7 +687,7 @@ body.dark-mode .segmented-legend-value {
     padding: 0.15rem 0.5rem;
     border-radius: 0.35rem;
     background: #e2e8f0;
-    color: #475569;
+    color: var(--text-muted);
 }
 
 .error-type-badge.react_component_error {
@@ -714,13 +708,13 @@ body.dark-mode .segmented-legend-value {
 .error-message-text {
     font-size: 0.95rem;
     font-weight: 700;
-    color: #1e293b;
+    color: var(--text-color);
     word-break: break-word;
 }
 
 .error-url-text {
     font-size: 0.8rem;
-    color: #64748b;
+    color: var(--text-muted);
     margin-top: 0.25rem;
     word-break: break-all;
 }
@@ -770,7 +764,7 @@ body.dark-mode .segmented-legend-value {
     font-weight: 700;
     border: 1px solid #cbd5e1;
     background: transparent;
-    color: #475569;
+    color: var(--text-muted);
     cursor: pointer;
 }
 
@@ -789,7 +783,7 @@ body.dark-mode .segmented-legend-value {
 
 .error-detail-field {
     font-size: 0.82rem;
-    color: #475569;
+    color: var(--text-muted);
 }
 
 .error-stack-block {
@@ -801,7 +795,7 @@ body.dark-mode .segmented-legend-value {
 .stack-title {
     font-size: 0.78rem;
     font-weight: 800;
-    color: #64748b;
+    color: var(--text-muted);
     text-transform: uppercase;
 }
 
@@ -927,8 +921,6 @@ body.dark-mode .details-toggle-btn {
 
 .api-key-card {
     background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(226, 232, 240, 0.8);
     border-radius: 1.25rem;
     padding: 1.25rem;
@@ -961,7 +953,7 @@ body.dark-mode .details-toggle-btn {
 .api-key-env {
     font-size: 0.78rem;
     font-family: monospace;
-    color: #64748b;
+    color: var(--text-muted);
     background: rgba(241, 245, 249, 0.9);
     padding: 0.15rem 0.4rem;
     border-radius: 0.35rem;
@@ -1009,7 +1001,7 @@ body.dark-mode .details-toggle-btn {
 .api-status-badge.status-unconfigured,
 .api-status-badge.status-untested {
     background: rgba(148, 163, 184, 0.15);
-    color: #475569;
+    color: var(--text-muted);
     border: 1px solid rgba(148, 163, 184, 0.3);
 }
 
@@ -1043,12 +1035,12 @@ body.dark-mode .details-toggle-btn {
 }
 
 .detail-label {
-    color: #64748b;
+    color: var(--text-muted);
     font-weight: 600;
 }
 
 .detail-value {
-    color: #1e293b;
+    color: var(--text-color);
     font-weight: 700;
 }
 
@@ -1244,7 +1236,7 @@ body.dark-mode .detail-value {
 }
 
 .users-search-box svg {
-    color: #64748b;
+    color: var(--text-muted);
     flex-shrink: 0;
 }
 
@@ -1254,7 +1246,7 @@ body.dark-mode .detail-value {
     background: transparent;
     width: 100%;
     font-size: 0.9rem;
-    color: #1e293b;
+    color: var(--text-color);
 }
 
 .users-filter-pills {
@@ -1267,7 +1259,7 @@ body.dark-mode .detail-value {
 .users-empty {
     padding: 3rem 1.5rem;
     text-align: center;
-    color: #64748b;
+    color: var(--text-muted);
     font-weight: 600;
 }
 
@@ -1332,8 +1324,6 @@ body.dark-mode .detail-value {
     top: calc(100% + 0.35rem) !important;
     bottom: auto !important;
     background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(203, 213, 225, 0.8);
     border-radius: 0.75rem;
     box-shadow: 0 16px 36px rgba(15, 23, 42, 0.22);
@@ -1377,7 +1367,7 @@ body.dark-mode .detail-value {
 
 .users-table th {
     background: rgba(241, 245, 249, 0.8);
-    color: #475569;
+    color: var(--text-muted);
     font-size: 0.78rem;
     font-weight: 800;
     text-transform: uppercase;
@@ -1389,7 +1379,7 @@ body.dark-mode .detail-value {
 .users-table td {
     padding: 0.875rem 1.125rem;
     border-bottom: 1px solid rgba(241, 245, 249, 0.8);
-    color: #1e293b;
+    color: var(--text-color);
     vertical-align: middle;
 }
 
@@ -1433,12 +1423,12 @@ body.dark-mode .detail-value {
 }
 
 .user-email-cell {
-    color: #475569;
+    color: var(--text-muted);
     font-weight: 500;
 }
 
 .user-date-cell {
-    color: #64748b;
+    color: var(--text-muted);
     font-size: 0.85rem;
 }
 
@@ -1501,7 +1491,7 @@ body.dark-mode .detail-value {
 
 .user-role-toggle-btn.demote {
     background: rgba(148, 163, 184, 0.15);
-    color: #475569;
+    color: var(--text-muted);
     border: 1px solid rgba(148, 163, 184, 0.3);
 }
 
@@ -1628,8 +1618,6 @@ body.dark-mode .user-email-cell {
     right: 0;
     top: calc(100% + 0.35rem);
     background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(203, 213, 225, 0.8);
     border-radius: 0.75rem;
     box-shadow: 0 12px 28px rgba(15, 23, 42, 0.15);
@@ -1664,14 +1652,14 @@ body.dark-mode .user-email-cell {
     border-radius: 0.5rem;
     font-size: 0.82rem;
     font-weight: 700;
-    color: #1e293b;
+    color: var(--text-color);
     cursor: pointer;
     text-align: left;
     transition: background 0.15s ease, color 0.15s ease;
 }
 
 .dropdown-menu-item svg {
-    color: #64748b;
+    color: var(--text-muted);
     flex-shrink: 0;
     transition: color 0.15s ease;
 }
@@ -1787,14 +1775,14 @@ body.dark-mode .dropdown-divider,
     justify-content: space-between;
     padding: 1rem 1.25rem;
     border-top: 1px solid rgba(226, 232, 240, 0.8);
-    background: color-mix(in srgb, var(--glass-bg) 60%, transparent);
+    background: color-mix(in srgb, var(--surface-bg) 60%, transparent);
     gap: 1rem;
     flex-wrap: wrap;
 }
 
 .pagination-info {
     font-size: 0.82rem;
-    color: #64748b;
+    color: var(--text-muted);
     font-weight: 500;
 }
 
@@ -1807,7 +1795,7 @@ body.dark-mode .dropdown-divider,
 .pagination-page-num {
     font-size: 0.82rem;
     font-weight: 700;
-    color: #1e293b;
+    color: var(--text-color);
 }
 
 .pagination-btn {
@@ -1815,7 +1803,7 @@ body.dark-mode .dropdown-divider,
     border-radius: 0.5rem;
     border: 1px solid rgba(203, 213, 225, 0.8);
     background: #ffffff;
-    color: #1e293b;
+    color: var(--text-color);
     font-size: 0.8rem;
     font-weight: 600;
     cursor: pointer;
@@ -1880,8 +1868,6 @@ body.dark-mode .pagination-btn,
 
 .system-control-card {
     background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(226, 232, 240, 0.8);
     border-radius: 1rem;
     padding: 1.25rem;
@@ -1914,7 +1900,7 @@ body.dark-mode .pagination-btn,
 
 .control-card-desc {
     font-size: 0.875rem;
-    color: #64748b;
+    color: var(--text-muted);
     margin: 0;
     line-height: 1.45;
 }

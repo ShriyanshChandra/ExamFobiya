@@ -64,7 +64,7 @@
     height: 2.75rem;
     border-radius: 50%;
     background: linear-gradient(135deg, var(--accent-color), #f59e0b);
-    color: var(--secondary-color);
+    color: var(--surface-text);
     font-size: 1.6rem;
     font-weight: 900;
     font-family: 'Henny Penny', cursive !important;
@@ -211,8 +211,6 @@
 .settings-main {
     flex: 1;
     background: var(--card-bg, linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(248, 250, 252, 0.68)));
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
     padding: 3.5rem 4rem;
     overflow-y: auto;
     color: var(--text-color, #1e293b);
@@ -244,7 +242,7 @@
 
 .settings-panel-header p {
     margin: 0;
-    color: #64748b;
+    color: var(--text-muted);
     font-size: 0.95rem;
     line-height: 1.6;
 }
@@ -283,7 +281,7 @@
     font-size: 2.2rem;
     font-weight: 900;
     font-family: 'Henny Penny', cursive !important;
-    color: var(--secondary-color);
+    color: var(--surface-text);
     line-height: 1;
 }
 
@@ -301,7 +299,7 @@
 .settings-avatar-role {
     font-size: 0.85rem;
     font-weight: 700;
-    color: #64748b;
+    color: var(--text-muted);
     margin-top: 0.2rem;
 }
 
@@ -363,7 +361,7 @@
 .settings-info-value {
     font-size: 0.95rem;
     font-weight: 700;
-    color: #1e293b;
+    color: var(--text-color);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -428,7 +426,7 @@
     border: 1.5px solid color-mix(in srgb, var(--accent-color) 50%, transparent);
     border-radius: 0.5rem;
     background: rgba(255, 255, 255, 0.9);
-    color: #1e293b;
+    color: var(--text-color);
     font-family: inherit;
     font-size: 0.95rem;
     font-weight: 700;
@@ -466,7 +464,7 @@
     font-weight: 800;
     border-radius: 0.5rem;
     background: linear-gradient(135deg, var(--accent-color), #f59e0b);
-    color: var(--secondary-color);
+    color: var(--surface-text);
     border: none;
     cursor: pointer;
     box-shadow: 0 4px 12px color-mix(in srgb, var(--accent-color) 30%, transparent);
@@ -508,7 +506,7 @@
 
 .settings-username-actions .settings-link-btn:hover:not(:disabled) {
     background: rgba(148, 163, 184, 0.18);
-    color: #475569;
+    color: var(--text-muted);
     border-color: rgba(148, 163, 184, 0.35);
 }
 
@@ -565,7 +563,7 @@
     border-radius: 0.875rem;
     background: rgba(255, 255, 255, 0.72);
     border: 1px solid rgba(148, 163, 184, 0.2);
-    color: #475569;
+    color: var(--text-muted);
     font-size: 0.92rem;
     line-height: 1.5;
 }
@@ -578,7 +576,7 @@
 }
 
 .settings-reset-email-display strong {
-    color: #1e293b;
+    color: var(--text-color);
 }
 
 /* Alert banners */
@@ -623,7 +621,7 @@
 .settings-form-hint {
     margin: 0;
     font-size: 0.88rem;
-    color: #64748b;
+    color: var(--text-muted);
     line-height: 1.6;
     padding: 0.875rem 1rem;
     background: rgba(100, 116, 139, 0.08);
@@ -639,7 +637,7 @@
 .settings-field label {
     font-size: 0.82rem;
     font-weight: 800;
-    color: #475569;
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.06em;
 }
@@ -649,7 +647,7 @@
     border: 1.5px solid rgba(148, 163, 184, 0.35);
     border-radius: 0.75rem;
     background: rgba(255, 255, 255, 0.85);
-    color: #1e293b;
+    color: var(--text-color);
     font-family: inherit;
     font-size: 0.95rem;
     font-weight: 600;
@@ -696,7 +694,7 @@
     transition: color 0.18s ease;
 }
 
-.settings-eye-btn:hover { color: #475569; }
+.settings-eye-btn:hover { color: var(--text-muted); }
 .settings-eye-btn svg { width: 1.1rem; height: 1.1rem; }
 
 /* Password strength bar */
@@ -745,7 +743,7 @@
 
 .settings-btn--primary {
     background: linear-gradient(135deg, var(--accent-color), #f59e0b);
-    color: var(--secondary-color);
+    color: var(--surface-text);
     box-shadow: 0 8px 20px color-mix(in srgb, var(--accent-color) 30%, transparent);
 }
 
@@ -771,7 +769,7 @@
     background: none;
     border: none;
     cursor: pointer;
-    color: #64748b;
+    color: var(--text-muted);
     font-family: inherit;
     font-size: 0.88rem;
     font-weight: 700;
@@ -789,7 +787,7 @@
     align-items: center;
     gap: 0.5rem;
     font-size: 0.85rem;
-    color: #64748b;
+    color: var(--text-muted);
     font-weight: 600;
 }
 
@@ -805,7 +803,7 @@
     width: 1.1rem;
     height: 1.1rem;
     border: 2px solid color-mix(in srgb, var(--secondary-color) 25%, transparent);
-    border-top-color: var(--secondary-color);
+    border-top-color: var(--surface-text);
     border-radius: 50%;
     animation: settingsSpin 0.7s linear infinite;
 }
@@ -826,7 +824,7 @@
     align-items: center;
     gap: 1rem;
     padding: 3rem;
-    color: #64748b;
+    color: var(--text-muted);
     font-weight: 700;
 }
 
@@ -1125,7 +1123,7 @@
     padding: 2rem;
     border-radius: 1.25rem;
     background: var(--card-bg, rgba(255, 255, 255, 0.85));
-    border: 1px solid var(--glass-border, rgba(0, 0, 0, 0.1));
+    border: 1px solid var(--surface-border, rgba(0, 0, 0, 0.1));
     box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
     transition: all 0.3s ease;
 }

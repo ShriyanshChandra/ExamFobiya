@@ -6,10 +6,8 @@
 
 .books-content {
   padding: 2.25rem;
-  background: var(--glass-bg);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid var(--glass-border);
+  background: var(--surface-bg);
+  border: 1px solid var(--surface-border);
   border-radius: 2rem;
   box-shadow: 0 30px 60px rgba(31, 38, 135, 0.12);
   max-width: 100rem;
@@ -131,8 +129,8 @@
 }
 
 .books-toolbar {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
+  background: var(--surface-bg);
+  border: 1px solid var(--surface-border);
   border-radius: 1.5rem;
   padding: 1.25rem;
   margin-bottom: 1.25rem;
@@ -179,7 +177,7 @@
 
 .books-search input {
   width: 100%;
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--surface-border);
   border-radius: 1rem;
   padding: 0.875rem 1rem;
   background-color: var(--card-bg);
@@ -191,7 +189,7 @@
 
 .books-sort select {
   width: 100%;
-  border: 1px solid var(--glass-border);
+  border: 1px solid var(--surface-border);
   border-radius: 1rem;
   padding: 0.875rem 2.5rem 0.875rem 1.125rem;
   background-color: var(--card-bg);
@@ -232,7 +230,7 @@
   height: 2.25rem;
   padding: 0 1.25rem;
   border-radius: 62.5rem;
-  border: 1.5px solid var(--glass-border);
+  border: 1.5px solid var(--surface-border);
   background: var(--input-bg);
   color: var(--text-color);
   font-size: 0.85rem;
@@ -240,8 +238,6 @@
   letter-spacing: 0.02em;
   cursor: pointer;
   transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
   overflow: hidden;
   z-index: 0;
 }
@@ -334,7 +330,7 @@ body:not(.dark-mode) .semester-chip:not(.active):hover {
 [data-theme='dark'] .category-chip.active,
 [data-theme='dark'] .semester-chip.active {
   background: linear-gradient(135deg, var(--accent-color), #f5c800) !important;
-  color: var(--secondary-color) !important;
+  color: var(--surface-text) !important;
   box-shadow:
     0 4px 22px color-mix(in srgb, var(--accent-color) 30%, transparent),
     0 0 0 3px color-mix(in srgb, var(--accent-color) 10%, transparent) !important;
@@ -394,8 +390,8 @@ body:not(.dark-mode) .semester-chip:not(.active):hover {
   padding: 3rem 1.5rem;
   text-align: center;
   border-radius: 1.5rem;
-  background: var(--glass-bg);
-  border: 1px dashed var(--glass-border);
+  background: var(--surface-bg);
+  border: 1px dashed var(--surface-border);
 }
 
 .books-empty-state h2 {
@@ -430,7 +426,6 @@ body:not(.dark-mode) .semester-chip:not(.active):hover {
   justify-content: center;
   align-items: center;
   z-index: 2000;
-  backdrop-filter: blur(5px);
 }
 
 .book-modal-content {
@@ -452,8 +447,14 @@ body:not(.dark-mode) .semester-chip:not(.active):hover {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+[data-theme='midnight'] .book-modal-content {
+  background: var(--card-bg);
+  color: var(--text-color);
+  border: 1px solid var(--surface-border);
+}
+
 .book-modal-content h2 {
-  color: var(--secondary-color);
+  color: var(--surface-text);
   margin-bottom: 1.25rem;
   font-size: 2rem;
   border-bottom: 2px solid var(--accent-color);
@@ -465,8 +466,13 @@ body:not(.dark-mode) .semester-chip:not(.active):hover {
   color: var(--accent-color);
 }
 
+[data-theme='midnight'] .book-modal-content h2,
+[data-theme='midnight'] .book-modal-content strong {
+  color: var(--accent-color);
+}
+
 .book-modal-content p {
-  color: #4a4a4a;
+  color: var(--text-muted);
   line-height: 1.8;
   font-size: 1.1rem;
   margin-bottom: 0.9375rem;
@@ -476,8 +482,12 @@ body:not(.dark-mode) .semester-chip:not(.active):hover {
   color: #e0e0e0;
 }
 
+[data-theme='midnight'] .book-modal-content p {
+  color: var(--text-muted);
+}
+
 .book-modal-content strong {
-  color: var(--secondary-color);
+  color: var(--surface-text);
   font-weight: 700;
 }
 

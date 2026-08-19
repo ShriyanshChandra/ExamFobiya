@@ -38,7 +38,7 @@
     background: rgba(255, 255, 255, 0.9);
     border: 1px solid #ddd;
     font-size: 1.4rem;
-    color: #1e293b;
+    color: var(--text-color);
     cursor: pointer;
     z-index: 20;
     width: 2.2rem;
@@ -120,7 +120,7 @@
 .topics-heading {
     font-size: 1.3rem;
     font-weight: 600;
-    color: #333;
+    color: var(--text-color);
     text-align: left;
     /* Force left alignment */
     margin-bottom: 0.9375rem;
@@ -130,7 +130,7 @@
 
 .topics-list-container {
     font-size: 0.85rem;
-    color: #555;
+    color: var(--text-muted);
     line-height: 1.3;
 }
 
@@ -159,7 +159,7 @@
 .topic-level-0 {
     font-weight: 700;
     margin-top: 0.75rem;
-    color: #333;
+    color: var(--text-color);
     margin-bottom: 0.5rem !important;
 }
 
@@ -176,7 +176,7 @@
     content: "•";
     position: absolute;
     left: 0;
-    color: #555;
+    color: var(--text-muted);
     font-weight: bold;
 }
 
@@ -185,7 +185,7 @@
     margin-left: 2.8125rem;
     position: relative;
     padding-left: 0.9375rem;
-    color: #555;
+    color: var(--text-muted);
     font-size: 0.95em;
 }
 
@@ -197,13 +197,13 @@
     left: 0;
     font-size: 1.2em;
     line-height: 1.2;
-    color: #777;
+    color: var(--text-muted);
 }
 
 /* -- Rich Text Content Styles (New) -- */
 .rich-text-content {
     font-size: 0.85rem;
-    color: #333;
+    color: var(--text-color);
     line-height: 1.3;
     text-align: left !important;
 }

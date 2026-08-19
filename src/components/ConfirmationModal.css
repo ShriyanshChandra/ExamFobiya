@@ -12,16 +12,14 @@
 }
 
 .confirmation-modal {
-    background: rgba(255, 255, 255, 0.25);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: var(--card-bg);
+    border: 1px solid var(--border-adaptive);
     padding: 2rem;
     border-radius: 1rem;
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
     width: 90%;
     max-width: 31.25rem;
-    color: #fff;
+    color: var(--text-color);
     animation: fadeIn 0.3s ease;
     text-align: center;
     position: relative;
@@ -38,9 +36,9 @@
 
 .modal-header h3 {
     margin: 0;
-    color: var(--secondary-color);
+    color: var(--surface-text);
     /* Dark Blue from theme */
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    text-shadow: none;
     font-size: 1.5rem;
     text-align: center;
     width: 100%;
@@ -50,11 +48,11 @@
     position: absolute;
     top: 1rem;
     right: 1rem;
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: color-mix(in srgb, var(--primary-color) 10%, var(--card-bg));
+    border: 1px solid var(--border-adaptive);
     font-size: 1.4rem;
     cursor: pointer;
-    color: var(--secondary-color);
+    color: var(--surface-text);
     width: 2.2rem;
     height: 2.2rem;
     border-radius: 50%;
@@ -68,7 +66,7 @@
 .confirmation-modal .close-btn:hover {
     background: var(--secondary-color);
     color: #ffffff;
-    border-color: var(--secondary-color);
+    border-color: var(--surface-text);
     transform: scale(1.1);
 }
 
@@ -78,7 +76,7 @@
 
 .confirmation-modal .modal-body p {
     font-size: 1.2rem;
-    color: var(--secondary-color);
+    color: var(--surface-text);
     /* Dark Blue */
     margin-bottom: 1.875rem;
     line-height: 1.5;
@@ -104,7 +102,7 @@
 .modal-actions .cancel-btn {
     background: transparent;
     border: 1px solid var(--secondary-color);
-    color: var(--secondary-color);
+    color: var(--surface-text);
 }
 
 .modal-actions .cancel-btn:hover {
@@ -129,7 +127,7 @@
 
 .modal-actions .confirm-btn.yellow {
     background: var(--accent-color);
-    color: var(--secondary-color);
+    color: var(--surface-text);
     box-shadow: 0 4px 6px color-mix(in srgb, var(--accent-color) 30%, transparent);
 }
 
@@ -150,6 +148,23 @@
 .modal-actions .confirm-btn.approve:hover {
     background: #218838;
     box-shadow: 0 6px 8px rgba(40, 167, 69, 0.4);
+}
+
+/* Dark surfaces need a light foreground instead of the theme's deep-blue accent. */
+[data-theme='dark'] .confirmation-modal .modal-header h3,
+[data-theme='dark'] .confirmation-modal .modal-body p,
+[data-theme='dark'] .confirmation-modal .close-btn,
+[data-theme='dark'] .confirmation-modal .cancel-btn,
+[data-theme='midnight'] .confirmation-modal .modal-header h3,
+[data-theme='midnight'] .confirmation-modal .modal-body p,
+[data-theme='midnight'] .confirmation-modal .close-btn,
+[data-theme='midnight'] .confirmation-modal .cancel-btn {
+    color: var(--text-color);
+}
+
+[data-theme='dark'] .confirmation-modal .cancel-btn,
+[data-theme='midnight'] .confirmation-modal .cancel-btn {
+    border-color: var(--surface-border);
 }
 
 @keyframes fadeIn {
