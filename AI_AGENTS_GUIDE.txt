@@ -1,0 +1,509 @@
+================================================================================
+EXAMFOBIYA - AI AGENTS TECHNICAL SPECIFICATION & ENGINE BLUEPRINT
+================================================================================
+Target Systems: Antigravity IDE, Claude Code, OpenAI Codex, Gemini CLI, Cursor
+Document Version: 2.0.0
+Last Updated: August 2026
+
+--------------------------------------------------------------------------------
+TABLE OF CONTENTS
+--------------------------------------------------------------------------------
+1.  System Operational Invariants & Agent Directives
+2.  Full Codebase Map & Module Responsibilities
+3.  State Management & React Context Signatures
+4.  Component API & Props Directory
+5.  Firestore Database Schema & Security Rules Specification
+6.  Complete Backend API Endpoints & Request/Response Contracts
+7.  AI Models, Prompt Pipelines & Response Parsers (Google Gemini)
+8.  Transactional Email Engine & HTML Templates (Brevo REST API v3)
+9.  Search Engine Indexation Pipeline (IndexNow)
+10. Client Diagnostic Error Logging Pipeline (ErrorLoggerService)
+11. Maintenance Mode Architecture & Real-Time Sync
+12. Document Parsing Pipeline (PDF Smart Baseline & DOCX Mammoth)
+13. CSS Theme System & Design Tokens Registry
+14. Critical Gotchas, Edge Cases & Implementation Rules
+
+================================================================================
+1. SYSTEM OPERATIONAL INVARIANTS & AGENT DIRECTIVES
+================================================================================
+All AI coding agents modifying this codebase MUST comply with the following invariants:
+
+1. NO DIRECT DOM MANIPULATION:
+   Never write imperative DOM queries (document.getElementById, document.querySelector,
+   document.getElementsByClassName, element.innerHTML, etc.) unless explicitly commanded.
+   All DOM operations must be driven declaratively through React state, props, controlled
+   components, or useRef handles.
+
+2. NO EMOJIS:
+   Never insert emojis into code, comments, documentation, UI elements, alerts, or responses
+   unless explicitly requested by the user.
+
+3. PRE-MODIFICATION ERROR CHECK:
+   Before modifying project code, check recent runtime client errors stored in Firestore
+   under the 'client_errors' collection (via ErrorLoggerService / Admin Dashboard) to triage
+   and fix existing production runtime issues first.
+
+4. CASE-SENSITIVITY COMPLIANCE:
+   The development host is macOS (case-insensitive file system), but deployment environments
+   (Linux on Render/Vercel) are case-sensitive. All module imports must match exact file
+   casing. Run 'python3 check.py' only once per session to validate imports.
+
+5. CSS VARIABLES MANDATE:
+   Never hardcode raw hex, RGB, or HSL color literals in component CSS. Always use the semantic
+   variables defined in src/themes.css (--primary-color, --card-bg, --text-color, --border-adaptive, etc.).
+
+6. CONTINUOUS DOCUMENTATION SYNCHRONIZATION:
+   Whenever changes are made to code, functionality, endpoints, services, or environment
+   variables in any conversation, immediately update both DEVELOPER_GUIDE.txt and AI_AGENTS_GUIDE.txt.
+
+================================================================================
+2. FULL CODEBASE MAP & MODULE RESPONSIBILITIES
+================================================================================
+ExamFobiya/
+├── .agents/
+│   └── AGENTS.md                 : Workspace rules and agent behavioral directives
+├── backend/
+│   ├── routes/
+│   │   └── ai.js                 : Express route handlers for Gemini AI features
+│   ├── .env                      : Backend environment variables (PORT, EMAIL_PASS, GEMINI_API_KEY, etc.)
+│   ├── package.json              : Backend dependencies (express, firebase-admin, @google/generative-ai, cors, dotenv)
+│   ├── server.js                 : Main Express server, API endpoints, crons, auth middleware
+│   └── serviceAccountKey.json    : Local development Firebase Admin service account key
+├── public/
+│   ├── c3b77bf259f243af99818667d9215013.txt : IndexNow ownership verification key file
+│   └── [icons, manifest, static assets]     : PWA manifest, favicons, brand assets
+├── src/
+│   ├── assets/                   : SVGs, illustrations, animation assets
+│   ├── components/
+│   │   ├── BackToTop.jsx         : Floating back-to-top scroll button with window listener
+│   │   ├── BookCard.jsx          : Reusable card for book inventory display & spotlight badges
+│   │   ├── BookCategorySection.jsx : Horizontal category layout with responsive navigation
+│   │   ├── BookDetailsModal.jsx  : Detailed book view modal with pricing, description, and actions
+│   │   ├── ConfirmationModal.jsx : Generic confirmation dialog for destructive actions
+│   │   ├── ErrorBoundary.jsx     : Class component catching React tree render crashes
+│   │   ├── Footer.jsx            : App footer with legal links, social icons, and copyright
+│   │   ├── GlobalErrorMonitor.jsx: Intercepts unhandledrejection and window.onerror events
+│   │   ├── Loader.jsx            : Visual loading spinner with fallback states
+│   │   ├── Navbar.jsx            : Responsive navigation bar, search bar, and auth buttons
+│   │   ├── PWAInstallBanner.jsx  : Custom banner handling beforeinstallprompt PWA install
+│   │   ├── ProtectedRoute.jsx    : React Router wrapper enforcing auth and role requirements
+│   │   └── RemoveBookModal.jsx   : Specialized confirmation modal for deleting books
+│   ├── context/
+│   │   ├── AuthContext.jsx       : Firebase Auth listener, role caching, login/register/logout
+│   │   ├── BookContext.jsx       : Firestore books sync, section sorting, solution binding
+│   │   ├── QuestionContext.jsx   : Firestore questions, PDFs, courses, subjects sync
+│   │   └── ThemeContext.jsx      : Dark/Light theme provider with localStorage sync
+│   ├── pages/
+│   │   ├── About_us.jsx          : Information page describing ExamFobiya mission
+│   │   ├── AddBook.jsx           : Admin form for creating and editing book entries
+│   │   ├── AddProgrammingSolution.jsx : Code solution editor with AI similarity checker
+│   │   ├── AdminDashboard.jsx    : Multi-tab admin control panel (metrics, users, keys, errors)
+│   │   ├── BestSeller.jsx        : Spotlight view for best-selling books
+│   │   ├── Books.jsx             : Searchable academic catalog with filter sidebar
+│   │   ├── EditQuestionPdf.jsx   : Admin management view for question paper PDFs
+│   │   ├── ExploreSection.jsx    : Featured discovery section
+│   │   ├── Home.jsx              : Landing page with search, speed test widget, and spotlights
+│   │   ├── Login.jsx             : Authentication portal (email/password login)
+│   │   ├── Maintenance.jsx       : Maintenance splash screen for non-admin users
+│   │   ├── NewArrivals.jsx       : Spotlight view for newly added inventory
+│   │   ├── PrivacyPolicy.jsx     : GDPR/legal compliance disclosure
+│   │   ├── ProgrammingSolutions.jsx : Code solutions explorer by language and topic
+│   │   ├── Questions.jsx         : Academic question bank (Q&A accordion & PDF papers)
+│   │   ├── Register.jsx          : Registration flow with 6-digit Brevo OTP verification
+│   │   ├── ResetPassword.jsx     : Password recovery via Brevo OTP or Firebase OOB code
+│   │   ├── Search.jsx            : Global cross-entity search results view
+│   │   ├── Settings.jsx          : User profile settings (username, password update)
+│   │   ├── TermsAndConditions.jsx: User agreement and service terms
+│   │   ├── UploadQuestions.jsx   : Batch question / PDF uploader with AI parsing
+│   │   └── Welcome.jsx           : Post-signup onboarding welcome screen
+│   ├── services/
+│   │   ├── AnalyticsService.js   : Admin analytics fetcher, API status, manual ping trigger
+│   │   ├── ErrorLoggerService.js : Firestore client error logger (excludes localhost)
+│   │   ├── IndexNowService.js    : Instant search engine indexation client
+│   │   ├── SystemSettingsService.js : Maintenance mode fetcher, setter, and subscriber
+│   │   └── UserService.js        : User management, role updater, password reset emailer
+│   ├── utils/
+│   │   ├── api.js                : Dynamic backend URL resolver (DEV vs PROD)
+│   │   ├── csvExporter.js        : Client-side CSV generator for exportable data
+│   │   ├── documentUtils.js      : PDF baseline extraction (pdfjs-dist) & DOCX conversion (mammoth)
+│   │   ├── usePWAInstall.js      : Hook capturing beforeinstallprompt event
+│   │   └── useSEO.js             : Dynamic document title, meta tags, and OpenGraph manager
+│   ├── App.css                   : Global app layout styles and animations
+│   ├── App.jsx                   : Main router, chunk-healing lazy loader, MaintenanceGuard
+│   ├── firebase.js               : Firebase Client SDK initialization
+│   ├── index.css                 : Reset stylesheet and typography
+│   ├── index.jsx                 : React DOM mount root
+│   └── themes.css                : Theme token dictionary (light & dark)
+├── AI_AGENTS_GUIDE.txt           : Machine-readable technical blueprint for AI systems
+├── DEVELOPER_GUIDE.txt           : Human-readable architecture and onboarding guide
+├── check.py                      : Python script to verify case-sensitive import paths
+├── firebase.json                 : Firebase Hosting configuration & Firestore rules mapping
+├── firestore.rules               : Cloud Firestore security rules specification
+├── package.json                  : Frontend dependencies and build scripts
+├── vercel.json                   : Vercel SPA rewrite configuration
+└── vite.config.js                : Vite configuration with React plugin
+
+================================================================================
+3. STATE MANAGEMENT & REACT CONTEXT SIGNATURES
+================================================================================
+1. AuthContext (src/context/AuthContext.jsx):
+   - Hook: useAuth()
+   - State:
+     * user: { uid, email, role: 'admin'|'user', username, createdAt } | null
+     * loading: boolean
+   - Methods:
+     * login(email, password) -> Promise<UserCredential>
+     * register(email, password, role, username) -> Promise<UserCredential>
+     * logout() -> Promise<void>
+     * checkAccountExists(email) -> Promise<boolean>
+     * updateUsername(newUsername) -> Promise<void>
+
+2. BookContext (src/context/BookContext.jsx):
+   - Hook: useBooks()
+   - State:
+     * books: Array<BookObject>
+     * loading: boolean
+   - Methods:
+     * addBook(newBook) -> Promise<void> (triggers notifyIndexNow(['/books']))
+     * removeBook(id) -> Promise<void> (triggers notifyIndexNow(['/books']))
+     * updateBook(id, updates) -> Promise<void> (triggers notifyIndexNow(['/books']))
+     * addProgrammingSolution(bookId, solution) -> Promise<string (solutionId)>
+     * updateProgrammingSolution(bookId, solutionId, updates) -> Promise<void>
+     * deleteProgrammingSolution(bookId, solutionId) -> Promise<void>
+     * getBooksBySection(sectionName) -> Array<BookObject> (sorted by sectionOrders)
+     * getBooksByCategory(category) -> Array<BookObject>
+
+3. QuestionContext (src/context/QuestionContext.jsx):
+   - Hook: useQuestions()
+   - State:
+     * questions: Array<QuestionObject> (fetched via collectionGroup 'questions')
+     * questionPdfs: Array<PdfObject> (fetched via collectionGroup 'questionPdfs')
+     * universities: Array<UniversityObject> (fetched from collection 'universities')
+     * loading: boolean
+   - Methods:
+     * addQuestion(newQuestion) -> Promise<void> (Path: /courses/{course}/subjects/{subject}/questions)
+     * updateQuestion(id, updates, parentPath) -> Promise<void>
+     * deleteQuestion(id, parentPath) -> Promise<void>
+     * addSubject(subjectData: { name, course }) -> Promise<void>
+     * deleteSubject(course, subjectName) -> Promise<void> (Cascading delete of questions)
+     * addUniversity(universityData) -> Promise<void>
+     * deleteUniversity(id) -> Promise<void>
+     * addQuestionPdfs(course, subject, pdfLinks) -> Promise<void>
+     * updateQuestionPdf(docPath, updates) -> Promise<void>
+     * deleteQuestionPdf(docPath) -> Promise<void>
+     * getSubjects(course) -> CollectionReference
+
+4. ThemeContext (src/context/ThemeContext.jsx):
+   - Hook: useTheme()
+   - State: theme: 'light' | 'dark'
+   - Methods: toggleTheme() -> void (sets document.documentElement.setAttribute('data-theme', theme))
+
+================================================================================
+4. COMPONENT API & PROPS DIRECTORY
+================================================================================
+- BookCard ({ book, onSelect, showActions, onEdit, onDelete })
+  * book: Object (book schema)
+  * onSelect: Function (triggers BookDetailsModal)
+  * showActions: boolean (renders edit/delete buttons for admin)
+- BookCategorySection ({ category, books, onSelectBook })
+- BookDetailsModal ({ book, isOpen, onClose })
+- ConfirmationModal ({ isOpen, title, message, onConfirm, onCancel, confirmText, isDestructive })
+- ErrorBoundary ({ children })
+- GlobalErrorMonitor ({ children })
+- Loader ({ message, fullScreen })
+- Navbar ({ setSearchQuery })
+- ProtectedRoute ({ children, requiredRole })
+- RemoveBookModal ({ isOpen, book, onConfirm, onCancel })
+
+================================================================================
+5. FIRESTORE DATABASE SCHEMA & SECURITY RULES SPECIFICATION
+================================================================================
+A. Collections & Schemas:
+1. /users/{userId}
+   * Document ID: Firebase Auth UID
+   * Types: { email: string, role: "admin"|"user", username: string, createdAt: Timestamp|string }
+
+2. /books/{bookId}
+   * Document ID: Auto-generated string
+   * Types: {
+       title: string, author: string, description: string, price: number, originalPrice: number,
+       genre: string, category: string, coverImage: string, sections: string[],
+       sectionOrders: Record<string, number|"Temp">, hasProgrammingSolution: boolean,
+       programmingSolutions: Array<{
+         id: string, title: string, language: string, code: string, explanation: string,
+         timeComplexity: string, spaceComplexity: string, difficulty: string, tags: string[]
+       }>,
+       createdAt: Timestamp|string
+     }
+
+3. /courses/{course}/subjects/{subject}/questions/{questionId}
+   * Types: { question: string (HTML), answer: string (HTML), year: string, marks: string, course: string, subject: string, createdAt: Timestamp|string }
+
+4. /courses/{course}/subjects/{subject}/questionPdfs/{pdfId}
+   * Types: { label: string, url: string, month: string, year: string, course: string, subject: string, uploadedAt: string }
+
+5. /universities/{universityId}
+   * Types: { name: string, location: string, courses: string[], createdAt: Timestamp|string }
+
+6. /otps/{normalizedEmail}
+   * Types: { code: string (6 digits), expiresAt: number (ms timestamp) }
+
+7. /stats/system_settings
+   * Types: { maintenanceMode: boolean, updatedAt: string }
+
+8. /system_status/api_keepalive
+   * Types: { lastPingAt: number, lastPingFormatted: string, brevoStatus: object, geminiStatus: object, updatedAt: string }
+
+9. /client_errors/{errorId}
+   * Types: { message: string, stack: string, componentStack: string, type: string, url: string, userAgent: string, userId: string, userEmail: string, resolved: boolean, date: string, timestamp: FieldValue, createdAt: string }
+
+B. Security Rules Core (firestore.rules):
+   function isAdmin() {
+     return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == "admin";
+   }
+   - /users/{userId}: allow read, write if request.auth.uid == userId || isAdmin()
+   - /books/{bookId}: allow read if true; allow write if isAdmin()
+   - /courses/**, /universities/**: allow read if true; allow write if isAdmin()
+   - /{path=**}/questions/{q}: allow read if true; allow write if isAdmin()
+   - /{path=**}/questionPdfs/{pdf}: allow read if true; allow write if isAdmin()
+   - /stats/**, /daily_stats/**: allow read if true; allow write if isAdmin()
+   - /client_errors/{err}: allow create if true; allow read, update, delete if isAdmin()
+
+================================================================================
+6. COMPLETE BACKEND API ENDPOINTS & REQUEST/RESPONSE CONTRACTS
+================================================================================
+Base URL Resolution: src/utils/api.js (DEV: http://127.0.0.1:5000, PROD: VITE_API_URL)
+
+1. POST /send-otp
+   - Body: { "email": string, "purpose": "register" | "reset-password" | "generic" }
+   - Logic: Validates account existence according to purpose. Generates 6-digit OTP, stores in /otps/{email} with 10-minute expiry, sends HTML email via Brevo API v3.
+   - Response: 200 { "message": "OTP sent successfully" } | 400 | 404 | 409 | 500
+
+2. POST /api/verify-otp
+   - Body: { "email": string, "otp": string }
+   - Logic: Compares OTP against /otps/{email}. Deletes OTP upon successful verification.
+   - Response: 200 { "message": "OTP Verified successfully" } | 400
+
+3. POST /api/reset-password
+   - Body: { "email": string, "otp": string, "newPassword": string }
+   - Logic: Validates OTP, updates password in Firebase Auth via updateUser(uid, { password }), deletes OTP.
+   - Response: 200 { "message": "Password successfully reset" } | 400 | 500
+
+4. POST /api/check-admin
+   - Body: { "email": string }
+   - Response: 200 { "message": "User is admin" } | 403 | 404 | 500
+
+5. POST /api/check-account-exists
+   - Body: { "email": string }
+   - Response: 200 { "exists": true } | 404 { "exists": false } | 400 | 500
+
+6. POST /api/auth/send-password-reset & POST /api/admin/send-password-reset
+   - Body: { "email": string }
+   - Logic: Generates Firebase reset link with getAuth().generatePasswordResetLink, extracts oobCode, formats custom URL: ${APP_URL}/reset-password?oobCode=...&email=..., sends styled HTML email via Brevo.
+   - Response: 200 { "message": "Password reset email sent successfully to ..." } | 404 | 500
+
+7. GET /api/admin/analytics [Requires verifyAdminToken]
+   - Response: 200 {
+       "totalBooks": number,
+       "newBooksCount": number,
+       "genreData": Array<{ name: string, value: number }>,
+       "totalQuestions": number,
+       "questionsData": Array<{ name: string, value: number }>,
+       "totalProgrammingSolutions": number,
+       "programmingData": Array<{ name: string, value: number }>
+     }
+
+8. GET /api/admin/api-keys-status [Requires verifyAdminToken]
+   - Response: 200 {
+       "lastPingAt": number | null,
+       "lastPingFormatted": string,
+       "keys": Array<{
+         "id": "brevo" | "gemini",
+         "name": string,
+         "envVar": string,
+         "configured": boolean,
+         "maskedKey": string,
+         "status": "active" | "error" | "untested" | "unconfigured",
+         "lastChecked": string,
+         "lastError": string | null
+       }>
+     }
+
+9. POST /api/admin/keepalive-ping [Requires verifyAdminToken]
+   - Body: { "target": "all" | "brevo" | "gemini" }
+   - Response: 200 { "message": "Keep-alive ping process completed", "result": object }
+
+10. POST /api/admin/maintenance-mode [Requires verifyAdminToken]
+    - Body: { "enabled": boolean }
+    - Logic: Sets /stats/system_settings document field maintenanceMode.
+    - Response: 200 { "message": string, "maintenanceMode": boolean }
+
+11. GET /api/maintenance-mode
+    - Response: 200 { "maintenanceMode": boolean }
+
+12. POST /api/admin/delete-user [Requires verifyAdminToken]
+    - Body: { "userId": string }
+    - Logic: Prevents self-deletion. Deletes document from /users/{userId} and calls getAuth().deleteUser(userId).
+    - Response: 200 { "message": "User account deleted successfully" } | 400 | 500
+
+13. POST /api/ai/suggestions
+    - Body: { "download": number, "upload": number, "ping": number, "ratings": { "gaming": number, "streaming": number, "browsing": number, "calling": number }, "browserType": string, "timeOfDay": string }
+    - Model: gemini-2.5-flash
+    - Response: 200 { "suggestions": string[], "source": "ai" }
+
+14. POST /api/ai/parse-questions
+    - Body: { "content": string }
+    - Model: gemini-2.5-flash
+    - Response: 200 { "questions": Array<{ "question": string, "answer": string }>, "count": number }
+
+15. POST /api/ai/check-similar-programming-solutions [Requires verifyAdminToken]
+    - Body: { "solution": { "title": string, "language": string }, "candidates": Array<{ "id": string, "title": string, "language": string }> }
+    - Model: gemini-3.6-flash
+    - Response: 200 { "matches": Array<{ "id": string, "score": number, "reason": string }>, "source": "ai" }
+
+16. POST /api/indexnow/notify
+    - Body: { "urls": string[] }
+    - Protocol: IndexNow API (https://api.indexnow.org/indexnow)
+    - Response: 200 { "success": true, "submitted": number } | 400 | 500
+
+17. POST /api/speedtest/upload
+    - Logic: Accepts dummy upload stream to measure client upload bandwidth.
+    - Response: 200 "Upload received"
+
+================================================================================
+7. AI MODELS, PROMPT PIPELINES & RESPONSE PARSERS (GOOGLE GEMINI)
+================================================================================
+1. Speed Suggestions Pipeline (backend/routes/ai.js):
+   - Model: "gemini-2.5-flash"
+   - Prompt constraint: Numbered list format (1., 2., 3., 4.), exactly 4 items, single clear sentence each, no bold headings.
+   - Parsing: text.split(/\d+\.\s+/).filter(s => s.trim().length > 0).map(s => s.trim())
+
+2. Question Parsing Pipeline (backend/routes/ai.js):
+   - Model: "gemini-2.5-flash"
+   - Rules: Retain HTML tags (<ul>, <ol>, <li>, <strong>, <em>, <p>, <br>), strip "Q:", "A:", "Question:", "Answer:" prefixes, enforce JSON array output shape [{"question": "...", "answer": "..."}].
+   - Markdown sanitization: Strips ```json and ``` code block fences before JSON.parse().
+
+3. Duplicate Solution Detection Pipeline (backend/routes/ai.js):
+   - Model: "gemini-3.6-flash"
+   - Prompt constraint: Compare question intent, return only matches with score >= 0.72, at most 3 items, JSON shape: {"matches":[{"id":"...","score":0.0,"reason":"..."}]}.
+   - Sanitization: Validates that returned match IDs exist in candidate set and enforces score threshold >= 0.72.
+
+================================================================================
+8. TRANSACTIONAL EMAIL ENGINE & HTML TEMPLATES (BREVO REST API V3)
+================================================================================
+- Endpoint: https://api.brevo.com/v3/smtp/email
+- Method: Native HTTPS POST via Node.js 'https' module
+- Headers:
+  * 'api-key': process.env.EMAIL_PASS
+  * 'Content-Type': 'application/json'
+  * 'Content-Length': Buffer.byteLength(data)
+- Payload Structure:
+  {
+    "sender": { "email": process.env.SENDER_EMAIL || process.env.EMAIL_USER, "name": "ExamFobiya" },
+    "to": [{ "email": normalizedEmail }],
+    "subject": string,
+    "textContent": string,
+    "htmlContent": string (Responsive inline-styled HTML email with header banner and action buttons)
+  }
+
+================================================================================
+9. SEARCH ENGINE INDEXATION PIPELINE (INDEXNOW)
+================================================================================
+- Endpoint: https://api.indexnow.org/indexnow
+- Verification Key: c3b77bf259f243af99818667d9215013
+- Host: www.examfobiya.com
+- Trigger Points:
+  * BookContext.addBook, removeBook, updateBook -> notifyIndexNow(['/books'])
+  * BookContext.addProgrammingSolution, updateProgrammingSolution, deleteProgrammingSolution -> notifyIndexNow(['/programming-solutions', '/programming-solutions/${bookId}'])
+  * QuestionContext.addQuestion, addQuestionPdfs -> notifyIndexNow(['/questions'])
+- Execution: Asynchronous, fire-and-forget, non-blocking.
+
+================================================================================
+10. CLIENT DIAGNOSTIC ERROR LOGGING PIPELINE (ERRORLOGGERSERVICE)
+================================================================================
+- File: src/services/ErrorLoggerService.js
+- Localhost Filter:
+  Functions isLocalhostUrl() inspects hostname and window.location.href. If url contains
+  'localhost', '127.0.0.1', '::1', or '0.0.0.0', logging is skipped immediately.
+- Deduplication:
+  Set 'recentErrorsSet' stores `${message}:${url}` hashes. Duplicate occurrences within
+  15 seconds are discarded.
+- Firestore Target: /client_errors
+- Admin Purge:
+  purgeErrorsFromFirebase(onlyResolved = true) executes batch delete on Firestore collection.
+
+================================================================================
+11. MAINTENANCE MODE ARCHITECTURE & REAL-TIME SYNC
+================================================================================
+- Firestore Document: /stats/system_settings (field: maintenanceMode)
+- Client Subscription:
+  SystemSettingsService.subscribeToMaintenanceMode uses Firestore onSnapshot listener.
+  MaintenanceGuard (src/App.jsx) updates local state and provides 8-second polling fallback.
+- Routing Behavior:
+  * When maintenanceMode == true:
+    - Non-admin user on any route except /login or /admin is redirected to /maintenance.
+    - Admin user is allowed access across all routes and receives a persistent top amber alert bar.
+  * When maintenanceMode == false:
+    - Any user on /maintenance is automatically redirected back to Home (/).
+
+================================================================================
+12. DOCUMENT PARSING PIPELINE (PDF SMART BASELINE & DOCX MAMMOTH)
+================================================================================
+- File: src/utils/documentUtils.js
+- PDF Parsing Algorithm (pdfjs-dist):
+  1. Extract items with text item.str and coordinate item.transform[4] (X-position).
+  2. Build X-histogram with bucketSize = 5.
+  3. Set significance threshold at 10% of total items to ignore marginal artifacts/numbers.
+  4. Identify minX as the leftmost significant bucket.
+  5. Compute indentLevel = Math.floor((item.x - minX) / 35).
+  6. Shift global indent level to 0 baseline.
+  7. Detect orphan bullet lines ('●', '•', 'o', '*', '-', '·') and merge into list items.
+  8. Output HTML <ul><li> or <p> tags with Quill classes (ql-indent-N).
+- DOCX Parsing (mammoth):
+  Direct conversion from ArrayBuffer to clean HTML via mammoth.convertToHtml().
+
+================================================================================
+13. CSS THEME SYSTEM & DESIGN TOKENS REGISTRY
+================================================================================
+Theme Definition File: src/themes.css
+Root Selector: :root (Light Theme default), [data-theme='dark'] (Dark Theme)
+
+Key Semantic Design Tokens:
+Token Name                  | Light Theme Value          | Dark Theme Value
+----------------------------+----------------------------+----------------------------
+--primary-color             | #2575fc                    | #4b6cb7
+--secondary-color           | #1e40af                    | #182848
+--accent-color              | #ffd700                    | #ffd700
+--background-color          | #f4f7f6                    | #121212
+--card-bg                   | #ffffff                    | #1e1e1e
+--text-color                | #000000                    | #e0e0e0
+--text-muted                | #5b6474                    | #b8c4d4
+--border-adaptive           | rgba(0, 0, 0, 0.2)         | rgba(255, 255, 255, 0.2)
+--navbar-bg                 | linear-gradient(90deg, #4b6cb7, #182848) | linear-gradient(90deg, #1f2937, #111827)
+--dashboard-wrapper-bg      | linear-gradient(180deg, rgba(255,255,255,0.5), rgba(248,250,252,0.56)) | linear-gradient(180deg, rgba(14,18,28,0.54), rgba(16,20,30,0.66))
+
+================================================================================
+14. CRITICAL GOTCHAS, EDGE CASES & IMPLEMENTATION RULES
+================================================================================
+1. Dynamic Chunk Reloads:
+   Always use lazyWithRetry(() => import('...')) when adding new page routes in App.jsx
+   to prevent white-screen crashes after new production builds are deployed.
+
+2. CollectionGroup Queries:
+   When updating or deleting documents fetched via collectionGroup(db, 'questions') or
+   collectionGroup(db, 'questionPdfs'), you must use the full document path (doc.ref.path)
+   because document IDs alone are not sufficient to construct subcollection references.
+
+3. Keep-Alive Heartbeat:
+   The backend server automatically pings Brevo and Gemini APIs on startup and every 24 hours.
+   Pings only execute against external APIs if 25 days have elapsed since the last recorded ping.
+
+4. Email Delivery Over HTTPS:
+   Never replace Brevo REST API v3 HTTPS calls with standard Nodemailer SMTP transport, as
+   Render and other containerized cloud platforms block outgoing SMTP ports by default.
+
+5. Synchronized Documentation:
+   Whenever any backend route, Firestore collection, environment variable, or frontend feature
+   is created or modified, both DEVELOPER_GUIDE.txt and AI_AGENTS_GUIDE.txt must be updated
+   in the same turn.
+================================================================================

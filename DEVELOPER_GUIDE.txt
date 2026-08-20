@@ -1,0 +1,656 @@
+================================================================================
+EXAMFOBIYA - ULTIMATE DEVELOPER ONBOARDING & SYSTEM ARCHITECTURE GUIDE
+================================================================================
+Document Version: 2.0.0
+Last Updated: August 2026
+
+--------------------------------------------------------------------------------
+TABLE OF CONTENTS
+--------------------------------------------------------------------------------
+1.  Executive Summary & Core Mission
+2.  High-Level System Architecture
+3.  Frontend Architecture, Routing & Component Tree
+4.  Backend Architecture, Middleware & Server Logic
+5.  Database Architecture & Complete Firestore Schema
+6.  Third-Party Services, Cloud Platforms & Integrations
+7.  Complete Environment Variables & API Key Directory
+8.  AI Integrations & Model Assignments (Google Gemini)
+9.  Transactional Email Infrastructure (Brevo API v3)
+10. Search Engine Indexing Pipeline (IndexNow)
+11. Diagnostic Error Logging & Health Monitoring System
+12. Maintenance Mode & Real-Time System Guards
+13. Document Parsing Engine (PDF & DOCX Processing)
+14. Complete API Endpoints Reference Specification
+15. Development Setup, Commands & Deployment Protocols
+16. Strict Engineering Conventions & Quality Rules
+
+================================================================================
+1. EXECUTIVE SUMMARY & CORE MISSION
+================================================================================
+ExamFobiya is a comprehensive, production-grade academic resource ecosystem and
+digital bookstore developed for university students, educators, and administrators.
+The platform unifies:
+  - Academic Book Catalog & Bookstore: Full inventory management, categorization,
+    spotlight sections (Best Sellers, New Arrivals, Featured), custom ordering,
+    and detailed modal inspection.
+  - University Question Papers & Solution Bank: Hierarchical indexing of academic
+    universities, courses, subjects, Q&A pairs, and past examination PDFs.
+  - Programming Solutions Hub: Code solution repository supporting multiple
+    programming languages, syntax formatting, algorithmic complexities, and
+    AI-driven semantic duplicate detection.
+  - Document & Question Extraction Engine: In-browser and server-side ingestion
+    of PDF and DOCX files with baseline indentation recovery and automated
+    AI-powered question-and-answer extraction.
+  - Network Diagnostics & AI Optimization: Built-in network speed test tool that
+    evaluates latency, upload/download throughput, and generates tailored AI
+    bandwidth optimization suggestions.
+  - Role-Based Access Control (RBAC): Differentiated student/customer experiences
+    and an exhaustive Admin Dashboard with inventory control, user moderation,
+    error logging, maintenance mode toggling, and API heartbeat monitors.
+  - Progressive Web App (PWA): Native-like mobile and desktop installation with
+    offline fallback resilience.
+
+================================================================================
+2. HIGH-LEVEL SYSTEM ARCHITECTURE
+================================================================================
+The application is structured into two primary tiers:
+
+[Client Tier (SPA)]
+  React 19 + Vite 8 Single-Page Application (SPA)
+  Context Providers: ThemeContext, AuthContext, BookContext, QuestionContext
+  Error Handlers: GlobalErrorMonitor, ErrorBoundary, ErrorLoggerService
+  Router: React Router DOM v7 (with lazyWithRetry chunk healing)
+  Hosting: Vercel / Firebase Hosting
+
+         |  HTTPS (JSON Payloads / Bearer ID Tokens)
+         v
+
+[Backend Tier (REST API)]
+  Node.js (v20+) + Express 5 REST API Server
+  Auth Validation: Firebase Admin SDK (token decoding & role checks)
+  External Services: Brevo REST API v3, Google Gemini AI SDK, IndexNow Protocol
+  Hosting: Render Cloud Application Server
+
+         |  Cloud SDKs / REST
+         +-------------------------------------------------------------+
+         |                             |                               |
+         v                             v                               v
+[Cloud Firestore / Auth / Storage]  [Brevo Email API]         [Google Gemini AI]
+(Firebase Cloud Services)           (api.brevo.com/v3)        (generativelanguage.googleapis.com)
+
+================================================================================
+3. FRONTEND ARCHITECTURE, ROUTING & COMPONENT TREE
+================================================================================
+A. Directory Structure:
+   src/
+   ├── assets/              : Static icons, SVGs, animation assets, logos
+   ├── components/          : Reusable UI widgets and layout elements
+   │   ├── BackToTop.jsx    : Smooth floating back-to-top button
+   │   ├── BookCard.jsx     : Book display card with pricing, badges, and hover actions
+   │   ├── BookCategorySection.jsx : Horizontal category carousel/grid
+   │   ├── BookDetailsModal.jsx    : Modal presenting full book metadata & descriptions
+   │   ├── ConfirmationModal.jsx   : Reusable action confirmation modal
+   │   ├── ErrorBoundary.jsx       : React component tree crash boundary
+   │   ├── Footer.jsx              : Global footer with links, copyright, and policies
+   │   ├── GlobalErrorMonitor.jsx  : Global window error and promise rejection interceptor
+   │   ├── Loader.jsx              : Animated loading spinner / skeleton widget
+   │   ├── Navbar.jsx              : Responsive header with search bar, navigation, theme toggle, and auth states
+   │   ├── PWAInstallBanner.jsx    : App install banner for supported browsers
+   │   ├── ProtectedRoute.jsx      : Client route guard verifying authentication & roles
+   │   └── RemoveBookModal.jsx     : Admin confirmation modal for inventory removal
+   ├── context/             : React Context state providers
+   │   ├── AuthContext.jsx         : Firebase Auth state, user role caching, register/login/logout
+   │   ├── BookContext.jsx         : Real-time Firestore sync for books, section sorting, solution binding
+   │   ├── QuestionContext.jsx     : Real-time Firestore sync for universities, courses, subjects, PDFs
+   │   └── ThemeContext.jsx        : Dark/Light theme state with localStorage persistence
+   ├── pages/               : Primary routed views
+   │   ├── About_us.jsx            : Platform mission, vision, and team details
+   │   ├── AddBook.jsx             : Admin interface for adding and updating books
+   │   ├── AddProgrammingSolution.jsx : Admin code solution editor with AI duplicate detection
+   │   ├── AdminDashboard.jsx      : Central admin portal (analytics, users, keys, errors, maintenance)
+   │   ├── BestSeller.jsx          : Filtered showcase of best-selling titles
+   │   ├── Books.jsx               : Searchable and filterable academic book catalog
+   │   ├── EditQuestionPdf.jsx     : Admin management portal for question PDFs
+   │   ├── ExploreSection.jsx      : Curated discovery modules
+   │   ├── Home.jsx                : Landing page with hero search, speed test, and spotlights
+   │   ├── Login.jsx               : User and Admin authentication portal
+   │   ├── Maintenance.jsx         : Public maintenance mode splash screen
+   │   ├── NewArrivals.jsx         : Filtered showcase of newly added inventory
+   │   ├── PrivacyPolicy.jsx       : Legal privacy policy and third-party disclosures
+   │   ├── ProgrammingSolutions.jsx: Searchable code solutions bank by language and topic
+   │   ├── Questions.jsx           : Academic exam papers, model papers, and Q&A accordion
+   │   ├── Register.jsx            : User registration with Brevo 6-digit OTP verification
+   │   ├── ResetPassword.jsx       : Password reset portal supporting OTP & OOB link flows
+   │   ├── Search.jsx              : Unified cross-entity search results page
+   │   ├── Settings.jsx            : User account settings (profile username, password change)
+   │   ├── TermsAndConditions.jsx  : Platform legal terms of service
+   │   ├── UploadQuestions.jsx     : Admin batch question and PDF uploader with AI parsing
+   │   └── Welcome.jsx             : Post-registration welcome and onboarding screen
+   ├── services/            : Client-side service singletons
+   │   ├── AnalyticsService.js     : Admin metric fetcher, API status checker, keep-alive trigger
+   │   ├── ErrorLoggerService.js   : Firestore client error logger (excludes localhost)
+   │   ├── IndexNowService.js      : Search engine instant indexation client
+   │   ├── SystemSettingsService.js: Maintenance mode state and real-time subscriber
+   │   └── UserService.js          : User management, role updates, and password reset dispatches
+   ├── utils/               : Pure helper functions
+   │   ├── api.js                  : Dynamic API base URL resolution for DEV/PROD
+   │   ├── csvExporter.js          : CSV serialization utility for analytics/users
+   │   ├── documentUtils.js        : PDF baseline text extraction & DOCX HTML conversion
+   │   ├── usePWAInstall.js        : PWA beforeinstallprompt lifecycle hook
+   │   └── useSEO.js               : Dynamic document metadata and OpenGraph manager
+   ├── firebase.js          : Firebase Client SDK initialization
+   ├── themes.css           : Comprehensive design token registry (light & dark)
+   ├── index.css            : Base typography, layout resets, and custom scrollbars
+   └── App.jsx              : Root application component and routing configuration
+
+B. Routing Table & Access Controls:
+   Route Path                     | Target Component          | Access Level   | Guards
+   -------------------------------+--------------------------+----------------+--------------------------
+   /                              | Home                     | Public         | MaintenanceGuard
+   /books                         | Books                    | Public         | MaintenanceGuard
+   /questions                     | Questions                | Public         | MaintenanceGuard
+   /search                        | Search                   | Public         | MaintenanceGuard
+   /login                         | Login                    | Public         | Open in maintenance
+   /register                      | Register                 | Public         | MaintenanceGuard
+   /welcome                       | Welcome                  | Authenticated  | ProtectedRoute
+   /settings                      | Settings                 | Authenticated  | ProtectedRoute
+   /programming-solutions         | ProgrammingSolutions     | Public         | MaintenanceGuard
+   /programming-solutions/:id     | ProgrammingSolutions     | Public         | MaintenanceGuard
+   /add-programming-solution      | AddProgrammingSolution   | Admin Only     | ProtectedRoute(role="admin")
+   /edit-programming-solution/... | AddProgrammingSolution   | Admin Only     | ProtectedRoute(role="admin")
+   /admin                         | AdminDashboard           | Admin Only     | ProtectedRoute(role="admin")
+   /add-book                      | AddBook                  | Admin Only     | ProtectedRoute(role="admin")
+   /edit-book/:id                 | AddBook                  | Admin Only     | ProtectedRoute(role="admin")
+   /upload-questions              | UploadQuestions          | Admin Only     | ProtectedRoute(role="admin")
+   /edit-question-pdf             | EditQuestionPdf          | Admin Only     | ProtectedRoute(role="admin")
+   /about                         | AboutUs                  | Public         | MaintenanceGuard
+   /terms                         | TermsAndConditions       | Public         | MaintenanceGuard
+   /privacy                       | PrivacyPolicy            | Public         | MaintenanceGuard
+   /maintenance                   | Maintenance              | Public         | Direct access
+   /reset-password                | ResetPassword            | Public         | Open in maintenance
+
+C. Dynamic Chunk Healing (lazyWithRetry):
+   When Vite builds are deployed, asset chunk hashes change. If a client has an older
+   version cached, navigating to a new route might fail with a dynamic import error.
+   The lazyWithRetry wrapper in src/App.jsx catches this error, stores a flag in
+   window.sessionStorage ('chunk_retry_refreshed'), and performs a clean reload to
+   fetch the latest production bundle without crashing the user's session.
+
+================================================================================
+4. BACKEND ARCHITECTURE, MIDDLEWARE & SERVER LOGIC
+================================================================================
+A. Core Components:
+   backend/
+   ├── routes/
+   │   └── ai.js              : AI controller containing Gemini prompt logic and handlers
+   ├── server.js              : Main Express server, middleware, routes, crons, keep-alives
+   ├── serviceAccountKey.json : Local development Firebase Admin SDK credentials
+   ├── package.json           : Backend dependencies and scripts
+   └── .env                   : Backend environment variables and secrets
+
+B. Server Initialization Sequence:
+   1. require('dotenv').config() executes immediately before any other module load.
+   2. Firebase Admin SDK initializes:
+      - In production (e.g. on Render): Reads process.env.FIREBASE_SERVICE_ACCOUNT (JSON string).
+      - In development: Loads backend/serviceAccountKey.json from disk.
+      - If credentials fail to load, the server logs a fatal error and terminates (process.exit(1)).
+   3. Express application created with CORS and JSON body parser.
+   4. Route controllers attached.
+   5. Server listens on process.env.PORT (default 5000) and HOST.
+   6. On startup, checkAndRunKeepAlivePings() triggers an initial health check, followed
+      by an automated recurring interval check every 24 hours.
+
+C. Authentication & Authorization Middleware (verifyAdminToken):
+   - Extracts Bearer token from the 'Authorization' HTTP header.
+   - Verifies the ID token cryptographically using Firebase Admin: getAuth().verifyIdToken(idToken).
+   - Looks up the user's profile document in Firestore: /users/{decodedToken.uid}.
+   - Confirms userDoc.data().role === 'admin'. If not met, returns HTTP 403 Forbidden.
+   - Attaches req.adminUser = { uid, email, role } to the request object.
+
+================================================================================
+5. DATABASE ARCHITECTURE & COMPLETE FIRESTORE SCHEMA
+================================================================================
+Cloud Firestore is configured as the primary NoSQL operational data store.
+
+1. Collection: /users/{userId}
+   - Document ID: Firebase Authentication UID.
+   - Schema:
+     {
+       "email": "student@university.edu",
+       "role": "admin" | "user",
+       "username": "student_name",
+       "createdAt": Timestamp | String
+     }
+   - Security: Read/write permitted to owner (request.auth.uid == userId); full read/write to admin.
+
+2. Collection: /books/{bookId}
+   - Document ID: Auto-generated Firestore string.
+   - Schema:
+     {
+       "title": "Data Structures & Algorithms",
+       "author": "Author Name",
+       "description": "Comprehensive textbook on DSA.",
+       "price": 499,
+       "originalPrice": 699,
+       "genre": "Computer Science",
+       "category": "Computer Science",
+       "coverImage": "https://firebasestorage.googleapis.com/...",
+       "sections": ["Best Sellers", "Featured"],
+       "sectionOrders": {
+         "Best Sellers": 1,
+         "Featured": "Temp"
+       },
+       "hasProgrammingSolution": true,
+       "programmingSolutions": [
+         {
+           "id": "sol-1718900000-abcde",
+           "title": "Binary Search Tree Implementation",
+           "language": "cpp",
+           "code": "#include <iostream>...",
+           "explanation": "Implementation of insertion and search.",
+           "timeComplexity": "O(log N)",
+           "spaceComplexity": "O(N)",
+           "difficulty": "Medium",
+           "tags": ["tree", "binary search"]
+         }
+       ],
+       "createdAt": Timestamp | ISOString
+     }
+   - Security: Publicly readable; strictly Admin writable.
+
+3. Nested Collection: /courses/{course}/subjects/{subject}/questions/{questionId}
+   - Document ID: Auto-generated Firestore string.
+   - Schema:
+     {
+       "question": "<p>Explain QuickSort partitioning.</p>",
+       "answer": "<p>QuickSort uses Lomuto or Hoare partitioning...</p>",
+       "course": "BCA",
+       "subject": "Data Structures",
+       "year": "2024",
+       "marks": "10",
+       "options": [],
+       "tags": ["algorithms", "sorting"],
+       "createdAt": Timestamp | ISOString
+     }
+   - Note: Queried globally via collectionGroup(db, 'questions').
+   - Security: Publicly readable; strictly Admin writable.
+
+4. Nested Collection: /courses/{course}/subjects/{subject}/questionPdfs/{pdfId}
+   - Document ID: Auto-generated Firestore string.
+   - Schema:
+     {
+       "label": "Dec 2023 End Semester Paper",
+       "url": "https://firebasestorage.googleapis.com/...",
+       "month": "December",
+       "year": "2023",
+       "course": "BCA",
+       "subject": "Data Structures",
+       "uploadedAt": "2026-08-20T12:00:00.000Z"
+     }
+   - Note: Queried globally via collectionGroup(db, 'questionPdfs').
+   - Security: Publicly readable; strictly Admin writable.
+
+5. Collection: /universities/{universityId}
+   - Document ID: Auto-generated Firestore string.
+   - Schema:
+     {
+       "name": "State Technological University",
+       "location": "State, Country",
+       "courses": ["BCA", "B.Tech", "MCA"],
+       "createdAt": Timestamp | ISOString
+     }
+   - Security: Publicly readable; strictly Admin writable.
+
+6. Collection: /otps/{normalizedEmail}
+   - Document ID: Lowercased, trimmed email string.
+   - Schema:
+     {
+       "code": "582914",
+       "expiresAt": 1755684000000  // Unix timestamp (10 minutes validity)
+     }
+   - Security: Internal backend managed; deleted immediately upon verification.
+
+7. Collection: /stats/system_settings
+   - Document ID: 'system_settings'
+   - Schema:
+     {
+       "maintenanceMode": false,
+       "updatedAt": "2026-08-20T12:00:00.000Z"
+     }
+   - Security: Publicly readable; Admin writable.
+
+8. Collection: /system_status/api_keepalive
+   - Document ID: 'api_keepalive'
+   - Schema:
+     {
+       "lastPingAt": 1755680000000,
+       "lastPingFormatted": "8/20/2026, 12:00:00 PM",
+       "brevoStatus": { "success": true, "statusCode": 201 },
+       "geminiStatus": { "success": true },
+       "updatedAt": "2026-08-20T12:00:00.000Z"
+     }
+   - Security: Admin managed via backend.
+
+9. Collection: /client_errors/{errorId}
+   - Document ID: Auto-generated Firestore string.
+   - Schema:
+     {
+       "message": "TypeError: Cannot read property...",
+       "stack": "TypeError: Cannot read property...\n    at ...",
+       "componentStack": "in BookDetailsModal\n    in App",
+       "type": "react_boundary" | "unhandled_rejection" | "window_error",
+       "url": "https://www.examfobiya.com/books",
+       "userAgent": "Mozilla/5.0...",
+       "userId": "auth_uid" | "anonymous",
+       "userEmail": "user@example.com" | "anonymous",
+       "resolved": false,
+       "date": "Aug 20, 2026, 12:00 PM",
+       "timestamp": ServerTimestamp,
+       "createdAt": "2026-08-20T12:00:00.000Z"
+     }
+   - Security: Public create allowed; Read, Update, Delete restricted to Admin.
+
+================================================================================
+6. THIRD-PARTY SERVICES, CLOUD PLATFORMS & INTEGRATIONS
+================================================================================
+1. Google Cloud Platform / Firebase:
+   - Firebase Authentication: Identity management (email/password).
+   - Cloud Firestore: Primary multi-region document store.
+   - Firebase Storage: Binary file storage for book covers and question documents.
+   - Firebase Hosting: Static asset delivery with 1-year immutable caching for static assets.
+
+2. Brevo (Sendinblue):
+   - High-deliverability transactional email delivery using REST API v3 over HTTPS.
+   - Replaces traditional SMTP port connections (ports 25, 465, 587) which are frequently
+     blocked or throttled by cloud hosting providers like Render.
+   - Sends HTML styled emails for 6-digit registration OTPs and administrator password resets.
+
+3. Google Gemini AI:
+   - LLM infrastructure providing real-time text analysis, structured JSON parsing, and
+     semantic similarity vector comparisons across academic content.
+
+4. IndexNow Protocol (Microsoft Bing, Yandex, Seznam, Naver):
+   - Push protocol to instantly notify search engine spiders of newly created or edited URLs.
+   - Minimizes the latency between publishing academic resources and appearing in search results.
+
+5. Cloud Hosting:
+   - Render: Deploys the Node.js Express server with automated build and deployment pipelines.
+   - Vercel: Alternative hosting platform for the frontend with single-page app rewrite configuration.
+
+================================================================================
+7. COMPLETE ENVIRONMENT VARIABLES & API KEY DIRECTORY
+================================================================================
+A. Frontend Variables (.env in project root):
+   - VITE_API_URL:
+     Description: The base URL of the Express backend API.
+     Development Default: "http://127.0.0.1:5000"
+     Production Default: "https://your-backend-service.onrender.com"
+     Used By: src/utils/api.js to route all fetch requests.
+
+   - VITE_GEMINI_API_KEY:
+     Description: Client-side Google Gemini AI API key.
+     Used By: Direct frontend AI fallbacks if backend is bypassed.
+
+   - VITE_EMAILJS_SERVICE_ID / VITE_EMAILJS_TEMPLATE_ID / VITE_EMAILJS_PUBLIC_KEY:
+     Description: EmailJS credentials for auxiliary contact forms.
+
+   - Embedded Firebase Config (src/firebase.js):
+     Contains client project parameters (apiKey, authDomain, projectId, storageBucket,
+     messagingSenderId, appId, measurementId). Safe for client exposure as security is
+     enforced by Firestore Security Rules.
+
+B. Backend Variables (backend/.env in backend directory):
+   - PORT:
+     Description: Port number on which Express listens.
+     Default: 5000
+
+   - HOST:
+     Description: IP interface binding.
+     Development Default: 127.0.0.1 (prevents macOS firewall prompts)
+     Production Default: 0.0.0.0
+
+   - EMAIL_USER:
+     Description: Primary account administrative email.
+     Example: chandrashriyansh@gmail.com
+
+   - EMAIL_PASS:
+     Description: Brevo (Sendinblue) API v3 key (starting with xkeysib-...).
+     Used By: Header 'api-key' in HTTPS POST requests to api.brevo.com/v3/smtp/email.
+
+   - SENDER_EMAIL:
+     Description: Verified email address displayed as the sender in transactional emails.
+     Example: examfobiya@gmail.com
+
+   - GEMINI_API_KEY:
+     Description: Google Gemini API key (starting with AIzaSy...).
+     Used By: @google/generative-ai SDK in backend/routes/ai.js and server.js.
+
+   - FIREBASE_SERVICE_ACCOUNT:
+     Description: Stringified JSON string of the Firebase Admin service account key.
+     Used By: backend/server.js in production (Render) to initialize Firebase Admin SDK.
+     Fallback: backend/serviceAccountKey.json is loaded in development if this variable is absent.
+
+   - INDEXNOW_KEY:
+     Description: Unique verification key for the IndexNow search engine protocol.
+     Value: c3b77bf259f243af99818667d9215013
+     Verification Location: public/c3b77bf259f243af99818667d9215013.txt
+
+   - APP_URL:
+     Description: Public base URL of the client application.
+     Used By: backend/server.js to generate password reset links sent via email.
+     Example: https://www.examfobiya.com or http://localhost:5173
+
+   - EMAIL_LOGO_URL:
+     Description: Direct link to the ExamFobiya brand logo embedded in HTML email headers.
+
+================================================================================
+8. AI INTEGRATIONS & MODEL ASSIGNMENTS (GOOGLE GEMINI)
+================================================================================
+ExamFobiya leverages Google Gemini generative AI across three distinct workflows:
+
+1. Internet Speed Optimization Suggestions:
+   - Endpoint: POST /api/ai/suggestions
+   - Controller: backend/routes/ai.js (generateSuggestions)
+   - Model Assigned: gemini-2.5-flash
+   - Prompt Purpose: Analyzes download speed, upload speed, latency (ping), browser type,
+     time of day, and ratings across gaming, streaming, browsing, and calling to generate
+     exactly 4 concise, actionable, single-sentence recommendations.
+
+2. Document & Text Question Parsing:
+   - Endpoint: POST /api/ai/parse-questions
+   - Controller: backend/routes/ai.js (parseQuestions)
+   - Model Assigned: gemini-2.5-flash
+   - Prompt Purpose: Ingests unstructured academic text or OCR output, detects question-answer
+     boundaries, strips 'Q:'/'A:' prefixes, preserves all HTML formatting (<ul>, <ol>, <li>,
+     <strong>, <em>, <p>, <br>), and returns a strict JSON array of question objects.
+
+3. Programming Solution Semantic Duplicate Detection:
+   - Endpoint: POST /api/ai/check-similar-programming-solutions
+   - Controller: backend/routes/ai.js (checkSimilarProgrammingSolutions)
+   - Model Assigned: gemini-3.6-flash
+   - Access Control: Restricted to Admin via verifyAdminToken.
+   - Prompt Purpose: Compares a new programming question against existing solutions in the
+     same language. Matches based on underlying algorithmic tasks (score >= 0.72) rather than
+     generic boilerplate code. Returns at most 3 matches with similarity scores and rationale.
+
+4. Automated API Keep-Alive Heartbeat:
+   - Handler: backend/server.js (sendGeminiKeepAlivePing)
+   - Model Assigned: gemini-2.5-flash
+   - Purpose: Sends lightweight generation requests every 25 days to prevent Google AI Studio
+     API keys from going stale due to inactivity.
+
+================================================================================
+9. TRANSACTIONAL EMAIL INFRASTRUCTURE (BREVO API V3)
+================================================================================
+- Protocol: Direct HTTPS POST to https://api.brevo.com/v3/smtp/email using Node.js https client.
+- Authentication: Header 'api-key' loaded from process.env.EMAIL_PASS.
+- Workflows:
+  1. Registration OTP:
+     - Endpoint: POST /send-otp (purpose: 'register')
+     - Generates cryptographically random 6-digit OTP.
+     - Saves OTP document in /otps/{normalizedEmail} with a 10-minute expiry timestamp.
+     - Delivers responsive HTML email with highlighted OTP card.
+  2. Password Reset (User Self-Service & Admin Triggered):
+     - Endpoints: POST /api/auth/send-password-reset and POST /api/admin/send-password-reset
+     - Generates official Firebase password reset link with action code settings.
+     - Encapsulates action code into customized application URL: /reset-password?oobCode=...&email=...
+     - Dispatches branded HTML email featuring a gradient header, reset button, and raw URL fallback.
+
+================================================================================
+10. SEARCH ENGINE INDEXING PIPELINE (INDEXNOW)
+================================================================================
+- Service: src/services/IndexNowService.js & backend/server.js (/api/indexnow/notify).
+- Protocol: IndexNow API (https://api.indexnow.org/indexnow).
+- Operational Flow:
+  1. Whenever an admin creates, updates, or deletes a Book, Question, or Programming Solution,
+     the corresponding context provider calls notifyIndexNow(['/path1', '/path2']).
+  2. The service dispatches an asynchronous, fire-and-forget POST request to the backend.
+  3. The backend batches up to 10,000 URLs and submits them to api.indexnow.org with host
+     'www.examfobiya.com' and key 'c3b77bf259f243af99818667d9215013'.
+  4. Search engines (Bing, Yandex, etc.) immediately schedule targeted crawl tasks.
+
+================================================================================
+11. DIAGNOSTIC ERROR LOGGING & HEALTH MONITORING SYSTEM
+================================================================================
+A. Client-Side Error Interception:
+   - ErrorLoggerService (src/services/ErrorLoggerService.js):
+     - Listens to React Error Boundaries (ErrorBoundary.jsx) and global window error events
+       (GlobalErrorMonitor.jsx).
+     - Localhost Filter: Automatically skips error logging when running on localhost, 127.0.0.1,
+       or private IP ranges to ensure development noise never pollutes production logs.
+     - Deduplication: In-memory hash filter prevents reporting the same error message and URL
+       within a 15-second sliding window.
+     - Destination: Firestore collection /client_errors.
+
+B. Admin Error Management:
+   - AdminDashboard provides a full error inspection interface allowing administrators to:
+     - Inspect message, stack trace, component stack, URL, user agent, user email, and timestamps.
+     - Toggle error resolution status (resolved: true / false).
+     - Batch purge resolved error logs or clear all entries.
+
+C. API Keys Keep-Alive Monitor:
+   - Backend service tracking inactivity timeouts for external APIs (Brevo and Gemini).
+   - Executes automatic pings if 25 days have elapsed since the last recorded ping.
+   - Status stored in /system_status/api_keepalive.
+   - Admins can view masked keys and trigger manual pings directly from the Admin Dashboard.
+
+================================================================================
+12. MAINTENANCE MODE & REAL-TIME SYSTEM GUARDS
+================================================================================
+- State Storage: Firestore document /stats/system_settings (field: maintenanceMode).
+- Service: src/services/SystemSettingsService.js.
+- Enforcement Mechanism:
+  - MaintenanceGuard (src/App.jsx) wraps the entire route tree.
+  - Maintains real-time subscription via onSnapshot to /stats/system_settings.
+  - Supplemental 8-second polling backup ensures recovery if WebSocket drops.
+  - Behavior when Maintenance Mode is ON:
+    - Standard users navigating to any protected or public route are redirected to /maintenance.
+    - Login (/login) and Admin (/admin) routes remain accessible.
+    - Admins see a persistent top amber alert banner indicating maintenance is active with a quick link to the dashboard.
+  - Behavior when Maintenance Mode is turned OFF:
+    - Users currently on /maintenance are automatically returned to Home (/).
+
+================================================================================
+13. DOCUMENT PARSING ENGINE (PDF & DOCX PROCESSING)
+================================================================================
+- Location: src/utils/documentUtils.js.
+- PDF Text & Hierarchy Extraction (pdfjs-dist):
+  - Uses CDN worker: //unpkg.com/pdfjs-dist@{version}/build/pdf.worker.min.mjs.
+  - Smart Baseline Indentation Algorithm:
+    1. Extracts text items with their geometric transform coordinates (x, y).
+    2. Builds an X-coordinate histogram to determine the genuine left margin threshold
+       (ignoring outliers like page numbers or margin artifacts).
+    3. Computes indentation levels (approx 35 units per tab level).
+    4. Normalizes global indentation so minimum indentation is zero.
+    5. Post-processes orphan bullets ('●', '•', 'o', '*', '-', '·') and wraps text in
+       semantic HTML <ul><li> or <p> tags with Quill indentation classes.
+- DOCX Extraction (mammoth):
+  - Ingests raw DOCX ArrayBuffer and converts structured document elements directly into clean HTML.
+
+================================================================================
+14. COMPLETE API ENDPOINTS REFERENCE SPECIFICATION
+================================================================================
+Method | Path                                       | Auth Level  | Description
+-------+--------------------------------------------+-------------+------------------------------------------------
+POST   | /send-otp                                  | Public      | Generates and emails 6-digit registration/reset OTP
+POST   | /api/verify-otp                            | Public      | Verifies and consumes 6-digit registration OTP
+POST   | /api/reset-password                        | Public      | Sets new password using verified OTP
+POST   | /api/check-admin                           | Public      | Validates if email belongs to an active Admin
+POST   | /api/check-account-exists                  | Public      | Verifies whether email exists in Auth or Firestore
+POST   | /api/auth/send-password-reset              | Public      | Generates Firebase reset link & sends via Brevo
+POST   | /api/admin/send-password-reset             | Admin       | Admin-triggered password reset email dispatch
+GET    | /api/admin/analytics                       | Admin       | Aggregates books, questions, and solutions counts
+GET    | /api/admin/api-keys-status                 | Admin       | Returns Brevo and Gemini key health & ping history
+POST   | /api/admin/keepalive-ping                  | Admin       | Manually triggers keep-alive pings for API keys
+POST   | /api/admin/maintenance-mode                | Admin       | Enables or disables global site maintenance mode
+GET    | /api/maintenance-mode                      | Public      | Returns current maintenance mode boolean state
+POST   | /api/admin/delete-user                     | Admin       | Deletes user account from Firestore and Auth
+POST   | /api/ai/suggestions                        | Public      | AI internet speed improvement advice (Gemini 2.5)
+POST   | /api/ai/parse-questions                    | Public      | AI document to Q&A JSON parser (Gemini 2.5)
+POST   | /api/ai/check-similar-programming-solutions| Admin       | Semantic duplicate solution detector (Gemini 3.6)
+POST   | /api/indexnow/notify                       | Public/Admin| Submits URL list to IndexNow search protocol
+POST   | /api/speedtest/upload                      | Public      | Dummy endpoint to measure upload bandwidth
+GET    | /                                          | Public      | Health check returning server status string
+
+================================================================================
+15. DEVELOPMENT SETUP, COMMANDS & DEPLOYMENT PROTOCOLS
+================================================================================
+1. Local Prerequisites:
+   - Node.js (v18.x, v20.x, or later)
+   - Python 3 (for case-sensitivity validation)
+   - npm (v9.x or later)
+
+2. Initial Installation:
+   # Install root frontend dependencies
+   npm install
+   # Install backend dependencies
+   cd backend && npm install && cd ..
+
+3. Running Development Servers:
+   npm run dev
+   # Runs concurrent processes:
+   #   1. Vite dev server at http://localhost:5173
+   #   2. Express backend server at http://127.0.0.1:5000
+
+4. Validation & Quality Checks:
+   # Check for case-sensitive import mismatches (run once per session)
+   python3 check.py
+
+5. Production Build:
+   npm run build
+   # Generates optimized production bundles in dist/
+
+6. Deployment Configurations:
+   - Backend: Hosted on Render with Start Command 'node server.js' and Root Directory 'backend'.
+     Requires setting FIREBASE_SERVICE_ACCOUNT, EMAIL_PASS, GEMINI_API_KEY, and other backend env vars.
+   - Frontend: Hosted on Firebase Hosting (firebase.json) or Vercel (vercel.json) with SPA rewrites.
+
+================================================================================
+16. STRICT ENGINEERING CONVENTIONS & QUALITY RULES
+================================================================================
+1. NO DIRECT DOM MANIPULATION:
+   Never write direct DOM queries (e.g. document.getElementById, document.querySelector,
+   element.innerHTML) unless explicitly commanded. All UI updates must flow through React
+   state, controlled components, or useRef hooks.
+
+2. NO EMOJIS:
+   Do not introduce emojis into source code, user interfaces, logs, or commit messages
+   unless explicitly requested by the user.
+
+3. PRE-MODIFICATION ERROR CHECK:
+   Before making code changes, inspect recent runtime errors logged in Firebase Firestore
+   under the 'client_errors' collection (via ErrorLoggerService / Admin Dashboard) to identify
+   and address existing runtime defects first.
+
+4. CSS VARIABLES MANDATE:
+   Always utilize semantic CSS variables defined in src/themes.css (--primary-color,
+   --card-bg, --text-color, --border-adaptive, etc.) instead of hardcoding hex/RGB values.
+
+5. CASE-SENSITIVITY COMPLIANCE:
+   macOS is case-insensitive while Linux deployment environments are case-sensitive.
+   Ensure all file imports match exact filesystem casing and run python3 check.py.
+
+6. CONTINUOUS DOCUMENTATION SYNCHRONIZATION:
+   Whenever changes are made to code, functionality, endpoints, services, or environment
+   variables, immediately update both DEVELOPER_GUIDE.txt and AI_AGENTS_GUIDE.txt.
+================================================================================
