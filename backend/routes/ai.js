@@ -185,7 +185,70 @@ Return format (JSON array only, nothing else):
     }
 };
 
+/**
+ * POST /api/ai/check-similar-programming-solutions
+ * Find semantically similar solutions from the same programming language.
+ * The client supplies the already-filtered candidate set so no solution data
+ * outside the admin's current workspace is exposed to this endpoint.
+ */
+const checkSimilarProgrammingSolutions = async (req, res) => {
+    try {
+        const { solution, candidates } = req.body || {};
+
+        if (!solution?.title || !solution?.language || !Array.isArray(candidates)) {
+            return res.status(400).json({
+                error: 'solution (title and language) and candidates are required'
+            });
+        }
+
+        if (candidates.length === 0) {
+            return res.status(200).json({ matches: [], source: 'ai' });
+        }
+
+        const model = genAI.getGenerativeModel({ model: "gemini-3.6-flash" });
+        const prompt = `You compare programming solution questions for duplicate or near-duplicate topics.
+
+New solution:
+${JSON.stringify(solution)}
+
+Candidate solutions (all candidates are already in the same programming language):
+${JSON.stringify(candidates)}
+
+Return ONLY valid JSON in this exact shape:
+{"matches":[{"id":"candidate id","score":0.0,"reason":"short explanation"}]}
+
+Rules:
+- Match by the underlying question/task, not by shared generic words or code style.
+- Include only genuinely similar questions with score >= 0.72.
+- Return at most 3 matches, ordered from most similar to least similar.
+- If there are no similar questions, return {"matches":[]}.
+- Copy candidate ids exactly.`;
+
+        const result = await model.generateContent(prompt);
+        let text = (await result.response).text().trim();
+        text = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim();
+        const parsed = JSON.parse(text);
+        const candidateIds = new Set(candidates.map(candidate => String(candidate.id)));
+        const matches = Array.isArray(parsed.matches)
+            ? parsed.matches
+                .filter(match => candidateIds.has(String(match.id)) && Number(match.score) >= 0.72)
+                .slice(0, 3)
+                .map(match => ({
+                    id: String(match.id),
+                    score: Number(match.score),
+                    reason: String(match.reason || 'The question appears to cover a similar task.')
+                }))
+            : [];
+
+        return res.status(200).json({ matches, source: 'ai' });
+    } catch (error) {
+        console.error('AI programming-solution similarity check error:', error);
+        return res.status(500).json({ error: 'AI similarity check failed', message: error.message });
+    }
+};
+
 module.exports = {
     generateSuggestions,
-    parseQuestions
+    parseQuestions,
+    checkSimilarProgrammingSolutions
 };

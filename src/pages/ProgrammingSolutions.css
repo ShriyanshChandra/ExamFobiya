@@ -1318,6 +1318,102 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
     cursor: pointer;
 }
 
+.similar-solutions-modal {
+    width: min(100% - 2rem, 42rem);
+    max-height: min(90vh, 48rem);
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.similar-solutions-modal::-webkit-scrollbar {
+    display: none;
+}
+
+.similar-solutions-list {
+    display: grid;
+    gap: 0.65rem;
+    margin-top: 1rem;
+}
+
+.similar-solution-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border: 1px solid var(--surface-border);
+    border-radius: 0.5rem;
+    background: color-mix(in srgb, var(--text-color) 4%, var(--card-bg));
+}
+
+.similar-solution-item div {
+    display: grid;
+    gap: 0.2rem;
+    min-width: 0;
+}
+
+.similar-solution-item span,
+.similar-solution-item small {
+    color: var(--text-muted);
+}
+
+.similar-solution-item small {
+    line-height: 1.35;
+}
+
+.similar-preview-btn,
+.similar-preview-heading button {
+    flex-shrink: 0;
+    border: 1px solid var(--accent-color);
+    border-radius: 0.4rem;
+    padding: 0.4rem 0.65rem;
+    background: transparent;
+    color: var(--accent-color);
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.similar-solution-preview {
+    margin-top: 1rem;
+    padding: 0.85rem;
+    border-left: 3px solid var(--accent-color);
+    background: color-mix(in srgb, var(--accent-color) 7%, var(--card-bg));
+}
+
+.similar-preview-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.similar-solution-preview p {
+    white-space: pre-wrap;
+    line-height: 1.45;
+}
+
+.similar-solution-preview pre {
+    max-height: 10rem;
+    overflow: auto;
+    white-space: pre-wrap;
+    padding: 0.65rem;
+    border-radius: 0.35rem;
+    background: color-mix(in srgb, var(--text-color) 8%, var(--card-bg));
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.similar-solution-preview pre::-webkit-scrollbar {
+    display: none;
+}
+
+.similar-solution-preview .similar-solution-code {
+    max-height: 18rem;
+    font-family: "Fira Code", "SFMono-Regular", Consolas, monospace;
+    text-align: left;
+}
+
 .solution-cancel-btn {
     background: var(--input-bg);
     color: var(--text-color);

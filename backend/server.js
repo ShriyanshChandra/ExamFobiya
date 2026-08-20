@@ -669,6 +669,9 @@ app.post('/api/ai/suggestions', aiController.generateSuggestions);
 // AI Question Parsing Route
 app.post('/api/ai/parse-questions', aiController.parseQuestions);
 
+// Programming solution duplicate check (admin-only because solution content is submitted here)
+app.post('/api/ai/check-similar-programming-solutions', verifyAdminToken, aiController.checkSimilarProgrammingSolutions);
+
 // Manual Keep-Alive Ping Trigger Route
 app.post('/api/admin/keepalive-ping', verifyAdminToken, async (req, res) => {
 
@@ -1000,5 +1003,4 @@ app.listen(PORT, HOST, () => {
     // Schedule check every 24 hours
     setInterval(() => checkAndRunKeepAlivePings(), 24 * 60 * 60 * 1000);
 });
-
 

@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useBooks } from '../context/BookContext';
+import { auth } from '../firebase';
+import { getApiUrl } from '../utils/api';
 import ConfirmationModal from '../components/ConfirmationModal';
 import Loader from '../components/Loader';
 import useSEO from '../utils/useSEO';
@@ -20,6 +22,74 @@ const normalizeSolutions = (book) => {
         return [{ ...book.programmingSolution, id: 'legacy' }];
     }
     return [];
+};
+
+const getSolutionCandidates = (books, language, currentBookId, currentSolutionId) => books.flatMap(book =>
+    normalizeSolutions(book)
+        .filter(solution => solution.language?.trim().toLowerCase() === language.trim().toLowerCase())
+        .filter(solution => !(String(book.id) === String(currentBookId) && String(solution.id) === String(currentSolutionId)))
+        .map(solution => ({
+            id: `${book.id}__${solution.id}`,
+            subject: book.title || 'Untitled subject',
+            title: solution.title || '',
+            description: solution.description || '',
+            input: solution.input || '',
+            output: solution.output || '',
+            code: solution.code || ''
+        }))
+);
+
+const normalizeComparisonText = (value) => String(value || '')
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+
+const getComparisonSource = (solution) => [
+    solution.title,
+    solution.input,
+    solution.code,
+    solution.output
+].map(normalizeComparisonText).join(' - ');
+
+const createSolutionHash = async (solution) => {
+    const source = getComparisonSource(solution);
+
+    if (globalThis.crypto?.subtle && globalThis.TextEncoder) {
+        const buffer = await globalThis.crypto.subtle.digest(
+            'SHA-256',
+            new TextEncoder().encode(source)
+        );
+        return Array.from(new Uint8Array(buffer))
+            .map(byte => byte.toString(16).padStart(2, '0'))
+            .join('');
+    }
+
+    // Deterministic fallback for non-secure older browser contexts.
+    let hash = 2166136261;
+    for (let index = 0; index < source.length; index += 1) {
+        hash ^= source.charCodeAt(index);
+        hash = Math.imul(hash, 16777619);
+    }
+    return `fallback-${(hash >>> 0).toString(16)}`;
+};
+
+const getComparisonTokens = (solution) => new Set(
+    getComparisonSource(solution)
+        .split(/[^a-z0-9+#]+/i)
+        .filter(token => token.length > 1)
+);
+
+const getLocalSimilarityScore = (firstSolution, secondSolution) => {
+    const firstTokens = getComparisonTokens(firstSolution);
+    const secondTokens = getComparisonTokens(secondSolution);
+    if (firstTokens.size === 0 || secondTokens.size === 0) return 0;
+
+    let overlap = 0;
+    firstTokens.forEach(token => {
+        if (secondTokens.has(token)) overlap += 1;
+    });
+
+    return overlap / Math.sqrt(firstTokens.size * secondTokens.size);
 };
 
 const AddProgrammingSolution = () => {
@@ -44,6 +114,8 @@ const AddProgrammingSolution = () => {
     const [solutionOutput, setSolutionOutput] = useState('');
     const [saving, setSaving] = useState(false);
     const [alertModal, setAlertModal] = useState(null);
+    const [similarModal, setSimilarModal] = useState(null);
+    const [previewSolution, setPreviewSolution] = useState(null);
     const inputLineNumberRef = useRef(null);
     const lineNumberRef = useRef(null);
     const outputLineNumberRef = useRef(null);
@@ -161,6 +233,93 @@ const AddProgrammingSolution = () => {
         }
     };
 
+    const saveSolution = async (solutionData) => {
+        if (isEditing) {
+            await updateProgrammingSolution(bookId, solutionId, solutionData);
+        } else {
+            await addProgrammingSolution(selectedBookId, solutionData);
+        }
+
+        showAlertModal({
+            title: 'Solution Saved',
+            message: 'Programming solution saved successfully.',
+            onClose: () => navigate('/programming-solutions')
+        });
+    };
+
+    const checkForSimilarSolutions = async (solutionData) => {
+        const currentUser = auth.currentUser;
+        if (!currentUser) return [];
+
+        const candidates = getSolutionCandidates(
+            books,
+            solutionData.language,
+            isEditing ? bookId : null,
+            isEditing ? solutionId : null
+        );
+        if (candidates.length === 0) return [];
+
+        const currentHash = await createSolutionHash(solutionData);
+        const candidatesWithHashes = await Promise.all(candidates.map(async candidate => ({
+            ...candidate,
+            hash: await createSolutionHash(candidate)
+        })));
+
+        const exactMatches = candidatesWithHashes
+            .filter(candidate => candidate.hash === currentHash)
+            .map(candidate => ({
+                id: candidate.id,
+                score: 1,
+                reason: 'This solution has the same normalized topic, input, code, and output.',
+                solution: candidate
+            }));
+
+        if (exactMatches.length > 0) return exactMatches;
+
+        // Only send the most promising local candidates to AI instead of the full language set.
+        const shortlistedCandidates = candidatesWithHashes
+            .map(candidate => ({
+                ...candidate,
+                localScore: getLocalSimilarityScore(solutionData, candidate)
+            }))
+            .filter(candidate => candidate.localScore >= 0.12)
+            .sort((first, second) => second.localScore - first.localScore)
+            .slice(0, 5);
+
+        if (shortlistedCandidates.length === 0) return [];
+
+        const token = await currentUser.getIdToken();
+        const response = await fetch(getApiUrl('/api/ai/check-similar-programming-solutions'), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                solution: {
+                    title: solutionData.title,
+                    language: solutionData.language,
+                    description: solutionData.description,
+                    input: solutionData.input,
+                    output: solutionData.output
+                },
+                candidates: shortlistedCandidates
+                    .map(candidate => ({ ...candidate, description: candidate.description.slice(0, 700), input: candidate.input.slice(0, 500), output: candidate.output.slice(0, 500), code: candidate.code.slice(0, 2500), hash: undefined, localScore: undefined }))
+            })
+        });
+
+        if (!response.ok) throw new Error('Similarity check unavailable');
+        const data = await response.json();
+        const candidateMap = new Map(candidates.map(candidate => [candidate.id, candidate]));
+        return (data.matches || []).map(match => ({ ...match, solution: candidateMap.get(match.id) })).filter(match => match.solution);
+    };
+
+    const dismissSimilarityModal = () => {
+        // Dismissing this advisory must leave the current edit completely untouched.
+        setPreviewSolution(null);
+        setSimilarModal(null);
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
 
@@ -185,24 +344,36 @@ const AddProgrammingSolution = () => {
         };
 
         try {
-            if (isEditing) {
-                await updateProgrammingSolution(bookId, solutionId, solutionData);
-            } else {
-                await addProgrammingSolution(selectedBookId, solutionData);
+            let matches = [];
+            try {
+                matches = await checkForSimilarSolutions(solutionData);
+            } catch (similarityError) {
+                // Similarity is an advisory check. Preserve the normal save path if AI is unavailable.
+                console.warn('Programming-solution similarity check unavailable:', similarityError.message);
             }
 
-            showAlertModal({
-                title: 'Solution Saved',
-                message: 'Programming solution saved successfully.',
-                onClose: () => navigate('/programming-solutions')
-            });
+            if (matches.length > 0) {
+                setSimilarModal({ matches, solutionData });
+                return;
+            }
+            await saveSolution(solutionData);
         } catch (error) {
             console.error('Error saving programming solution:', error);
-            showAlertModal({
-                title: 'Save Failed',
-                message: `Could not save solution: ${error.message}`,
-                variant: 'danger'
-            });
+            showAlertModal({ title: 'Save Failed', message: `Could not save solution: ${error.message}`, variant: 'danger' });
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const proceedAfterSimilarityCheck = async () => {
+        if (!similarModal) return;
+        setSimilarModal(null);
+        setSaving(true);
+        try {
+            await saveSolution(similarModal.solutionData);
+        } catch (error) {
+            console.error('Error saving programming solution:', error);
+            showAlertModal({ title: 'Save Failed', message: `Could not save solution: ${error.message}`, variant: 'danger' });
         } finally {
             setSaving(false);
         }
@@ -388,6 +559,49 @@ const AddProgrammingSolution = () => {
                 confirmLabel="OK"
                 hideCancel
             />
+
+            {similarModal && (
+                <div className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="similar-solutions-title">
+                    <div className="modal-content confirmation-modal similar-solutions-modal">
+                        <div className="modal-header">
+                            <h3 id="similar-solutions-title">Similar question found</h3>
+                            <button type="button" className="close-btn" onClick={dismissSimilarityModal}>&times;</button>
+                        </div>
+                        <div className="modal-body">
+                            <p>A similar {solutionLanguage} programming question already exists. Do you still want to proceed?</p>
+                            <div className="similar-solutions-list">
+                                {similarModal.matches.map(match => (
+                                    <div className="similar-solution-item" key={match.id}>
+                                        <div>
+                                            <strong>{match.solution.title}</strong>
+                                            <span>{match.solution.subject}</span>
+                                            <small>{match.reason}</small>
+                                        </div>
+                                        <button type="button" className="similar-preview-btn" onClick={() => setPreviewSolution(match.solution)}>Preview</button>
+                                    </div>
+                                ))}
+                            </div>
+                            {previewSolution && (
+                                <div className="similar-solution-preview">
+                                    <div className="similar-preview-heading">
+                                        <strong>{previewSolution.title}</strong>
+                                        <button type="button" onClick={() => setPreviewSolution(null)}>Close preview</button>
+                                    </div>
+                                    <p><strong>Subject:</strong> {previewSolution.subject}</p>
+                                    {previewSolution.description && <p>{previewSolution.description}</p>}
+                                    {previewSolution.input && <pre><strong>Input</strong>{`\n${previewSolution.input}`}</pre>}
+                                    {previewSolution.output && <pre><strong>Output</strong>{`\n${previewSolution.output}`}</pre>}
+                                    {previewSolution.code && <pre className="similar-solution-code"><strong>Solution</strong>{`\n${previewSolution.code}`}</pre>}
+                                </div>
+                            )}
+                        </div>
+                        <div className="modal-actions">
+                            <button type="button" className="cancel-btn" onClick={dismissSimilarityModal}>No, Cancel</button>
+                            <button type="button" className="confirm-btn yellow" onClick={proceedAfterSimilarityCheck}>Yes, Proceed</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </main>
     );
 };
