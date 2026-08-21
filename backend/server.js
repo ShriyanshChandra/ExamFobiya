@@ -285,13 +285,6 @@ ExamFobiya Team`,
     }
 });
 
-// Speed Test Upload Endpoint
-// Accepts large payloads and ignores them to measure upload bandwidth
-app.post('/api/speedtest/upload', (req, res) => {
-    // We don't need to do anything with the data, just acknowledge receipt
-    res.status(200).send('Upload received');
-});
-
 // Check Admin Role Endpoint
 app.post('/api/check-admin', async (req, res) => {
     const { email } = req.body;
@@ -662,9 +655,6 @@ app.get('/api/admin/api-keys-status', verifyAdminToken, async (req, res) => {
         res.status(500).json({ error: 'Failed to retrieve API key statuses.' });
     }
 });
-
-// AI Suggestions Route
-app.post('/api/ai/suggestions', aiController.generateSuggestions);
 
 // AI Question Parsing Route
 app.post('/api/ai/parse-questions', aiController.parseQuestions);

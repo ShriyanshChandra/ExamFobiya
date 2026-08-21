@@ -13,7 +13,7 @@ const PrivacyPolicy = () => {
                 'Academic and admin-entered content such as book records, indexes, programming solutions, question data, university/course/subject information, and question PDF links.',
                 'Usage and technical information such as page visits, device/browser context, performance metrics, and aggregated traffic insights collected through our own tracking endpoint and Vercel analytics tooling.',
                 'Diagnostic error logs, including runtime JavaScript errors, exception stack traces, page URLs, and browser context captured automatically to diagnose crashes and ensure website stability.',
-                'AI feature inputs, such as question content submitted for parsing or speed-test details submitted for improvement suggestions, when those features are used.',
+                'AI feature inputs, such as question content submitted for parsing or programming solutions submitted for similarity checking, when those features are used.',
                 'Local device data such as saved theme preferences, dismissed install prompts, chunk-retry state, and temporary form data stored in your browser for convenience.'
             ]
         },
@@ -24,7 +24,7 @@ const PrivacyPolicy = () => {
                 'To send OTP emails for verification and password recovery.',
                 'To provide saved-item features, account preferences, admin dashboards, content management, maintenance controls, and role-based access.',
                 'To operate, improve, monitor, and protect the website, including diagnosing application crashes, resolving bugs, and measuring traffic and performance.',
-                'To process AI-assisted parsing or suggestion requests when a user or administrator submits content to those tools.',
+                'To process AI-assisted parsing or content similarity requests when a user or administrator submits content to those tools.',
                 'To respond to support requests, enforce our terms, and comply with applicable law.'
             ]
         },
@@ -34,7 +34,7 @@ const PrivacyPolicy = () => {
                 'Firebase Authentication, Firestore, Firebase Storage, and related Google Firebase services to manage accounts, application data, stored files or links, and diagnostic error logs.',
                 'Vercel Analytics and Vercel Speed Insights to understand website usage and performance.',
                 'Brevo email infrastructure, through our backend, to deliver verification, password reset, and service emails.',
-                'Google Gemini AI services to generate suggestions or parse academic content when AI features are used.',
+                'Google Gemini AI services to parse academic content and evaluate programming solution similarity when AI features are used.',
                 'External hosting or link destinations when the website references third-party files, PDFs, images, or resources.'
             ]
         },

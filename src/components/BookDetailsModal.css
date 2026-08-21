@@ -419,12 +419,6 @@ body.dark-mode .topics-heading {
     border-bottom-color: rgba(255, 255, 255, 0.2) !important;
 }
 
-[data-theme='dark'] .modal-book-price,
-[data-theme='midnight'] .modal-book-price,
-body.dark-mode .modal-book-price {
-    color: var(--accent-color, #22d3ee) !important;
-}
-
 [data-theme='dark'] .topics-list-container,
 [data-theme='dark'] .topics-list-container *,
 [data-theme='dark'] .rich-text-content,
@@ -514,10 +508,6 @@ body.dark-mode .syllabus-topic-page-leader {
 [data-theme='nord'] .topics-heading {
     color: #182848 !important;
     border-bottom-color: rgba(24, 40, 72, 0.2) !important;
-}
-
-[data-theme='nord'] .modal-book-price {
-    color: #5e81ac !important;
 }
 
 [data-theme='nord'] .topics-list-container,

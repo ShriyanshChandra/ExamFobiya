@@ -28,24 +28,22 @@ TABLE OF CONTENTS
 1. EXECUTIVE SUMMARY & CORE MISSION
 ================================================================================
 ExamFobiya is a comprehensive, production-grade academic resource ecosystem and
-digital bookstore developed for university students, educators, and administrators.
+study platform developed for university students, educators, and administrators.
 The platform unifies:
-  - Academic Book Catalog & Bookstore: Full inventory management, categorization,
-    spotlight sections (Best Sellers, New Arrivals, Featured), custom ordering,
-    and detailed modal inspection.
+  - Academic Book & Study Material Catalog: Full catalog management, course categorization
+    (BCA, DCA, PGDCA), semester filtering, spotlight sections (BCA Spotlight, DCA Spotlight,
+    PGDCA Spotlight, Featured Books, Best Sellers, New Arrivals), custom ordering, syllabus
+    topics with page index mapping, and detailed modal inspection.
   - University Question Papers & Solution Bank: Hierarchical indexing of academic
-    universities, courses, subjects, Q&A pairs, and past examination PDFs.
+    universities, courses, subjects, Q&A pairs, and past examination PDFs with course selector tabs.
   - Programming Solutions Hub: Code solution repository supporting multiple
-    programming languages, syntax formatting, algorithmic complexities, and
-    AI-driven semantic duplicate detection.
+    programming languages (C, C#, C++, Java, Python), syntax formatting, how-to-run instructions,
+    and AI-driven semantic duplicate detection.
   - Document & Question Extraction Engine: In-browser and server-side ingestion
     of PDF and DOCX files with baseline indentation recovery and automated
     AI-powered question-and-answer extraction.
-  - Network Diagnostics & AI Optimization: Built-in network speed test tool that
-    evaluates latency, upload/download throughput, and generates tailored AI
-    bandwidth optimization suggestions.
-  - Role-Based Access Control (RBAC): Differentiated student/customer experiences
-    and an exhaustive Admin Dashboard with inventory control, user moderation,
+  - Role-Based Access Control (RBAC): Differentiated student and administrator experiences
+    with an exhaustive Admin Dashboard for catalog control, user moderation,
     error logging, maintenance mode toggling, and API heartbeat monitors.
   - Progressive Web App (PWA): Native-like mobile and desktop installation with
     offline fallback resilience.
@@ -86,9 +84,9 @@ A. Directory Structure:
    ├── assets/              : Static icons, SVGs, animation assets, logos
    ├── components/          : Reusable UI widgets and layout elements
    │   ├── BackToTop.jsx    : Smooth floating back-to-top button
-   │   ├── BookCard.jsx     : Book display card with pricing, badges, and hover actions
+   │   ├── BookCard.jsx     : Book display card with category badges, questions, syllabus, and solutions links
    │   ├── BookCategorySection.jsx : Horizontal category carousel/grid
-   │   ├── BookDetailsModal.jsx    : Modal presenting full book metadata & descriptions
+   │   ├── BookDetailsModal.jsx    : Modal presenting book cover, title, syllabus topics, and page number index
    │   ├── ConfirmationModal.jsx   : Reusable action confirmation modal
    │   ├── ErrorBoundary.jsx       : React component tree crash boundary
    │   ├── Footer.jsx              : Global footer with links, copyright, and policies
@@ -97,7 +95,7 @@ A. Directory Structure:
    │   ├── Navbar.jsx              : Responsive header with search bar, navigation, theme toggle, and auth states
    │   ├── PWAInstallBanner.jsx    : App install banner for supported browsers
    │   ├── ProtectedRoute.jsx      : Client route guard verifying authentication & roles
-   │   └── RemoveBookModal.jsx     : Admin confirmation modal for inventory removal
+   │   └── RemoveBookModal.jsx     : Admin confirmation modal for catalog book deletion
    ├── context/             : React Context state providers
    │   ├── AuthContext.jsx         : Firebase Auth state, user role caching, register/login/logout
    │   ├── BookContext.jsx         : Real-time Firestore sync for books, section sorting, solution binding
@@ -118,7 +116,7 @@ A. Directory Structure:
    │   ├── NewArrivals.jsx         : Filtered showcase of newly added inventory
    │   ├── PrivacyPolicy.jsx       : Legal privacy policy and third-party disclosures
    │   ├── ProgrammingSolutions.jsx: Searchable code solutions bank by language and topic
-   │   ├── Questions.jsx           : Academic exam papers, model papers, and Q&A accordion
+   │   ├── Questions.jsx           : Academic exam papers explorer with course selector tabs (BCA, DCA, PGDCA), search, filters, and PDF viewer
    │   ├── Register.jsx            : User registration with Brevo 6-digit OTP verification
    │   ├── ResetPassword.jsx       : Password reset portal supporting OTP & OOB link flows
    │   ├── Search.jsx              : Unified cross-entity search results page
@@ -228,18 +226,17 @@ Cloud Firestore is configured as the primary NoSQL operational data store.
    - Schema:
      {
        "title": "Data Structures & Algorithms",
-       "author": "Author Name",
-       "description": "Comprehensive textbook on DSA.",
-       "price": 499,
-       "originalPrice": 699,
-       "genre": "Computer Science",
-       "category": "Computer Science",
-       "coverImage": "https://firebasestorage.googleapis.com/...",
-       "sections": ["Best Sellers", "Featured"],
+       "category": "BCA",
+       "semester": "BCA 2nd Semester",
+       "author": "Smart Publications",
+       "sections": ["BCA Spotlight", "Featured Books"],
        "sectionOrders": {
-         "Best Sellers": 1,
-         "Featured": "Temp"
+         "BCA Spotlight": 1,
+         "Featured Books": 2
        },
+       "image": "https://lh3.googleusercontent.com/...",
+       "contents": "Unit 1: Linear Data Structures\nUnit 2: Trees and Graphs",
+       "syllabusPageNumbers": ["1-15", "16-35"],
        "hasProgrammingSolution": true,
        "programmingSolutions": [
          {
@@ -247,14 +244,12 @@ Cloud Firestore is configured as the primary NoSQL operational data store.
            "title": "Binary Search Tree Implementation",
            "language": "cpp",
            "code": "#include <iostream>...",
-           "explanation": "Implementation of insertion and search.",
-           "timeComplexity": "O(log N)",
-           "spaceComplexity": "O(N)",
-           "difficulty": "Medium",
-           "tags": ["tree", "binary search"]
+           "description": "Implementation of insertion and search.",
+           "input": "5 3 7",
+           "output": "3 5 7"
          }
        ],
-       "createdAt": Timestamp | ISOString
+       "createdAt": "2026-08-20T12:00:00.000Z"
      }
    - Security: Publicly readable; strictly Admin writable.
 
@@ -446,25 +441,17 @@ B. Backend Variables (backend/.env in backend directory):
 ================================================================================
 8. AI INTEGRATIONS & MODEL ASSIGNMENTS (GOOGLE GEMINI)
 ================================================================================
-ExamFobiya leverages Google Gemini generative AI across three distinct workflows:
+ExamFobiya leverages Google Gemini generative AI across key academic workflows:
 
-1. Internet Speed Optimization Suggestions:
-   - Endpoint: POST /api/ai/suggestions
-   - Controller: backend/routes/ai.js (generateSuggestions)
-   - Model Assigned: gemini-2.5-flash
-   - Prompt Purpose: Analyzes download speed, upload speed, latency (ping), browser type,
-     time of day, and ratings across gaming, streaming, browsing, and calling to generate
-     exactly 4 concise, actionable, single-sentence recommendations.
-
-2. Document & Text Question Parsing:
+1. Document & Text Question Parsing:
    - Endpoint: POST /api/ai/parse-questions
    - Controller: backend/routes/ai.js (parseQuestions)
-   - Model Assigned: gemini-2.5-flash
+   - Model Assigned: gemini-3.6-flash
    - Prompt Purpose: Ingests unstructured academic text or OCR output, detects question-answer
      boundaries, strips 'Q:'/'A:' prefixes, preserves all HTML formatting (<ul>, <ol>, <li>,
      <strong>, <em>, <p>, <br>), and returns a strict JSON array of question objects.
 
-3. Programming Solution Semantic Duplicate Detection:
+2. Programming Solution Semantic Duplicate Detection:
    - Endpoint: POST /api/ai/check-similar-programming-solutions
    - Controller: backend/routes/ai.js (checkSimilarProgrammingSolutions)
    - Model Assigned: gemini-3.6-flash
@@ -473,7 +460,7 @@ ExamFobiya leverages Google Gemini generative AI across three distinct workflows
      same language. Matches based on underlying algorithmic tasks (score >= 0.72) rather than
      generic boilerplate code. Returns at most 3 matches with similarity scores and rationale.
 
-4. Automated API Keep-Alive Heartbeat:
+3. Automated API Keep-Alive Heartbeat:
    - Handler: backend/server.js (sendGeminiKeepAlivePing)
    - Model Assigned: gemini-2.5-flash
    - Purpose: Sends lightweight generation requests every 25 days to prevent Google AI Studio
@@ -585,11 +572,9 @@ POST   | /api/admin/keepalive-ping                  | Admin       | Manually tri
 POST   | /api/admin/maintenance-mode                | Admin       | Enables or disables global site maintenance mode
 GET    | /api/maintenance-mode                      | Public      | Returns current maintenance mode boolean state
 POST   | /api/admin/delete-user                     | Admin       | Deletes user account from Firestore and Auth
-POST   | /api/ai/suggestions                        | Public      | AI internet speed improvement advice (Gemini 2.5)
-POST   | /api/ai/parse-questions                    | Public      | AI document to Q&A JSON parser (Gemini 2.5)
+POST   | /api/ai/parse-questions                    | Public      | AI document to Q&A JSON parser (Gemini 3.6)
 POST   | /api/ai/check-similar-programming-solutions| Admin       | Semantic duplicate solution detector (Gemini 3.6)
 POST   | /api/indexnow/notify                       | Public/Admin| Submits URL list to IndexNow search protocol
-POST   | /api/speedtest/upload                      | Public      | Dummy endpoint to measure upload bandwidth
 GET    | /                                          | Public      | Health check returning server status string
 
 ================================================================================

@@ -7,8 +7,10 @@ import useSEO from "../utils/useSEO";
 import "./Questions.css";
 
 const RESULTS_BATCH_SIZE = 7;
+const COURSE_TABS = ['BCA', 'DCA', 'PGDCA'];
 
 const Questions = () => {
+  const [selectedCourse, setSelectedCourse] = useState("BCA");
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState([]);
   const [visibleResultCount, setVisibleResultCount] = useState(RESULTS_BATCH_SIZE);
@@ -29,6 +31,7 @@ const Questions = () => {
   const { questionPdfs, deleteQuestionPdf } = useQuestions();
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const skipNextCourseEffect = React.useRef(false);
   const formatQuestionDate = (pdf) => [pdf.month, pdf.year].filter(Boolean).join(' ');
 
   const setSearchResults = (nextResults) => {
@@ -64,7 +67,7 @@ const Questions = () => {
   const uniqueYears = [...new Set(questionPdfs.map((pdf) => pdf.year).filter(Boolean))].sort((a, b) => String(b).localeCompare(String(a)));
   const uniqueSubjects = [...new Set(questionPdfs.map((pdf) => pdf.subject).filter(Boolean))].sort((a, b) => a.localeCompare(b));
 
-  const applySearchAndFilters = (query = searchQuery, activeFilters = filters) => {
+  const applySearchAndFilters = (query = searchQuery, activeFilters = filters, courseTab = selectedCourse) => {
     const q = query.trim().toLowerCase();
 
     return questionPdfs.filter((pdf) => {
@@ -78,23 +81,53 @@ const Questions = () => {
       const matchesCourse = !activeFilters.course || pdf.course === activeFilters.course;
       const matchesYear = !activeFilters.year || String(pdf.year) === activeFilters.year;
       const matchesSubject = !activeFilters.subject || pdf.subject === activeFilters.subject;
+      const matchesCourseTab = !courseTab || pdf.course === courseTab;
 
-      return matchesQuery && matchesCourse && matchesYear && matchesSubject;
+      return matchesQuery && matchesCourse && matchesYear && matchesSubject && matchesCourseTab;
     });
   };
 
+  // Auto-show results for the selected course tab
+  React.useEffect(() => {
+    if (questionPdfs.length === 0) return;
+    if (skipNextCourseEffect.current) {
+      skipNextCourseEffect.current = false;
+      return;
+    }
+    const filtered = applySearchAndFilters(searchQuery, filters, selectedCourse);
+    setSearchResults(filtered);
+    setSearched(true);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCourse, questionPdfs]);
+
   // Handle auto-search when redirected from a BookCard
   React.useEffect(() => {
-    if (location.state?.initialSearch && questionPdfs.length > 0) {
-      const q = location.state.initialSearch.trim();
-      let currentFilters = filters;
-      if (location.state.categoryFilter) {
-        currentFilters = { ...filters, course: location.state.categoryFilter };
-      }
+    const hasLocationData = Boolean(
+      location.state?.categoryFilter ||
+      location.state?.subjectFilter ||
+      location.state?.initialSearch
+    );
 
-      const filtered = applySearchAndFilters(q, currentFilters);
+    if (hasLocationData && questionPdfs.length > 0) {
+      const course = location.state.categoryFilter || "";
+      const subject = location.state.subjectFilter || location.state.initialSearch || "";
+
+      const tempFilters = {
+        course,
+        year: "",
+        subject: ""
+      };
+
+      const filtered = applySearchAndFilters(subject, tempFilters, "");
       setSearchResults(filtered);
       setSearched(true);
+
+      // Clear the filter selection inputs after displaying results
+      setFilters({ course: "", year: "", subject: "" });
+      setShowFilters(false);
+      skipNextCourseEffect.current = true;
+      setSelectedCourse("");
+      setSearchQuery(subject);
 
       // Clear the state so refreshing the page doesn't run it again
       window.history.replaceState({}, document.title);
@@ -120,6 +153,7 @@ const Questions = () => {
   }, [viewingPdf]);
 
   const handleSearch = () => {
+    setSelectedCourse(""); // Clear active course tab filter when searching via search bar
     const hasActiveFilters = Object.values(filters).some(Boolean);
     const q = searchQuery.trim();
 
@@ -129,8 +163,7 @@ const Questions = () => {
       return;
     }
 
-    const filtered = applySearchAndFilters(searchQuery, filters);
-    setSearchResults(filtered);
+    setSearchResults(applySearchAndFilters(searchQuery, filters, ""));
     setSearched(true);
   };
 
@@ -139,7 +172,7 @@ const Questions = () => {
       const nextFilters = { ...prev, [key]: value };
 
       if (searched) {
-        const filtered = applySearchAndFilters(searchQuery, nextFilters);
+        const filtered = applySearchAndFilters(searchQuery, nextFilters, selectedCourse);
         setSearchResults(filtered);
       }
 
@@ -150,16 +183,10 @@ const Questions = () => {
   const clearFilters = () => {
     const resetFilters = { course: "", year: "", subject: "" };
     setFilters(resetFilters);
-
-    if (searched) {
-      const hasQuery = searchQuery.trim();
-      if (!hasQuery) {
-        setSearchResults([]);
-        setSearched(false);
-      } else {
-        setSearchResults(applySearchAndFilters(searchQuery, resetFilters));
-      }
-    }
+    setSearchQuery("");
+    setSelectedCourse("");
+    setSearchResults(applySearchAndFilters("", resetFilters, ""));
+    setSearched(true);
   };
 
 
@@ -251,10 +278,21 @@ const Questions = () => {
       <div className="questions-content container">
         <h1>BCA, DCA & PGDCA Previous Year Questions</h1>
 
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", flexWrap: "wrap", gap: "15px" }}>
+          <div className="course-tabs-section" style={{ margin: 0 }}>
+            {COURSE_TABS.map((course) => (
+              <button
+                key={course}
+                type="button"
+                className={`course-tab-pill${selectedCourse === course ? ' active' : ''}`}
+                onClick={() => setSelectedCourse((prev) => (prev === course ? "" : course))}
+              >
+                {course}
+              </button>
+            ))}
+          </div>
 
-        {/* Admin: Upload Questions button */}
-        {user?.role === 'admin' && (
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
+          {user?.role === 'admin' && (
             <button
               onClick={() => navigate('/upload-questions')}
               className="uq-upload-btn"
@@ -262,8 +300,8 @@ const Questions = () => {
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
               <span>Upload Questions</span>
             </button>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Search Bar */}
         <div className="search-section">
@@ -356,7 +394,13 @@ const Questions = () => {
         {/* Results */}
         {searched && (
           results.length === 0 ? (
-            <p className="no-results">No question PDFs found for "{searchQuery}".</p>
+            <p className="no-results">
+              {searchQuery
+                ? `No question PDFs found for "${searchQuery}".`
+                : selectedCourse
+                ? `No question PDFs found for "${selectedCourse}".`
+                : "No question PDFs found matching your criteria."}
+            </p>
           ) : (
             <div className="pdf-results-list">
 
@@ -436,7 +480,7 @@ const Questions = () => {
 
         {!searched && (
           <p className="instruction-placeholder">
-            Enter a subject, course, or question label above to find question PDFs.
+            Select a course above or enter a subject, course, or question label to find question PDFs.
           </p>
         )}
 

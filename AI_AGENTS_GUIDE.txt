@@ -76,9 +76,9 @@ ExamFobiya/
 │   ├── assets/                   : SVGs, illustrations, animation assets
 │   ├── components/
 │   │   ├── BackToTop.jsx         : Floating back-to-top scroll button with window listener
-│   │   ├── BookCard.jsx          : Reusable card for book inventory display & spotlight badges
+│   │   ├── BookCard.jsx          : Reusable card for book catalog display with badges, questions, and syllabus actions
 │   │   ├── BookCategorySection.jsx : Horizontal category layout with responsive navigation
-│   │   ├── BookDetailsModal.jsx  : Detailed book view modal with pricing, description, and actions
+│   │   ├── BookDetailsModal.jsx  : Detailed book view modal with cover, title, syllabus topics, and page number index
 │   │   ├── ConfirmationModal.jsx : Generic confirmation dialog for destructive actions
 │   │   ├── ErrorBoundary.jsx     : Class component catching React tree render crashes
 │   │   ├── Footer.jsx            : App footer with legal links, social icons, and copyright
@@ -87,7 +87,7 @@ ExamFobiya/
 │   │   ├── Navbar.jsx            : Responsive navigation bar, search bar, and auth buttons
 │   │   ├── PWAInstallBanner.jsx  : Custom banner handling beforeinstallprompt PWA install
 │   │   ├── ProtectedRoute.jsx    : React Router wrapper enforcing auth and role requirements
-│   │   └── RemoveBookModal.jsx   : Specialized confirmation modal for deleting books
+│   │   └── RemoveBookModal.jsx   : Specialized confirmation modal for deleting catalog books
 │   ├── context/
 │   │   ├── AuthContext.jsx       : Firebase Auth listener, role caching, login/register/logout
 │   │   ├── BookContext.jsx       : Firestore books sync, section sorting, solution binding
@@ -102,13 +102,13 @@ ExamFobiya/
 │   │   ├── Books.jsx             : Searchable academic catalog with filter sidebar
 │   │   ├── EditQuestionPdf.jsx   : Admin management view for question paper PDFs
 │   │   ├── ExploreSection.jsx    : Featured discovery section
-│   │   ├── Home.jsx              : Landing page with search, speed test widget, and spotlights
+│   │   ├── Home.jsx              : Landing page with search, course cards, and spotlight sections
 │   │   ├── Login.jsx             : Authentication portal (email/password login)
 │   │   ├── Maintenance.jsx       : Maintenance splash screen for non-admin users
 │   │   ├── NewArrivals.jsx       : Spotlight view for newly added inventory
 │   │   ├── PrivacyPolicy.jsx     : GDPR/legal compliance disclosure
 │   │   ├── ProgrammingSolutions.jsx : Code solutions explorer by language and topic
-│   │   ├── Questions.jsx         : Academic question bank (Q&A accordion & PDF papers)
+│   │   ├── Questions.jsx         : Academic question bank with course selector tabs (BCA, DCA, PGDCA), search, filters, and PDF viewer
 │   │   ├── Register.jsx          : Registration flow with 6-digit Brevo OTP verification
 │   │   ├── ResetPassword.jsx     : Password recovery via Brevo OTP or Firebase OOB code
 │   │   ├── Search.jsx            : Global cross-entity search results view
@@ -201,19 +201,20 @@ ExamFobiya/
 ================================================================================
 4. COMPONENT API & PROPS DIRECTORY
 ================================================================================
-- BookCard ({ book, onSelect, showActions, onEdit, onDelete })
+- BookCard ({ book, index, canEdit, onRemove, onEdit, onSaveClick })
   * book: Object (book schema)
-  * onSelect: Function (triggers BookDetailsModal)
-  * showActions: boolean (renders edit/delete buttons for admin)
-- BookCategorySection ({ category, books, onSelectBook })
-- BookDetailsModal ({ book, isOpen, onClose })
-- ConfirmationModal ({ isOpen, title, message, onConfirm, onCancel, confirmText, isDestructive })
+  * index: number (animation delay calculation)
+  * canEdit: boolean (renders admin edit/delete controls)
+  * onRemove, onEdit, onSaveClick: Functions
+- BookCategorySection ({ title, section, category, limit })
+- BookDetailsModal ({ book, onClose })
+- ConfirmationModal ({ isOpen, onClose, onConfirm, title, message, variant, confirmLabel, cancelLabel })
 - ErrorBoundary ({ children })
 - GlobalErrorMonitor ({ children })
-- Loader ({ message, fullScreen })
-- Navbar ({ setSearchQuery })
-- ProtectedRoute ({ children, requiredRole })
-- RemoveBookModal ({ isOpen, book, onConfirm, onCancel })
+- Loader ({ text, size, fullScreen })
+- Navbar ({ onSearch, searchQuery })
+- ProtectedRoute ({ children, role })
+- RemoveBookModal ({ isOpen, book, onConfirm, onClose })
 
 ================================================================================
 5. FIRESTORE DATABASE SCHEMA & SECURITY RULES SPECIFICATION
@@ -226,14 +227,14 @@ A. Collections & Schemas:
 2. /books/{bookId}
    * Document ID: Auto-generated string
    * Types: {
-       title: string, author: string, description: string, price: number, originalPrice: number,
-       genre: string, category: string, coverImage: string, sections: string[],
-       sectionOrders: Record<string, number|"Temp">, hasProgrammingSolution: boolean,
-       programmingSolutions: Array<{
-         id: string, title: string, language: string, code: string, explanation: string,
-         timeComplexity: string, spaceComplexity: string, difficulty: string, tags: string[]
+       title: string, category: "BCA"|"DCA"|"PGDCA", semester: string|null, author: string,
+       sections: string[], sectionOrders: Record<string, number|"Temp">, image: string,
+       contents: string, syllabusPageNumbers: string[], hasProgrammingSolution?: boolean,
+       programmingSolutions?: Array<{
+         id: string, title: string, language: string, code: string, description: string,
+         input?: string, output?: string
        }>,
-       createdAt: Timestamp|string
+       createdAt: string
      }
 
 3. /courses/{course}/subjects/{subject}/questions/{questionId}
@@ -346,44 +347,30 @@ Base URL Resolution: src/utils/api.js (DEV: http://127.0.0.1:5000, PROD: VITE_AP
     - Logic: Prevents self-deletion. Deletes document from /users/{userId} and calls getAuth().deleteUser(userId).
     - Response: 200 { "message": "User account deleted successfully" } | 400 | 500
 
-13. POST /api/ai/suggestions
-    - Body: { "download": number, "upload": number, "ping": number, "ratings": { "gaming": number, "streaming": number, "browsing": number, "calling": number }, "browserType": string, "timeOfDay": string }
-    - Model: gemini-2.5-flash
-    - Response: 200 { "suggestions": string[], "source": "ai" }
-
-14. POST /api/ai/parse-questions
+13. POST /api/ai/parse-questions
     - Body: { "content": string }
-    - Model: gemini-2.5-flash
+    - Model: gemini-3.6-flash
     - Response: 200 { "questions": Array<{ "question": string, "answer": string }>, "count": number }
 
-15. POST /api/ai/check-similar-programming-solutions [Requires verifyAdminToken]
+14. POST /api/ai/check-similar-programming-solutions [Requires verifyAdminToken]
     - Body: { "solution": { "title": string, "language": string }, "candidates": Array<{ "id": string, "title": string, "language": string }> }
     - Model: gemini-3.6-flash
     - Response: 200 { "matches": Array<{ "id": string, "score": number, "reason": string }>, "source": "ai" }
 
-16. POST /api/indexnow/notify
+15. POST /api/indexnow/notify
     - Body: { "urls": string[] }
     - Protocol: IndexNow API (https://api.indexnow.org/indexnow)
     - Response: 200 { "success": true, "submitted": number } | 400 | 500
 
-17. POST /api/speedtest/upload
-    - Logic: Accepts dummy upload stream to measure client upload bandwidth.
-    - Response: 200 "Upload received"
-
 ================================================================================
 7. AI MODELS, PROMPT PIPELINES & RESPONSE PARSERS (GOOGLE GEMINI)
 ================================================================================
-1. Speed Suggestions Pipeline (backend/routes/ai.js):
-   - Model: "gemini-2.5-flash"
-   - Prompt constraint: Numbered list format (1., 2., 3., 4.), exactly 4 items, single clear sentence each, no bold headings.
-   - Parsing: text.split(/\d+\.\s+/).filter(s => s.trim().length > 0).map(s => s.trim())
-
-2. Question Parsing Pipeline (backend/routes/ai.js):
-   - Model: "gemini-2.5-flash"
+1. Question Parsing Pipeline (backend/routes/ai.js):
+   - Model: "gemini-3.6-flash"
    - Rules: Retain HTML tags (<ul>, <ol>, <li>, <strong>, <em>, <p>, <br>), strip "Q:", "A:", "Question:", "Answer:" prefixes, enforce JSON array output shape [{"question": "...", "answer": "..."}].
    - Markdown sanitization: Strips ```json and ``` code block fences before JSON.parse().
 
-3. Duplicate Solution Detection Pipeline (backend/routes/ai.js):
+2. Duplicate Solution Detection Pipeline (backend/routes/ai.js):
    - Model: "gemini-3.6-flash"
    - Prompt constraint: Compare question intent, return only matches with score >= 0.72, at most 3 items, JSON shape: {"matches":[{"id":"...","score":0.0,"reason":"..."}]}.
    - Sanitization: Validates that returned match IDs exist in candidate set and enforces score threshold >= 0.72.
