@@ -3,21 +3,23 @@ import { useEffect } from 'react';
 const SITE_NAME = 'ExamFobiya';
 const SITE_URL = 'https://www.examfobiya.com';
 const DEFAULT_IMAGE = `${SITE_URL}/logo512.png`;
+const DEFAULT_KEYWORDS = 'ExamFobiya, examfobiya, Examphobia, examphobia, Exam Phobia, exam phobia, Exam Fobiya, BCA books, DCA books, PGDCA books, previous year questions, programming solutions, computer science notes, university study materials';
 
 /**
  * Custom hook for per-page SEO metadata.
  *
  * Sets document title, meta description, canonical URL,
- * Open Graph tags, and Twitter Card tags.
+ * Open Graph tags, Twitter Card tags, and keyword tags.
  *
  * @param {Object} options
  * @param {string} options.title   - Page-specific title (appended with " | ExamFobiya")
  * @param {string} options.description - Page meta description
  * @param {string} options.path    - Route path, e.g. "/books"
  * @param {string} [options.image] - OG/Twitter image URL (defaults to logo)
+ * @param {string} [options.keywords] - Additional page-specific keywords
  * @param {boolean} [options.noindex=false] - Whether to exclude page from search engine index
  */
-const useSEO = ({ title, description, path = '/', image, type = 'website', noindex = false }) => {
+const useSEO = ({ title, description, path = '/', image, type = 'website', noindex = false, keywords }) => {
   useEffect(() => {
     // --- Document title ---
     const fullTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
@@ -47,12 +49,16 @@ const useSEO = ({ title, description, path = '/', image, type = 'website', noind
 
     const pageUrl = `${SITE_URL}/${path.replace(/^\//, '')}`;
     const pageImage = image || DEFAULT_IMAGE;
+    const pageKeywords = keywords ? `${keywords}, ${DEFAULT_KEYWORDS}` : DEFAULT_KEYWORDS;
 
     // --- Robots indexing directive ---
     setMeta('name', 'robots', noindex ? 'noindex, nofollow' : 'index, follow');
 
     // --- Meta description ---
     setMeta('name', 'description', description);
+
+    // --- Meta keywords ---
+    setMeta('name', 'keywords', pageKeywords);
 
     // --- Canonical URL ---
     setLink('canonical', pageUrl);
@@ -75,7 +81,7 @@ const useSEO = ({ title, description, path = '/', image, type = 'website', noind
     return () => {
       document.title = `${SITE_NAME} - BCA, DCA & PGDCA Books & Study Materials`;
     };
-  }, [title, description, path, image, type, noindex]);
+  }, [title, description, path, image, type, noindex, keywords]);
 };
 
 export default useSEO;

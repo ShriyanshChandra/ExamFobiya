@@ -1,10 +1,10 @@
-# ExamFobiya
+# ExamFobiya (Examphobia / Exam Phobia)
 
 > Your ultimate destination for BCA, DCA, and PGDCA course materials, books, previous year questions, and programming solutions.
 
 ## About
 
-ExamFobiya is an educational platform providing free study materials for university computer science courses including BCA (Bachelor of Computer Applications), DCA (Diploma in Computer Applications), and PGDCA (Post Graduate Diploma in Computer Applications). The platform offers textbooks, previous year question papers, and programming solutions to help students prepare for their exams.
+ExamFobiya (also searched as Examphobia or Exam Phobia) is an educational platform providing free study materials for university computer science courses including BCA (Bachelor of Computer Applications), DCA (Diploma in Computer Applications), and PGDCA (Post Graduate Diploma in Computer Applications). The platform offers textbooks, previous year question papers, and programming solutions to help students prepare for their exams.
 
 ## Pages
 

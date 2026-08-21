@@ -135,7 +135,7 @@ A. Directory Structure:
    │   ├── csvExporter.js          : CSV serialization utility for analytics/users
    │   ├── documentUtils.js        : PDF baseline text extraction & DOCX HTML conversion
    │   ├── usePWAInstall.js        : PWA beforeinstallprompt lifecycle hook
-   │   └── useSEO.js               : Dynamic document metadata and OpenGraph manager
+   │   └── useSEO.js               : Dynamic document metadata, keywords, and OpenGraph manager (includes Examphobia/Exam Phobia search indexing)
    ├── firebase.js          : Firebase Client SDK initialization
    ├── themes.css           : Comprehensive design token registry (light & dark)
    ├── index.css            : Base typography, layout resets, and custom scrollbars

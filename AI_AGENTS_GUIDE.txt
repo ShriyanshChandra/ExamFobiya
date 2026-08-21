@@ -127,7 +127,7 @@ ExamFobiya/
 │   │   ├── csvExporter.js        : Client-side CSV generator for exportable data
 │   │   ├── documentUtils.js      : PDF baseline extraction (pdfjs-dist) & DOCX conversion (mammoth)
 │   │   ├── usePWAInstall.js      : Hook capturing beforeinstallprompt event
-│   │   └── useSEO.js             : Dynamic document title, meta tags, and OpenGraph manager
+│   │   └── useSEO.js             : Dynamic document title, keywords, meta tags, and OpenGraph manager (includes Examphobia/Exam Phobia indexing)
 │   ├── App.css                   : Global app layout styles and animations
 │   ├── App.jsx                   : Main router, chunk-healing lazy loader, MaintenanceGuard
 │   ├── firebase.js               : Firebase Client SDK initialization

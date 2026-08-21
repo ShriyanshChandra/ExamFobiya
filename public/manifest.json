@@ -35,5 +35,6 @@
   "display": "standalone",
   "theme_color": "#182848",
   "background_color": "#182848",
-  "description": "Access study materials, books, and questions for BCA, DCA, and PGDCA courses"
+  "description": "ExamFobiya (Examphobia / Exam Phobia) — Access study materials, books, and questions for BCA, DCA, and PGDCA courses",
+  "categories": ["education", "books", "study"]
 }
