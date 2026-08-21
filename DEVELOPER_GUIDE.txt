@@ -119,7 +119,7 @@ A. Directory Structure:
    │   ├── Questions.jsx           : Academic exam papers explorer with course selector tabs (BCA, DCA, PGDCA), search, filters, and PDF viewer
    │   ├── Register.jsx            : User registration with Brevo 6-digit OTP verification
    │   ├── ResetPassword.jsx       : Password reset portal supporting OTP & OOB link flows
-   │   ├── Search.jsx              : Unified cross-entity search results page
+   │   ├── Search.jsx              : Unified cross-entity search results page with in-page PDF preview modal, inline expandable code solution viewer, and URL search query parameter synchronization
    │   ├── Settings.jsx            : User account settings (profile username, password change)
    │   ├── TermsAndConditions.jsx  : Platform legal terms of service
    │   ├── UploadQuestions.jsx     : Admin batch question and PDF uploader with AI parsing

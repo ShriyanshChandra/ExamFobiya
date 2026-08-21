@@ -77,10 +77,11 @@ const Navbar = ({ setSearchQuery }) => {
   };
 
   const handleSearchSubmit = () => {
+    const trimmed = localSearch.trim();
     if (setSearchQuery) {
-      setSearchQuery(localSearch);
+      setSearchQuery(trimmed);
     }
-    navigate("/search");
+    navigate(trimmed ? `/search?q=${encodeURIComponent(trimmed)}` : "/search");
     setIsOpen(false);
     setShowMobileSearch(false);
   };

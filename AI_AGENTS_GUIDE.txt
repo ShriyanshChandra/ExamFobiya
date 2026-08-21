@@ -111,7 +111,7 @@ ExamFobiya/
 │   │   ├── Questions.jsx         : Academic question bank with course selector tabs (BCA, DCA, PGDCA), search, filters, and PDF viewer
 │   │   ├── Register.jsx          : Registration flow with 6-digit Brevo OTP verification
 │   │   ├── ResetPassword.jsx     : Password recovery via Brevo OTP or Firebase OOB code
-│   │   ├── Search.jsx            : Global cross-entity search results view
+│   │   ├── Search.jsx            : Global cross-entity search results view with in-page PDF preview modal, inline code solution viewer, and URL query parameter sync
 │   │   ├── Settings.jsx          : User profile settings (username, password update)
 │   │   ├── TermsAndConditions.jsx: User agreement and service terms
 │   │   ├── UploadQuestions.jsx   : Batch question / PDF uploader with AI parsing
