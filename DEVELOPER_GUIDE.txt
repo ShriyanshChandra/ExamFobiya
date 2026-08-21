@@ -406,7 +406,7 @@ B. Backend Variables (backend/.env in backend directory):
 
    - EMAIL_USER:
      Description: Primary account administrative email.
-     Example: chandrashriyansh@gmail.com
+     Example: admin@examfobiya.com
 
    - EMAIL_PASS:
      Description: Brevo (Sendinblue) API v3 key (starting with xkeysib-...).
