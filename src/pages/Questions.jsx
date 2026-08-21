@@ -424,23 +424,6 @@ const Questions = () => {
 
                   {/* Right Side: Actions */}
                   <div className="pdf-row-actions">
-                    {user?.role === 'admin' && (
-                      <>
-                      <button
-                        className="pdf-edit-btn"
-                        onClick={(e) => { e.stopPropagation(); navigate('/edit-question-pdf', { state: { pdf } }) }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        type="button"
-                        className="pdf-edit-btn solution-delete-btn"
-                        onClick={(e) => { e.stopPropagation(); setDeleteTarget({ id: pdf.id, docPath: pdf.docPath || pdf.id, title: pdf.subject || pdf.label || 'this question' }); }}
-                      >
-                        Delete
-                      </button>
-                      </>
-                    )}
                     <div className="pdf-user-actions">
                       <button
                         type="button"
@@ -461,6 +444,23 @@ const Questions = () => {
                         Download
                       </a>
                     </div>
+                    {user?.role === 'admin' && (
+                      <>
+                      <button
+                        className="pdf-edit-btn"
+                        onClick={(e) => { e.stopPropagation(); navigate('/edit-question-pdf', { state: { pdf } }) }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        type="button"
+                        className="pdf-edit-btn solution-delete-btn"
+                        onClick={(e) => { e.stopPropagation(); setDeleteTarget({ id: pdf.id, docPath: pdf.docPath || pdf.id, title: pdf.subject || pdf.label || 'this question' }); }}
+                      >
+                        Delete
+                      </button>
+                      </>
+                    )}
                   </div>
 
                 </div>

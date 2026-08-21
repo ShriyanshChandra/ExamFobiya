@@ -73,9 +73,9 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit, onSaveClick }) => {
                 onClick={openDetails}
                 onKeyDown={handleCardKeyDown}
                 onMouseEnter={handleCardMouseEnter}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: Math.min(index * 0.03, 0.5) }}
+                initial={{ opacity: 0, scale: 0.7, filter: 'blur(6px)' }}
+                whileInView={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                transition={{ duration: 0.45, delay: Math.min(index * 0.04, 0.5), ease: [0.25, 1, 0.5, 1] }}
                 viewport={{ once: true }}
             >
                 {hasProgrammingSolution && (
