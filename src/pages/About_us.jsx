@@ -102,7 +102,7 @@ export default function AboutUs() {
   return (
     <div className="about-us-container about-us-page">
       <div className="about-hero-section">
-        <div className="about-hero-inner container">
+        <div className="about-hero-inner">
           <p className="about-eyebrow">About ExamFobiya</p>
           <h1 className="about-hero-title">About ExamFobiya - Your BCA, DCA & PGDCA Study Companion</h1>
           <p className="about-hero-subtitle">
@@ -126,7 +126,7 @@ export default function AboutUs() {
         </div>
       </div>
 
-      <div className="about-content-wrapper container">
+      <div className="about-content-wrapper">
         <section className="about-mission-section">
           <div className="about-mission-copy">
             <p className="about-section-kicker">Our mission</p>

@@ -103,6 +103,7 @@ A. Directory Structure:
    │   └── ThemeContext.jsx        : Dark/Light theme state with localStorage persistence
    ├── pages/               : Primary routed views
    │   ├── About_us.jsx            : Platform mission, vision, and team details
+   │   ├── About_us.css            : Responsive theme-aware styling for About Us, Privacy Policy, and Terms pages
    │   ├── AddBook.jsx             : Admin interface for adding and updating books
    │   ├── AddProgrammingSolution.jsx : Admin code solution editor with AI duplicate detection
    │   ├── AdminDashboard.jsx      : Central admin portal (analytics, users, keys, errors, maintenance)

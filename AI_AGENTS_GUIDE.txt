@@ -95,6 +95,7 @@ ExamFobiya/
 │   │   └── ThemeContext.jsx      : Dark/Light theme provider with localStorage sync
 │   ├── pages/
 │   │   ├── About_us.jsx          : Information page describing ExamFobiya mission
+│   │   ├── About_us.css          : Responsive theme-aware styling for About Us, Privacy Policy, and Terms pages
 │   │   ├── AddBook.jsx           : Admin form for creating and editing book entries
 │   │   ├── AddProgrammingSolution.jsx : Code solution editor with AI similarity checker
 │   │   ├── AdminDashboard.jsx    : Multi-tab admin control panel (metrics, users, keys, errors)
