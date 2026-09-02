@@ -17,9 +17,11 @@ const DEFAULT_KEYWORDS = 'ExamFobiya, examfobiya, Examphobia, examphobia, Exam P
  * @param {string} options.path    - Route path, e.g. "/books"
  * @param {string} [options.image] - OG/Twitter image URL (defaults to logo)
  * @param {string} [options.keywords] - Additional page-specific keywords
- * @param {boolean} [options.noindex=false] - Whether to exclude page from search engine index
+ * @param {boolean} [options.noindex=false] - Whether to exclude page from search engine index (sets 'noindex, follow')
+ * @param {boolean} [options.nofollow=false] - Whether to disallow search engines from following links
+ * @param {string} [options.robots] - Explicit robots directive string override
  */
-const useSEO = ({ title, description, path = '/', image, type = 'website', noindex = false, keywords }) => {
+const useSEO = ({ title, description, path = '/', image, type = 'website', noindex = false, nofollow = false, robots, keywords }) => {
   useEffect(() => {
     // --- Document title ---
     const fullTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
@@ -52,7 +54,15 @@ const useSEO = ({ title, description, path = '/', image, type = 'website', noind
     const pageKeywords = keywords ? `${keywords}, ${DEFAULT_KEYWORDS}` : DEFAULT_KEYWORDS;
 
     // --- Robots indexing directive ---
-    setMeta('name', 'robots', noindex ? 'noindex, nofollow' : 'index, follow');
+    let robotsDirective = 'index, follow';
+    if (robots) {
+      robotsDirective = robots;
+    } else if (noindex) {
+      robotsDirective = nofollow ? 'noindex, nofollow' : 'noindex, follow';
+    } else if (nofollow) {
+      robotsDirective = 'index, nofollow';
+    }
+    setMeta('name', 'robots', robotsDirective);
 
     // --- Meta description ---
     setMeta('name', 'description', description);
@@ -77,11 +87,12 @@ const useSEO = ({ title, description, path = '/', image, type = 'website', noind
     setMeta('name', 'twitter:description', description);
     setMeta('name', 'twitter:image', pageImage);
 
-    // Cleanup: reset title when component unmounts
+    // Cleanup: reset title and robots meta tag when component unmounts
     return () => {
       document.title = `${SITE_NAME} - BCA, DCA & PGDCA Books & Study Materials`;
+      setMeta('name', 'robots', 'index, follow');
     };
-  }, [title, description, path, image, type, noindex, keywords]);
+  }, [title, description, path, image, type, noindex, nofollow, robots, keywords]);
 };
 
 export default useSEO;

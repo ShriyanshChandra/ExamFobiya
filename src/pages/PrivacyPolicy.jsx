@@ -1,4 +1,5 @@
 import React from 'react';
+import { Helmet } from 'react-helmet-async';
 import useSEO from '../utils/useSEO';
 import './About_us.css'; // Reusing styles for consistency
 
@@ -113,6 +114,10 @@ const PrivacyPolicy = () => {
 
     return (
         <div className="about-us-container legal-page">
+            <Helmet>
+                <meta name="robots" content="noindex, follow" />
+                <title>Privacy Policy - How We Protect Your Data | ExamFobiya</title>
+            </Helmet>
             <div className="about-hero-section">
                 <div className="legal-hero-inner">
                     <p className="about-eyebrow">Privacy Policy</p>

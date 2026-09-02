@@ -55,7 +55,7 @@ The application is structured into two primary tiers:
 
 [Client Tier (SPA)]
   React 19 + Vite 8 Single-Page Application (SPA)
-  Context Providers: ThemeContext, AuthContext, BookContext, QuestionContext
+  Context Providers: HelmetProvider (react-helmet-async), ThemeContext, AuthContext, BookContext, QuestionContext
   Error Handlers: GlobalErrorMonitor, ErrorBoundary, ErrorLoggerService
   Router: React Router DOM v7 (with lazyWithRetry chunk healing)
   Hosting: Vercel / Firebase Hosting
@@ -136,7 +136,7 @@ A. Directory Structure:
    │   ├── csvExporter.js          : CSV serialization utility for analytics/users
    │   ├── documentUtils.js        : PDF baseline text extraction & DOCX HTML conversion
    │   ├── usePWAInstall.js        : PWA beforeinstallprompt lifecycle hook
-   │   └── useSEO.js               : Dynamic document metadata, keywords, and OpenGraph manager (includes Examphobia/Exam Phobia search indexing)
+   │   └── useSEO.js               : Dynamic document metadata, keywords, robots directives (noindex/follow), and OpenGraph manager (includes Examphobia/Exam Phobia search indexing)
    ├── firebase.js          : Firebase Client SDK initialization
    ├── themes.css           : Comprehensive design token registry (light & dark)
    ├── index.css            : Base typography, layout resets, and custom scrollbars

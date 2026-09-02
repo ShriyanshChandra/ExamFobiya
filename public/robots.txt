@@ -7,6 +7,7 @@ Allow: /questions
 Allow: /programming-solutions
 Allow: /about
 Allow: /login
+Allow: /privacy
 
 # Disallow internal, admin, user account, and non-navigational pages
 Disallow: /admin
@@ -21,7 +22,6 @@ Disallow: /settings
 Disallow: /search
 Disallow: /register
 Disallow: /reset-password
-Disallow: /privacy
 Disallow: /terms
 Disallow: /maintenance
 
