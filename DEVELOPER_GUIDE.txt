@@ -1,8 +1,8 @@
 ================================================================================
 EXAMFOBIYA - ULTIMATE DEVELOPER ONBOARDING & SYSTEM ARCHITECTURE GUIDE
 ================================================================================
-Document Version: 2.0.0
-Last Updated: August 2026
+Document Version: 2.1.0
+Last Updated: September 2026
 
 --------------------------------------------------------------------------------
 TABLE OF CONTENTS
@@ -350,7 +350,12 @@ Cloud Firestore is configured as the primary NoSQL operational data store.
 6. THIRD-PARTY SERVICES, CLOUD PLATFORMS & INTEGRATIONS
 ================================================================================
 1. Google Cloud Platform / Firebase:
-   - Firebase Authentication: Identity management (email/password).
+   - Firebase Authentication: Identity management (email/password + Google OAuth Sign-In).
+     Google Sign-In is available on the User Portal only (not Admin Portal).
+     googleProvider is exported from src/firebase.js (GoogleAuthProvider with prompt: 'select_account').
+     loginWithGoogle() lives in AuthContext.jsx: calls signInWithPopup, then upserts Firestore user doc
+     with role: 'user', photoURL, username. Full error mapping for popup-closed, popup-blocked,
+     network-request-failed. To enable: Firebase Console -> Authentication -> Sign-in method -> Google -> Enable.
    - Cloud Firestore: Primary multi-region document store.
    - Firebase Storage: Binary file storage for book covers and question documents.
    - Firebase Hosting: Static asset delivery with 1-year immutable caching for static assets.
@@ -447,7 +452,7 @@ ExamFobiya leverages Google Gemini generative AI across key academic workflows:
 1. Document & Text Question Parsing:
    - Endpoint: POST /api/ai/parse-questions
    - Controller: backend/routes/ai.js (parseQuestions)
-   - Model Assigned: gemini-3.6-flash
+   - Model Assigned: gemini-3.7-flash
    - Prompt Purpose: Ingests unstructured academic text or OCR output, detects question-answer
      boundaries, strips 'Q:'/'A:' prefixes, preserves all HTML formatting (<ul>, <ol>, <li>,
      <strong>, <em>, <p>, <br>), and returns a strict JSON array of question objects.
@@ -455,7 +460,7 @@ ExamFobiya leverages Google Gemini generative AI across key academic workflows:
 2. Programming Solution Semantic Duplicate Detection:
    - Endpoint: POST /api/ai/check-similar-programming-solutions
    - Controller: backend/routes/ai.js (checkSimilarProgrammingSolutions)
-   - Model Assigned: gemini-3.6-flash
+   - Model Assigned: gemini-3.7-flash
    - Access Control: Restricted to Admin via verifyAdminToken.
    - Prompt Purpose: Compares a new programming question against existing solutions in the
      same language. Matches based on underlying algorithmic tasks (score >= 0.72) rather than
@@ -463,7 +468,7 @@ ExamFobiya leverages Google Gemini generative AI across key academic workflows:
 
 3. Automated API Keep-Alive Heartbeat:
    - Handler: backend/server.js (sendGeminiKeepAlivePing)
-   - Model Assigned: gemini-2.5-flash
+   - Model Assigned: gemini-3.7-flash
    - Purpose: Sends lightweight generation requests every 25 days to prevent Google AI Studio
      API keys from going stale due to inactivity.
 
@@ -573,8 +578,8 @@ POST   | /api/admin/keepalive-ping                  | Admin       | Manually tri
 POST   | /api/admin/maintenance-mode                | Admin       | Enables or disables global site maintenance mode
 GET    | /api/maintenance-mode                      | Public      | Returns current maintenance mode boolean state
 POST   | /api/admin/delete-user                     | Admin       | Deletes user account from Firestore and Auth
-POST   | /api/ai/parse-questions                    | Public      | AI document to Q&A JSON parser (Gemini 3.6)
-POST   | /api/ai/check-similar-programming-solutions| Admin       | Semantic duplicate solution detector (Gemini 3.6)
+POST   | /api/ai/parse-questions                    | Public      | AI document to Q&A JSON parser (Gemini 3.7)
+POST   | /api/ai/check-similar-programming-solutions| Admin       | Semantic duplicate solution detector (Gemini 3.7)
 POST   | /api/indexnow/notify                       | Public/Admin| Submits URL list to IndexNow search protocol
 GET    | /                                          | Public      | Health check returning server status string
 

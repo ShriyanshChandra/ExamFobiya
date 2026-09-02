@@ -21,7 +21,7 @@ const parseQuestions = async (req, res) => {
         console.log('DEBUG - Parsing questions with AI...');
         console.log('DEBUG - Content length:', content.length);
 
-        const model = genAI.getGenerativeModel({ model: "gemini-3.6-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-3.7-flash" });
 
         const prompt = `You are a question parser. Extract individual question-answer pairs from the provided content and return them with their HTML formatting preserved.
 
@@ -140,7 +140,7 @@ const checkSimilarProgrammingSolutions = async (req, res) => {
             return res.status(200).json({ matches: [], source: 'ai' });
         }
 
-        const model = genAI.getGenerativeModel({ model: "gemini-3.6-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-3.7-flash" });
         const prompt = `You compare programming solution questions for duplicate or near-duplicate topics.
 
 New solution:

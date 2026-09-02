@@ -545,6 +545,18 @@
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 18%, transparent);
 }
 
+[data-theme='midnight'] .settings-username-input {
+    background: rgba(10, 10, 30, 0.85);
+    border-color: color-mix(in srgb, var(--accent-color) 40%, transparent);
+    color: #e2e8f0;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 10%, transparent);
+}
+
+[data-theme='midnight'] .settings-username-input:focus {
+    border-color: color-mix(in srgb, var(--accent-color) 65%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 18%, transparent);
+}
+
 /* ═══════════════════════════════════════════════════════════════
    RESET PASSWORD PANEL
    ═══════════════════════════════════════════════════════════════ */

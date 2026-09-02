@@ -104,7 +104,7 @@ ExamFobiya/
 │   │   ├── EditQuestionPdf.jsx   : Admin management view for question paper PDFs
 │   │   ├── ExploreSection.jsx    : Featured discovery section
 │   │   ├── Home.jsx              : Landing page with search, course cards, and spotlight sections
-│   │   ├── Login.jsx             : Authentication portal (email/password login)
+│   │   ├── Login.jsx             : Authentication portal (email/password + Google Sign-In). User Portal has Google OAuth button; Admin Portal is email/password only.
 │   │   ├── Maintenance.jsx       : Maintenance splash screen for non-admin users
 │   │   ├── NewArrivals.jsx       : Spotlight view for newly added inventory
 │   │   ├── PrivacyPolicy.jsx     : GDPR/legal compliance disclosure
@@ -350,12 +350,12 @@ Base URL Resolution: src/utils/api.js (DEV: http://127.0.0.1:5000, PROD: VITE_AP
 
 13. POST /api/ai/parse-questions
     - Body: { "content": string }
-    - Model: gemini-3.6-flash
+    - Model: gemini-3.7-flash
     - Response: 200 { "questions": Array<{ "question": string, "answer": string }>, "count": number }
 
 14. POST /api/ai/check-similar-programming-solutions [Requires verifyAdminToken]
     - Body: { "solution": { "title": string, "language": string }, "candidates": Array<{ "id": string, "title": string, "language": string }> }
-    - Model: gemini-3.6-flash
+    - Model: gemini-3.7-flash
     - Response: 200 { "matches": Array<{ "id": string, "score": number, "reason": string }>, "source": "ai" }
 
 15. POST /api/indexnow/notify
@@ -367,12 +367,12 @@ Base URL Resolution: src/utils/api.js (DEV: http://127.0.0.1:5000, PROD: VITE_AP
 7. AI MODELS, PROMPT PIPELINES & RESPONSE PARSERS (GOOGLE GEMINI)
 ================================================================================
 1. Question Parsing Pipeline (backend/routes/ai.js):
-   - Model: "gemini-3.6-flash"
+   - Model: "gemini-3.7-flash"
    - Rules: Retain HTML tags (<ul>, <ol>, <li>, <strong>, <em>, <p>, <br>), strip "Q:", "A:", "Question:", "Answer:" prefixes, enforce JSON array output shape [{"question": "...", "answer": "..."}].
    - Markdown sanitization: Strips ```json and ``` code block fences before JSON.parse().
 
 2. Duplicate Solution Detection Pipeline (backend/routes/ai.js):
-   - Model: "gemini-3.6-flash"
+   - Model: "gemini-3.7-flash"
    - Prompt constraint: Compare question intent, return only matches with score >= 0.72, at most 3 items, JSON shape: {"matches":[{"id":"...","score":0.0,"reason":"..."}]}.
    - Sanitization: Validates that returned match IDs exist in candidate set and enforces score threshold >= 0.72.
 

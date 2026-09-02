@@ -546,7 +546,7 @@ const sendGeminiKeepAlivePing = async () => {
     try {
         const { GoogleGenerativeAI } = require('@google/generative-ai');
         const genAI = new GoogleGenerativeAI(geminiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-3.7-flash" });
         await model.generateContent("Keep alive check");
         console.log('[Keep-Alive] Gemini API ping successful.');
         return { success: true };
