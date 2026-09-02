@@ -251,7 +251,7 @@ const Navbar = ({ setSearchQuery }) => {
               </svg>
             </button>
             {showThemeMenu && (
-              <div className="account-dropdown" style={{ right: 0, minWidth: '150px' }} role="menu">
+              <div className="account-dropdown theme-dropdown-menu" role="menu">
                 <button type="button" className={`account-dropdown-item theme-option-card ${theme === 'light' ? 'active' : ''}`} onClick={() => { setTheme('light'); setShowThemeMenu(false); }}>
                   <div className="theme-card-colors">
                     <div style={{ background: '#2575fc' }}></div>

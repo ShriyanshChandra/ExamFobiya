@@ -915,7 +915,7 @@ body.dark-mode .details-toggle-btn {
 
 .api-keys-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
     gap: 1.25rem;
 }
 
@@ -1861,7 +1861,7 @@ body.dark-mode .pagination-btn,
 
 .system-controls-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
     gap: 1.25rem;
     margin-top: 1rem;
 }

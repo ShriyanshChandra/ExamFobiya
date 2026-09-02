@@ -365,6 +365,45 @@
   text-transform: uppercase;
 }
 
+.theme-dropdown-menu {
+  width: min(17.5rem, calc(100vw - 2rem));
+  min-width: 12rem;
+  max-height: min(85vh, 32rem);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 1rem;
+  right: 0;
+  left: auto;
+  transform: none;
+  animation: themeMenuFadeIn 0.18s ease;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-adaptive) transparent;
+}
+
+@keyframes themeMenuFadeIn {
+  from {
+    opacity: 0;
+    margin-top: -0.35rem;
+  }
+  to {
+    opacity: 1;
+    margin-top: 0;
+  }
+}
+
+.theme-dropdown-menu::-webkit-scrollbar {
+  width: 4px;
+}
+
+.theme-dropdown-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.theme-dropdown-menu::-webkit-scrollbar-thumb {
+  background: var(--border-adaptive);
+  border-radius: 4px;
+}
+
 .account-dropdown-logout {
   background-color: var(--accent-color);
   color: var(--surface-text);
@@ -651,6 +690,20 @@
 
   .theme-dropdown-container {
     order: 3;
+  }
+
+  .theme-dropdown-menu {
+    width: min(13.5rem, calc(100vw - 1.5rem));
+    padding: 0.75rem;
+    right: -3.5rem;
+    left: auto;
+    transform: none;
+  }
+
+  .theme-dropdown-menu::before {
+    right: 4.5rem;
+    left: auto;
+    transform: rotate(45deg);
   }
 
   .theme-toggle {
@@ -959,6 +1012,31 @@
   }
 }
 
+/* ─── Small mobile screens (<= 480px) ─── */
+@media screen and (max-width: 30rem) {
+  .theme-dropdown-menu {
+    right: -2.85rem;
+    left: auto;
+    width: min(11.5rem, calc(100vw - 1rem));
+    padding: 0.55rem 0.45rem;
+    max-height: min(75vh, 22rem);
+  }
+
+  .theme-dropdown-menu::before {
+    right: 3.75rem;
+  }
+
+  .account-dropdown-item.theme-option-card {
+    height: 38px;
+    margin-bottom: 6px;
+  }
+
+  .theme-card-label {
+    padding: 3px 10px;
+    font-size: 0.72rem;
+  }
+}
+
 /* ─── Ultra-narrow screens (< 330px) ─── */
 @media screen and (max-width: 20.625rem) {
   .navbar {
@@ -995,6 +1073,28 @@
   .theme-toggle svg {
     width: 18px;
     height: 18px;
+  }
+
+  .theme-dropdown-menu {
+    right: -2rem;
+    left: auto;
+    width: min(10rem, calc(100vw - 0.75rem));
+    padding: 0.45rem 0.35rem;
+    max-height: min(70vh, 19rem);
+  }
+
+  .theme-dropdown-menu::before {
+    right: 2.75rem;
+  }
+
+  .account-dropdown-item.theme-option-card {
+    height: 34px;
+    margin-bottom: 4px;
+  }
+
+  .theme-card-label {
+    padding: 2px 8px;
+    font-size: 0.65rem;
   }
 
   .search-btn {

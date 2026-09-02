@@ -84,7 +84,7 @@ ExamFobiya/
 │   │   ├── Footer.jsx            : App footer with legal links, social icons, and copyright
 │   │   ├── GlobalErrorMonitor.jsx: Intercepts unhandledrejection and window.onerror events
 │   │   ├── Loader.jsx            : Visual loading spinner with fallback states
-│   │   ├── Navbar.jsx            : Responsive navigation bar, search bar, and auth buttons
+│   │   ├── Navbar.jsx            : Responsive navigation bar, search bar, responsive theme selector dropdown, and auth buttons
 │   │   ├── PWAInstallBanner.jsx  : Custom banner handling beforeinstallprompt PWA install
 │   │   ├── ProtectedRoute.jsx    : React Router wrapper enforcing auth and role requirements
 │   │   └── RemoveBookModal.jsx   : Specialized confirmation modal for deleting catalog books

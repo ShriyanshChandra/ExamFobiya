@@ -73,6 +73,32 @@
     }
 }
 
+/* ─── Small phone scaling (≤ 480px) ─── */
+@media (max-width: 480px) {
+    .footer-container {
+        padding: 1.5rem 0.875rem 0.75rem;
+    }
+
+    .footer-section h3 {
+        font-size: 1.2rem;
+    }
+
+    .footer-section h4 {
+        font-size: 1rem;
+    }
+
+    .footer-section p,
+    .footer-section a,
+    .footer-section ul li {
+        font-size: 0.88rem;
+    }
+
+    .footer-bottom {
+        font-size: 0.8rem;
+        margin-top: 1.5rem;
+    }
+}
+
 /* Theme-Adaptive Footer (applies to all themes except 'light') */
 [data-theme]:not([data-theme='light']) .footer-container {
     background-color: color-mix(in srgb, var(--background-color) 92%, var(--text-color));

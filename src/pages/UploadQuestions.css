@@ -383,3 +383,25 @@
         flex-direction: column;
     }
 }
+
+/* ─── Small phone scaling (≤ 480px) ─── */
+@media (max-width: 480px) {
+    .uq-container {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .uq-card {
+        padding: 1.25rem 0.875rem;
+    }
+
+    .uq-card h2 {
+        font-size: 1.2rem;
+    }
+
+    .uq-label-input,
+    .uq-month-select,
+    .uq-year-select,
+    .uq-url-input {
+        font-size: 0.88rem;
+    }
+}

@@ -92,7 +92,7 @@ A. Directory Structure:
    │   ├── Footer.jsx              : Global footer with links, copyright, and policies
    │   ├── GlobalErrorMonitor.jsx  : Global window error and promise rejection interceptor
    │   ├── Loader.jsx              : Animated loading spinner / skeleton widget
-   │   ├── Navbar.jsx              : Responsive header with search bar, navigation, theme toggle, and auth states
+   │   ├── Navbar.jsx              : Responsive header with search bar, navigation, responsive theme selector dropdown (7 themes), and auth states
    │   ├── PWAInstallBanner.jsx    : App install banner for supported browsers
    │   ├── ProtectedRoute.jsx      : Client route guard verifying authentication & roles
    │   └── RemoveBookModal.jsx     : Admin confirmation modal for catalog book deletion

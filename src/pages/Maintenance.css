@@ -57,3 +57,24 @@
     opacity: 0.8;
     font-weight: 600;
 }
+
+/* ─── Small phone scaling (≤ 480px) ─── */
+@media (max-width: 480px) {
+    .maintenance-card {
+        padding: 2rem 1.25rem;
+        width: 94%;
+    }
+
+    .maintenance-animation {
+        width: min(11rem, 100%);
+        height: min(11rem, 100%);
+    }
+
+    .maintenance-title {
+        font-size: 1.7rem;
+    }
+
+    .maintenance-text {
+        font-size: 0.95rem;
+    }
+}
