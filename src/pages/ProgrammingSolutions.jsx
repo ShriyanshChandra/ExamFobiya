@@ -12,6 +12,7 @@ const getRunInstructions = (language) => {
   const lang = (language || "").toLowerCase();
 
   const compilerMap = {
+    ".net": { name: ".NET", compiler: ".NET SDK", ext: ".cs / .vb / .fs", compileCmd: "dotnet run", runCmd: "", onlineNote: ".NET compiler", vsExt: "C# Dev Kit by Microsoft", fileHint: 'a .NET project or a file named "Program.cs"', installHint: { text: "Install the .NET SDK from", linkText: "dotnet.microsoft.com", linkUrl: "https://dotnet.microsoft.com/download" } },
     c: { name: "C", compiler: "C compiler (e.g. GCC)", ext: ".c", compileCmd: "gcc program.c -o program", runCmd: "./program (or program.exe on Windows)", onlineNote: "C compiler", vsExt: "C/C++ by Microsoft", fileHint: 'a file named "program.c"', installHint: "Install GCC (MinGW on Windows, Xcode Command Line Tools on macOS, or build-essential on Linux)." },
     "c++": { name: "C++", compiler: "C++ compiler (e.g. G++)", ext: ".cpp", compileCmd: "g++ program.cpp -o program", runCmd: "./program (or program.exe on Windows)", onlineNote: "C++ compiler", vsExt: "C/C++ by Microsoft", fileHint: 'a file named "program.cpp"', installHint: "Install G++ (MinGW on Windows, Xcode Command Line Tools on macOS, or build-essential on Linux)." },
     "c#": { name: "C#", compiler: ".NET SDK", ext: ".cs", compileCmd: "dotnet run", runCmd: "", onlineNote: "C# compiler", vsExt: "C# Dev Kit by Microsoft", fileHint: 'a C# project or a file named "Program.cs"', installHint: { text: "Install the .NET SDK from", linkText: "dotnet.microsoft.com", linkUrl: "https://dotnet.microsoft.com/download" } },
@@ -38,7 +39,7 @@ const getRunInstructions = (language) => {
 
   if (lang === "python") {
     option2Steps.push(`Open the integrated terminal (Ctrl+\` or Cmd+\` on Mac) and run: ${info.runCmd}`);
-  } else if (lang === "c#") {
+  } else if (lang === "c#" || lang === ".net") {
     option2Steps.push(`Open the integrated terminal (Ctrl+\` or Cmd+\` on Mac) and run: ${info.compileCmd}`);
   } else {
     option2Steps.push(`Open the integrated terminal (Ctrl+\` or Cmd+\` on Mac) and compile: ${info.compileCmd}`);
@@ -55,7 +56,7 @@ const getRunInstructions = (language) => {
 
   if (lang === "python") {
     option3Steps.push(`Run the program: ${info.runCmd}`);
-  } else if (lang === "c#") {
+  } else if (lang === "c#" || lang === ".net") {
     option3Steps.push(`Create a new console project: dotnet new console -o MyApp`);
     option3Steps.push(`Navigate into the project folder: cd MyApp`);
     option3Steps.push(`Replace the code in Program.cs with the solution code.`);
@@ -160,7 +161,7 @@ const normalizeSolutions = (book) => {
   return [];
 };
 
-const LANGUAGE_TABS = ['C', 'C#', 'C++', 'Java', 'Python'];
+const LANGUAGE_TABS = ['.NET', 'C', 'C#', 'C++', 'Java', 'Python'];
 
 const ProgrammingSolutions = () => {
   const { id } = useParams();
@@ -638,7 +639,15 @@ const ProgrammingSolutions = () => {
 
         {searched && (
           results.length === 0 ? (
-            <p className="no-results">No programming solutions found for "{searchQuery}".</p>
+            <p className="no-results">
+              {searchQuery?.trim()
+                ? `No programming solutions found for "${searchQuery.trim()}".`
+                : selectedLanguage
+                ? `No programming solutions found for "${selectedLanguage}".`
+                : filters.language
+                ? `No programming solutions found for "${filters.language}".`
+                : "No programming solutions found matching your criteria."}
+            </p>
           ) : (
             <div className="pdf-results-list">
               {visibleResults.map(({ book, solution, rowId }) => (

@@ -37,7 +37,7 @@ The platform unifies:
   - University Question Papers & Solution Bank: Hierarchical indexing of academic
     universities, courses, subjects, Q&A pairs, and past examination PDFs with course selector tabs.
   - Programming Solutions Hub: Code solution repository supporting multiple
-    programming languages (C, C#, C++, Java, Python), syntax formatting, how-to-run instructions,
+    programming languages (.NET, C, C#, C++, Java, Python), syntax formatting, how-to-run instructions,
     and AI-driven semantic duplicate detection.
   - Document & Question Extraction Engine: In-browser and server-side ingestion
     of PDF and DOCX files with baseline indentation recovery and automated

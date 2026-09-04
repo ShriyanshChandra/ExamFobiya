@@ -97,7 +97,7 @@ ExamFobiya/
 │   │   ├── About_us.jsx          : Information page describing ExamFobiya mission
 │   │   ├── About_us.css          : Responsive theme-aware styling for About Us, Privacy Policy, and Terms pages
 │   │   ├── AddBook.jsx           : Admin form for creating and editing book entries
-│   │   ├── AddProgrammingSolution.jsx : Code solution editor with AI similarity checker
+│   │   ├── AddProgrammingSolution.jsx : Code solution editor with AI similarity checker (.NET, C, C#, C++, Java, Python)
 │   │   ├── AdminDashboard.jsx    : Multi-tab admin control panel (metrics, users, keys, errors)
 │   │   ├── BestSeller.jsx        : Spotlight view for best-selling books
 │   │   ├── Books.jsx             : Searchable academic catalog with filter sidebar
@@ -108,7 +108,7 @@ ExamFobiya/
 │   │   ├── Maintenance.jsx       : Maintenance splash screen for non-admin users
 │   │   ├── NewArrivals.jsx       : Spotlight view for newly added inventory
 │   │   ├── PrivacyPolicy.jsx     : GDPR/legal compliance disclosure
-│   │   ├── ProgrammingSolutions.jsx : Code solutions explorer by language and topic
+│   │   ├── ProgrammingSolutions.jsx : Code solutions explorer by language (.NET, C, C#, C++, Java, Python) and topic
 │   │   ├── Questions.jsx         : Academic question bank with course selector tabs (BCA, DCA, PGDCA), search, filters, and PDF viewer
 │   │   ├── Register.jsx          : Registration flow with 6-digit Brevo OTP verification
 │   │   ├── ResetPassword.jsx     : Password recovery via Brevo OTP or Firebase OOB code
