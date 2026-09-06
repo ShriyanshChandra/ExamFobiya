@@ -20,7 +20,7 @@
   --text-color: #000000;
   --text-muted: #5b6474;
   --surface-text: #1e40af;
-  --on-accent: #1e293b;
+  --on-accent: #1e40af;
   --white: #ffffff;
   /* Opaque elevated surfaces are safe across deployment targets. */
   --surface-bg: var(--card-bg);
@@ -72,7 +72,7 @@
   --text-color: #e0e0e0;
   --text-muted: #b8c4d4;
   --surface-text: #111827;
-  --on-accent: #111827;
+  --on-accent: #000000;
   --white: #1e1e1e;
   --surface-bg: var(--card-bg);
   --surface-border: var(--border-adaptive);
@@ -122,8 +122,8 @@
   --background-color: #f4ebd8;
   --text-color: #4e342e;
   --text-muted: #6d4c41;
-  --surface-text: #3e2723;
-  --on-accent: #3e2723;
+  --surface-text: #6e352b;
+  --on-accent: #6e352b;
   --white: #e8dcc8;
   --surface-bg: var(--card-bg);
   --surface-border: var(--border-adaptive);
@@ -147,7 +147,7 @@
   --text-color: #134e4a;
   --text-muted: #276e6a;
   --surface-text: #164e63;
-  --on-accent: #134e4a;
+  --on-accent: var(--surface-text);
   --white: #f0fdfa;
   --surface-bg: var(--card-bg);
   --surface-border: var(--border-adaptive);
@@ -171,7 +171,7 @@
   --text-color: #2e1d16;
   --text-muted: #5d4037;
   --surface-text: #2e1d16;
-  --on-accent: #2e1d16;
+  --on-accent: var(--surface-text);
   --white: #f7f3e8;
   --surface-bg: var(--card-bg);
   --surface-border: var(--border-adaptive);
@@ -195,7 +195,7 @@
   --text-color: #e2e8f0;
   --text-muted: #b7c4dc;
   --surface-text: #0a0a14;
-  --on-accent: #0a0a14;
+  --on-accent: var(--surface-text);
   --white: #0a0a14;
   --surface-bg: var(--card-bg);
   --surface-border: var(--border-adaptive);
@@ -219,7 +219,7 @@
   --text-color: #2e3440;
   --text-muted: #4c566a;
   --surface-text: #2e3440;
-  --on-accent: #2e3440;
+  --on-accent: var(--surface-text);
   --white: #e5e9f0;
   --surface-bg: var(--card-bg);
   --surface-border: var(--border-adaptive);
@@ -422,3 +422,82 @@
     background: color-mix(in srgb, var(--primary-color) 14%, transparent);
     color: #795548;
 }
+
+/*
+ * ═══════════════════════════════════════════════════
+ *  QUESTIONS & PROGRAMMING SOLUTIONS ACCENT THEMING
+ * ═══════════════════════════════════════════════════
+ */
+
+.pdf-card-course,
+.pdf-view-btn,
+.questions-search-btn,
+.pdf-edit-btn:not(.solution-delete-btn) {
+  color: var(--on-accent) !important;
+}
+
+.pdf-view-btn svg,
+.questions-search-btn svg {
+  stroke: var(--on-accent) !important;
+}
+
+/* Dark theme — black (#000000) */
+[data-theme='dark'] .pdf-card-course,
+[data-theme='dark'] .pdf-view-btn,
+[data-theme='dark'] .questions-search-btn,
+[data-theme='dark'] .pdf-edit-btn:not(.solution-delete-btn),
+[data-theme='dark'] .course-tab-pill.active,
+[data-theme='dark'] .lang-tab-pill.active {
+  color: #000000 !important;
+}
+
+[data-theme='dark'] .pdf-view-btn svg,
+[data-theme='dark'] .questions-search-btn svg {
+  stroke: #000000 !important;
+}
+
+/* Vintage theme — #6e352b */
+[data-theme='vintage'] .pdf-card-course,
+[data-theme='vintage'] .pdf-view-btn,
+[data-theme='vintage'] .questions-search-btn,
+[data-theme='vintage'] .pdf-edit-btn:not(.solution-delete-btn),
+[data-theme='vintage'] .course-tab-pill.active,
+[data-theme='vintage'] .lang-tab-pill.active {
+  color: #6e352b !important;
+}
+
+[data-theme='vintage'] .pdf-view-btn svg,
+[data-theme='vintage'] .questions-search-btn svg {
+  stroke: #6e352b !important;
+}
+
+/* Light theme — #1e40af */
+:is([data-theme='light'], :root:not([data-theme])) .pdf-card-course,
+:is([data-theme='light'], :root:not([data-theme])) .pdf-view-btn,
+:is([data-theme='light'], :root:not([data-theme])) .questions-search-btn,
+:is([data-theme='light'], :root:not([data-theme])) .pdf-edit-btn:not(.solution-delete-btn),
+:is([data-theme='light'], :root:not([data-theme])) .course-tab-pill.active,
+:is([data-theme='light'], :root:not([data-theme])) .lang-tab-pill.active {
+  color: #1e40af !important;
+}
+
+:is([data-theme='light'], :root:not([data-theme])) .pdf-view-btn svg,
+:is([data-theme='light'], :root:not([data-theme])) .questions-search-btn svg {
+  stroke: #1e40af !important;
+}
+
+/* Ocean, Forest, Midnight, Nord — var(--surface-text) */
+:is([data-theme='ocean'], [data-theme='forest'], [data-theme='midnight'], [data-theme='nord']) .pdf-card-course,
+:is([data-theme='ocean'], [data-theme='forest'], [data-theme='midnight'], [data-theme='nord']) .pdf-view-btn,
+:is([data-theme='ocean'], [data-theme='forest'], [data-theme='midnight'], [data-theme='nord']) .questions-search-btn,
+:is([data-theme='ocean'], [data-theme='forest'], [data-theme='midnight'], [data-theme='nord']) .pdf-edit-btn:not(.solution-delete-btn),
+:is([data-theme='ocean'], [data-theme='forest'], [data-theme='midnight'], [data-theme='nord']) .course-tab-pill.active,
+:is([data-theme='ocean'], [data-theme='forest'], [data-theme='midnight'], [data-theme='nord']) .lang-tab-pill.active {
+  color: var(--surface-text) !important;
+}
+
+:is([data-theme='ocean'], [data-theme='forest'], [data-theme='midnight'], [data-theme='nord']) .pdf-view-btn svg,
+:is([data-theme='ocean'], [data-theme='forest'], [data-theme='midnight'], [data-theme='nord']) .questions-search-btn svg {
+  stroke: var(--surface-text) !important;
+}
+

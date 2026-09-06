@@ -1,0 +1,201 @@
+/* ==========================================================================
+   Spotlight Section — Unified Course Showcase (BCA, DCA, PGDCA)
+   ========================================================================== */
+
+.spotlight-section {
+  position: relative;
+  width: 95%;
+  max-width: 100rem;
+  margin: 0 auto 2rem;
+  padding: 3.5rem 2rem 3rem;
+  border-radius: 1.25rem;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Header */
+.spotlight-header {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  max-width: 52rem;
+  margin: 0 auto 2.5rem;
+}
+
+.spotlight-title {
+  font-size: clamp(2.1rem, 4.6vw, 3.2rem);
+  font-weight: 800;
+  line-height: 1.22;
+  color: var(--text-color);
+  margin: 0 0 2rem 0;
+  letter-spacing: -0.025em;
+}
+
+/* Capsule Pill Filter Bar */
+.spotlight-nav-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.spotlight-pill-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-bg);
+  border: 1px solid var(--surface-border);
+  border-radius: 62.5rem;
+  padding: 0.38rem 0.5rem;
+  gap: 0.35rem;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.spotlight-tab-btn {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.58rem 1.45rem;
+  border-radius: 62.5rem;
+  cursor: pointer;
+  transition: all 0.22s ease-in-out;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.spotlight-tab-btn:hover:not(.active) {
+  color: var(--text-color);
+  background: color-mix(in srgb, var(--text-color) 8%, transparent);
+}
+
+.spotlight-tab-btn.active {
+  background: var(--accent-color);
+  color: var(--surface-text);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--accent-color) 40%, transparent);
+  transform: translateY(-1px);
+}
+
+.spotlight-tab-btn.active:hover {
+  background: color-mix(in srgb, var(--accent-color) 85%, white);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--accent-color) 50%, transparent);
+}
+
+[data-theme='vintage'] .spotlight-tab-btn.active {
+  color: #ffffff;
+}
+
+/* Books Showcase */
+.spotlight-books-wrapper {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+.spotlight-shelf {
+  animation: spotlightFadeIn 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes spotlightFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Empty State */
+.spotlight-empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  border-radius: 1.5rem;
+  background: var(--surface-bg);
+  border: 1px dashed var(--surface-border);
+  color: var(--text-muted);
+  font-size: 1.05rem;
+}
+
+.spotlight-empty-link {
+  display: inline-block;
+  margin-top: 1rem;
+  color: var(--accent-color);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+/* Footer Link */
+.spotlight-footer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2.25rem;
+}
+
+.spotlight-browse-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-color);
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  padding: 0.65rem 1.6rem;
+  border-radius: 62.5rem;
+  background: var(--surface-bg);
+  border: 1px solid var(--surface-border);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+}
+
+.spotlight-browse-all:hover {
+  border-color: var(--accent-color);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  color: var(--accent-color);
+}
+
+.spotlight-browse-all svg {
+  transition: transform 0.2s ease;
+}
+
+.spotlight-browse-all:hover svg {
+  transform: translateX(3px);
+}
+
+/* Mobile Responsiveness */
+@media screen and (max-width: 48rem) {
+  .spotlight-section {
+    width: 98%;
+    padding: 2.5rem 0.875rem 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .spotlight-pill-container {
+    padding: 0.3rem;
+    gap: 0.25rem;
+  }
+
+  .spotlight-tab-btn {
+    font-size: 0.78rem;
+    padding: 0.5rem 0.95rem;
+  }
+
+  .decor-dots-top-left,
+  .decor-cross-top-right,
+  .decor-circle {
+    display: none;
+  }
+}

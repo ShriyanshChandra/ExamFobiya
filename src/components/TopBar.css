@@ -1,0 +1,264 @@
+/* Theme SVG stroke colors for TopBar */
+:root {
+  --topbar-svg-color: #64748b;
+}
+
+[data-theme='dark'] {
+  --topbar-svg-color: #d1d5db;
+}
+
+[data-theme='vintage'] {
+  --topbar-svg-color: #5d4037;
+}
+
+[data-theme='ocean'] {
+  --topbar-svg-color: #0e7490;
+}
+
+[data-theme='forest'] {
+  --topbar-svg-color: #047857;
+}
+
+[data-theme='midnight'] {
+  --topbar-svg-color: #818cf8;
+}
+
+[data-theme='nord'] {
+  --topbar-svg-color: #4c566a;
+}
+
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 1100;
+  background: var(--background-color);
+  border-bottom: 1px solid var(--surface-border);
+  padding: 0.32rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  transition: transform 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+  color: var(--topbar-svg-color);
+}
+
+.topbar--hidden {
+  transform: translateY(-100%);
+}
+
+/* Left — social links */
+.topbar-social {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.topbar-social-link {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--topbar-svg-color);
+  text-decoration: none;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.topbar-social-link:hover {
+  color: var(--text-color);
+  transform: translateY(-1px);
+}
+
+.topbar-social-instagram:hover {
+  color: #e1306c;
+}
+
+.topbar-social-email:hover {
+  color: var(--accent-color);
+}
+
+/* Right — auth */
+.topbar-auth {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.topbar-btn {
+  text-decoration: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.22rem 0.9rem;
+  border-radius: 1rem;
+  letter-spacing: 0.03em;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.topbar-btn-register {
+  background: transparent;
+  color: var(--topbar-svg-color);
+  border: 1px solid color-mix(in srgb, var(--topbar-svg-color) 35%, transparent);
+}
+
+.topbar-btn-register:hover {
+  background: color-mix(in srgb, var(--topbar-svg-color) 10%, transparent);
+  color: var(--text-color);
+  border-color: var(--topbar-svg-color);
+  transform: translateY(-1px);
+}
+
+.topbar-btn-login {
+  background: var(--accent-color);
+  color: var(--surface-text);
+  border: 1px solid transparent;
+}
+
+.topbar-btn-login:hover {
+  background: color-mix(in srgb, var(--accent-color) 80%, white);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--accent-color) 40%, transparent);
+}
+
+@media screen and (max-width: 75rem) {
+  .topbar {
+    display: none;
+  }
+}
+
+/* User Account Dropdown on Hover */
+.topbar-user-menu {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.topbar-username-btn {
+  background: transparent;
+  border: none;
+  outline: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.18rem 0.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  color: var(--topbar-svg-color);
+  transition: background 0.2s ease, color 0.2s ease;
+  font-family: inherit;
+}
+
+.topbar-username-btn:hover,
+.topbar-user-menu:hover .topbar-username-btn {
+  background: color-mix(in srgb, var(--topbar-svg-color) 12%, transparent);
+  color: var(--text-color);
+}
+
+.topbar-username {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  max-width: 9.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: inherit;
+}
+
+.topbar-chevron {
+  transition: transform 0.25s ease;
+  opacity: 0.75;
+}
+
+.topbar-user-menu:hover .topbar-chevron {
+  transform: rotate(180deg);
+  opacity: 1;
+}
+
+/* Dropdown Menu */
+.topbar-dropdown {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  min-width: 10.5rem;
+  background: var(--card-bg);
+  color: var(--text-color);
+  border: 1px solid var(--surface-border);
+  border-radius: 0.85rem;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  padding: 0.35rem;
+  display: none;
+  flex-direction: column;
+  gap: 0.2rem;
+  z-index: 1200;
+  animation: topbarDropdownIn 0.18s ease;
+}
+
+/* Invisible bridge so moving cursor into dropdown doesn't lose hover */
+.topbar-dropdown::before {
+  content: '';
+  position: absolute;
+  top: -0.5rem;
+  left: 0;
+  right: 0;
+  height: 0.5rem;
+}
+
+.topbar-user-menu:hover .topbar-dropdown,
+.topbar-user-menu:focus-within .topbar-dropdown {
+  display: flex;
+}
+
+.topbar-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.55rem 0.85rem;
+  border-radius: 0.55rem;
+  border: none;
+  background: transparent;
+  color: var(--text-color);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+  box-sizing: border-box;
+}
+
+.topbar-dropdown-item svg {
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+
+.topbar-dropdown-item:hover {
+  background: color-mix(in srgb, var(--primary-color) 12%, transparent);
+  color: var(--primary-color);
+}
+
+.topbar-dropdown-item:hover svg {
+  opacity: 1;
+}
+
+.topbar-dropdown-logout:hover {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+}
+
+@keyframes topbarDropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

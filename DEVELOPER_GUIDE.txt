@@ -84,18 +84,20 @@ A. Directory Structure:
    ├── assets/              : Static icons, SVGs, animation assets, logos
    ├── components/          : Reusable UI widgets and layout elements
    │   ├── BackToTop.jsx    : Smooth floating back-to-top button
-   │   ├── BookCard.jsx     : Book display card with category badges, questions, syllabus, and solutions links
-   │   ├── BookCategorySection.jsx : Horizontal category carousel/grid
+   │   ├── BookCard.jsx     : Book display card with category badges, questions, syllabus, solutions links, and marquee support
+   │   ├── BookCategorySection.jsx : Horizontal category shelf with continuous alternating auto-scrolling marquee (left-to-right in New Arrivals, right-to-left in Best Sellers, pause on hover)
    │   ├── BookDetailsModal.jsx    : Modal presenting book cover, title, syllabus topics, and page number index
    │   ├── ConfirmationModal.jsx   : Reusable action confirmation modal
    │   ├── ErrorBoundary.jsx       : React component tree crash boundary
    │   ├── Footer.jsx              : Global footer with links, copyright, and policies
    │   ├── GlobalErrorMonitor.jsx  : Global window error and promise rejection interceptor
    │   ├── Loader.jsx              : Animated loading spinner / skeleton widget
-   │   ├── Navbar.jsx              : Responsive header with search bar, navigation, responsive theme selector dropdown (7 themes), and auth states
+   │   ├── Navbar.jsx              : Clean responsive navigation bar with search bar, category links, responsive theme selector dropdown (7 themes), and mobile menu with user name at top and Settings & Logout below Dashboard
    │   ├── PWAInstallBanner.jsx    : App install banner for supported browsers
    │   ├── ProtectedRoute.jsx      : Client route guard verifying authentication & roles
-   │   └── RemoveBookModal.jsx     : Admin confirmation modal for catalog book deletion
+   │   ├── RemoveBookModal.jsx     : Admin confirmation modal for catalog book deletion
+   │   ├── SpotlightSection.jsx    : Unified course spotlight showcase with capsule pill tabs (ALL RELEASES, BCA, DCA, PGDCA) and left-to-right continuous auto-scrolling marquee shelf (pause on hover)
+   │   └── TopBar.jsx              : Top header bar styled with website background and SVG-stroke-matched text colors, social media links, scroll-direction show/hide behavior, and desktop auth state with hover user dropdown (Settings, Logout) or Login/Register
    ├── context/             : React Context state providers
    │   ├── AuthContext.jsx         : Firebase Auth state, user role caching, register/login/logout
    │   ├── BookContext.jsx         : Real-time Firestore sync for books, section sorting, solution binding
@@ -110,8 +112,8 @@ A. Directory Structure:
    │   ├── BestSeller.jsx          : Filtered showcase of best-selling titles
    │   ├── Books.jsx               : Searchable and filterable academic book catalog
    │   ├── EditQuestionPdf.jsx     : Admin management portal for question PDFs
-   │   ├── ExploreSection.jsx      : Curated discovery modules
-   │   ├── Home.jsx                : Landing page with hero search, speed test, and spotlights
+   │   ├── ExploreSection.jsx      : Curated discovery modules (standalone book discovery module)
+   │   ├── Home.jsx                : Landing page with responsive split hero (desktop: left-aligned text & right-aligned CTAs; mobile: centered), speed test, and spotlights
    │   ├── Login.jsx               : User and Admin authentication portal
    │   ├── Maintenance.jsx         : Public maintenance mode splash screen
    │   ├── NewArrivals.jsx         : Filtered showcase of newly added inventory
@@ -138,7 +140,7 @@ A. Directory Structure:
    │   ├── usePWAInstall.js        : PWA beforeinstallprompt lifecycle hook
    │   └── useSEO.js               : Dynamic document metadata, keywords, robots directives (noindex/follow), and OpenGraph manager (includes Examphobia/Exam Phobia search indexing)
    ├── firebase.js          : Firebase Client SDK initialization
-   ├── themes.css           : Comprehensive design token registry (light & dark)
+   ├── themes.css           : Comprehensive design token registry (7 themes: light, dark, vintage, ocean, forest, midnight, nord)
    ├── index.css            : Base typography, layout resets, and custom scrollbars
    └── App.jsx              : Root application component and routing configuration
 
@@ -635,7 +637,11 @@ GET    | /                                          | Public      | Health check
 
 4. CSS VARIABLES MANDATE:
    Always utilize semantic CSS variables defined in src/themes.css (--primary-color,
-   --card-bg, --text-color, --border-adaptive, etc.) instead of hardcoding hex/RGB values.
+   --card-bg, --text-color, --border-adaptive, --on-accent, etc.) instead of hardcoding
+   hex/RGB values. For accent elements (.pdf-card-course, .pdf-view-btn, .questions-search-btn,
+   .pdf-edit-btn, .course-tab-pill.active, .lang-tab-pill.active), text and icon strokes are
+   governed by --on-accent (#000000 in dark, #6e352b in vintage, #1e40af in light, and
+   var(--surface-text) in ocean, forest, midnight, nord).
 
 5. CASE-SENSITIVITY COMPLIANCE:
    macOS is case-insensitive while Linux deployment environments are case-sensitive.

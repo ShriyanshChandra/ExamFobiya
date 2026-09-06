@@ -4,8 +4,7 @@ import useSEO from "../utils/useSEO";
 import "./Home.css";
 import NewArrivals from "./NewArrivals";
 import BestSeller from "./BestSeller";
-import ExploreSection from "./ExploreSection";
-import BookCategorySection from "../components/BookCategorySection";
+import SpotlightSection from "../components/SpotlightSection";
 
 const Home = () => {
   useSEO({
@@ -115,12 +114,15 @@ const Home = () => {
         </div>
 
         <div className="hero-content">
-          <h1>
-            <span className="brand-name">ExamFobiya</span> - BCA, DCA & PGDCA Study Materials
-          </h1>
-          <p>
-            Simplify your BCA, DCA, and PGDCA exam preparation with curated books, detailed syllabus indexes, and solved question sets.
-          </p>
+          <div className="hero-text-col">
+            <h1>
+              <span className="brand-name">ExamFobiya</span>
+              <span className="hero-tagline">BCA, DCA & PGDCA Study Materials</span>
+            </h1>
+            <p>
+              Simplify your BCA, DCA, and PGDCA exam preparation with curated books, detailed syllabus indexes, and solved question sets.
+            </p>
+          </div>
 
           <div className="hero-buttons">
             <Link to="/books" className="primary-btn">Explore Books</Link>
@@ -207,11 +209,7 @@ const Home = () => {
         </div>
       </section>
 
-      <BookCategorySection title="BCA Spotlight" section="BCA Books" category="BCA" limit={5} />
-      <BookCategorySection title="DCA Spotlight" section="DCA Books" category="DCA" limit={5} />
-      <BookCategorySection title="PGDCA Spotlight" section="PGDCA Books" category="PGDCA" limit={5} />
-
-      <ExploreSection />
+      <SpotlightSection />
     </div>
   );
 };

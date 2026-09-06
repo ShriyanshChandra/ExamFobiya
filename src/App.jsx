@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate, useNavigate } from "react-router-dom";
 import React, { useEffect, useState, Suspense } from "react";
 import Navbar from "./components/Navbar";
+import TopBar from "./components/TopBar";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -168,9 +169,10 @@ function App() {
               <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
                 <MaintenanceGuard>
                   <ScrollToTop />
+                  <TopBar />
                   <Navbar setSearchQuery={setSearchQuery} />
                   {/* Ensure this div is transparent so the background shows through */}
-                  <main className="p-6" style={{ paddingTop: "4rem" }}>
+                  <main className="p-6" style={{ paddingTop: "5rem" }}>
                     <ErrorBoundary>
                       <Suspense fallback={<SuspenseFallback />}>
                         <Routes>

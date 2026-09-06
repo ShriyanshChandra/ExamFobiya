@@ -133,11 +133,9 @@
 }
 
 .hero-content h1 {
-  font-size: clamp(2.8rem, 7vw, 4.6rem);
-  margin-bottom: 1.25rem;
+  margin-bottom: 0;
   font-weight: 800;
   line-height: 1.2;
-  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .hero-section .brand-name {
@@ -145,9 +143,19 @@
   color: var(--accent-color);
   font-size: clamp(3rem, 7vw, 4.8rem);
   font-weight: normal !important;
-  display: inline-block;
-  margin: 0 0.625rem;
+  display: block;
+  margin: 0 auto 0.4rem;
   filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
+}
+
+.hero-tagline {
+  display: block;
+  font-size: clamp(1.6rem, 3.5vw, 2.75rem);
+  font-weight: 800;
+  line-height: 1.25;
+  color: #ffffff;
+  margin-bottom: 1.25rem;
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
 .hero-content p {
@@ -194,6 +202,78 @@
   flex-wrap: wrap;
   margin-bottom: 1.25rem;
 }
+
+/* Desktop Hero Split Layout (min-width: 64rem / 1024px) */
+@media screen and (min-width: 64rem) {
+  .hero-content {
+    max-width: 100rem;
+    width: 95%;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(2.5rem, 4vw, 4.5rem);
+    text-align: left;
+    box-sizing: border-box;
+  }
+
+  .hero-text-col {
+    flex: 1 1 auto;
+    max-width: 58rem;
+    text-align: left;
+  }
+
+  .hero-content h1 {
+    text-align: left;
+    margin-bottom: 0;
+  }
+
+  .hero-section .brand-name {
+    font-size: clamp(2.8rem, 4.5vw, 4.6rem);
+    margin: 0 0 0.35rem 0;
+    text-align: left;
+  }
+
+  .hero-tagline {
+    font-size: clamp(1.8rem, 2.8vw, 2.75rem);
+    text-align: left;
+    margin: 0 0 1.25rem 0;
+  }
+
+  .hero-content p {
+    font-size: 1.2rem;
+    line-height: 1.75;
+    margin: 0;
+    text-align: left;
+    max-width: 46rem;
+  }
+
+  .hero-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    gap: 1.15rem;
+    width: clamp(17rem, 20vw, 19.5rem);
+    flex-shrink: 0;
+    margin: 0;
+  }
+
+  .hero-buttons .primary-btn,
+  .hero-buttons .accent-hero-btn,
+  .hero-buttons .secondary-btn {
+    width: 100%;
+    min-width: 0;
+    padding: 1.05rem 1.75rem;
+    box-sizing: border-box;
+    text-align: center;
+    justify-content: center;
+    white-space: nowrap;
+  }
+}
+
 
 .primary-btn,
 .accent-hero-btn,
@@ -903,6 +983,88 @@
   scroll-snap-align: start;
 }
 
+/* ─── Continuous Auto-Scrolling Book Shelf Marquee (RAF + scrollLeft) ─── */
+.home-marquee-shelf {
+  --marquee-gap: 1.25rem;
+  --marquee-card-width: 14.5rem;
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  width: 100%;
+  padding: 1.25rem 0;
+  scroll-snap-type: none;
+  cursor: grab;
+  /* Inherit border-radius / background from .home-book-shelf when combined */
+}
+
+.home-marquee-shelf::-webkit-scrollbar {
+  display: none;
+}
+
+.home-marquee-shelf:active,
+.home-marquee-shelf[style*="grabbing"] {
+  cursor: grabbing;
+}
+
+.home-marquee-group {
+  display: flex;
+  flex-shrink: 0;
+  align-items: stretch;
+  gap: var(--marquee-gap);
+  padding-right: var(--marquee-gap);
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.home-marquee-group:first-child {
+  padding-left: 0.875rem;
+}
+
+.home-marquee-shelf .book-card {
+  flex: 0 0 var(--marquee-card-width) !important;
+  width: var(--marquee-card-width) !important;
+  min-width: var(--marquee-card-width) !important;
+  max-width: var(--marquee-card-width) !important;
+  scroll-snap-align: none;
+}
+
+/* Tablet */
+@media screen and (max-width: 61.25rem) {
+  .home-marquee-shelf {
+    --marquee-gap: 1rem;
+    --marquee-card-width: 12.5rem;
+    padding: 1rem 0;
+  }
+}
+
+/* Mobile */
+@media screen and (max-width: 48rem) {
+  .home-marquee-shelf {
+    --marquee-gap: 0.75rem;
+    --marquee-card-width: 10.75rem;
+    padding: 0.875rem 0;
+  }
+}
+
+/* Small phones */
+@media screen and (max-width: 24rem) {
+  .home-marquee-shelf {
+    --marquee-gap: 0.5rem;
+    --marquee-card-width: 9.5rem;
+    padding: 0.75rem 0;
+  }
+}
+
+/* Accessibility: reduced motion — disable auto-scroll via JS check in component */
+@media (prefers-reduced-motion: reduce) {
+  .home-marquee-shelf {
+    overflow-x: auto !important;
+  }
+}
+
 .home-container .book-img {
   width: 100%;
   height: auto;
@@ -981,13 +1143,17 @@
   }
 
   .hero-content h1 {
-    font-size: 1.9rem;
-    margin-bottom: 0.625rem;
+    margin-bottom: 0;
   }
 
   .hero-section .brand-name {
     font-size: 2.4rem;
-    margin: 0.3125rem 0;
+    margin: 0 auto 0.25rem;
+  }
+
+  .hero-tagline {
+    font-size: 1.35rem;
+    margin-bottom: 0.85rem;
   }
 
   .hero-content p {

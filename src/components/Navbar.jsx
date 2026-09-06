@@ -10,124 +10,102 @@ const Navbar = ({ setSearchQuery }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [localSearch, setLocalSearch] = useState("");
   const [showMobileSearch, setShowMobileSearch] = useState(false);
-  const [showAccountMenu, setShowAccountMenu] = useState(false);
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const { user, logout } = useAuth();
 
-  const getAccountName = () => {
-    return user?.name || user?.fullName || user?.displayName || "";
-  };
-
-  const getAccountLabel = () => {
-    return getAccountName() || user?.email || user?.username || "Account";
-  };
-
-  const getAccountInitial = () => {
-    const accountName = getAccountName() || user?.username || user?.email;
-    const firstLetter = accountName?.trim()?.charAt(0);
-    return firstLetter ? firstLetter.toUpperCase() : "U";
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setIsOpen(false);
+      navigate("/");
+    } catch (error) {
+      console.error("Failed to log out:", error);
+    }
   };
 
   useEffect(() => {
     const handleScroll = () => {
-      // Close mobile search on scroll
-      if (showMobileSearch) {
-        setShowMobileSearch(false);
-      }
+      if (showMobileSearch) setShowMobileSearch(false);
     };
-
     window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [showMobileSearch]);
 
-  // Click outside listener for mobile search
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (showMobileSearch && !event.target.closest('.search-container')) {
         setShowMobileSearch(false);
-      }
-
-      if (showAccountMenu && !event.target.closest('.account-menu-scope')) {
-        setShowAccountMenu(false);
       }
       if (showThemeMenu && !event.target.closest('.theme-menu-scope')) {
         setShowThemeMenu(false);
       }
     };
 
-    if (showMobileSearch || showAccountMenu || showThemeMenu) {
+    if (showMobileSearch || showThemeMenu) {
       document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showMobileSearch, showThemeMenu]);
+
+  // Lock background page scroll when mobile menu is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
     };
-  }, [showMobileSearch, showAccountMenu, showThemeMenu]);
+  }, [isOpen]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > NAVBAR_COLLAPSE_BREAKPOINT && isOpen) {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [isOpen]);
 
   const toggleMenu = () => {
     setIsOpen(!isOpen);
-    setShowMobileSearch(false); // Close search when menu opens
-    setShowAccountMenu(false);
+    setShowMobileSearch(false);
     setShowThemeMenu(false);
   };
 
   const handleSearchSubmit = () => {
     const trimmed = localSearch.trim();
-    if (setSearchQuery) {
-      setSearchQuery(trimmed);
-    }
+    if (setSearchQuery) setSearchQuery(trimmed);
     navigate(trimmed ? `/search?q=${encodeURIComponent(trimmed)}` : "/search");
     setIsOpen(false);
     setShowMobileSearch(false);
   };
 
   const handleSearchClick = (e) => {
-    // Mobile logic
     if (window.innerWidth <= NAVBAR_COLLAPSE_BREAKPOINT) {
       if (!showMobileSearch) {
         setShowMobileSearch(true);
-        e.preventDefault(); // Prevent submit if just opening
+        e.preventDefault();
         return;
       }
-      // If already open, submit search
     }
     handleSearchSubmit();
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      handleSearchSubmit();
-    }
-  };
-
-  const toggleAccountMenu = () => {
-    setShowAccountMenu((current) => !current);
-    setShowThemeMenu(false);
+    if (e.key === "Enter") handleSearchSubmit();
   };
 
   const toggleThemeMenu = () => {
     setShowThemeMenu((current) => !current);
-    setShowAccountMenu(false);
-  };
-
-  const handleLogout = () => {
-    logout();
-    setShowAccountMenu(false);
-    setShowThemeMenu(false);
-    setIsOpen(false);
-    navigate('/login');
-  };
-
-  const handleSettings = () => {
-    setShowAccountMenu(false);
-    setShowThemeMenu(false);
-    setIsOpen(false);
-    navigate('/settings');
   };
 
   const handleNavMouseEnter = (e) => {
@@ -188,56 +166,55 @@ const Navbar = ({ setSearchQuery }) => {
           </svg>
         </button>
 
-        {/* Navigation Links - Centered */}
+        {/* Navigation Links */}
         <ul className={isOpen ? "nav-menu active" : "nav-menu"}>
+          {/* Non-desktop: show the user's name at the top */}
+          {user && (
+            <li className="mobile-only-nav mobile-user-header">
+              <span className="mobile-username">
+                {user?.name || user?.fullName || user?.displayName || user?.username || user?.email || "Account"}
+              </span>
+            </li>
+          )}
+
           <li><Link to="/" onMouseEnter={handleNavMouseEnter} onMouseLeave={handleNavMouseLeave} onClick={() => setIsOpen(false)}>Home</Link></li>
           <li><Link to="/books" onMouseEnter={handleNavMouseEnter} onMouseLeave={handleNavMouseLeave} onClick={() => setIsOpen(false)}>Books</Link></li>
           <li><Link to="/questions" onMouseEnter={handleNavMouseEnter} onMouseLeave={handleNavMouseLeave} onClick={() => setIsOpen(false)}>Questions</Link></li>
           <li><Link to="/programming-solutions" onMouseEnter={handleNavMouseEnter} onMouseLeave={handleNavMouseLeave} onClick={() => setIsOpen(false)}>Programming Solutions</Link></li>
           <li><Link to="/about" onMouseEnter={handleNavMouseEnter} onMouseLeave={handleNavMouseLeave} onClick={() => setIsOpen(false)}>About Us</Link></li>
-          {(user?.role === 'admin') && (
+
+          {user?.role === 'admin' && (
             <>
               <li className="nav-separator" aria-hidden="true">|</li>
               <li><Link to="/admin" onMouseEnter={handleNavMouseEnter} onMouseLeave={handleNavMouseLeave} onClick={() => setIsOpen(false)}>Dashboard</Link></li>
             </>
           )}
 
-
-          {/* Mobile Only Auth Link (Optional, if we want it inside menu on mobile) */}
-          <li className={`mobile-only-auth account-menu-scope ${user ? "mobile-account-menu-item" : ""}`}>
-            {user ? (
-              <button
-                type="button"
-                className="mobile-account-btn"
-                aria-label="Account"
-                aria-expanded={showAccountMenu}
-                aria-haspopup="menu"
-                title="Account"
-                onClick={toggleAccountMenu}
-              >
-                <span className="account-avatar-letter">{getAccountInitial()}</span>
-              </button>
-            ) : (
+          {/* Non-desktop: Settings & Logout below Dashboard */}
+          {user ? (
+            <>
+              {user?.role !== 'admin' && <li className="nav-separator mobile-only-nav" aria-hidden="true">|</li>}
+              <li className="mobile-only-nav">
+                <Link to="/settings" onMouseEnter={handleNavMouseEnter} onMouseLeave={handleNavMouseLeave} onClick={() => setIsOpen(false)}>Settings</Link>
+              </li>
+              <li className="mobile-only-nav">
+                <button
+                  type="button"
+                  className="mobile-logout-btn"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </button>
+              </li>
+            </>
+          ) : (
+            <li className="mobile-only-nav mobile-only-login">
               <Link to="/login" onClick={() => setIsOpen(false)}>Login</Link>
-            )}
-          </li>
-          {user && showAccountMenu && (
-            <li className="mobile-account-actions account-menu-scope" role="menu">
-              <button type="button" className="mobile-account-action-btn" role="menuitem" onClick={handleSettings}>
-                Settings
-              </button>
-            </li>
-          )}
-          {user && (
-            <li className="mobile-only-logout">
-              <button type="button" onClick={handleLogout}>
-                Logout
-              </button>
             </li>
           )}
         </ul>
 
-        {/* Action Group: Theme -> Search -> Auth */}
+        {/* Action Group: Theme + Search */}
         <div className="navbar-actions">
           {/* Theme Dropdown */}
           <div className="theme-dropdown-container theme-menu-scope" style={{ position: 'relative' }}>
@@ -337,43 +314,6 @@ const Navbar = ({ setSearchQuery }) => {
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
             </button>
-          </div>
-
-          {/* Desktop Auth Button */}
-          <div className="desktop-auth account-menu-scope">
-            {user ? (
-              <>
-                <button
-                  type="button"
-                  className="account-avatar-btn"
-                  aria-label="Open account menu"
-                  aria-expanded={showAccountMenu}
-                  aria-haspopup="menu"
-                  title="Account"
-                  onClick={toggleAccountMenu}
-                >
-                  <span className="account-avatar-letter">{getAccountInitial()}</span>
-                </button>
-                {showAccountMenu && (
-                  <div className="account-dropdown" role="menu">
-                    <div className="account-dropdown-header">
-                      <div className="account-dropdown-avatar">
-                        <span className="account-avatar-letter">{getAccountInitial()}</span>
-                      </div>
-                      <p className="account-dropdown-label">{getAccountLabel()}</p>
-                    </div>
-                    <button type="button" className="account-dropdown-item" role="menuitem" onClick={handleSettings}>
-                      Settings
-                    </button>
-                    <button type="button" className="account-dropdown-logout" role="menuitem" onClick={handleLogout}>
-                      Logout
-                    </button>
-                  </div>
-                )}
-              </>
-            ) : (
-              <Link to="/login" className="auth-btn-link">Login</Link>
-            )}
           </div>
         </div>
       </div>

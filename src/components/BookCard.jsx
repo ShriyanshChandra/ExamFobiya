@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import BookDetailsModal from './BookDetailsModal';
 import './BookCard.css';
 
-const BookCard = ({ book, index, canEdit, onRemove, onEdit, onSaveClick }) => {
+const BookCard = ({ book, index, canEdit, onRemove, onEdit, onSaveClick, isMarquee = false, isDuplicate = false }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
 
@@ -69,19 +69,22 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit, onSaveClick }) => {
             <motion.div
                 className="book-card"
                 role="button"
-                tabIndex={0}
+                tabIndex={isDuplicate ? -1 : 0}
+                aria-hidden={isDuplicate ? true : undefined}
                 onClick={openDetails}
                 onKeyDown={handleCardKeyDown}
                 onMouseEnter={handleCardMouseEnter}
-                initial={{ opacity: 0, scale: 0.7, filter: 'blur(6px)' }}
-                whileInView={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-                transition={{ duration: 0.45, delay: Math.min(index * 0.04, 0.5), ease: [0.25, 1, 0.5, 1] }}
-                viewport={{ once: true }}
+                initial={isMarquee ? false : { opacity: 0, scale: 0.7, filter: 'blur(6px)' }}
+                animate={isMarquee ? { opacity: 1, scale: 1, filter: 'blur(0px)' } : undefined}
+                whileInView={isMarquee ? undefined : { opacity: 1, scale: 1, filter: 'blur(0px)' }}
+                transition={isMarquee ? undefined : { duration: 0.45, delay: Math.min(index * 0.04, 0.5), ease: [0.25, 1, 0.5, 1] }}
+                viewport={isMarquee ? undefined : { once: true }}
             >
                 {hasProgrammingSolution && (
                     <button
                         type="button"
                         className="book-code-btn"
+                        tabIndex={isDuplicate ? -1 : undefined}
                         onClick={(e) => {
                             e.stopPropagation();
                             navigate('/programming-solutions', { 

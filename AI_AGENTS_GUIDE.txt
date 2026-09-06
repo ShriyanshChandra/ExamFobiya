@@ -76,18 +76,20 @@ ExamFobiya/
 │   ├── assets/                   : SVGs, illustrations, animation assets
 │   ├── components/
 │   │   ├── BackToTop.jsx         : Floating back-to-top scroll button with window listener
-│   │   ├── BookCard.jsx          : Reusable card for book catalog display with badges, questions, and syllabus actions
-│   │   ├── BookCategorySection.jsx : Horizontal category layout with responsive navigation
+│   │   ├── BookCard.jsx          : Reusable card for book catalog display with badges, questions, syllabus actions, and marquee support
+│   │   ├── BookCategorySection.jsx : Horizontal category shelf with continuous alternating auto-scrolling marquee (left-to-right for New Arrivals, right-to-left for Best Sellers, pause on hover)
 │   │   ├── BookDetailsModal.jsx  : Detailed book view modal with cover, title, syllabus topics, and page number index
 │   │   ├── ConfirmationModal.jsx : Generic confirmation dialog for destructive actions
 │   │   ├── ErrorBoundary.jsx     : Class component catching React tree render crashes
 │   │   ├── Footer.jsx            : App footer with legal links, social icons, and copyright
 │   │   ├── GlobalErrorMonitor.jsx: Intercepts unhandledrejection and window.onerror events
 │   │   ├── Loader.jsx            : Visual loading spinner with fallback states
-│   │   ├── Navbar.jsx            : Responsive navigation bar, search bar, responsive theme selector dropdown, and auth buttons
+│   │   ├── Navbar.jsx            : Clean responsive navigation bar, search bar, responsive theme selector dropdown (7 themes), and mobile menu with user name at top and Settings & Logout below Dashboard
 │   │   ├── PWAInstallBanner.jsx  : Custom banner handling beforeinstallprompt PWA install
 │   │   ├── ProtectedRoute.jsx    : React Router wrapper enforcing auth and role requirements
-│   │   └── RemoveBookModal.jsx   : Specialized confirmation modal for deleting catalog books
+│   │   ├── RemoveBookModal.jsx   : Specialized confirmation modal for deleting catalog books
+│   │   ├── SpotlightSection.jsx  : Unified course spotlight showcase with capsule pill tabs (ALL RELEASES, BCA, DCA, PGDCA) and left-to-right continuous auto-scrolling marquee shelf (pause on hover)
+│   │   └── TopBar.jsx            : Top header bar styled with website background and SVG-stroke-matched text colors, social links, scroll-direction show/hide behavior, and desktop auth state with hover user dropdown (Settings, Logout) or Login/Register
 │   ├── context/
 │   │   ├── AuthContext.jsx       : Firebase Auth listener, role caching, login/register/logout
 │   │   ├── BookContext.jsx       : Firestore books sync, section sorting, solution binding
@@ -99,14 +101,14 @@ ExamFobiya/
 │   │   ├── AddBook.jsx           : Admin form for creating and editing book entries
 │   │   ├── AddProgrammingSolution.jsx : Code solution editor with AI similarity checker (.NET, C, C#, C++, Java, Python)
 │   │   ├── AdminDashboard.jsx    : Multi-tab admin control panel (metrics, users, keys, errors)
-│   │   ├── BestSeller.jsx        : Spotlight view for best-selling books
+│   │   ├── BestSeller.jsx        : Spotlight view for best-selling books with right-to-left marquee animation
 │   │   ├── Books.jsx             : Searchable academic catalog with filter sidebar
 │   │   ├── EditQuestionPdf.jsx   : Admin management view for question paper PDFs
-│   │   ├── ExploreSection.jsx    : Featured discovery section
-│   │   ├── Home.jsx              : Landing page with search, course cards, and spotlight sections
+│   │   ├── ExploreSection.jsx    : Featured discovery section (standalone book discovery module)
+│   │   ├── Home.jsx              : Landing page with responsive split hero, search, course cards, and alternating continuous book shelf marquees (New Arrivals LTR, Best Sellers RTL, Spotlight LTR)
 │   │   ├── Login.jsx             : Authentication portal (email/password + Google Sign-In). User Portal has Google OAuth button; Admin Portal is email/password only.
 │   │   ├── Maintenance.jsx       : Maintenance splash screen for non-admin users
-│   │   ├── NewArrivals.jsx       : Spotlight view for newly added inventory
+│   │   ├── NewArrivals.jsx       : Spotlight view for newly added inventory with left-to-right marquee animation
 │   │   ├── PrivacyPolicy.jsx     : GDPR/legal compliance disclosure
 │   │   ├── ProgrammingSolutions.jsx : Code solutions explorer by language (.NET, C, C#, C++, Java, Python) and topic
 │   │   ├── Questions.jsx         : Academic question bank with course selector tabs (BCA, DCA, PGDCA), search, filters, and PDF viewer
@@ -454,7 +456,7 @@ Base URL Resolution: src/utils/api.js (DEV: http://127.0.0.1:5000, PROD: VITE_AP
 13. CSS THEME SYSTEM & DESIGN TOKENS REGISTRY
 ================================================================================
 Theme Definition File: src/themes.css
-Root Selector: :root (Light Theme default), [data-theme='dark'] (Dark Theme)
+Supported Themes: light (default), dark, vintage, ocean, forest, midnight, nord
 
 Key Semantic Design Tokens:
 Token Name                  | Light Theme Value          | Dark Theme Value
@@ -469,6 +471,19 @@ Token Name                  | Light Theme Value          | Dark Theme Value
 --border-adaptive           | rgba(0, 0, 0, 0.2)         | rgba(255, 255, 255, 0.2)
 --navbar-bg                 | linear-gradient(90deg, #4b6cb7, #182848) | linear-gradient(90deg, #1f2937, #111827)
 --dashboard-wrapper-bg      | linear-gradient(180deg, rgba(255,255,255,0.5), rgba(248,250,252,0.56)) | linear-gradient(180deg, rgba(14,18,28,0.54), rgba(16,20,30,0.66))
+--on-accent                 | #1e40af                    | #000000
+
+Accent Badge & Action Button Colors (Questions & Programming Solutions):
+- Elements: .pdf-card-course, .pdf-view-btn (and SVG), .questions-search-btn (and SVG), .pdf-edit-btn, .course-tab-pill.active, .lang-tab-pill.active
+- Theme Mappings:
+  - dark: #000000 (black)
+  - vintage: #6e352b (--surface-text)
+  - light: #1e40af
+  - ocean: var(--surface-text) (#164e63)
+  - forest: var(--surface-text) (#2e1d16)
+  - midnight: var(--surface-text) (#0a0a14)
+  - nord: var(--surface-text) (#2e3440)
+
 
 ================================================================================
 14. CRITICAL GOTCHAS, EDGE CASES & IMPLEMENTATION RULES
