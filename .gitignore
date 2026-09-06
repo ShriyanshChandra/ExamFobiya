@@ -28,3 +28,4 @@ backend/serviceAccountKey.json
 .agents/AGENTS.md
 
 firestore.rules
+experiment/
