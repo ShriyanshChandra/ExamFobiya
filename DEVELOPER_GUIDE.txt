@@ -92,7 +92,7 @@ A. Directory Structure:
    │   ├── Footer.jsx              : Global footer with links, copyright, and policies
    │   ├── GlobalErrorMonitor.jsx  : Global window error / unhandledrejection interceptor with isTransientError filter
    │   ├── Loader.jsx              : Animated loading spinner / skeleton widget
-   │   ├── Navbar.jsx              : Clean responsive navigation bar with search bar, category links, responsive theme selector dropdown (7 themes), and mobile menu with user name at top and Settings & Logout below Dashboard
+   │   ├── Navbar.jsx              : Clean responsive navigation bar with search bar, category links, responsive theme selector dropdown (8 themes), and mobile menu with user name at top and Settings & Logout below Dashboard
    │   ├── PWAInstallBanner.jsx    : App install banner for supported browsers
    │   ├── ProtectedRoute.jsx      : Client route guard verifying authentication & roles
    │   ├── RemoveBookModal.jsx     : Admin confirmation modal for catalog book deletion
@@ -102,7 +102,7 @@ A. Directory Structure:
    │   ├── AuthContext.jsx         : Firebase Auth state, user role caching, register/login/logout
    │   ├── BookContext.jsx         : Real-time Firestore sync for books, section sorting, solution binding
    │   ├── QuestionContext.jsx     : Real-time Firestore sync for universities, courses, subjects, PDFs
-   │   └── ThemeContext.jsx        : Dark/Light theme state with localStorage persistence
+   │   └── ThemeContext.jsx        : Multi-theme provider (8 themes) with localStorage persistence
    ├── pages/               : Primary routed views
    │   ├── About_us.jsx            : Platform mission, vision, and team details
    │   ├── About_us.css            : Responsive theme-aware styling for About Us, Privacy Policy, and Terms pages
@@ -140,7 +140,7 @@ A. Directory Structure:
    │   ├── usePWAInstall.js        : PWA beforeinstallprompt lifecycle hook
    │   └── useSEO.js               : Dynamic document metadata, keywords, robots directives (noindex/follow), and OpenGraph manager (includes Examphobia/Exam Phobia search indexing)
    ├── firebase.js          : Firebase Client SDK initialization
-   ├── themes.css           : Comprehensive design token registry (6 themes: light, dark, vintage, ocean, midnight, nord)
+   ├── themes.css           : Comprehensive design token registry (7 themes: light, dark, vintage, ocean, midnight, nord, sunset)
    ├── index.css            : Base typography, layout resets, and custom scrollbars
    └── App.jsx              : Root application component and routing configuration
 
@@ -646,13 +646,15 @@ GET    | /                                          | Public      | Health check
    under the 'client_errors' collection (via ErrorLoggerService / Admin Dashboard) to identify
    and address existing runtime defects first.
 
-4. CSS VARIABLES MANDATE:
+4. CSS VARIABLES & THEME CONSISTENCY MANDATE:
    Always utilize semantic CSS variables defined in src/themes.css (--primary-color,
    --card-bg, --text-color, --border-adaptive, --on-accent, etc.) instead of hardcoding
    hex/RGB values. For accent elements (.pdf-card-course, .pdf-view-btn, .questions-search-btn,
    .pdf-edit-btn, .course-tab-pill.active, .lang-tab-pill.active), text and icon strokes are
    governed by --on-accent (#000000 in dark, #6e352b in vintage, #1e40af in light, and
    var(--surface-text) in ocean, midnight, nord).
+   When making theme-related changes, ensure they are applied across all pages and maintain
+   proper contrast between text colour and background colour.
 
 5. CASE-SENSITIVITY COMPLIANCE:
    macOS is case-insensitive while Linux deployment environments are case-sensitive.

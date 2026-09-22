@@ -158,12 +158,17 @@
 [data-theme='midnight'] .confirmation-modal .modal-header h3,
 [data-theme='midnight'] .confirmation-modal .modal-body p,
 [data-theme='midnight'] .confirmation-modal .close-btn,
-[data-theme='midnight'] .confirmation-modal .cancel-btn {
+[data-theme='midnight'] .confirmation-modal .cancel-btn,
+[data-theme='sunset'] .confirmation-modal .modal-header h3,
+[data-theme='sunset'] .confirmation-modal .modal-body p,
+[data-theme='sunset'] .confirmation-modal .close-btn,
+[data-theme='sunset'] .confirmation-modal .cancel-btn {
     color: var(--text-color);
 }
 
 [data-theme='dark'] .confirmation-modal .cancel-btn,
-[data-theme='midnight'] .confirmation-modal .cancel-btn {
+[data-theme='midnight'] .confirmation-modal .cancel-btn,
+[data-theme='sunset'] .confirmation-modal .cancel-btn {
     border-color: var(--surface-border);
 }
 

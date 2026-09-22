@@ -323,7 +323,15 @@
     background-color: var(--card-bg);
 }
 
-/* ===== DARK MODE ===== */
+/* ===== DARK & SUNSET MODE ===== */
+:is([data-theme='dark'], [data-theme='midnight'], [data-theme='sunset']) .uq-remove-btn {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
+:is([data-theme='dark'], [data-theme='midnight'], [data-theme='sunset']) .uq-remove-btn:hover:not(:disabled) {
+    background: rgba(239, 68, 68, 0.25);
+}
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 37.5rem) {

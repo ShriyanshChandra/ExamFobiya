@@ -28,3 +28,24 @@ Vintage:
   --primary-color: #795548
   --secondary-color: #3e2723
   --accent-color: #e65100
+
+Ocean:
+  --primary-color: #0891b2
+  --secondary-color: #164e63
+  --accent-color: #ebd576
+
+Midnight:
+  --primary-color: #818cf8
+  --secondary-color: #0f0f1a
+  --accent-color: #22d3ee
+
+Nord:
+  --primary-color: #5e81ac
+  --secondary-color: #2e3440
+  --accent-color: #88c0d0
+
+Sunset:
+  --primary-color: #ff7e5f
+  --secondary-color: #6a3093
+  --accent-color: #feb47b
+

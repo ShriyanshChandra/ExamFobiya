@@ -99,6 +99,14 @@ body.dark-mode .container {
   box-shadow: 0 16px 36px -10px rgba(46, 52, 64, 0.1) !important;
 }
 
+/* Sunset Theme */
+[data-theme='sunset'] .container {
+  background: #5c3a63 !important;
+  border: 1px solid rgba(251, 233, 231, 0.15) !important;
+  box-shadow: 0 20px 45px -10px rgba(20, 8, 22, 0.35) !important;
+}
+
+
 /* Keep labels readable when controls use the accent background. */
 .login-btn,
 .submit-btn,

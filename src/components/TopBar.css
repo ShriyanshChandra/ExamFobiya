@@ -24,6 +24,10 @@
   --topbar-svg-color: #4c566a;
 }
 
+[data-theme='sunset'] {
+  --topbar-svg-color: #d8b3c9;
+}
+
 .topbar {
   position: fixed;
   top: 0;

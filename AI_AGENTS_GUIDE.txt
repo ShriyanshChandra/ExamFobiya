@@ -48,9 +48,11 @@ All AI coding agents modifying this codebase MUST comply with the following inva
    (Linux on Render/Vercel) are case-sensitive. All module imports must match exact file
    casing. Run 'python3 check.py' only once per session to validate imports.
 
-5. CSS VARIABLES MANDATE:
+5. CSS VARIABLES & THEME CONSISTENCY MANDATE:
    Never hardcode raw hex, RGB, or HSL color literals in component CSS. Always use the semantic
    variables defined in src/themes.css (--primary-color, --card-bg, --text-color, --border-adaptive, etc.).
+   When making theme-related changes, ensure they are applied across all pages and maintain proper
+   contrast between text colour and background colour.
 
 6. CONTINUOUS DOCUMENTATION SYNCHRONIZATION:
    Whenever changes are made to code, functionality, endpoints, services, or environment
@@ -84,7 +86,7 @@ ExamFobiya/
 │   │   ├── Footer.jsx            : App footer with legal links, social icons, and copyright
 │   │   ├── GlobalErrorMonitor.jsx: Intercepts unhandledrejection and window.onerror events
 │   │   ├── Loader.jsx            : Visual loading spinner with fallback states
-│   │   ├── Navbar.jsx            : Clean responsive navigation bar, search bar, responsive theme selector dropdown (7 themes), and mobile menu with user name at top and Settings & Logout below Dashboard
+│   │   ├── Navbar.jsx            : Clean responsive navigation bar, search bar, responsive theme selector dropdown (8 themes), and mobile menu with user name at top and Settings & Logout below Dashboard
 │   │   ├── PWAInstallBanner.jsx  : Custom banner handling beforeinstallprompt PWA install
 │   │   ├── ProtectedRoute.jsx    : React Router wrapper enforcing auth and role requirements
 │   │   ├── RemoveBookModal.jsx   : Specialized confirmation modal for deleting catalog books
@@ -94,7 +96,7 @@ ExamFobiya/
 │   │   ├── AuthContext.jsx       : Firebase Auth listener, role caching, login/register/logout
 │   │   ├── BookContext.jsx       : Firestore books sync, section sorting, solution binding
 │   │   ├── QuestionContext.jsx   : Firestore questions, PDFs, courses, subjects sync
-│   │   └── ThemeContext.jsx      : Dark/Light theme provider with localStorage sync
+│   │   └── ThemeContext.jsx      : Multi-theme provider (8 themes) with localStorage sync
 │   ├── pages/
 │   │   ├── About_us.jsx          : Information page describing ExamFobiya mission
 │   │   ├── About_us.css          : Responsive theme-aware styling for About Us, Privacy Policy, and Terms pages
@@ -136,7 +138,7 @@ ExamFobiya/
 │   ├── firebase.js               : Firebase Client SDK initialization
 │   ├── index.css                 : Reset stylesheet and typography
 │   ├── index.jsx                 : React DOM mount root with HelmetProvider
-│   └── themes.css                : Theme token dictionary (light & dark)
+│   └── themes.css                : Theme token dictionary (7 themes: light, dark, vintage, ocean, midnight, nord, sunset)
 ├── AI_AGENTS_GUIDE.txt           : Machine-readable technical blueprint for AI systems
 ├── DEVELOPER_GUIDE.txt           : Human-readable architecture and onboarding guide
 ├── check.py                      : Python script to verify case-sensitive import paths
@@ -456,7 +458,7 @@ Base URL Resolution: src/utils/api.js (DEV: http://127.0.0.1:5000, PROD: VITE_AP
 13. CSS THEME SYSTEM & DESIGN TOKENS REGISTRY
 ================================================================================
 Theme Definition File: src/themes.css
-Supported Themes: light (default), dark, vintage, ocean, midnight, nord
+Supported Themes: light (default), dark, vintage, ocean, midnight, nord, sunset
 
 Key Semantic Design Tokens:
 Token Name                  | Light Theme Value          | Dark Theme Value

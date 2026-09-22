@@ -536,6 +536,18 @@
   border: 1px solid #d8dee9;
 }
 
+[data-theme='sunset'] .intro-card,
+[data-theme='sunset'] .course-browse-strip,
+[data-theme='sunset'] .new-arrivals,
+[data-theme='sunset'] .best-sellers,
+[data-theme='sunset'] .book-category-section,
+[data-theme='sunset'] .explore-section {
+  background: #5c3a63;
+  border: 1px solid rgba(251, 233, 231, 0.15);
+  box-shadow: 0 20px 45px -10px rgba(20, 8, 22, 0.35);
+}
+
+
 .intro-card {
   padding: 1.5rem;
   position: relative;
@@ -759,6 +771,7 @@
   color: #0f0f1a !important;
   border-color: #818cf8 !important;
 }
+
 
 .browse-all-link::after {
   content: '→';

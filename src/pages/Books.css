@@ -36,15 +36,53 @@
 .books-eyebrow {
   display: inline-flex;
   align-items: center;
-  padding: 0.375rem 0.75rem;
+  padding: 0.375rem 0.85rem;
   border-radius: 62.4375rem;
   background: color-mix(in srgb, var(--primary-color) 12%, transparent);
-  color: #28437b;
+  border: 1px solid color-mix(in srgb, var(--primary-color) 25%, transparent);
+  color: var(--secondary-color);
   font-size: 0.82rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-bottom: 0.875rem;
+  transition: all 0.3s ease;
+}
+
+[data-theme='dark'] .books-eyebrow {
+  background: color-mix(in srgb, var(--primary-color) 20%, transparent);
+  border-color: color-mix(in srgb, var(--primary-color) 45%, transparent);
+  color: #93b5ff;
+}
+
+[data-theme='midnight'] .books-eyebrow {
+  background: rgba(129, 140, 248, 0.15);
+  border-color: rgba(129, 140, 248, 0.35);
+  color: #a5b4fc;
+}
+
+[data-theme='sunset'] .books-eyebrow {
+  background: rgba(255, 126, 95, 0.18);
+  border-color: rgba(254, 180, 123, 0.35);
+  color: #feb47b;
+}
+
+[data-theme='vintage'] .books-eyebrow {
+  background: color-mix(in srgb, var(--primary-color) 14%, transparent);
+  border-color: color-mix(in srgb, var(--primary-color) 28%, transparent);
+  color: #5d4037;
+}
+
+[data-theme='ocean'] .books-eyebrow {
+  background: color-mix(in srgb, var(--primary-color) 14%, transparent);
+  border-color: color-mix(in srgb, var(--primary-color) 28%, transparent);
+  color: #0e7490;
+}
+
+[data-theme='nord'] .books-eyebrow {
+  background: color-mix(in srgb, var(--primary-color) 14%, transparent);
+  border-color: color-mix(in srgb, var(--primary-color) 28%, transparent);
+  color: #4c566a;
 }
 
 .books-page h1 {

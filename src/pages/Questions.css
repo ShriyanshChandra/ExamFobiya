@@ -103,7 +103,7 @@
 }
 
 /* Light theme explicit border polish */
-:root:not([data-theme='dark']):not([data-theme='midnight']) .course-tab-pill:not(.active),
+:root:not([data-theme='dark']):not([data-theme='midnight']):not([data-theme='sunset']) .course-tab-pill:not(.active),
 [data-theme='light'] .course-tab-pill:not(.active),
 body:not(.dark-mode) .course-tab-pill:not(.active) {
   border: 1.5px solid #cbd5e1 !important;
@@ -112,7 +112,7 @@ body:not(.dark-mode) .course-tab-pill:not(.active) {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
 }
 
-:root:not([data-theme='dark']):not([data-theme='midnight']) .course-tab-pill:not(.active):hover,
+:root:not([data-theme='dark']):not([data-theme='midnight']):not([data-theme='sunset']) .course-tab-pill:not(.active):hover,
 [data-theme='light'] .course-tab-pill:not(.active):hover,
 body:not(.dark-mode) .course-tab-pill:not(.active):hover {
   border-color: var(--primary-color) !important;
@@ -121,13 +121,13 @@ body:not(.dark-mode) .course-tab-pill:not(.active):hover {
   box-shadow: 0 4px 12px color-mix(in srgb, var(--primary-color) 20%, transparent) !important;
 }
 
-/* Dark & Midnight theme adjustments */
-:is([data-theme='dark'], [data-theme='midnight']) .course-tab-pill {
+/* Dark, Midnight & Sunset theme adjustments */
+:is([data-theme='dark'], [data-theme='midnight'], [data-theme='sunset']) .course-tab-pill {
   border-color: color-mix(in srgb, var(--accent-color) 18%, transparent);
   background: rgba(255, 255, 255, 0.04);
 }
 
-:is([data-theme='dark'], [data-theme='midnight']) .course-tab-pill:hover {
+:is([data-theme='dark'], [data-theme='midnight'], [data-theme='sunset']) .course-tab-pill:hover {
   border-color: color-mix(in srgb, var(--accent-color) 45%, transparent);
   box-shadow: 0 6px 20px color-mix(in srgb, var(--accent-color) 10%, transparent);
 }
@@ -147,6 +147,15 @@ body:not(.dark-mode) .course-tab-pill:not(.active):hover {
     0 4px 22px color-mix(in srgb, var(--accent-color) 30%, transparent),
     0 0 0 3px color-mix(in srgb, var(--accent-color) 10%, transparent);
 }
+
+[data-theme='sunset'] .course-tab-pill.active {
+  background: linear-gradient(135deg, #ff7e5f, #feb47b);
+  color: #4a2f4f;
+  box-shadow:
+    0 4px 22px rgba(255, 126, 95, 0.35),
+    0 0 0 3px rgba(254, 180, 123, 0.15);
+}
+
 
 /* Mobile responsive */
 @media (max-width: 48rem) {
@@ -614,7 +623,8 @@ body:not(.dark-mode) .course-tab-pill:not(.active):hover {
 }
 
 [data-theme='dark'] .results-show-more-btn,
-[data-theme='midnight'] .results-show-more-btn {
+[data-theme='midnight'] .results-show-more-btn,
+[data-theme='sunset'] .results-show-more-btn {
   color: #f8fafc;
 }
 
@@ -715,14 +725,14 @@ body:not(.dark-mode) .course-tab-pill:not(.active):hover {
   text-align: left;
 }
 
-:is([data-theme='dark'], [data-theme='midnight']) .question-save-btn {
+:is([data-theme='dark'], [data-theme='midnight'], [data-theme='sunset']) .question-save-btn {
   background: color-mix(in srgb, var(--accent-color) 10%, transparent);
   border-color: color-mix(in srgb, var(--accent-color) 28%, transparent);
   color: #f3f4f6;
 }
 
-:is([data-theme='dark'], [data-theme='midnight']) .question-save-btn:hover,
-:is([data-theme='dark'], [data-theme='midnight']) .question-save-btn.saved {
+:is([data-theme='dark'], [data-theme='midnight'], [data-theme='sunset']) .question-save-btn:hover,
+:is([data-theme='dark'], [data-theme='midnight'], [data-theme='sunset']) .question-save-btn.saved {
   background: var(--accent-color);
   border-color: color-mix(in srgb, var(--accent-color) 90%, transparent);
   color: var(--surface-text);

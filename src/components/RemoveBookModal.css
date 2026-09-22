@@ -145,11 +145,16 @@
 [data-theme='midnight'] .solid-modal h2,
 [data-theme='midnight'] .solid-modal .checkbox-option,
 [data-theme='midnight'] .solid-modal .cancel-btn,
-[data-theme='midnight'] .confirmation-message {
+[data-theme='midnight'] .confirmation-message,
+[data-theme='sunset'] .solid-modal h2,
+[data-theme='sunset'] .solid-modal .checkbox-option,
+[data-theme='sunset'] .solid-modal .cancel-btn,
+[data-theme='sunset'] .confirmation-message {
     color: var(--text-color);
 }
 
 [data-theme='dark'] .solid-modal .cancel-btn,
-[data-theme='midnight'] .solid-modal .cancel-btn {
+[data-theme='midnight'] .solid-modal .cancel-btn,
+[data-theme='sunset'] .solid-modal .cancel-btn {
     border-color: var(--surface-border);
 }

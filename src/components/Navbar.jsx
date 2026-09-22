@@ -283,6 +283,15 @@ const Navbar = ({ setSearchQuery }) => {
                   </div>
                   <div className="theme-card-label">Nord</div>
                 </button>
+                <button type="button" className={`account-dropdown-item theme-option-card ${theme === 'sunset' ? 'active' : ''}`} onClick={() => { setTheme('sunset'); setShowThemeMenu(false); }}>
+                  <div className="theme-card-colors">
+                    <div style={{ background: '#ff7e5f' }}></div>
+                    <div style={{ background: '#6a3093' }}></div>
+                    <div style={{ background: '#feb47b' }}></div>
+                    <div style={{ background: '#4a2f4f' }}></div>
+                  </div>
+                  <div className="theme-card-label">Sunset</div>
+                </button>
               </div>
             )}
           </div>
