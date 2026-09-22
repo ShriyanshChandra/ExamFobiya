@@ -162,29 +162,7 @@
   --font-family: 'Quicksand', sans-serif;
 }
 
-/* ─── Forest Theme ─── */
-[data-theme='forest'] {
-  --primary-color: #e6ccb2;
-  --secondary-color: #059669;
-  --accent-color: #ddb892;
-  --background-color: #e8f5e9;
-  --text-color: #2e1d16;
-  --text-muted: #5d4037;
-  --surface-text: #2e1d16;
-  --on-accent: var(--surface-text);
-  --white: #f7f3e8;
-  --surface-bg: var(--card-bg);
-  --surface-border: var(--border-adaptive);
-  --border-adaptive: rgba(5, 150, 105, 0.2);
-  --shadow-sm: 0 4px 6px rgba(5, 150, 105, 0.1);
-  --shadow-md: 0 8px 15px rgba(5, 150, 105, 0.1);
-  --shadow-lg: 0 12px 24px rgba(5, 150, 105, 0.15);
-  --navbar-bg: linear-gradient(90deg, #047857, #064e3b);
-  --card-bg: #f3eadd;
-  --input-bg: rgba(5, 150, 105, 0.06);
-  --input-text: #2e1d16;
-  --font-family: 'Quicksand', sans-serif;
-}
+
 
 /* ─── Midnight Theme (AMOLED Dark) ─── */
 [data-theme='midnight'] {
@@ -292,29 +270,6 @@
     color: #fff;
 }
 
-/* Forest theme */
-[data-theme='forest'] .questions-btn,
-[data-theme='forest'] .syllabus-btn {
-    background: linear-gradient(135deg, #e6ccb2, #ddb892);
-    color: #059669;
-    box-shadow: 0 8px 18px rgba(230, 204, 178, 0.2);
-}
-[data-theme='forest'] .questions-btn:hover,
-[data-theme='forest'] .syllabus-btn:hover {
-    background: linear-gradient(135deg, #f0d6bc, #e6ccb2);
-    color: #059669;
-}
-[data-theme='forest'] .edit-btn {
-    background: linear-gradient(135deg, #f97316, #ea580c);
-    color: #fff;
-}
-[data-theme='forest'] .book-code-btn {
-    color: #e6ccb2;
-}
-[data-theme='forest'] .book-code-btn:hover {
-    background: #e6ccb2;
-    color: #059669;
-}
 
 
 
@@ -486,18 +441,18 @@
   stroke: #1e40af !important;
 }
 
-/* Ocean, Forest, Midnight, Nord — var(--surface-text) */
-:is([data-theme='ocean'], [data-theme='forest'], [data-theme='midnight'], [data-theme='nord']) .pdf-card-course,
-:is([data-theme='ocean'], [data-theme='forest'], [data-theme='midnight'], [data-theme='nord']) .pdf-view-btn,
-:is([data-theme='ocean'], [data-theme='forest'], [data-theme='midnight'], [data-theme='nord']) .questions-search-btn,
-:is([data-theme='ocean'], [data-theme='forest'], [data-theme='midnight'], [data-theme='nord']) .pdf-edit-btn:not(.solution-delete-btn),
-:is([data-theme='ocean'], [data-theme='forest'], [data-theme='midnight'], [data-theme='nord']) .course-tab-pill.active,
-:is([data-theme='ocean'], [data-theme='forest'], [data-theme='midnight'], [data-theme='nord']) .lang-tab-pill.active {
+/* Ocean, Midnight, Nord — var(--surface-text) */
+:is([data-theme='ocean'], [data-theme='midnight'], [data-theme='nord']) .pdf-card-course,
+:is([data-theme='ocean'], [data-theme='midnight'], [data-theme='nord']) .pdf-view-btn,
+:is([data-theme='ocean'], [data-theme='midnight'], [data-theme='nord']) .questions-search-btn,
+:is([data-theme='ocean'], [data-theme='midnight'], [data-theme='nord']) .pdf-edit-btn:not(.solution-delete-btn),
+:is([data-theme='ocean'], [data-theme='midnight'], [data-theme='nord']) .course-tab-pill.active,
+:is([data-theme='ocean'], [data-theme='midnight'], [data-theme='nord']) .lang-tab-pill.active {
   color: var(--surface-text) !important;
 }
 
-:is([data-theme='ocean'], [data-theme='forest'], [data-theme='midnight'], [data-theme='nord']) .pdf-view-btn svg,
-:is([data-theme='ocean'], [data-theme='forest'], [data-theme='midnight'], [data-theme='nord']) .questions-search-btn svg {
+:is([data-theme='ocean'], [data-theme='midnight'], [data-theme='nord']) .pdf-view-btn svg,
+:is([data-theme='ocean'], [data-theme='midnight'], [data-theme='nord']) .questions-search-btn svg {
   stroke: var(--surface-text) !important;
 }
 

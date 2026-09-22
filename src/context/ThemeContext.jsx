@@ -7,7 +7,8 @@ export const useTheme = () => useContext(ThemeContext);
 export const ThemeProvider = ({ children }) => {
     const [theme, setTheme] = useState(() => {
         const savedTheme = localStorage.getItem('theme');
-        return savedTheme || 'light';
+        const validThemes = ['light', 'dark', 'vintage', 'ocean', 'midnight', 'nord'];
+        return (savedTheme && validThemes.includes(savedTheme)) ? savedTheme : 'light';
     });
 
     useEffect(() => {
@@ -16,7 +17,7 @@ export const ThemeProvider = ({ children }) => {
 
         // Remove all theme classes and apply the current one
         const themeClasses = [
-            'dark-mode', 'vintage-mode', 'ocean-mode', 'forest-mode',
+            'dark-mode', 'vintage-mode', 'ocean-mode',
             'midnight-mode', 'nord-mode'
         ];
         document.body.classList.remove(...themeClasses);

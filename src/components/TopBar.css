@@ -15,9 +15,6 @@
   --topbar-svg-color: #0e7490;
 }
 
-[data-theme='forest'] {
-  --topbar-svg-color: #047857;
-}
 
 [data-theme='midnight'] {
   --topbar-svg-color: #818cf8;

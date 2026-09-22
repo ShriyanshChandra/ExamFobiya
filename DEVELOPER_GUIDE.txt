@@ -90,7 +90,7 @@ A. Directory Structure:
    │   ├── ConfirmationModal.jsx   : Reusable action confirmation modal
    │   ├── ErrorBoundary.jsx       : React component tree crash boundary
    │   ├── Footer.jsx              : Global footer with links, copyright, and policies
-   │   ├── GlobalErrorMonitor.jsx  : Global window error and promise rejection interceptor
+   │   ├── GlobalErrorMonitor.jsx  : Global window error / unhandledrejection interceptor with isTransientError filter
    │   ├── Loader.jsx              : Animated loading spinner / skeleton widget
    │   ├── Navbar.jsx              : Clean responsive navigation bar with search bar, category links, responsive theme selector dropdown (7 themes), and mobile menu with user name at top and Settings & Logout below Dashboard
    │   ├── PWAInstallBanner.jsx    : App install banner for supported browsers
@@ -140,7 +140,7 @@ A. Directory Structure:
    │   ├── usePWAInstall.js        : PWA beforeinstallprompt lifecycle hook
    │   └── useSEO.js               : Dynamic document metadata, keywords, robots directives (noindex/follow), and OpenGraph manager (includes Examphobia/Exam Phobia search indexing)
    ├── firebase.js          : Firebase Client SDK initialization
-   ├── themes.css           : Comprehensive design token registry (7 themes: light, dark, vintage, ocean, forest, midnight, nord)
+   ├── themes.css           : Comprehensive design token registry (6 themes: light, dark, vintage, ocean, midnight, nord)
    ├── index.css            : Base typography, layout resets, and custom scrollbars
    └── App.jsx              : Root application component and routing configuration
 
@@ -170,12 +170,23 @@ B. Routing Table & Access Controls:
    /maintenance                   | Maintenance              | Public         | Direct access
    /reset-password                | ResetPassword            | Public         | Open in maintenance
 
-C. Dynamic Chunk Healing (lazyWithRetry):
+C. Dynamic Chunk Healing (lazyWithRetry + vite:preloadError):
    When Vite builds are deployed, asset chunk hashes change. If a client has an older
-   version cached, navigating to a new route might fail with a dynamic import error.
-   The lazyWithRetry wrapper in src/App.jsx catches this error, stores a flag in
-   window.sessionStorage ('chunk_retry_refreshed'), and performs a clean reload to
-   fetch the latest production bundle without crashing the user's session.
+   version cached, two failure modes can occur:
+   1. JS import failure: The dynamic import() rejects. lazyWithRetry catches this, sets
+      a sessionStorage flag ('chunk_retry_refreshed'), and reloads the page once.
+   2. CSS preload failure: Vite injects <link rel="modulepreload"> for CSS chunks.
+      When the chunk no longer exists, the browser fires a 'vite:preloadError' event.
+      A window-level listener in App.jsx catches this, sets a localStorage timestamp
+      ('vite_preload_reload_ts'), and forces a hard reload (with a 15s cooldown to
+      prevent reload loops).
+   GlobalErrorMonitor uses an isTransientError() guard to suppress all transient errors
+   from Firebase logging:
+     - Vite chunk preload failures ("Unable to preload CSS", "Failed to fetch dynamically imported module")
+     - User-side network errors (fetch failures, "NetworkError", "Load failed", "net::ERR_*" codes)
+     - Firebase / Firestore offline errors ("client is offline", "could not reach Cloud Firestore backend")
+     - Timeout / abort signals (timeout, AbortError, "request aborted")
+     - Any error fired while navigator.onLine === false
 
 ================================================================================
 4. BACKEND ARCHITECTURE, MIDDLEWARE & SERVER LOGIC
@@ -641,7 +652,7 @@ GET    | /                                          | Public      | Health check
    hex/RGB values. For accent elements (.pdf-card-course, .pdf-view-btn, .questions-search-btn,
    .pdf-edit-btn, .course-tab-pill.active, .lang-tab-pill.active), text and icon strokes are
    governed by --on-accent (#000000 in dark, #6e352b in vintage, #1e40af in light, and
-   var(--surface-text) in ocean, forest, midnight, nord).
+   var(--surface-text) in ocean, midnight, nord).
 
 5. CASE-SENSITIVITY COMPLIANCE:
    macOS is case-insensitive while Linux deployment environments are case-sensitive.

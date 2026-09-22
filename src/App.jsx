@@ -20,17 +20,32 @@ import "@fontsource/nunito";
 
 import './App.css';
 
-// Helper to auto-retry dynamic imports if a new deployment changed chunk hashes
+// Intercept Vite's CSS / JS chunk preload failures (fires when a <link rel="modulepreload">
+// or dynamic-import chunk 404s after a new deployment flushes old hashes).
+// We force a one-time hard reload so the browser fetches the fresh index.html + new chunks.
+window.addEventListener('vite:preloadError', () => {
+  const RELOAD_KEY = 'vite_preload_reload_ts';
+  const COOLDOWN_MS = 15_000; // only reload once every 15 s to avoid infinite loops
+  const last = Number(localStorage.getItem(RELOAD_KEY) || 0);
+  if (Date.now() - last > COOLDOWN_MS) {
+    localStorage.setItem(RELOAD_KEY, String(Date.now()));
+    window.location.reload();
+  }
+});
+
+// lazyWithRetry — JS dynamic-import guard (complements the vite:preloadError listener above).
+// If a JS chunk import fails (e.g. stale service-worker cache), we do one reload per session.
 const lazyWithRetry = (componentImport) =>
   React.lazy(async () => {
-    const pageHasBeenRefreshed = window.sessionStorage.getItem('chunk_retry_refreshed');
+    const RETRY_KEY = 'chunk_retry_refreshed';
+    const pageHasBeenRefreshed = sessionStorage.getItem(RETRY_KEY);
     try {
       const component = await componentImport();
-      window.sessionStorage.removeItem('chunk_retry_refreshed');
+      sessionStorage.removeItem(RETRY_KEY);
       return component;
     } catch (error) {
       if (!pageHasBeenRefreshed) {
-        window.sessionStorage.setItem('chunk_retry_refreshed', 'true');
+        sessionStorage.setItem(RETRY_KEY, 'true');
         window.location.reload();
         return { default: () => null };
       }

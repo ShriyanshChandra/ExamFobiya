@@ -525,15 +525,6 @@
   border: 1px solid #bfe7f6;
 }
 
-[data-theme='forest'] .intro-card,
-[data-theme='forest'] .course-browse-strip,
-[data-theme='forest'] .new-arrivals,
-[data-theme='forest'] .best-sellers,
-[data-theme='forest'] .book-category-section,
-[data-theme='forest'] .explore-section {
-  background: #f3eadd;
-  border: 1px solid #d7ccc8;
-}
 
 [data-theme='nord'] .intro-card,
 [data-theme='nord'] .course-browse-strip,
@@ -994,7 +985,7 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
   width: 100%;
-  padding: 1.25rem 0;
+  padding: 0.5rem 0;
   scroll-snap-type: none;
   cursor: grab;
   /* Inherit border-radius / background from .home-book-shelf when combined */
@@ -1014,14 +1005,9 @@
   flex-shrink: 0;
   align-items: stretch;
   gap: var(--marquee-gap);
-  padding-right: var(--marquee-gap);
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
+  padding: 0;
 }
 
-.home-marquee-group:first-child {
-  padding-left: 0.875rem;
-}
 
 .home-marquee-shelf .book-card {
   flex: 0 0 var(--marquee-card-width) !important;
@@ -1036,7 +1022,7 @@
   .home-marquee-shelf {
     --marquee-gap: 1rem;
     --marquee-card-width: 12.5rem;
-    padding: 1rem 0;
+    padding: 0.5rem 0;
   }
 }
 
@@ -1045,7 +1031,7 @@
   .home-marquee-shelf {
     --marquee-gap: 0.75rem;
     --marquee-card-width: 10.75rem;
-    padding: 0.875rem 0;
+    padding: 0.5rem 0;
   }
 }
 
@@ -1054,7 +1040,7 @@
   .home-marquee-shelf {
     --marquee-gap: 0.5rem;
     --marquee-card-width: 9.5rem;
-    padding: 0.75rem 0;
+    padding: 0.5rem 0;
   }
 }
 

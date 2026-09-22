@@ -91,12 +91,6 @@ body.dark-mode .container {
   box-shadow: 0 16px 36px -10px rgba(8, 145, 178, 0.1) !important;
 }
 
-/* Forest Theme */
-[data-theme='forest'] .container {
-  background: #f3eadd !important;
-  border: 1px solid #d7ccc8 !important;
-  box-shadow: 0 16px 36px -10px rgba(5, 150, 105, 0.1) !important;
-}
 
 /* Nord Theme */
 [data-theme='nord'] .container {

@@ -1676,54 +1676,6 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
     border-color: rgba(8, 145, 178, 0.35);
 }
 
-/* ── Forest theme overrides ── */
-
-[data-theme='forest'] .solution-code-block {
-    background: #f0eadd;
-    color: #2e1d16;
-    border-color: rgba(5, 150, 105, 0.18);
-}
-
-[data-theme='forest'] .solution-line-number {
-    color: #059669;
-    border-right-color: rgba(5, 150, 105, 0.15);
-}
-
-[data-theme='forest'] .solution-code-editor {
-    background: #eae3d4;
-    border-color: rgba(5, 150, 105, 0.25);
-}
-
-[data-theme='forest'] .solution-editor-lines {
-    color: #059669;
-    background: rgba(5, 150, 105, 0.04);
-    border-right-color: rgba(5, 150, 105, 0.15);
-}
-
-[data-theme='forest'] .solution-code-input {
-    color: #2e1d16 !important;
-    caret-color: #2e1d16;
-}
-
-[data-theme='forest'] .solution-form-field input,
-[data-theme='forest'] .solution-form-field select,
-[data-theme='forest'] .solution-form-field textarea {
-    background: #eae3d4;
-    color: #2e1d16;
-    border-color: rgba(5, 150, 105, 0.25);
-}
-
-[data-theme='forest'] .solution-copy-btn {
-    background: rgba(5, 150, 105, 0.1);
-    color: #047857;
-    border: 1px solid rgba(5, 150, 105, 0.2);
-}
-
-[data-theme='forest'] .solution-copy-btn:hover {
-    background: rgba(5, 150, 105, 0.18);
-    color: #059669;
-    border-color: rgba(5, 150, 105, 0.35);
-}
 
 /* ── "How to Run This Code" instructions box ── */
 
@@ -1994,36 +1946,6 @@ body:not(.dark-mode) .lang-tab-pill:not(.active):hover {
     background: #0e7490;
 }
 
-/* ── Forest theme overrides for run instructions ── */
-
-[data-theme='forest'] .run-instructions-box {
-    border-top-color: rgba(5, 150, 105, 0.15);
-}
-
-[data-theme='forest'] .run-instructions-toggle {
-    color: #059669;
-}
-
-[data-theme='forest'] .run-instructions-toggle-icon {
-    background: #059669;
-}
-
-[data-theme='forest'] .run-option {
-    background: rgba(5, 150, 105, 0.04);
-    border-color: rgba(5, 150, 105, 0.12);
-}
-
-[data-theme='forest'] .run-option-title {
-    color: #047857;
-}
-
-[data-theme='forest'] .run-download-btn {
-    background: #059669;
-}
-
-[data-theme='forest'] .run-download-btn:hover {
-    background: #047857;
-}
 
 /* Sectioned Layout */
 .solution-result-card {

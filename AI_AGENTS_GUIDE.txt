@@ -456,7 +456,7 @@ Base URL Resolution: src/utils/api.js (DEV: http://127.0.0.1:5000, PROD: VITE_AP
 13. CSS THEME SYSTEM & DESIGN TOKENS REGISTRY
 ================================================================================
 Theme Definition File: src/themes.css
-Supported Themes: light (default), dark, vintage, ocean, forest, midnight, nord
+Supported Themes: light (default), dark, vintage, ocean, midnight, nord
 
 Key Semantic Design Tokens:
 Token Name                  | Light Theme Value          | Dark Theme Value
@@ -480,7 +480,6 @@ Accent Badge & Action Button Colors (Questions & Programming Solutions):
   - vintage: #6e352b (--surface-text)
   - light: #1e40af
   - ocean: var(--surface-text) (#164e63)
-  - forest: var(--surface-text) (#2e1d16)
   - midnight: var(--surface-text) (#0a0a14)
   - nord: var(--surface-text) (#2e3440)
 
