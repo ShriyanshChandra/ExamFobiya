@@ -19,6 +19,51 @@
     <link rel="icon" type="image/png" sizes="48x48" href="https://www.examfobiya.com/favicon-48x48.png" />
     <link rel="shortcut icon" href="https://www.examfobiya.com/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="https://www.examfobiya.com/logo192.png" />
+    <!-- Early Network Bandwidth Preload Detector -->
+    <script>
+      (function() {
+        try {
+          var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+          var isSlow = false;
+          var bw = null;
+          if (conn && typeof conn.downlink === 'number') {
+            bw = conn.downlink;
+            // Only flag as slow if bandwidth is genuinely under 0.6 Mbps
+            if (bw > 0 && bw < 0.6) {
+              isSlow = true;
+            }
+          }
+          window.__INITIAL_NETWORK_STATE__ = {
+            isSlow: isSlow,
+            bandwidthMbps: bw,
+            isOnline: navigator.onLine !== false
+          };
+          // Start early latency/bandwidth probe in background
+          if (navigator.onLine) {
+            var t0 = performance.now();
+            fetch('/vite.svg?_early=' + Date.now(), { method: 'GET', cache: 'no-store' })
+              .then(function(res) {
+                var dur = performance.now() - t0;
+                // If response takes over 2000ms, flag as slow
+                if (dur > 2000 || !res.ok) {
+                  window.__INITIAL_NETWORK_STATE__ = {
+                    isSlow: true,
+                    bandwidthMbps: 0.2,
+                    isOnline: true
+                  };
+                } else {
+                  window.__INITIAL_NETWORK_STATE__ = {
+                    isSlow: false,
+                    bandwidthMbps: (bw && bw > 0) ? bw : 5.0,
+                    isOnline: true
+                  };
+                }
+              })
+              .catch(function() {});
+          }
+        } catch (e) {}
+      })();
+    </script>
     
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#182848" />

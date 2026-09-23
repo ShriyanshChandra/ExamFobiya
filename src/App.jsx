@@ -15,6 +15,7 @@ import { subscribeToMaintenanceMode, fetchMaintenanceMode } from "./services/Sys
 
 import PWAInstallBanner from "./components/PWAInstallBanner";
 import BackToTop from "./components/BackToTop";
+import NetworkStatusNotification from "./components/NetworkStatusNotification";
 
 import "@fontsource/nunito";
 
@@ -220,6 +221,7 @@ function App() {
                   <Footer />
                   <BackToTop />
                   <PWAInstallBanner />
+                  <NetworkStatusNotification />
                 </MaintenanceGuard>
               </Router>
             </QuestionProvider>

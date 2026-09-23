@@ -93,6 +93,8 @@ A. Directory Structure:
    │   ├── GlobalErrorMonitor.jsx  : Global window error / unhandledrejection interceptor with isTransientError filter
    │   ├── Loader.jsx              : Animated loading spinner / skeleton widget
    │   ├── Navbar.jsx              : Clean responsive navigation bar with search bar, category links, responsive theme selector dropdown (8 themes), and mobile menu with user name at top and Settings & Logout below Dashboard
+   │   ├── NetworkStatusNotification.jsx : 5-second auto-dismissing oval-shaped slow/unstable connection alert (disappears early if network stabilizes)
+   │   ├── NetworkStatusNotification.css : Responsive oval pill styling, glassmorphism, and 5-second countdown progress animation for slow network notification
    │   ├── PWAInstallBanner.jsx    : App install banner for supported browsers
    │   ├── ProtectedRoute.jsx      : Client route guard verifying authentication & roles
    │   ├── RemoveBookModal.jsx     : Admin confirmation modal for catalog book deletion
@@ -137,6 +139,7 @@ A. Directory Structure:
    │   ├── api.js                  : Dynamic API base URL resolution for DEV/PROD
    │   ├── csvExporter.js          : CSV serialization utility for analytics/users
    │   ├── documentUtils.js        : PDF baseline text extraction & DOCX HTML conversion
+   │   ├── useNetworkQuality.js    : Custom hook with head-start preload (index.html), monitoring pure bandwidth throughput in Mbps (independent of 2G/3G/4G/5G types) with active transfer rate probes
    │   ├── usePWAInstall.js        : PWA beforeinstallprompt lifecycle hook
    │   └── useSEO.js               : Dynamic document metadata, keywords, robots directives (noindex/follow), and OpenGraph manager (includes Examphobia/Exam Phobia search indexing)
    ├── firebase.js          : Firebase Client SDK initialization
@@ -408,6 +411,10 @@ A. Frontend Variables (.env in project root):
    - VITE_EMAILJS_SERVICE_ID / VITE_EMAILJS_TEMPLATE_ID / VITE_EMAILJS_PUBLIC_KEY:
      Description: EmailJS credentials for auxiliary contact forms.
 
+   - VITE_ADMIN_EMAIL / VITE_ADMIN_PASSWORD:
+     Description: Admin portal credentials used for automated browser sessions, DOM actions, and administrative verification.
+     Default: examfobiya@gmail.com
+
    - Embedded Firebase Config (src/firebase.js):
      Contains client project parameters (apiKey, authDomain, projectId, storageBucket,
      messagingSenderId, appId, measurementId). Safe for client exposure as security is
@@ -422,6 +429,9 @@ B. Backend Variables (backend/.env in backend directory):
      Description: IP interface binding.
      Development Default: 127.0.0.1 (prevents macOS firewall prompts)
      Production Default: 0.0.0.0
+
+   - ADMIN_EMAIL / ADMIN_PASSWORD:
+     Description: Admin portal authentication credentials for automated testing and administrative operations.
 
    - EMAIL_USER:
      Description: Primary account administrative email.

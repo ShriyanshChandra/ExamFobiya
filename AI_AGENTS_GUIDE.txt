@@ -64,10 +64,11 @@ All AI coding agents modifying this codebase MUST comply with the following inva
 ExamFobiya/
 ├── .agents/
 │   └── AGENTS.md                 : Workspace rules and agent behavioral directives
+├── .env                          : Frontend environment variables (VITE_GEMINI_API_KEY, VITE_ADMIN_EMAIL, VITE_ADMIN_PASSWORD)
 ├── backend/
 │   ├── routes/
 │   │   └── ai.js                 : Express route handlers for Gemini AI features
-│   ├── .env                      : Backend environment variables (PORT, EMAIL_PASS, GEMINI_API_KEY, etc.)
+│   ├── .env                      : Backend environment variables (PORT, EMAIL_PASS, GEMINI_API_KEY, ADMIN_EMAIL, ADMIN_PASSWORD)
 │   ├── package.json              : Backend dependencies (express, firebase-admin, @google/generative-ai, cors, dotenv)
 │   ├── server.js                 : Main Express server, API endpoints, crons, auth middleware
 │   └── serviceAccountKey.json    : Local development Firebase Admin service account key
@@ -87,6 +88,8 @@ ExamFobiya/
 │   │   ├── GlobalErrorMonitor.jsx: Intercepts unhandledrejection and window.onerror events
 │   │   ├── Loader.jsx            : Visual loading spinner with fallback states
 │   │   ├── Navbar.jsx            : Clean responsive navigation bar, search bar, responsive theme selector dropdown (8 themes), and mobile menu with user name at top and Settings & Logout below Dashboard
+│   │   ├── NetworkStatusNotification.jsx : 5-second auto-dismissing oval-shaped slow/unstable connection alert (disappears early if network stabilizes)
+│   │   ├── NetworkStatusNotification.css : Responsive oval pill styling, glassmorphism, and 5-second countdown progress animation for slow network notification
 │   │   ├── PWAInstallBanner.jsx  : Custom banner handling beforeinstallprompt PWA install
 │   │   ├── ProtectedRoute.jsx    : React Router wrapper enforcing auth and role requirements
 │   │   ├── RemoveBookModal.jsx   : Specialized confirmation modal for deleting catalog books
@@ -131,6 +134,7 @@ ExamFobiya/
 │   │   ├── api.js                : Dynamic backend URL resolver (DEV vs PROD)
 │   │   ├── csvExporter.js        : Client-side CSV generator for exportable data
 │   │   ├── documentUtils.js      : PDF baseline extraction (pdfjs-dist) & DOCX conversion (mammoth)
+│   │   ├── useNetworkQuality.js  : Hook with head-start preload (index.html), monitoring pure bandwidth throughput in Mbps (independent of 2G/3G/4G/5G types) with active transfer rate probes
 │   │   ├── usePWAInstall.js      : Hook capturing beforeinstallprompt event
 │   │   └── useSEO.js             : Dynamic document title, keywords, robots directives (noindex/follow), meta tags, and OpenGraph manager (includes Examphobia/Exam Phobia indexing)
 │   ├── App.css                   : Global app layout styles and animations
