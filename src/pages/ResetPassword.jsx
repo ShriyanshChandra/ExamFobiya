@@ -119,12 +119,17 @@ const ResetPassword = () => {
                 ) : (
                     <form onSubmit={handleSubmit} className="reset-password-form">
                         <div className="reset-header">
-                            <span className="reset-badge">Security Reset</span>
-                            <h2>Set New Password</h2>
+                            <div className="reset-badge">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                <span>Security Reset</span>
+                            </div>
+                            <h2 className="reset-title">Set New Password</h2>
                             {verifiedEmail && (
-                                <p className="user-email-tag">
-                                    Account: <span>{verifiedEmail}</span>
-                                </p>
+                                <div className="reset-account-pill">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                    <span className="account-label">Account:</span>
+                                    <span className="account-email">{verifiedEmail}</span>
+                                </div>
                             )}
                         </div>
 
@@ -141,11 +146,13 @@ const ResetPassword = () => {
                                     placeholder="Enter at least 6 characters"
                                     required
                                     minLength={6}
+                                    autoComplete="new-password"
                                 />
                                 <button
                                     type="button"
                                     className="password-toggle-icon"
                                     onClick={() => setShowPassword(prev => !prev)}
+                                    aria-label={showPassword ? 'Hide password' : 'Show password'}
                                     tabIndex="-1"
                                 >
                                     {showPassword ? (
@@ -168,16 +175,31 @@ const ResetPassword = () => {
                                     placeholder="Re-enter your new password"
                                     required
                                     minLength={6}
+                                    autoComplete="new-password"
                                 />
                             </div>
                         </div>
 
                         <div className="password-requirements">
                             <div className={`req-item ${newPassword.length >= 6 ? 'met' : ''}`}>
-                                <span className="req-dot"></span> At least 6 characters
+                                <span className="req-icon" aria-hidden="true">
+                                    {newPassword.length >= 6 ? (
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                    ) : (
+                                        <span className="req-dot"></span>
+                                    )}
+                                </span>
+                                <span>At least 6 characters</span>
                             </div>
                             <div className={`req-item ${confirmPassword && newPassword === confirmPassword ? 'met' : ''}`}>
-                                <span className="req-dot"></span> Passwords match
+                                <span className="req-icon" aria-hidden="true">
+                                    {confirmPassword && newPassword === confirmPassword ? (
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                    ) : (
+                                        <span className="req-dot"></span>
+                                    )}
+                                </span>
+                                <span>Passwords match</span>
                             </div>
                         </div>
 

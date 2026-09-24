@@ -46,7 +46,8 @@ const AdminDashboard = () => {
     const [users, setUsers] = useState([]);
     const [loadingUsers, setLoadingUsers] = useState(true);
     const [userSearchQuery, setUserSearchQuery] = useState('');
-    const [userRoleFilter, setUserRoleFilter] = useState('all');
+    const [userSortField, setUserSortField] = useState(null);
+    const [userSortDirection, setUserSortDirection] = useState('asc');
     const [userPage, setUserPage] = useState(1);
     const [confirmRoleChangeTarget, setConfirmRoleChangeTarget] = useState(null);
 
@@ -157,18 +158,29 @@ const AdminDashboard = () => {
 
     const handleConfirmRoleChange = async () => {
         if (!confirmRoleChangeTarget) return;
-        const { id: userId, currentRole } = confirmRoleChangeTarget;
+        const { id: userId, username, email, currentRole } = confirmRoleChangeTarget;
         setConfirmRoleChangeTarget(null);
+        setUserFeedback(null);
 
         const newRole = currentRole === 'admin' ? 'user' : 'admin';
         // Optimistic UI update
         setUsers(prev => prev.map(u => u.id === userId ? { ...u, role: newRole } : u));
 
         try {
-            await updateUserRole(userId, newRole);
+            await updateUserRole(userId, newRole, email, username);
+            setUserFeedback({
+                type: 'success',
+                message: `User "${username}" was successfully ${newRole === 'admin' ? 'promoted to Administrator' : 'demoted to Standard User'}. Notification email sent.`
+            });
         } catch (err) {
             // Revert state on error
             setUsers(prev => prev.map(u => u.id === userId ? { ...u, role: currentRole } : u));
+            setUserFeedback({
+                type: 'error',
+                message: `Failed to update role for "${username}": ${err.message}`
+            });
+        } finally {
+            setTimeout(() => setUserFeedback(null), 8000);
         }
     };
 
@@ -354,21 +366,54 @@ const AdminDashboard = () => {
         return clientErrors.filter(e => !e.resolved);
     }, [clientErrors, errorView]);
 
+    const handleUserSort = (field) => {
+        if (userSortField === field) {
+            setUserSortDirection(prev => (prev === 'asc' ? 'desc' : 'asc'));
+        } else {
+            setUserSortField(field);
+            setUserSortDirection(field === 'joinedDate' ? 'desc' : 'asc');
+        }
+    };
+
     const filteredUsers = useMemo(() => {
         const q = userSearchQuery.trim().toLowerCase();
-        return users.filter(u => {
-            const matchesQuery = !q || (
+        const list = users.filter(u => {
+            return !q || (
                 (u.username && u.username.toLowerCase().includes(q)) ||
                 (u.email && u.email.toLowerCase().includes(q))
             );
-            const matchesRole = userRoleFilter === 'all' || u.role === userRoleFilter;
-            return matchesQuery && matchesRole;
         });
-    }, [users, userSearchQuery, userRoleFilter]);
+
+        if (!userSortField) {
+            return list;
+        }
+
+        return [...list].sort((a, b) => {
+            let comp = 0;
+            if (userSortField === 'username') {
+                const nameA = (a.username || a.email || '').trim().toLowerCase();
+                const nameB = (b.username || b.email || '').trim().toLowerCase();
+                comp = nameA.localeCompare(nameB);
+            } else if (userSortField === 'role') {
+                const roleA = (a.role || 'user').trim().toLowerCase();
+                const roleB = (b.role || 'user').trim().toLowerCase();
+                comp = roleA.localeCompare(roleB);
+            } else if (userSortField === 'joinedDate') {
+                const dateA = typeof a.createdAt === 'number' && a.createdAt > 0
+                    ? a.createdAt
+                    : (a.joinedDate && a.joinedDate !== 'N/A' ? new Date(a.joinedDate).getTime() : 0);
+                const dateB = typeof b.createdAt === 'number' && b.createdAt > 0
+                    ? b.createdAt
+                    : (b.joinedDate && b.joinedDate !== 'N/A' ? new Date(b.joinedDate).getTime() : 0);
+                comp = (isNaN(dateA) ? 0 : dateA) - (isNaN(dateB) ? 0 : dateB);
+            }
+            return userSortDirection === 'asc' ? comp : -comp;
+        });
+    }, [users, userSearchQuery, userSortField, userSortDirection]);
 
     useEffect(() => {
         setUserPage(1);
-    }, [userSearchQuery, userRoleFilter]);
+    }, [userSearchQuery, userSortField, userSortDirection]);
 
     const USERS_PER_PAGE = 6;
     const totalUserPages = Math.ceil(filteredUsers.length / USERS_PER_PAGE) || 1;
@@ -719,27 +764,6 @@ const AdminDashboard = () => {
                                     className="users-search-input"
                                 />
                             </div>
-
-                            <div className="users-filter-pills">
-                                <button
-                                    className={`filter-btn ${userRoleFilter === 'all' ? 'active' : ''}`}
-                                    onClick={() => setUserRoleFilter('all')}
-                                >
-                                    All Users ({users.length})
-                                </button>
-                                <button
-                                    className={`filter-btn ${userRoleFilter === 'admin' ? 'active' : ''}`}
-                                    onClick={() => setUserRoleFilter('admin')}
-                                >
-                                    Admins ({adminUsersCount})
-                                </button>
-                                <button
-                                    className={`filter-btn ${userRoleFilter === 'user' ? 'active' : ''}`}
-                                    onClick={() => setUserRoleFilter('user')}
-                                >
-                                    Standard Users ({regularUsersCount})
-                                </button>
-                            </div>
                         </div>
 
                         {loadingUsers ? (
@@ -751,10 +775,85 @@ const AdminDashboard = () => {
                                 <table className="users-table">
                                     <thead>
                                         <tr>
-                                            <th>User</th>
+                                            <th>
+                                                <button
+                                                    type="button"
+                                                    className={`users-th-sort-btn ${userSortField === 'username' ? 'is-active' : ''}`}
+                                                    onClick={() => handleUserSort('username')}
+                                                    title={`Sort by Username (${userSortField === 'username' ? (userSortDirection === 'asc' ? 'A to Z' : 'Z to A') : 'Click to sort'})`}
+                                                    aria-label={`Sort by Username, currently ${userSortField === 'username' ? userSortDirection + 'ending' : 'unsorted'}`}
+                                                >
+                                                    <span>User</span>
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="14"
+                                                        height="14"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2.5"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        className={`sort-caret-indicator ${userSortField === 'username' ? `is-sorted ${userSortDirection}` : ''}`}
+                                                        aria-hidden="true"
+                                                    >
+                                                        <polyline points="18 15 12 9 6 15"></polyline>
+                                                    </svg>
+                                                </button>
+                                            </th>
                                             <th>Email</th>
-                                            <th>Role</th>
-                                            <th>Joined Date</th>
+                                            <th>
+                                                <button
+                                                    type="button"
+                                                    className={`users-th-sort-btn ${userSortField === 'role' ? 'is-active' : ''}`}
+                                                    onClick={() => handleUserSort('role')}
+                                                    title={`Sort by Role (${userSortField === 'role' ? (userSortDirection === 'asc' ? 'Admin first' : 'User first') : 'Click to sort'})`}
+                                                    aria-label={`Sort by Role, currently ${userSortField === 'role' ? userSortDirection + 'ending' : 'unsorted'}`}
+                                                >
+                                                    <span>Role</span>
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="14"
+                                                        height="14"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2.5"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        className={`sort-caret-indicator ${userSortField === 'role' ? `is-sorted ${userSortDirection}` : ''}`}
+                                                        aria-hidden="true"
+                                                    >
+                                                        <polyline points="18 15 12 9 6 15"></polyline>
+                                                    </svg>
+                                                </button>
+                                            </th>
+                                            <th>
+                                                <button
+                                                    type="button"
+                                                    className={`users-th-sort-btn ${userSortField === 'joinedDate' ? 'is-active' : ''}`}
+                                                    onClick={() => handleUserSort('joinedDate')}
+                                                    title={`Sort by Joining Date (${userSortField === 'joinedDate' ? (userSortDirection === 'asc' ? 'Oldest first' : 'Newest first') : 'Click to sort'})`}
+                                                    aria-label={`Sort by Joining Date, currently ${userSortField === 'joinedDate' ? userSortDirection + 'ending' : 'unsorted'}`}
+                                                >
+                                                    <span>Joined Date</span>
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="14"
+                                                        height="14"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        strokeWidth="2.5"
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        className={`sort-caret-indicator ${userSortField === 'joinedDate' ? `is-sorted ${userSortDirection}` : ''}`}
+                                                        aria-hidden="true"
+                                                    >
+                                                        <polyline points="18 15 12 9 6 15"></polyline>
+                                                    </svg>
+                                                </button>
+                                            </th>
                                             <th style={{ textAlign: 'right' }}>Actions</th>
                                         </tr>
                                     </thead>
@@ -803,7 +902,7 @@ const AdminDashboard = () => {
                                                                         className="dropdown-menu-item"
                                                                         onClick={() => {
                                                                             setOpenDropdownId(null);
-                                                                            setConfirmRoleChangeTarget({ id: u.id, username: u.username, currentRole: u.role });
+                                                                            setConfirmRoleChangeTarget({ id: u.id, username: u.username, email: u.email, currentRole: u.role });
                                                                         }}
                                                                     >
                                                                         <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>

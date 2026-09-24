@@ -195,6 +195,9 @@ This code will expire in 10 minutes. For your security, please do not share this
 
 If you did not request this code, you can safely ignore this email.
 
+This is an automated system-generated email. Please do not reply directly to this email.
+For any queries, please email examfobiya@gmail.com.
+
 Regards,
 ExamFobiya Team`,
             htmlContent: `
@@ -228,9 +231,15 @@ ExamFobiya Team`,
                     If you did not request this code, you can safely ignore this email.
                 </p>
                 <div style="padding-top:20px;border-top:1px solid #e5e7eb;">
-                    <p style="margin:0;font-size:14px;line-height:1.6;color:#6b7280;">
+                    <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#6b7280;">
                         Regards,<br />
                         <strong style="color:#111827;">ExamFobiya Team</strong>
+                    </p>
+                    <p style="margin:0 0 4px;font-size:12px;line-height:1.5;color:#9ca3af;">
+                        This is an automated system-generated email. Please do not reply directly to this email.
+                    </p>
+                    <p style="margin:0;font-size:12px;line-height:1.5;color:#9ca3af;">
+                        For any queries, please email <a href="mailto:examfobiya@gmail.com" style="color:#2563eb;text-decoration:underline;">examfobiya@gmail.com</a>.
                     </p>
                 </div>
             </div>
@@ -749,11 +758,16 @@ const handleSendPasswordReset = async (req, res) => {
         try {
             firebaseResetLink = await getAuth().generatePasswordResetLink(normalizedEmail, actionCodeSettings);
         } catch (authErr) {
-            console.error('Firebase Auth error generating reset link:', authErr.message);
-            if (authErr.code === 'auth/user-not-found') {
-                return res.status(404).json({ error: `No registered Auth account found for email "${normalizedEmail}".` });
+            console.warn('Firebase Auth error generating reset link with actionCodeSettings, trying default:', authErr.message);
+            try {
+                firebaseResetLink = await getAuth().generatePasswordResetLink(normalizedEmail);
+            } catch (fallbackAuthErr) {
+                console.error('Firebase Auth error generating reset link:', fallbackAuthErr.message);
+                if (fallbackAuthErr.code === 'auth/user-not-found') {
+                    return res.status(404).json({ error: `No registered Auth account found for email "${normalizedEmail}".` });
+                }
+                return res.status(400).json({ error: `Firebase Auth error: ${fallbackAuthErr.message}` });
             }
-            return res.status(400).json({ error: `Firebase Auth error: ${authErr.message}` });
         }
 
         let oobCode = '';
@@ -770,7 +784,7 @@ const handleSendPasswordReset = async (req, res) => {
             : firebaseResetLink;
 
         const apiKey = process.env.EMAIL_PASS;
-        const senderEmail = process.env.EMAIL_USER || process.env.SENDER_EMAIL || 'chandrashriyansh@gmail.com';
+        const senderEmail = process.env.SENDER_EMAIL || process.env.EMAIL_USER || 'examfobiya@gmail.com';
 
         if (!apiKey) {
             console.warn('EMAIL_PASS API key missing in environment');
@@ -800,7 +814,7 @@ const handleSendPasswordReset = async (req, res) => {
                                 <tr>
                                     <td>
                                         <div style="display: inline-block; padding: 6px 14px; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 9999px; margin-bottom: 14px;">
-                                            <span style="color: #60a5fa; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;">⚡ EXAMFOBIYA SECURITY</span>
+                                            <span style="color: #60a5fa; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;">EXAMFOBIYA SECURITY</span>
                                         </div>
                                         <h1 style="margin: 0 0 6px; font-size: 26px; line-height: 1.25; font-weight: 800; color: #ffffff; letter-spacing: -0.02em;">Password Reset</h1>
                                         <p style="margin: 0; font-size: 14px; color: #94a3b8;">Official account security notification</p>
@@ -818,17 +832,10 @@ const handleSendPasswordReset = async (req, res) => {
                             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom: 28px;">
                                 <tr>
                                     <td style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 14px; padding: 16px 20px;">
-                                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
-                                            <tr>
-                                                <td width="28" valign="top" style="font-size: 20px; line-height: 1;">🛡️</td>
-                                                <td style="padding-left: 10px;">
-                                                    <p style="margin: 0 0 2px; font-size: 13px; font-weight: 700; color: #1e40af; text-transform: uppercase; letter-spacing: 0.05em;">Admin Initiated Reset</p>
-                                                    <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #1e3a8a;">
-                                                        This password reset was generated by an administrator for: <strong style="color: #0f172a; word-break: break-all;">${normalizedEmail}</strong>
-                                                    </p>
-                                                </td>
-                                            </tr>
-                                        </table>
+                                        <p style="margin: 0 0 4px; font-size: 12px; font-weight: 800; color: #1e40af; text-transform: uppercase; letter-spacing: 0.06em;">Admin Initiated Reset</p>
+                                        <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #1e3a8a;">
+                                            This password reset was generated by an administrator for: <strong style="color: #0f172a; word-break: break-all;">${normalizedEmail}</strong>
+                                        </p>
                                     </td>
                                 </tr>
                             </table>
@@ -843,7 +850,7 @@ const handleSendPasswordReset = async (req, res) => {
                                 <tr>
                                     <td align="center">
                                         <a href="${finalResetLink}" target="_blank" style="display: inline-block; padding: 16px 36px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff; text-decoration: none; font-weight: 700; font-size: 15px; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4); letter-spacing: 0.02em; transition: all 0.2s ease;">
-                                            🔐 Reset Password
+                                            Reset Password
                                         </a>
                                     </td>
                                 </tr>
@@ -864,7 +871,7 @@ const handleSendPasswordReset = async (req, res) => {
 
                             <!-- Security Notice -->
                             <p style="margin: 28px 0 0; font-size: 13px; line-height: 1.6; color: #94a3b8; text-align: center;">
-                                🔒 For security, this link is unique to your account. If you did not expect this reset, please notify your team administrator immediately.
+                                For security, this link is unique to your account. If you did not expect this reset, please notify your team administrator immediately.
                             </p>
 
                             <!-- Footer Divider & Signature -->
@@ -882,7 +889,13 @@ const handleSendPasswordReset = async (req, res) => {
 
                     <!-- Bottom Footer -->
                     <tr>
-                        <td style="background-color: #f8fafc; padding: 20px 40px; border-top: 1px solid #e2e8f0; text-align: center;">
+                        <td style="background-color: #f8fafc; padding: 24px 40px; border-top: 1px solid #e2e8f0; text-align: center;">
+                            <p style="margin: 0 0 6px; font-size: 12px; line-height: 1.5; color: #94a3b8;">
+                                This is an automated system-generated email. Please do not reply directly to this email.
+                            </p>
+                            <p style="margin: 0 0 12px; font-size: 12px; line-height: 1.5; color: #94a3b8;">
+                                For any queries, please email <a href="mailto:examfobiya@gmail.com" style="color: #2563eb; text-decoration: underline;">examfobiya@gmail.com</a>.
+                            </p>
                             <p style="margin: 0; font-size: 12px; color: #94a3b8;">© ${new Date().getFullYear()} ExamFobiya. All rights reserved.</p>
                         </td>
                     </tr>
@@ -897,7 +910,7 @@ const handleSendPasswordReset = async (req, res) => {
             sender: { email: senderEmail, name: 'ExamFobiya Admin' },
             to: [{ email: normalizedEmail }],
             subject: 'Password Reset Generated by Admin - ExamFobiya',
-            textContent: `Password Reset Request (Generated by Administrator) - ExamFobiya\n\nAdmin Notice: This password reset email has been generated directly by an Administrator for your account.\n\nClick the link below to reset your password:\n${finalResetLink}\n\nIf the link does not work, copy and paste this URL into your browser:\n${finalResetLink}`,
+            textContent: `Password Reset Request (Generated by Administrator) - ExamFobiya\n\nAdmin Notice: This password reset email has been generated directly by an Administrator for your account.\n\nClick the link below to reset your password:\n${finalResetLink}\n\nIf the link does not work, copy and paste this URL into your browser:\n${finalResetLink}\n\nThis is an automated system-generated email. Please do not reply directly to this email.\nFor any queries, please email examfobiya@gmail.com.\n\nBest regards,\nExamFobiya Administration Team`,
             htmlContent
         });
 
@@ -944,6 +957,467 @@ const handleSendPasswordReset = async (req, res) => {
 
 app.post('/api/auth/send-password-reset', handleSendPasswordReset);
 app.post('/api/admin/send-password-reset', handleSendPasswordReset);
+
+// ── Welcome Email Endpoint (with Deduplication Guard) ─────────────────────────
+const recentWelcomeEmailLocks = new Map();
+
+app.post('/api/send-welcome-email', async (req, res) => {
+    const { email, username } = req.body;
+    const normalizedEmail = email?.trim().toLowerCase();
+
+    if (!normalizedEmail) {
+        return res.status(400).json({ error: 'Email is required' });
+    }
+
+    const cleanUsername = (username || normalizedEmail.split('@')[0]).trim();
+
+    try {
+        // 1. In-memory rapid deduplication lock (blocks concurrent requests within 5 minutes)
+        const lastSentTimestamp = recentWelcomeEmailLocks.get(normalizedEmail);
+        const now = Date.now();
+        if (lastSentTimestamp && (now - lastSentTimestamp) < 5 * 60 * 1000) {
+            console.log(`[Welcome Email] In-memory lock prevented duplicate welcome email for: ${normalizedEmail}`);
+            return res.status(200).json({ message: 'Welcome email already processed recently.' });
+        }
+
+        // 2. Firestore persistent idempotency check
+        const welcomeDocRef = getFirestore().collection('welcome_emails').doc(normalizedEmail);
+        const welcomeDoc = await welcomeDocRef.get();
+        if (welcomeDoc.exists) {
+            console.log(`[Welcome Email] Persistent record found. Skipping duplicate welcome email for: ${normalizedEmail}`);
+            recentWelcomeEmailLocks.set(normalizedEmail, now);
+            return res.status(200).json({ message: 'Welcome email has already been sent to this account.' });
+        }
+
+        // Mark in-memory lock immediately
+        recentWelcomeEmailLocks.set(normalizedEmail, now);
+
+        const reqOrigin = req.headers.origin || (req.headers.referer ? new URL(req.headers.referer).origin : null);
+        const appOrigin = (process.env.APP_URL || reqOrigin || 'http://localhost:5173').replace(/\/$/, '');
+
+        const apiKey = process.env.EMAIL_PASS;
+        const senderEmail = process.env.SENDER_EMAIL || process.env.EMAIL_USER || 'examfobiya@gmail.com';
+
+        if (!apiKey) {
+            console.warn('EMAIL_PASS API key missing in environment for welcome email');
+            return res.status(500).json({ error: 'Brevo EMAIL_PASS API key is not configured on the server.' });
+        }
+
+        const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Welcome to ExamFobiya</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1e293b;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f1f5f9; padding: 40px 16px;">
+        <tr>
+            <td align="center">
+                <!-- Main Email Container Card -->
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width: 580px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);">
+                    
+                    <!-- Top Brand Header Banner -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%); padding: 36px 40px; text-align: left;">
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                <tr>
+                                    <td>
+                                        <div style="display: inline-block; padding: 6px 14px; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 9999px; margin-bottom: 14px;">
+                                            <span style="color: #60a5fa; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;">WELCOME TO EXAMFOBIYA</span>
+                                        </div>
+                                        <h1 style="margin: 0 0 6px; font-size: 26px; line-height: 1.25; font-weight: 800; color: #ffffff; letter-spacing: -0.02em;">Welcome to the Platform</h1>
+                                        <p style="margin: 0; font-size: 14px; color: #94a3b8;">Your account is ready to explore academic resources</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Body Content -->
+                    <tr>
+                        <td style="padding: 40px 40px 32px;">
+                            
+                            <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6; color: #334155; font-weight: 600;">Hello ${cleanUsername},</p>
+                            <p style="margin: 0 0 24px; font-size: 15px; line-height: 1.6; color: #475569;">
+                                Thank you for joining ExamFobiya! Your account has been successfully created. We are excited to support your exam preparation and academic journey with curated resources.
+                            </p>
+
+                            <!-- Features Overview -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom: 28px;">
+                                <tr>
+                                    <td style="padding: 12px 0;">
+                                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 18px; margin-bottom: 10px;">
+                                            <tr>
+                                                <td>
+                                                    <p style="margin: 0 0 4px; font-size: 14px; font-weight: 700; color: #0f172a;">Academic Textbooks & Notes</p>
+                                                    <p style="margin: 0; font-size: 13px; color: #64748b; line-height: 1.4;">Access curated books, reference guides, and subject materials.</p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 18px; margin-bottom: 10px;">
+                                            <tr>
+                                                <td>
+                                                    <p style="margin: 0 0 4px; font-size: 14px; font-weight: 700; color: #0f172a;">Previous Year Question Papers</p>
+                                                    <p style="margin: 0; font-size: 13px; color: #64748b; line-height: 1.4;">Download semester question papers organized by course and subject.</p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 18px; margin-bottom: 10px;">
+                                            <tr>
+                                                <td>
+                                                    <p style="margin: 0 0 4px; font-size: 14px; font-weight: 700; color: #0f172a;">Programming Solutions</p>
+                                                    <p style="margin: 0; font-size: 13px; color: #64748b; line-height: 1.4;">Explore verified code solutions and implementations in multiple languages.</p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 18px;">
+                                            <tr>
+                                                <td>
+                                                    <p style="margin: 0 0 4px; font-size: 14px; font-weight: 700; color: #0f172a;">Personalized Experience & Themes</p>
+                                                    <p style="margin: 0; font-size: 13px; color: #64748b; line-height: 1.4;">Save favorites and switch between multiple sleek themes in Settings.</p>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Primary CTA Button -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 28px 0;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="${appOrigin}/" target="_blank" style="display: inline-block; padding: 16px 36px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff; text-decoration: none; font-weight: 700; font-size: 15px; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4); letter-spacing: 0.02em;">
+                                            Explore ExamFobiya
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Footer Divider & Signature -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-top: 32px; border-top: 1px solid #f1f5f9; padding-top: 24px;">
+                                <tr>
+                                    <td>
+                                        <p style="margin: 0 0 4px; font-size: 14px; color: #475569; font-weight: 600;">Best regards,</p>
+                                        <p style="margin: 0; font-size: 14px; color: #0f172a; font-weight: 700;">ExamFobiya Team</p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+
+                    <!-- Bottom Footer -->
+                    <tr>
+                        <td style="background-color: #f8fafc; padding: 24px 40px; border-top: 1px solid #e2e8f0; text-align: center;">
+                            <p style="margin: 0 0 6px; font-size: 12px; line-height: 1.5; color: #94a3b8;">
+                                This is an automated system-generated email. Please do not reply directly to this email.
+                            </p>
+                            <p style="margin: 0 0 12px; font-size: 12px; line-height: 1.5; color: #94a3b8;">
+                                For any queries, please email <a href="mailto:examfobiya@gmail.com" style="color: #2563eb; text-decoration: underline;">examfobiya@gmail.com</a>.
+                            </p>
+                            <p style="margin: 0; font-size: 12px; color: #94a3b8;">&copy; ${new Date().getFullYear()} ExamFobiya. All rights reserved.</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>`;
+
+        const data = JSON.stringify({
+            sender: { email: senderEmail, name: 'ExamFobiya' },
+            to: [{ email: normalizedEmail }],
+            subject: 'Welcome to ExamFobiya - Start Exploring Study Materials',
+            textContent: `Welcome to ExamFobiya\n\nHello ${cleanUsername},\n\nThank you for joining ExamFobiya! Your account has been created successfully.\n\nYou now have access to:\n- Academic Textbooks & Reference Materials\n- Previous Year Question Papers\n- Programming Solutions & Code Implementations\n- Personalized Library & Theme Customization\n\nStart exploring now: ${appOrigin}/\n\nThis is an automated system-generated email. Please do not reply directly to this email.\nFor any queries, please email examfobiya@gmail.com.\n\nBest regards,\nExamFobiya Team`,
+            htmlContent
+        });
+
+        const options = {
+            hostname: 'api.brevo.com',
+            port: 443,
+            path: '/v3/smtp/email',
+            method: 'POST',
+            headers: {
+                'api-key': apiKey,
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(data)
+            }
+        };
+
+        const https = require('https');
+        const apiReq = https.request(options, (apiRes) => {
+            let responseData = '';
+            apiRes.on('data', (chunk) => { responseData += chunk; });
+            apiRes.on('end', async () => {
+                if (apiRes.statusCode >= 200 && apiRes.statusCode < 300) {
+                    console.log(`Welcome email sent to ${normalizedEmail}`);
+                    try {
+                        await welcomeDocRef.set({
+                            email: normalizedEmail,
+                            username: cleanUsername,
+                            sentAt: Date.now(),
+                            sentAtFormatted: new Date().toISOString()
+                        });
+                    } catch (storeErr) {
+                        console.warn('Failed to record welcome email in Firestore:', storeErr.message);
+                    }
+                    res.status(200).json({ message: `Welcome email sent successfully to ${normalizedEmail}` });
+                } else {
+                    console.error('Brevo API Error (Welcome Email):', responseData);
+                    recentWelcomeEmailLocks.delete(normalizedEmail);
+                    res.status(500).json({ error: 'Failed to send welcome email: ' + responseData });
+                }
+            });
+        });
+
+        apiReq.on('error', (error) => {
+            console.error('Network Error (Welcome Email):', error);
+            recentWelcomeEmailLocks.delete(normalizedEmail);
+            res.status(500).json({ error: 'Failed to send welcome email: ' + error.message });
+        });
+
+        apiReq.write(data);
+        apiReq.end();
+
+    } catch (error) {
+        console.error('Error in send-welcome-email:', error);
+        recentWelcomeEmailLocks.delete(normalizedEmail);
+        res.status(500).json({ error: error.message || 'Failed to send welcome email.' });
+    }
+});
+
+// ── Role Change Notification Endpoint ─────────────────────────────────────────
+app.post('/api/admin/notify-role-change', async (req, res) => {
+    const { email, username, newRole } = req.body;
+    const normalizedEmail = email?.trim().toLowerCase();
+
+    if (!normalizedEmail) {
+        return res.status(400).json({ error: 'Email is required' });
+    }
+
+    if (!newRole || (newRole !== 'admin' && newRole !== 'user')) {
+        return res.status(400).json({ error: 'Valid newRole (admin or user) is required' });
+    }
+
+    const cleanUsername = (username || normalizedEmail.split('@')[0]).trim();
+    const isPromotion = newRole === 'admin';
+
+    try {
+        const reqOrigin = req.headers.origin || (req.headers.referer ? new URL(req.headers.referer).origin : null);
+        const appOrigin = (process.env.APP_URL || reqOrigin || 'http://localhost:5173').replace(/\/$/, '');
+
+        const apiKey = process.env.EMAIL_PASS;
+        const senderEmail = process.env.SENDER_EMAIL || process.env.EMAIL_USER || 'examfobiya@gmail.com';
+
+        if (!apiKey) {
+            console.warn('EMAIL_PASS API key missing in environment for role notification');
+            return res.status(500).json({ error: 'Brevo EMAIL_PASS API key is not configured on the server.' });
+        }
+
+        const subject = isPromotion
+            ? 'Account Notification: You have been promoted to Administrator'
+            : 'Account Notification: Your account role has been updated';
+
+        const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>${subject} - ExamFobiya</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; color: #1e293b;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f1f5f9; padding: 40px 16px;">
+        <tr>
+            <td align="center">
+                <!-- Main Email Container Card -->
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width: 580px; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);">
+                    
+                    <!-- Top Brand Header Banner -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%); padding: 36px 40px; text-align: left;">
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                                <tr>
+                                    <td>
+                                        <div style="display: inline-block; padding: 6px 14px; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 9999px; margin-bottom: 14px;">
+                                            <span style="color: #60a5fa; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;">
+                                                ${isPromotion ? 'ADMINISTRATIVE PRIVILEGES' : 'ACCOUNT STATUS UPDATE'}
+                                            </span>
+                                        </div>
+                                        <h1 style="margin: 0 0 6px; font-size: 26px; line-height: 1.25; font-weight: 800; color: #ffffff; letter-spacing: -0.02em;">
+                                            ${isPromotion ? 'Promoted to Administrator' : 'Account Role Updated'}
+                                        </h1>
+                                        <p style="margin: 0; font-size: 14px; color: #94a3b8;">
+                                            ${isPromotion ? 'Official administrative permission notification' : 'Official account permission update'}
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Body Content -->
+                    <tr>
+                        <td style="padding: 40px 40px 32px;">
+                            
+                            <!-- Role Status Badge -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom: 28px;">
+                                <tr>
+                                    <td style="background-color: ${isPromotion ? '#eff6ff' : '#f8fafc'}; border: 1px solid ${isPromotion ? '#bfdbfe' : '#e2e8f0'}; border-radius: 14px; padding: 16px 20px;">
+                                        <p style="margin: 0 0 4px; font-size: 12px; font-weight: 800; color: ${isPromotion ? '#1e40af' : '#475569'}; text-transform: uppercase; letter-spacing: 0.06em;">
+                                            Role Status: ${isPromotion ? 'Administrator' : 'Standard User'}
+                                        </p>
+                                        <p style="margin: 0; font-size: 14px; line-height: 1.5; color: ${isPromotion ? '#1e3a8a' : '#334155'};">
+                                            Account: <strong style="color: #0f172a; word-break: break-all;">${normalizedEmail}</strong>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6; color: #334155; font-weight: 600;">Hello ${cleanUsername},</p>
+                            
+                            ${isPromotion ? `
+                            <p style="margin: 0 0 20px; font-size: 15px; line-height: 1.6; color: #475569;">
+                                An administrator has updated your ExamFobiya account role to <strong>Administrator</strong>. You now have elevated permissions across the platform, including access to the Admin Dashboard and management tools.
+                            </p>
+
+                            <!-- Admin Capabilities Box -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; margin-bottom: 28px;">
+                                <tr>
+                                    <td>
+                                        <p style="margin: 0 0 10px; font-size: 13px; font-weight: 800; color: #1e293b; text-transform: uppercase; letter-spacing: 0.05em;">Administrator Capabilities</p>
+                                        <ul style="margin: 0; padding-left: 20px; color: #475569; font-size: 14px; line-height: 1.6;">
+                                            <li style="margin-bottom: 6px;"><strong>Dashboard & Analytics:</strong> Access platform insights, active catalog totals, and system status.</li>
+                                            <li style="margin-bottom: 6px;"><strong>Content Management:</strong> Add, edit, and organize books, question PDFs, and programming solutions.</li>
+                                            <li><strong>User Administration:</strong> View registered users and manage user roles.</li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Primary CTA Button -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 28px 0;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="${appOrigin}/admin" target="_blank" style="display: inline-block; padding: 16px 36px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff; text-decoration: none; font-weight: 700; font-size: 15px; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4); letter-spacing: 0.02em;">
+                                            Go to Admin Dashboard
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p style="margin: 24px 0 0; font-size: 13px; line-height: 1.6; color: #94a3b8; text-align: center;">
+                                Please ensure your account credentials remain secure. If you did not expect this administrative promotion, please inform the team immediately.
+                            </p>
+                            ` : `
+                            <p style="margin: 0 0 20px; font-size: 15px; line-height: 1.6; color: #475569;">
+                                Your ExamFobiya account role has been updated to <strong>Standard User</strong> by an administrator.
+                            </p>
+                            <p style="margin: 0 0 24px; font-size: 15px; line-height: 1.6; color: #475569;">
+                                You continue to have full access to all academic books, semester previous year question papers, programming solutions, and your personal saved library.
+                            </p>
+
+                            <!-- Primary CTA Button -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin: 28px 0;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="${appOrigin}/" target="_blank" style="display: inline-block; padding: 16px 36px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff; text-decoration: none; font-weight: 700; font-size: 15px; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4); letter-spacing: 0.02em;">
+                                            Go to ExamFobiya
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                            `}
+
+                            <!-- Footer Divider & Signature -->
+                            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-top: 32px; border-top: 1px solid #f1f5f9; padding-top: 24px;">
+                                <tr>
+                                    <td>
+                                        <p style="margin: 0 0 4px; font-size: 14px; color: #475569; font-weight: 600;">Best regards,</p>
+                                        <p style="margin: 0; font-size: 14px; color: #0f172a; font-weight: 700;">ExamFobiya Administration Team</p>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </td>
+                    </tr>
+
+                    <!-- Bottom Footer -->
+                    <tr>
+                        <td style="background-color: #f8fafc; padding: 24px 40px; border-top: 1px solid #e2e8f0; text-align: center;">
+                            <p style="margin: 0 0 6px; font-size: 12px; line-height: 1.5; color: #94a3b8;">
+                                This is an automated system-generated email. Please do not reply directly to this email.
+                            </p>
+                            <p style="margin: 0 0 12px; font-size: 12px; line-height: 1.5; color: #94a3b8;">
+                                For any queries, please email <a href="mailto:examfobiya@gmail.com" style="color: #2563eb; text-decoration: underline;">examfobiya@gmail.com</a>.
+                            </p>
+                            <p style="margin: 0; font-size: 12px; color: #94a3b8;">&copy; ${new Date().getFullYear()} ExamFobiya. All rights reserved.</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>`;
+
+        const textContent = isPromotion
+            ? `Account Notification: You have been promoted to Administrator - ExamFobiya\n\nHello ${cleanUsername},\n\nAn administrator has updated your ExamFobiya account role to Administrator.\n\nYou now have access to administrative features including the Admin Dashboard, content moderation, and user management.\n\nAccess the Admin Dashboard: ${appOrigin}/admin\n\nThis is an automated system-generated email. Please do not reply directly to this email.\nFor any queries, please email examfobiya@gmail.com.\n\nBest regards,\nExamFobiya Administration Team`
+            : `Account Notification: Your account role has been updated - ExamFobiya\n\nHello ${cleanUsername},\n\nYour ExamFobiya account role has been updated to Standard User by an administrator.\n\nYou continue to have full access to books, semester question papers, programming solutions, and your personal library.\n\nVisit ExamFobiya: ${appOrigin}/\n\nThis is an automated system-generated email. Please do not reply directly to this email.\nFor any queries, please email examfobiya@gmail.com.\n\nBest regards,\nExamFobiya Administration Team`;
+
+        const data = JSON.stringify({
+            sender: { email: senderEmail, name: 'ExamFobiya Administration' },
+            to: [{ email: normalizedEmail }],
+            subject,
+            textContent,
+            htmlContent
+        });
+
+        const options = {
+            hostname: 'api.brevo.com',
+            port: 443,
+            path: '/v3/smtp/email',
+            method: 'POST',
+            headers: {
+                'api-key': apiKey,
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(data)
+            }
+        };
+
+        const https = require('https');
+        const apiReq = https.request(options, (apiRes) => {
+            let responseData = '';
+            apiRes.on('data', (chunk) => { responseData += chunk; });
+            apiRes.on('end', () => {
+                if (apiRes.statusCode >= 200 && apiRes.statusCode < 300) {
+                    console.log(`Role change notification sent to ${normalizedEmail}`);
+                    res.status(200).json({ message: `Role change notification email sent successfully to ${normalizedEmail}` });
+                } else {
+                    console.error('Brevo API Error (Role Change):', responseData);
+                    res.status(500).json({ error: 'Failed to send role notification email: ' + responseData });
+                }
+            });
+        });
+
+        apiReq.on('error', (error) => {
+            console.error('Network Error (Role Change):', error);
+            res.status(500).json({ error: 'Failed to send role notification email: ' + error.message });
+        });
+
+        apiReq.write(data);
+        apiReq.end();
+
+    } catch (error) {
+        console.error('Error in notify-role-change:', error);
+        res.status(500).json({ error: error.message || 'Failed to send role change notification.' });
+    }
+});
 
 // ── IndexNow: notify search engines of content changes ────────────────────────
 const INDEXNOW_KEY = process.env.INDEXNOW_KEY || 'c3b77bf259f243af99818667d9215013';

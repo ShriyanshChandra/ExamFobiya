@@ -3,6 +3,7 @@ import { auth, db, googleProvider } from '../firebase';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { getApiUrl } from '../utils/api';
+import { sendWelcomeEmail } from '../services/UserService';
 
 const AuthContext = createContext(null);
 
@@ -87,6 +88,10 @@ export const AuthProvider = ({ children }) => {
             username,
             createdAt: new Date()
         });
+
+        // Trigger welcome email asynchronously
+        sendWelcomeEmail(normalizedEmail, username);
+
         return result;
     };
 
@@ -122,15 +127,18 @@ export const AuthProvider = ({ children }) => {
             const userDocRef = doc(db, 'users', user.uid);
             const existingDoc = await getDoc(userDocRef);
             if (!existingDoc.exists()) {
+                const userDisplayName = user.displayName || user.email.split('@')[0];
                 // New user — create doc with default role
                 await setDoc(userDocRef, {
                     email: user.email,
-                    username: user.displayName || user.email.split('@')[0],
+                    username: userDisplayName,
                     photoURL: user.photoURL || '',
                     role: 'user',
                     createdAt: new Date(),
                     provider: 'google'
                 });
+                // Send welcome email for first-time Google sign up
+                sendWelcomeEmail(user.email, userDisplayName);
             } else {
                 // Returning user — just update photoURL/username if present
                 await setDoc(userDocRef, {
