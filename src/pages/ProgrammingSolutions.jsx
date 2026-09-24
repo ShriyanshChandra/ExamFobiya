@@ -5,7 +5,69 @@ import { useBooks } from "../context/BookContext";
 import ConfirmationModal from "../components/ConfirmationModal";
 import Loader from "../components/Loader";
 import useSEO from "../utils/useSEO";
+import katex from "katex";
+import "katex/dist/katex.min.css";
 import "./ProgrammingSolutions.css";
+
+const DESCRIPTION_MATH_PATTERN = /(\$\$[\s\S]*?\$\$|\\\([\s\S]*?\\\)|\$[^$\n]+\$)/g;
+
+const renderMath = (expression, key, displayMode = false) => {
+  try {
+    const renderedMath = katex.renderToString(expression.trim(), {
+      displayMode,
+      throwOnError: false,
+    });
+
+    return (
+      <span
+        key={key}
+        className={displayMode ? "solution-description-math solution-description-math-display" : "solution-description-math"}
+        dangerouslySetInnerHTML={{ __html: renderedMath }}
+      />
+    );
+  } catch {
+    return <React.Fragment key={key}>{expression}</React.Fragment>;
+  }
+};
+
+const renderDescriptionText = (text, keyPrefix) => (
+  text.split("\n").map((line, lineIndex, lines) => {
+    const isRawMathLine = /\\(?:pi|times|frac|text|circ|sqrt)|\^\{?[^}\s]+\}?|_\{?[^}\s]+\}?/.test(line);
+
+    return (
+      <React.Fragment key={`${keyPrefix}-line-${lineIndex}`}>
+        {isRawMathLine ? renderMath(line, `${keyPrefix}-math-${lineIndex}`) : line}
+        {lineIndex < lines.length - 1 && <br />}
+      </React.Fragment>
+    );
+  })
+);
+
+const DescriptionWithMath = ({ description }) => {
+  const parts = String(description || "").split(DESCRIPTION_MATH_PATTERN);
+
+  return (
+    <>
+      {parts.map((part, index) => {
+        const isDisplayMath = part.startsWith("$$") && part.endsWith("$$");
+        const isInlineMath = (part.startsWith("$") && part.endsWith("$")) ||
+          (part.startsWith("\\(") && part.endsWith("\\)"));
+
+        if (!isDisplayMath && !isInlineMath) {
+          return <React.Fragment key={`description-text-${index}`}>{renderDescriptionText(part, `description-${index}`)}</React.Fragment>;
+        }
+
+        const expression = isDisplayMath
+          ? part.slice(2, -2).trim()
+          : part.startsWith("\\(")
+            ? part.slice(2, -2).trim()
+            : part.slice(1, -1).trim();
+
+        return renderMath(expression, `description-math-${index}`, isDisplayMath);
+      })}
+    </>
+  );
+};
 
 // Returns language-specific instructions for running a code solution
 const getRunInstructions = (language) => {
@@ -469,7 +531,7 @@ const ProgrammingSolutions = () => {
                 </div>
               </div>
 
-              {solution.description && <p className="solution-description">{solution.description}</p>}
+              {solution.description && <p className="solution-description"><DescriptionWithMath description={solution.description} /></p>}
               {solution.input && (
                 <div className="solution-io-preview solution-input-preview" style={{ padding: "0 1.25rem 0.75rem" }}>
                   <span className="solution-io-label">Input:</span>
@@ -687,7 +749,7 @@ const ProgrammingSolutions = () => {
                       <span className="pdf-card-label-row">{solution.title}</span>
                     )}
                     {solution.description && (
-                      <p className="solution-description solution-inline-description">{solution.description}</p>
+                      <p className="solution-description solution-inline-description"><DescriptionWithMath description={solution.description} /></p>
                     )}
                     {solution.input && (
                       <div className="solution-io-preview solution-input-preview">
