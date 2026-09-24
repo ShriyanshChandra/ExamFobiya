@@ -848,4 +848,5 @@ const ProgrammingSolutions = () => {
   );
 };
 
+export { DescriptionWithMath };
 export default ProgrammingSolutions;

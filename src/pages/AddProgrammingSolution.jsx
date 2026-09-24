@@ -7,6 +7,7 @@ import { getApiUrl } from '../utils/api';
 import ConfirmationModal from '../components/ConfirmationModal';
 import Loader from '../components/Loader';
 import useSEO from '../utils/useSEO';
+import { DescriptionWithMath } from './ProgrammingSolutions';
 import './ProgrammingSolutions.css';
 
 const COURSES = ['BCA', 'DCA', 'PGDCA'];
@@ -116,6 +117,7 @@ const AddProgrammingSolution = () => {
     const [alertModal, setAlertModal] = useState(null);
     const [similarModal, setSimilarModal] = useState(null);
     const [previewSolution, setPreviewSolution] = useState(null);
+    const [showKatexHelp, setShowKatexHelp] = useState(false);
     const inputLineNumberRef = useRef(null);
     const lineNumberRef = useRef(null);
     const outputLineNumberRef = useRef(null);
@@ -464,15 +466,50 @@ const AddProgrammingSolution = () => {
                         </label>
                     </div>
 
-                    <label className="solution-form-field">
-                        <span>Description</span>
+                    <div className="solution-form-field solution-description-editor-field">
+                        <span className="solution-description-label">
+                            <span>Description</span>
+                            <button
+                                type="button"
+                                className="solution-description-info-btn"
+                                onClick={() => setShowKatexHelp((visible) => !visible)}
+                                aria-label="How to format KaTeX formulas"
+                                aria-expanded={showKatexHelp}
+                                title="How to format KaTeX formulas"
+                            >
+                                i
+                            </button>
+                        </span>
+                        {showKatexHelp && (
+                            <div className="solution-description-help" role="note">
+                                <strong>KaTeX formatting tutorial</strong>
+                                <span><code>$...$</code> renders an inline formula within a sentence. Example: <code>$x^2$</code> renders x².</span>
+                                <span><code>$$...$$</code> renders a larger formula on its own line. Example: <code>$$2\pi r^2$$</code> renders 2πr².</span>
+                                <span><code>^</code> creates a superscript. Write <code>x^2</code> for x².</span>
+                                <span><code>_</code> creates a subscript. Write <code>x_1</code> for x₁.</span>
+                                <span><code>&#123;...&#125;</code> groups multiple characters. Write <code>x&#94;&#123;10&#125;</code> for x¹⁰ and <code>x_&#123;ij&#125;</code> for xᵢⱼ.</span>
+                                <span>Commands begin with a backslash: <code>\pi</code> gives π, <code>\times</code> gives ×, <code>\sqrt&#123;x&#125;</code> gives √x, and <code>\frac&#123;a&#125;&#123;b&#125;</code> gives a fraction.</span>
+                                <span>For a complete example, write <code>$$A = \pi r^2$$</code> to display the area of a circle.</span>
+                            </div>
+                        )}
                         <textarea
                             className="solution-description-input"
+                            rows={6}
                             value={solutionDescription}
                             onChange={(event) => setSolutionDescription(event.target.value)}
                             placeholder="Write a short explanation for this solution."
                         />
-                    </label>
+                        <div className="solution-description-live-preview">
+                            <span className="solution-description-preview-label">Preview</span>
+                            {solutionDescription.trim() ? (
+                                <div className="solution-description solution-description-preview-content">
+                                    <DescriptionWithMath description={solutionDescription} />
+                                </div>
+                            ) : (
+                                <span className="solution-description-preview-empty">Your formatted description will appear here.</span>
+                            )}
+                        </div>
+                    </div>
 
                     <label className="solution-form-field">
                         <span>Input</span>

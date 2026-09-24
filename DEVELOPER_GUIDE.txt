@@ -460,6 +460,9 @@ B. Complete Route Matrix:
 
 4. ProgrammingSolutions (src/pages/ProgrammingSolutions.jsx):
    - Features: Multi-language code library (.NET, C, C#, C++, Java, Python), topic filters, syntax-highlighted code viewer, copy-to-clipboard, input/output test case blocks, and fullscreen code modal.
+   - Description rendering: Both detail and inline solution descriptions use the KaTeX renderer. Explicit `$$...$$`, `$...$`, and `\\(...\\)` formulas render as mathematics, and raw lines containing common LaTeX math syntax are detected automatically. Normal description text uses the shared KaTeX-style typography.
+   - Description content is normalized to remove table borders, divider rows, extra blank lines, indentation, and repeated spaces while preserving coding-term backticks, function parentheses, formulas, and arrow separators.
+   - The live Programming Solutions content includes the BCA Python Programming question bank through Question 150 and the PGDCA Programming using C & C++ bank with 68 C and 66 C++ solutions. Records remain stored in the book document's `programmingSolutions` array.
 
 5. AdminDashboard (src/pages/AdminDashboard.jsx):
    - Features: Multi-tab administrative portal:
@@ -474,6 +477,7 @@ B. Complete Route Matrix:
 
 7. AddProgrammingSolution (src/pages/AddProgrammingSolution.jsx):
    - Features: Code editor for programming solutions; language selector; topic tags; description editor; input/output test cases; integrated Gemini AI semantic similarity detector preventing duplicate submissions.
+   - The add/edit description editor is six lines tall, uses the KaTeX-style description font, shows a live rendered preview, and includes an `i` tutorial explaining `$...$` inline formulas, `$$...$$` display formulas, `^` superscripts, `_` subscripts, `{...}` grouping, and commands such as `\\pi`, `\\times`, `\\sqrt{...}`, and `\\frac{...}{...}`.
 
 8. UploadQuestions (src/pages/UploadQuestions.jsx):
    - Features: Batch question paper upload interface; course and subject binding; PDF and DOCX document ingestion with smart indentation parsing; Gemini AI unstructured text to Q&A JSON parser.
