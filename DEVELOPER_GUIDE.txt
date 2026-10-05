@@ -877,10 +877,15 @@ C. API Keys Keep-Alive Monitor:
    - Executes automatic pings if 25 days have elapsed since the last recorded ping.
    - Status stored in /system_status/api_keepalive.
 
-D. User Management & Table Sorting:
-   - Live registered user catalog in AdminDashboard with keyword search and pagination.
-   - Interactive column sorting on User Name, Role, and Joining Date via clickable headers with SVG chevron arrow indicators.
-   - Exact chronological sorting for Joining Date powered by raw epoch timestamps in UserService.js.
+ D. User Management & Table Sorting:
+    - Live registered user catalog in AdminDashboard with keyword search and pagination.
+    - Interactive column sorting on User Name, Role, and Joining Date via clickable headers with SVG chevron arrow indicators.
+    - Exact chronological sorting for Joining Date powered by raw epoch timestamps in UserService.js.
+    - Mobile/Tablet Sort Bar: On viewports <= 65rem (where the thead is hidden), a dedicated "Sort by:" pill-button bar
+      (.users-mobile-sort-bar) is displayed above the user card list, providing sort access for User, Role, and Joined Date.
+      The bar is hidden on desktop (display: none) and shown via the 65rem media query (display: flex).
+    - Stable Column Widths: The users-table uses table-layout: fixed with a <colgroup> (5 cols at 22%, 34%, 14%, 16%, 14%)
+      to prevent column width shifts when navigating between pagination pages. table-layout reverts to auto in mobile card mode.
 
 ================================================================================
 19. MAINTENANCE MODE & REAL-TIME SYSTEM GUARDS
@@ -979,6 +984,10 @@ All 7 Supported Themes & Visual Profiles:
    - Secondary Text (--text-muted): #d8b3c9 | Action Text (--surface-text, --on-accent): #4a2f4f
    - Navigation Bar (--navbar-bg): linear-gradient(90deg, #ff7e5f, #6a3093)
    - Adaptive Border (--border-adaptive): rgba(251, 233, 231, 0.22)
+   - Settings Page: Full [data-theme='sunset'] block in Settings.css provides dark-purple main panel, warm orange
+     sidebar gradient (#6a3093 -> #4a2f4f), cream text (#fbe9e7) for all info rows, labels, inputs, and role badges.
+     This is necessary because the generic :root:not([data-theme='dark']) light-theme override in Settings.css does
+     not work correctly for sunset (a dark theme with light text). Explicit [data-theme='sunset'] rules take precedence.
 
 Theme Contrast & Accessibility Mandates:
 - All custom components must use var(--text-color) or var(--text-muted) for text and var(--card-bg) or var(--surface-bg) for backgrounds.

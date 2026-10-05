@@ -764,6 +764,36 @@ const AdminDashboard = () => {
                                     className="users-search-input"
                                 />
                             </div>
+                            {/* Mobile / Tablet sort bar — visible only when thead is hidden */}
+                            <div className="users-mobile-sort-bar">
+                                <span className="mobile-sort-label">Sort by:</span>
+                                <div className="mobile-sort-pills">
+                                    <button
+                                        type="button"
+                                        className={`mobile-sort-pill ${userSortField === 'username' ? 'is-active' : ''}`}
+                                        onClick={() => handleUserSort('username')}
+                                    >
+                                        User
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={`sort-caret-indicator ${userSortField === 'username' ? `is-sorted ${userSortDirection}` : ''}`} aria-hidden="true"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={`mobile-sort-pill ${userSortField === 'role' ? 'is-active' : ''}`}
+                                        onClick={() => handleUserSort('role')}
+                                    >
+                                        Role
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={`sort-caret-indicator ${userSortField === 'role' ? `is-sorted ${userSortDirection}` : ''}`} aria-hidden="true"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={`mobile-sort-pill ${userSortField === 'joinedDate' ? 'is-active' : ''}`}
+                                        onClick={() => handleUserSort('joinedDate')}
+                                    >
+                                        Joined Date
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={`sort-caret-indicator ${userSortField === 'joinedDate' ? `is-sorted ${userSortDirection}` : ''}`} aria-hidden="true"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
                         {loadingUsers ? (
@@ -773,6 +803,13 @@ const AdminDashboard = () => {
                         ) : (
                             <div className="users-table-wrapper">
                                 <table className="users-table">
+                                    <colgroup>
+                                        <col />
+                                        <col />
+                                        <col />
+                                        <col />
+                                        <col />
+                                    </colgroup>
                                     <thead>
                                         <tr>
                                             <th>
