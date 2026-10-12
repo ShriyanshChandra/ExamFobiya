@@ -45,7 +45,7 @@ The platform unifies:
   - University Question Papers & Solution Bank: Hierarchical indexing of academic
     universities, courses, subjects, Q&A pairs, and past examination PDFs with course selector tabs.
   - Programming Solutions Hub: Code solution repository supporting multiple
-    programming languages (.NET, C, C#, C++, Java, Python), syntax formatting, how-to-run instructions,
+    programming languages (C, C#, C++, Java, Python), syntax formatting, how-to-run instructions,
     and AI-driven semantic duplicate detection.
   - Document & Question Extraction Engine: In-browser and server-side ingestion
     of PDF and DOCX files with baseline indentation recovery and automated
@@ -134,7 +134,7 @@ ExamFobiya/
 │   │   ├── About_us.jsx                         : Mission, vision, core values, leadership, engineering credits
 │   │   ├── About_us.css                         : Theme-compatible styles for informational and legal pages
 │   │   ├── AddBook.jsx                          : Form for creating and editing book entries with syllabus manager
-│   │   ├── AddProgrammingSolution.jsx            : Code solution editor with AI similarity checker (.NET, C, C#, C++, Java, Python)
+│   │   ├── AddProgrammingSolution.jsx            : Code solution editor with AI similarity checker (C, C#, C++, Java, Python)
 │   │   ├── AdminDashboard.jsx                   : Multi-tab admin control panel (metrics, sortable user catalog, keys, errors)
 │   │   ├── AdminDashboard.css                   : Glassmorphic dashboard styles, sortable headers, error cards, maintenance controls
 │   │   ├── BestSeller.jsx                       : Spotlight view for best-selling books with right-to-left marquee animation
@@ -459,10 +459,10 @@ B. Complete Route Matrix:
    - Features: Course selector tabs (BCA, DCA, PGDCA), subject selector, year filter, search bar, interactive question accordion with formatted HTML answers, and embedded PDF viewer.
 
 4. ProgrammingSolutions (src/pages/ProgrammingSolutions.jsx):
-   - Features: Multi-language code library (.NET, C, C#, C++, Java, Python), topic filters, syntax-highlighted code viewer, copy-to-clipboard, input/output test case blocks, and fullscreen code modal.
+   - Features: Multi-language code library (C, C#, C++, Java, Python), topic filters, syntax-highlighted code viewer, copy-to-clipboard, input/output test case blocks, and fullscreen code modal.
    - Description rendering: Both detail and inline solution descriptions use the KaTeX renderer. Explicit `$$...$$`, `$...$`, and `\\(...\\)` formulas render as mathematics, and raw lines containing common LaTeX math syntax are detected automatically. Normal description text uses the shared KaTeX-style typography.
    - Description content is normalized to remove table borders, divider rows, extra blank lines, indentation, and repeated spaces while preserving coding-term backticks, function parentheses, formulas, and arrow separators.
-   - The live Programming Solutions content includes the BCA Python Programming question bank through Question 150 and the PGDCA Programming using C & C++ bank with 68 C and 66 C++ solutions. Records remain stored in the book document's `programmingSolutions` array.
+   - The live Programming Solutions content includes the BCA Python Programming question bank through Question 150, the PGDCA Programming using C & C++ bank with 68 C and 66 C++ solutions, and 45 C# solutions for BCA Programming in .NET (Questions 1–31 and 33–46; Question 32 is omitted because the supplied prompt was incomplete). Records remain stored in the book document's `programmingSolutions` array.
 
 5. AdminDashboard (src/pages/AdminDashboard.jsx):
    - Features: Multi-tab administrative portal:
