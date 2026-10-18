@@ -3,6 +3,11 @@ import ReactDOM from 'react-dom/client';
 import { HelmetProvider } from 'react-helmet-async';
 import './index.css';
 import App from './App';
+import { warmBackend } from './utils/api';
+
+// Wake the backend immediately on every page visit so later dashboard requests
+// are less likely to pay the cost of a cold start.
+warmBackend();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

@@ -144,6 +144,10 @@ const isRecentDate = (dateValue) => {
 
 
 // Routes
+app.get('/api/health', (req, res) => {
+    res.status(200).json({ status: 'ok' });
+});
+
 app.post('/send-otp', async (req, res) => {
     const normalizedEmail = req.body?.email?.trim().toLowerCase();
     const purpose = req.body?.purpose || 'generic';

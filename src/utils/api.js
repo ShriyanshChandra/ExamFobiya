@@ -9,3 +9,15 @@ const API_BASE_URL = configuredApiBaseUrl || (
 );
 
 export const getApiUrl = (path) => `${API_BASE_URL}${path}`;
+
+// Start the backend wake-up request as soon as the app bundle is evaluated.
+// It is intentionally fire-and-forget so it does not delay the first paint.
+export const warmBackend = () => {
+  fetch(getApiUrl('/api/health'), {
+    method: 'GET',
+    cache: 'no-store',
+    keepalive: true
+  }).catch(() => {
+    // A warm-up request must never prevent the app from loading.
+  });
+};

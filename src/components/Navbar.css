@@ -359,7 +359,7 @@
   }
 
   .nav-menu a[href="/admin"] {
-    --wave-delay: 0.70s;
+    animation: none;
   }
 
   .nav-menu li a:hover {

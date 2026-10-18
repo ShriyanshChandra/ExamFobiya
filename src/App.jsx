@@ -15,7 +15,6 @@ import { subscribeToMaintenanceMode, fetchMaintenanceMode } from "./services/Sys
 
 import PWAInstallBanner from "./components/PWAInstallBanner";
 import BackToTop from "./components/BackToTop";
-import NetworkStatusNotification from "./components/NetworkStatusNotification";
 
 import "@fontsource/nunito";
 
@@ -94,6 +93,44 @@ function ScrollToTop() {
   return null;
 }
 
+function MainContent({ searchQuery }) {
+  const { pathname } = useLocation();
+  const isHomePage = pathname === '/';
+
+  return (
+    <main className={`p-6 ${isHomePage ? 'home-main' : 'page-main'}`} style={{ paddingTop: "5rem" }}>
+      <ErrorBoundary>
+        <Suspense fallback={<SuspenseFallback />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/books" element={<Books searchQuery={searchQuery} />} />
+            <Route path="/questions" element={<Questions />} />
+            <Route path="/search" element={<Search searchQuery={searchQuery} />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/welcome" element={<ProtectedRoute><Welcome /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+            <Route path="/programming-solutions" element={<ProgrammingSolutions />} />
+            <Route path="/programming-solutions/:id" element={<ProgrammingSolutions />} />
+            <Route path="/add-programming-solution" element={<ProtectedRoute requiredRole="admin"><AddProgrammingSolution /></ProtectedRoute>} />
+            <Route path="/edit-programming-solution/:bookId/:solutionId" element={<ProtectedRoute requiredRole="admin"><AddProgrammingSolution /></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/add-book" element={<ProtectedRoute requiredRole="admin"><AddBook /></ProtectedRoute>} />
+            <Route path="/edit-book/:id" element={<ProtectedRoute requiredRole="admin"><AddBook /></ProtectedRoute>} />
+            <Route path="/upload-questions" element={<ProtectedRoute requiredRole="admin"><UploadQuestions /></ProtectedRoute>} />
+            <Route path="/edit-question-pdf" element={<ProtectedRoute requiredRole="admin"><EditQuestionPdf /></ProtectedRoute>} />
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/terms" element={<TermsAndConditions />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/maintenance" element={<Maintenance />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+          </Routes>
+        </Suspense>
+      </ErrorBoundary>
+    </main>
+  );
+}
+
 function MaintenanceGuard({ children }) {
   const { user, loading } = useAuth();
   const location = useLocation();
@@ -162,7 +199,7 @@ function MaintenanceGuard({ children }) {
           gap: '0.75rem',
           boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)'
         }}>
-          <span>⚡ System Maintenance Mode is currently ACTIVE for standard users.</span>
+          <span>System Maintenance Mode is currently ACTIVE for standard users.</span>
           <a href="/admin" style={{ color: '#ffffff', textDecoration: 'underline', fontWeight: '800' }}>
             Manage in Dashboard
           </a>
@@ -187,41 +224,10 @@ function App() {
                   <ScrollToTop />
                   <TopBar />
                   <Navbar setSearchQuery={setSearchQuery} />
-                  {/* Ensure this div is transparent so the background shows through */}
-                  <main className="p-6" style={{ paddingTop: "5rem" }}>
-                    <ErrorBoundary>
-                      <Suspense fallback={<SuspenseFallback />}>
-                        <Routes>
-                          <Route path="/" element={<Home />} />
-                          <Route path="/books" element={<Books searchQuery={searchQuery} />} />
-                          <Route path="/questions" element={<Questions />} />
-                          <Route path="/search" element={<Search searchQuery={searchQuery} />} />
-                          <Route path="/login" element={<Login />} />
-                          <Route path="/register" element={<Register />} />
-                          <Route path="/welcome" element={<ProtectedRoute><Welcome /></ProtectedRoute>} />
-                          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-                          <Route path="/programming-solutions" element={<ProgrammingSolutions />} />
-                          <Route path="/programming-solutions/:id" element={<ProgrammingSolutions />} />
-                          <Route path="/add-programming-solution" element={<ProtectedRoute requiredRole="admin"><AddProgrammingSolution /></ProtectedRoute>} />
-                          <Route path="/edit-programming-solution/:bookId/:solutionId" element={<ProtectedRoute requiredRole="admin"><AddProgrammingSolution /></ProtectedRoute>} />
-                          <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
-                          <Route path="/add-book" element={<ProtectedRoute requiredRole="admin"><AddBook /></ProtectedRoute>} />
-                          <Route path="/edit-book/:id" element={<ProtectedRoute requiredRole="admin"><AddBook /></ProtectedRoute>} />
-                          <Route path="/upload-questions" element={<ProtectedRoute requiredRole="admin"><UploadQuestions /></ProtectedRoute>} />
-                          <Route path="/edit-question-pdf" element={<ProtectedRoute requiredRole="admin"><EditQuestionPdf /></ProtectedRoute>} />
-                          <Route path="/about" element={<AboutUs />} />
-                          <Route path="/terms" element={<TermsAndConditions />} />
-                          <Route path="/privacy" element={<PrivacyPolicy />} />
-                          <Route path="/maintenance" element={<Maintenance />} />
-                          <Route path="/reset-password" element={<ResetPassword />} />
-                        </Routes>
-                      </Suspense>
-                    </ErrorBoundary>
-                  </main>
+                  <MainContent searchQuery={searchQuery} />
                   <Footer />
                   <BackToTop />
                   <PWAInstallBanner />
-                  <NetworkStatusNotification />
                 </MaintenanceGuard>
               </Router>
             </QuestionProvider>
