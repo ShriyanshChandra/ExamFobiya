@@ -107,7 +107,7 @@ function MainContent({ searchQuery }) {
             <Route path="/questions" element={<Questions />} />
             <Route path="/search" element={<Search searchQuery={searchQuery} />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            <Route path="/register" element={<Login initialMode="register" />} />
             <Route path="/welcome" element={<ProtectedRoute><Welcome /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             <Route path="/programming-solutions" element={<ProgrammingSolutions />} />

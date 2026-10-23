@@ -1,13 +1,793 @@
+/* ═══════════════════════════════════════════════
+   LOGIN PAGE — BOOK-FLIP SHELL
+   ═══════════════════════════════════════════════ */
+
 .login-container {
     display: flex;
     flex-direction: column;
-    /* Stack error message and boxes vertically */
     justify-content: center;
     align-items: center;
     min-height: 80vh;
     padding: 2rem;
     background-color: transparent;
 }
+
+.login-book-shell {
+    min-height: min(860px, calc(100vh - 9rem));
+    padding: 2rem 1.5rem 2rem;
+    overflow: hidden;
+    background: transparent;
+    color: var(--text-color);
+    font-family: var(--font-family, 'Quicksand', sans-serif);
+}
+
+.login-book-error { max-width: 64rem; }
+
+/* ── Book viewport ── */
+.login-book {
+    --book-ink:   #1b2433;
+    --book-paper: #fbfaf5;
+    --book-blue:  #2554a8;
+    --book-navy:  #1f3a68;
+    --book-gold:  #f2c230;
+
+    position: relative;
+    isolation: isolate;
+    width: min(100%, 1050px);
+    aspect-ratio: 3 / 2;
+    container-type: inline-size;
+    perspective: 180cqw;          /* same unit as the experiment */
+    font-family: var(--font-family, 'Quicksand', sans-serif);
+}
+
+/* ── Cloth cover decoration ── */
+.lb-cloth-cover {
+    position: absolute;
+    inset: -1.6cqw;
+    z-index: -2;
+    border-radius: 1cqw;
+    background:
+        repeating-linear-gradient(45deg, #24457a 0 2px, #1f3a68 2px 4px),
+        linear-gradient(to right, transparent 47%, rgba(0,0,0,.3) 50%, transparent 53%);
+    box-shadow: 0 3cqw 6cqw rgba(0,0,0,.6);
+}
+
+/* ── Page-block edge (stacked pages effect) ── */
+.lb-pages-edge {
+    position: absolute;
+    z-index: -1;
+    inset: .5cqw -0.6cqw -0.6cqw;
+    border-radius: 0.6cqw;
+    background: repeating-linear-gradient(to bottom, #fff 0 2px, #d5d9e0 2px 3px);
+}
+
+/* ── Base pages (static, sit behind leaves) ── */
+.lb-base-pages {
+    position: absolute;
+    inset: 0;
+    display: flex;
+}
+.lb-base-page {
+    position: relative;
+    width: 50%;
+    height: 100%;
+}
+.lb-base-page--left { left: 0; }
+.lb-base-page--right { right: 0; }
+
+/* ── Individual page face (shared by base + leaf faces) ── */
+.lb-page-face {
+    position: absolute;
+    inset: 0;
+    background-color: var(--book-paper);
+    overflow: hidden;
+}
+.lb-page-face--left  { border-radius: 0.8cqw 0 0 0.8cqw; }
+.lb-page-face--right { border-radius: 0 0.8cqw 0.8cqw 0; }
+
+/* Grid ruled lines */
+.lb-ruled {
+    background-image:
+        linear-gradient(rgba(37,84,168,.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(37,84,168,.07) 1px, transparent 1px);
+    background-size: 2cqw 2cqw;
+}
+
+/* Page shadow (depth simulation) */
+.lb-page-shadow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+.lb-page-face--left  .lb-page-shadow { background: linear-gradient(to left,  rgba(20,35,60,.22), rgba(20,35,60,0) 12%); }
+.lb-page-face--right .lb-page-shadow { background: linear-gradient(to right, rgba(20,35,60,.22), rgba(20,35,60,0) 12%); }
+
+/* Side colour tab */
+.lb-page-tab {
+    position: absolute;
+    top: 14%;
+    height: 12%;
+    width: 1.1cqw;
+    background: var(--book-blue);
+}
+.lb-page-face--left  .lb-page-tab { left: 0;  border-radius: 0 0.3cqw 0.3cqw 0; }
+.lb-page-face--right .lb-page-tab { right: 0; border-radius: 0.3cqw 0 0 0.3cqw; }
+
+/* Inner layout */
+.lb-page-inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 4.5% 6.5% 4% 6.5%;
+}
+.lb-page-face--right .lb-page-inner { padding-left: 9%; padding-right: 6.5%; }
+
+/* Running head */
+.lb-running-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(27,36,51,.25);
+    padding-bottom: .8cqw;
+    color: rgba(27,36,51,.55);
+    font-size: clamp(.5rem, 1cqw, .8rem);
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+/* Right pages: reverse so "Course Book" sits on the outer (right) edge */
+.lb-running-head--right { flex-direction: row-reverse; }
+.lb-running-blue { color: var(--book-blue); }
+
+/* Body area — vertically centres all children (chapter content OR login form) */
+.lb-page-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.lb-page-body > * {
+    animation: lbContentFadeIn 240ms ease-out;
+}
+
+@keyframes lbContentFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Folio (page number) */
+.lb-folio {
+    display: flex;
+    justify-content: flex-end;
+    flex-shrink: 0;
+}
+.lb-folio--left { justify-content: flex-start; }
+.lb-folio span {
+    border-top: 2px solid var(--book-gold);
+    padding-top: .5cqw;
+    color: rgba(27,36,51,.55);
+    font-size: 1.2cqw;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ── Chapter content ── */
+.lb-chapter { text-align: left; }
+
+.lb-chapter-title {
+    display: block;
+    margin-bottom: 0.5cqw;
+}
+.lb-chapter-num {
+    display: none;
+}
+.lb-chapter-label small {
+    display: block;
+    color: rgba(27,36,51,.55);
+    font-size: clamp(.6rem, 1.25cqw, .9rem);
+    font-weight: 700;
+    letter-spacing: .24em;
+    text-transform: uppercase;
+}
+.lb-chapter-label h2 {
+    margin: .25cqw 0 0;
+    font-family: var(--font-family, 'Quicksand', sans-serif);
+    font-size: clamp(2rem, 5.2cqw, 3.8rem);
+    font-weight: 700;
+    line-height: 1.05;
+    color: var(--book-ink);
+}
+.lb-chapter-sub {
+    margin: 1.6cqw 0 1.8cqw;
+    color: rgba(27,36,51,.7);
+    font-family: var(--font-family, 'Quicksand', sans-serif);
+    font-size: clamp(.75rem, 1.7cqw, 1.25rem);
+    font-style: italic;
+}
+.lb-chapter-objectives {
+    border-left: 0.35cqw solid var(--book-gold);
+    background: rgba(37,84,168,.06);
+    padding: 1.3cqw 1.6cqw;
+}
+.lb-chapter-objectives strong {
+    display: block;
+    color: var(--book-blue);
+    font-size: clamp(.5rem, 1.1cqw, .8rem);
+    font-weight: 700;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+}
+.lb-chapter-objectives ul {
+    margin: .7cqw 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: .5cqw;
+    color: rgba(27,36,51,.85);
+    font-size: clamp(.65rem, 1.45cqw, 1rem);
+    line-height: 1.4;
+}
+.lb-chapter-objectives li { display: flex; gap: .8cqw; }
+.lb-chapter-objectives li::before { content: '\25B8'; color: var(--book-blue); flex-shrink: 0; }
+
+/* CTA button group */
+.lb-chapter-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.2cqw;
+    margin-top: 2.4cqw;
+    flex-wrap: wrap;
+}
+
+/* CTA button */
+.lb-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.1cqw 3.4cqw;
+    border: 0;
+    border-radius: 0.3cqw;
+    background: var(--book-navy);
+    box-shadow: 0 0.35cqw 0 #0f1f3c;
+    color: var(--book-paper);
+    cursor: pointer;
+    font-size: clamp(.65rem, 1.4cqw, 1rem);
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    text-decoration: none;
+    font-family: inherit;
+    line-height: normal;
+    transition: transform .2s, background .2s, box-shadow .1s, color .2s, border-color .2s;
+}
+.lb-cta:hover    { transform: translateY(-1px); background: var(--book-blue); color: var(--book-paper); }
+.lb-cta:active   { transform: translateY(.3cqw); box-shadow: none; }
+.lb-cta:focus-visible { outline: 2px solid var(--book-blue); outline-offset: 4px; }
+
+/* Register secondary CTA */
+.lb-cta--register {
+    background: transparent;
+    color: var(--book-navy);
+    border: 2px solid var(--book-navy);
+    box-shadow: 0 0.35cqw 0 rgba(31, 58, 104, 0.2);
+}
+.lb-cta--register:hover {
+    background: var(--book-navy);
+    color: var(--book-paper);
+    border-color: var(--book-navy);
+    box-shadow: 0 0.35cqw 0 #0f1f3c;
+}
+
+.register-link-btn {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    font-size: inherit;
+    text-decoration: underline;
+    font-family: inherit;
+}
+.register-link-btn:hover {
+    color: var(--book-navy);
+}
+
+/* ═══════════════════════════════════════════════
+   3D LEAF FLIP  — the core animation
+   ═══════════════════════════════════════════════
+
+   Each leaf covers half the book.
+   Front face = chapter page (visible at rest).
+   Back face  = login form   (visible after flip).
+
+   Left  leaf: origin right,  flips +180deg to open (page turns left→right)
+   Right leaf: origin left,   flips -180deg to open (page turns right→left)
+*/
+
+.lb-leaf {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 50%;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transform: perspective(180cqw) rotateY(0deg);
+    transition: transform 1200ms cubic-bezier(.65, 0, .25, 1);
+    z-index: 10;
+}
+
+/* Z-index: active/open leaf goes on top */
+.lb-leaf--top { z-index: 20; }
+.lb-leaf--open { z-index: 25; }
+.lb-leaf--open.lb-leaf--top { z-index: 30; }
+
+.lb-leaf--left  { left: 0;  transform-origin: right center;  }
+.lb-leaf--right { right: 0; transform-origin: left center;   }
+
+/* Open states — flip 180 deg around the spine edge */
+.lb-leaf--left.lb-leaf--open  { transform: perspective(180cqw) rotateY( 180deg); }
+.lb-leaf--right.lb-leaf--open { transform: perspective(180cqw) rotateY(-180deg); }
+
+/* ── Forgot Password Leaf (flips right to left over the spine) ── */
+.lb-leaf--forgot {
+    right: 0;
+    transform-origin: left center;
+    z-index: 45;
+    pointer-events: none;
+    transform: perspective(180cqw) rotateY(0deg);
+    visibility: hidden;
+    transition: transform 1200ms cubic-bezier(.65, 0, .25, 1);
+}
+
+.lb-leaf--forgot.lb-leaf--open {
+    visibility: visible;
+    pointer-events: auto;
+    transform: perspective(180cqw) rotateY(-180deg);
+}
+
+.lb-leaf--forgot.lb-leaf--closing {
+    visibility: visible;
+    pointer-events: none;
+    transform: perspective(180cqw) rotateY(0deg);
+}
+
+/* While closing to cover in user mode, keep forgot leaf at -180deg on left while left leaf flips over it */
+.lb-leaf--forgot.lb-leaf--closing-cover-user {
+    visibility: visible;
+    pointer-events: none;
+    transform: perspective(180cqw) rotateY(-180deg);
+    z-index: 40;
+}
+
+/* While closing to cover in admin mode, hide forgot leaf so lb-leaf--right smoothly turns from Forgot Password to Admin cover */
+.lb-leaf--forgot.lb-leaf--closing-cover-admin {
+    display: none !important;
+    visibility: hidden;
+    pointer-events: none;
+    transform: perspective(180cqw) rotateY(0deg);
+}
+
+/* Left leaf closing over forgot leaf in user mode needs z-index 60 */
+.lb-leaf--left.lb-leaf--closing-from-forgot {
+    z-index: 60;
+}
+
+/* Right leaf closing over forgot leaf in admin mode needs z-index 60 */
+.lb-leaf--right.lb-leaf--closing-from-forgot {
+    z-index: 60;
+}
+
+.lb-mobile-only-forgot {
+    display: none;
+}
+
+/* ── Faces ── */
+.lb-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* Back face is pre-rotated 180 deg so it reads correctly when flipped */
+.lb-face--back { transform: rotateY(180deg); }
+
+/* ── Admin form fade-in on base right page ── */
+.lb-base-form-fade {
+    opacity: 0;
+    transition: opacity 500ms ease;
+    pointer-events: none;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    min-height: 0;
+}
+.lb-base-form-fade--visible {
+    opacity: 1;
+    pointer-events: auto;
+    transition-delay: 900ms;
+}
+
+/* ── Spine centre shadow ── */
+.lb-spine {
+    pointer-events: none;
+    position: absolute;
+    left: 50%;
+    top: 0;
+    z-index: 30;
+    height: 100%;
+    width: 0.6cqw;
+    transform: translateX(-50%);
+    background: linear-gradient(to right, transparent, rgba(10,20,40,.35), transparent);
+}
+
+/* ════════════════════════════════════════════════
+   LOGIN FORM STYLES (inside the book pages)
+   Reset all theme variable inheritance inside the
+   book pages so form elements use paper/ink colors.
+   ════════════════════════════════════════════════ */
+
+/* Force book color context — override global theme vars */
+.lb-page-face {
+    --text-color: #1b2433;
+    --input-bg: #ffffff;
+    --accent-color: #1f3a68;
+    --surface-text: #fbfaf5;
+    --primary-color: #2554a8;
+    --border-adaptive: rgba(27, 36, 51, 0.3);
+    color: #1b2433;
+    background-color: #fbfaf5;
+}
+
+/* Neutralize .container dark theme overrides from index.css — the book pages
+   always use a paper-white background regardless of the active site theme */
+.lb-page-face .container,
+.lb-page-face .login-card {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    color: #1b2433 !important;
+}
+
+
+.login-book-back {
+    align-self: center;
+    margin: .35rem auto .5rem;
+    display: block;
+    text-align: center;
+    border: 0;
+    padding: .2rem 0;
+    background: transparent;
+    color: rgba(27,36,51,.72);
+    cursor: pointer;
+    font-size: clamp(.6rem, 1.3cqw, .85rem);
+    text-decoration: underline;
+    text-decoration-color: var(--book-gold);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+}
+.login-book-back:hover { color: var(--book-blue); }
+.login-book-back:focus-visible { outline: 3px solid var(--book-blue); outline-offset: 3px; }
+
+.login-book-folio {
+    align-self: flex-end;
+    border-top: 2px solid var(--book-gold);
+    padding-top: .3rem;
+    color: rgba(27,36,51,.58);
+    font-size: .85rem;
+    font-weight: 700;
+}
+.login-book-running-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    border-bottom: 1px solid rgba(27,36,51,.25);
+    padding-bottom: .65rem;
+    margin-bottom: .5rem;
+    color: rgba(27,36,51,.58);
+    font-size: clamp(.55rem, 1cqw, .8rem);
+    font-weight: 700;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+}
+.login-book-running-head span:last-child { color: var(--book-blue); }
+
+/* The login-card inside the book — flex: 0 auto so it sits centred vertically
+   rather than stretching to fill all available space */
+.lb-page-body .login-card {
+    display: flex;
+    flex-direction: column;
+    flex: 0 1 auto;
+    min-height: 0;
+    padding: .5rem 0 .25rem;
+    overflow-y: auto;
+    color: var(--book-ink);
+    text-align: left;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+    width: 100%;
+    max-width: none;
+}
+
+.lb-page-body .login-card h2 {
+    margin: 0 0 .75rem;
+    font-family: var(--font-family, 'Quicksand', sans-serif);
+    font-size: clamp(1.2rem, 3cqw, 2rem);
+    color: var(--book-ink);
+}
+
+.lb-page-body .form-group { margin-bottom: .6rem; }
+
+.lb-page-body .form-group label {
+    display: block;
+    margin-bottom: .3rem;
+    color: rgba(27,36,51,.72);
+    font-size: clamp(.5rem, 1.1cqw, .78rem);
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+}
+
+.lb-page-body .form-group input {
+    width: 100%;
+    padding: .65rem .75rem;
+    border: 1px solid rgba(27,36,51,.32);
+    border-radius: 4px;
+    background: #fff;
+    color: var(--book-ink);
+    font-size: clamp(.75rem, 1.6cqw, .95rem);
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+}
+.lb-page-body .form-group input:focus {
+    border-color: var(--book-blue);
+    box-shadow: 0 0 0 .3cqw rgba(37,84,168,.2);
+}
+.lb-page-body .form-group input::placeholder { color: rgba(27,36,51,.42); }
+
+.lb-page-body .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    justify-content: flex-start;
+    margin: .4rem 0;
+    color: rgba(27,36,51,.72);
+    font-size: clamp(.6rem, 1.3cqw, .82rem);
+}
+.lb-page-body .checkbox-group label { color: rgba(27,36,51,.72) !important; }
+
+.lb-page-body .login-btn {
+    width: 100%;
+    margin-top: .65rem;
+    padding: .7rem 1rem;
+    border: 0;
+    border-radius: 4px;
+    background: var(--book-navy);
+    box-shadow: 0 3px 0 #0f1f3c;
+    color: var(--book-paper);
+    cursor: pointer;
+    font-size: clamp(.65rem, 1.4cqw, .95rem);
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    transition: background .2s, transform .15s, box-shadow .1s;
+}
+.lb-page-body .login-btn:hover:not(:disabled)   { background: var(--book-blue); transform: translateY(-1px); }
+.lb-page-body .login-btn:active:not(:disabled)  { transform: translateY(1px); box-shadow: 0 1px 0 #0f1f3c; }
+.lb-page-body .login-btn:disabled               { opacity: .55; cursor: not-allowed; }
+
+.lb-page-body .forgot-pass-btn {
+    background: none;
+    border: none;
+    color: var(--book-blue);
+    cursor: pointer;
+    padding: 0;
+    font-size: clamp(.6rem, 1.3cqw, .82rem);
+    font-weight: 700;
+}
+.lb-page-body .forgot-pass-btn:hover { text-decoration: underline; }
+
+.lb-page-body .toggle-auth,
+.lb-page-body .login-subtext {
+    color: rgba(27,36,51,.78);
+    font-size: clamp(.6rem, 1.35cqw, .85rem);
+    margin-top: .6rem;
+}
+.lb-page-body .login-subtext { margin-bottom: .5rem; }
+
+.lb-page-body .register-link { color: var(--book-blue); font-weight: 700; }
+.lb-page-body .register-link:hover { text-decoration: underline; }
+
+.lb-page-body .login-secondary-btn,
+.back-to-login-btn {
+    background: none;
+    border: none;
+    color: rgba(27,36,51,.72);
+    cursor: pointer;
+    width: 100%;
+    margin-top: .5rem;
+    font-size: clamp(.6rem, 1.3cqw, .82rem);
+    transition: color .2s, opacity .2s;
+    text-decoration: underline;
+    text-decoration-color: var(--book-blue);
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 3px;
+}
+.lb-page-body .login-secondary-btn:hover,
+.back-to-login-btn:hover {
+    color: var(--book-blue);
+}
+
+.lb-page-body .resend-code-btn {
+    background: none;
+    border: none;
+    color: var(--book-blue);
+    cursor: pointer;
+    width: 100%;
+    margin-top: .4rem;
+    font-weight: 700;
+    font-size: clamp(.6rem, 1.3cqw, .82rem);
+}
+.lb-page-body .resend-code-btn:disabled {
+    color: rgba(27,36,51,.4);
+    cursor: not-allowed;
+}
+
+/* OR divider */
+.lb-page-body .or-divider {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin: .7rem 0 .2rem;
+    color: rgba(27,36,51,.5);
+    font-size: clamp(.55rem, 1.2cqw, .78rem);
+}
+.lb-page-body .or-divider::before,
+.lb-page-body .or-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(27,36,51,.22);
+}
+
+/* Google button */
+.lb-page-body .google-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    width: 100%;
+    margin-top: .5rem;
+    padding: .6rem .75rem;
+    background: #fff;
+    color: #3c4043;
+    border: 1.5px solid rgba(0,0,0,.15);
+    border-radius: 4px;
+    font-size: clamp(.6rem, 1.35cqw, .85rem);
+    font-weight: 600;
+    cursor: pointer;
+    transition: box-shadow .2s, transform .15s;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+.lb-page-body .google-btn:hover:not(:disabled) {
+    box-shadow: 0 3px 8px rgba(0,0,0,.14);
+    transform: translateY(-1px);
+}
+.lb-page-body .google-btn:disabled { opacity: .65; cursor: not-allowed; }
+
+/* Spinner */
+.google-btn-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2.5px solid rgba(0,0,0,.12);
+    border-top-color: #4285F4;
+    border-radius: 50%;
+    animation: google-spin .7s linear infinite;
+    flex-shrink: 0;
+}
+@keyframes google-spin { to { transform: rotate(360deg); } }
+
+/* Error / success */
+.lb-page-body .register-error-message { font-size: clamp(.6rem, 1.3cqw, .82rem); }
+
+/* Global error above book */
+.global-error-message {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 1rem;
+    border-radius: .5rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0,0,0,.1);
+}
+
+/* ════════════════════════════════════════════════
+   RESPONSIVE — MOBILE (≤ 760px)
+   ════════════════════════════════════════════════
+   On mobile the 3D flip is replaced with a
+   simple vertical slide for readability.
+   ════════════════════════════════════════════════ */
+
+@media (max-width: 760px) {
+    .login-book-shell  { min-height: calc(100vh - 7rem); padding: 1.5rem .75rem 1.5rem; }
+
+    .login-book {
+        width: min(100%, 600px);
+        aspect-ratio: auto;
+        min-height: 680px;
+        perspective: none;          /* disable 3D on mobile */
+    }
+
+    .lb-pages-edge  { display: none; }
+    .lb-cloth-cover { inset: -8px; border-radius: 10px; }
+
+    /* Stack base pages vertically */
+    .lb-base-pages { flex-direction: column; position: relative; gap: .65rem; }
+    .lb-base-page  { width: 100%; height: auto; position: relative; }
+    .lb-page-face  { position: relative; inset: unset; border-radius: 8px; min-height: 300px; }
+    .lb-page-face--left, .lb-page-face--right { border-radius: 8px; }
+
+    /* Hide leaves on mobile — base pages handle everything */
+    .lb-leaf { display: none; }
+    .lb-spine { display: none; }
+
+    /* Show base pages instead */
+    .lb-base-form-fade { opacity: 1; pointer-events: auto; transition: none; }
+    .lb-mobile-only-forgot { display: block; }
+    .lb-base-left-content.lb-mobile-hide { display: none; }
+
+    .lb-page-inner { padding: 1.15rem 1.3rem; }
+    .lb-running-head { font-size: .6rem; padding-bottom: .5rem; }
+    .lb-folio { display: none; }
+
+    .lb-chapter-num { display: none; }
+    .lb-chapter-label h2 { font-size: 1.8rem; }
+    .lb-chapter-sub  { font-size: .9rem; margin: .6rem 0 .8rem; }
+    .lb-chapter-objectives { padding: .7rem .9rem; }
+    .lb-chapter-objectives strong { font-size: .65rem; }
+    .lb-chapter-objectives ul { font-size: .8rem; gap: .3rem; }
+    .lb-chapter-actions { margin-top: 1.2rem; gap: .6rem; }
+    .lb-cta { font-size: .78rem; padding: .7rem 1.4rem; }
+
+    .lb-page-body .login-card h2 { font-size: 1.3rem; }
+    .lb-page-body .form-group input { font-size: .9rem; padding: .55rem .65rem; }
+    .lb-page-body .login-btn { font-size: .88rem; }
+    .lb-page-body .google-btn { font-size: .82rem; }
+}
+
+@media (max-width: 480px) {
+    .lb-page-inner { padding: 1rem; }
+    .global-error-message { font-size: .85rem; padding: .75rem; }
+    .lb-chapter-actions { gap: .5rem; }
+    .lb-cta { padding: .6rem 1.1rem; font-size: .74rem; }
+}
+
+/* ════════════════════════════════════════════════
+   LEGACY STYLES — kept for any other pages that
+   might still reference these class names
+   ════════════════════════════════════════════════ */
 
 .login-boxes-wrapper {
     display: flex;
@@ -21,7 +801,7 @@
     background: var(--surface-bg);
     border: 1px solid var(--surface-border);
     border-radius: 1.5rem;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 12px 40px rgba(0,0,0,.12);
     padding: 3.5rem 4rem;
     width: 80%;
     max-width: 72rem;
@@ -29,32 +809,17 @@
 
 .login-portals-divider {
     width: 1px;
-    background: var(--border-adaptive, rgba(150, 150, 150, 0.25));
+    background: var(--border-adaptive, rgba(150,150,150,.25));
     align-self: stretch;
     margin: 0 2rem;
     flex-shrink: 0;
 }
 
 @media (max-width: 1000px) {
-    .login-boxes-wrapper {
-        flex-wrap: wrap;
-    }
-
-    .login-card {
-        max-width: 100%;
-        flex: 1 1 100%;
-    }
-
-    .login-portals-divider {
-        width: 100%;
-        height: 1px;
-        margin: 1.5rem 0;
-    }
-
-    .login-outer-container {
-        padding: 2rem 1.5rem;
-        width: 95%;
-    }
+    .login-boxes-wrapper { flex-wrap: wrap; }
+    .login-card { max-width: 100%; flex: 1 1 100%; }
+    .login-portals-divider { width: 100%; height: 1px; margin: 1.5rem 0; }
+    .login-outer-container { padding: 2rem 1.5rem; width: 95%; }
 }
 
 .login-card {
@@ -71,56 +836,22 @@
     min-width: 0;
 }
 
-/* Global error message above the boxes */
-.global-error-message {
-    color: #721c24;
-    background-color: #f8d7da;
-    border: 1px solid #f5c6cb;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    margin-bottom: 1.5rem;
-    width: 100%;
-    text-align: center;
-    font-weight: bold;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+.login-card h2 { margin-bottom: 1.5rem; color: var(--text-color); }
 
-.login-card h2 {
-    margin-bottom: 1.5rem;
-    color: var(--text-color);
-}
-
-.form-group {
-    margin-bottom: 1rem;
-    text-align: left;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: var(--text-color);
-}
-
+.form-group { margin-bottom: 1rem; text-align: left; }
+.form-group label { display: block; margin-bottom: .5rem; font-weight: 600; color: var(--text-color); }
 .form-group input,
 .form-group select {
     width: 100%;
-    padding: 0.75rem;
-    border: 1px solid var(--border-adaptive, rgba(150, 150, 150, 0.3));
-    border-radius: 0.375rem;
+    padding: .75rem;
+    border: 1px solid var(--border-adaptive, rgba(150,150,150,.3));
+    border-radius: .375rem;
     font-size: 1rem;
     background: var(--input-bg);
     color: var(--text-color);
 }
-
-.form-group input::placeholder {
-    color: var(--text-color);
-    opacity: 0.6;
-}
-
-.login-card .checkbox-group label {
-    color: var(--text-color) !important;
-}
+.form-group input::placeholder { color: var(--text-color); opacity: .6; }
+.login-card .checkbox-group label { color: var(--text-color) !important; }
 
 .forgot-pass-btn {
     background: none;
@@ -128,51 +859,29 @@
     color: var(--primary-color);
     cursor: pointer;
     padding: 0;
-    font-size: 0.95rem;
+    font-size: .95rem;
     font-weight: 600;
 }
+.forgot-pass-btn:hover { text-decoration: underline; }
 
-.forgot-pass-btn:hover {
-    text-decoration: underline;
-}
+.toggle-auth { color: var(--text-color); margin-top: 1rem; }
+.register-link { color: var(--primary-color); font-weight: 600; }
+.register-link:hover { text-decoration: underline; }
 
-.toggle-auth {
-    color: var(--text-color);
-    margin-top: 1rem;
-}
-
-.register-link {
-    color: var(--primary-color);
-    font-weight: 600;
-}
-
-.register-link:hover {
-    text-decoration: underline;
-}
-
-.login-subtext {
-    margin-bottom: 1rem;
-    color: var(--text-color);
-    opacity: 0.85;
-    font-size: 0.9rem;
-}
+.login-subtext { margin-bottom: 1rem; color: var(--text-color); opacity: .85; font-size: .9rem; }
 
 .login-secondary-btn {
     background: none;
     border: none;
     color: var(--text-color);
-    opacity: 0.8;
+    opacity: .8;
     cursor: pointer;
     width: 100%;
-    margin-top: 0.625rem;
-    font-size: 0.95rem;
-    transition: opacity 0.2s;
+    margin-top: .625rem;
+    font-size: .95rem;
+    transition: opacity .2s;
 }
-
-.login-secondary-btn:hover {
-    opacity: 1;
-    text-decoration: underline;
-}
+.login-secondary-btn:hover { opacity: 1; text-decoration: underline; }
 
 .resend-code-btn {
     background: none;
@@ -180,198 +889,69 @@
     color: var(--primary-color);
     cursor: pointer;
     width: 100%;
-    margin-top: 0.625rem;
+    margin-top: .625rem;
     font-weight: 600;
 }
-
-.resend-code-btn:disabled {
-    color: var(--text-color);
-    opacity: 0.4;
-    cursor: not-allowed;
-}
+.resend-code-btn:disabled { color: var(--text-color); opacity: .4; cursor: not-allowed; }
 
 .login-btn {
     width: 100%;
-    padding: 0.75rem;
+    padding: .75rem;
     background-color: var(--accent-color);
     color: var(--surface-text);
     border: none;
-    border-radius: 0.375rem;
+    border-radius: .375rem;
     font-size: 1.1rem;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
+    transition: background-color .3s, transform .2s;
     margin-top: 1rem;
     font-weight: bold;
 }
-
-.login-btn:hover {
-    background-color: color-mix(in srgb, var(--accent-color) 80%, white);
-    transform: translateY(-1px);
-}
+.login-btn:hover { background-color: color-mix(in srgb, var(--accent-color) 80%, white); transform: translateY(-1px); }
 
 .error-message {
     color: #dc3545;
     background-color: #f8d7da;
     border: 1px solid #f5c6cb;
-    padding: 0.75rem;
-    border-radius: 0.375rem;
+    padding: .75rem;
+    border-radius: .375rem;
     margin-bottom: 1rem;
 }
-
-.mock-credentials {
-    margin-top: 2rem;
-    text-align: left;
-    font-size: 0.85rem;
-    color: var(--text-color);
-    opacity: 0.75;
-    border-top: 1px solid var(--border-adaptive, rgba(150, 150, 150, 0.2));
-    padding-top: 1rem;
-}
-
-.mock-credentials ul {
-    list-style: none;
-    padding: 0;
-}
-
-.mock-credentials li {
-    margin-bottom: 0.25rem;
-}
-
-/* ─── Google Sign-In ─── */
 
 .or-divider {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    margin: 1.25rem 0 0.25rem;
+    gap: .75rem;
+    margin: 1.25rem 0 .25rem;
     color: var(--text-muted, #888);
-    font-size: 0.85rem;
+    font-size: .85rem;
 }
-
-.or-divider::before,
-.or-divider::after {
+.or-divider::before, .or-divider::after {
     content: '';
     flex: 1;
     height: 1px;
-    background: var(--border-adaptive, rgba(150, 150, 150, 0.3));
+    background: var(--border-adaptive, rgba(150,150,150,.3));
 }
 
 .google-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.6rem;
+    gap: .6rem;
     width: 100%;
-    padding: 0.7rem 1rem;
-    margin-top: 0.875rem;
+    padding: .7rem 1rem;
+    margin-top: .875rem;
     background: #fff;
     color: #3c4043;
-    border: 1.5px solid rgba(0, 0, 0, 0.15);
-    border-radius: 0.375rem;
-    font-size: 0.975rem;
+    border: 1.5px solid rgba(0,0,0,.15);
+    border-radius: .375rem;
+    font-size: .975rem;
     font-weight: 600;
     cursor: pointer;
-    transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
-    letter-spacing: 0.01em;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: box-shadow .2s ease, border-color .2s ease, transform .15s ease;
+    letter-spacing: .01em;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
 }
-
-.google-btn:hover:not(:disabled) {
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-    border-color: rgba(0, 0, 0, 0.25);
-    transform: translateY(-1px);
-}
-
-.google-btn:active:not(:disabled) {
-    transform: translateY(0);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-}
-
-.google-btn:disabled {
-    opacity: 0.65;
-    cursor: not-allowed;
-    transform: none;
-}
-
-.google-btn-spinner {
-    display: inline-block;
-    width: 18px;
-    height: 18px;
-    border: 2.5px solid rgba(0, 0, 0, 0.15);
-    border-top-color: #4285F4;
-    border-radius: 50%;
-    animation: google-spin 0.7s linear infinite;
-    flex-shrink: 0;
-}
-
-@keyframes google-spin {
-    to { transform: rotate(360deg); }
-}
-
-/* ─── Small phone scaling (≤ 480px) ─── */
-@media (max-width: 480px) {
-    .login-container {
-        padding: 1.25rem 0.75rem;
-    }
-
-    .login-outer-container {
-        padding: 1.75rem 1.25rem;
-        width: 100%;
-        border-radius: 1rem;
-    }
-
-    .login-card h2 {
-        font-size: 1.3rem;
-        margin-bottom: 1rem;
-    }
-
-    .form-group {
-        margin-bottom: 0.75rem;
-    }
-
-    .form-group label {
-        font-size: 0.88rem;
-    }
-
-    .form-group input,
-    .form-group select {
-        padding: 0.55rem 0.65rem;
-        font-size: 0.9rem;
-    }
-
-    .login-card .checkbox-group {
-        font-size: 0.85rem;
-        gap: 0.4rem;
-    }
-
-    .login-btn {
-        font-size: 0.95rem;
-        padding: 0.6rem;
-        margin-top: 0.75rem;
-    }
-
-    .forgot-pass-btn,
-    .login-secondary-btn,
-    .toggle-auth,
-    .login-subtext {
-        font-size: 0.82rem;
-    }
-
-    .google-btn {
-        font-size: 0.85rem;
-        padding: 0.55rem 0.75rem;
-        gap: 0.4rem;
-        margin-top: 0.5rem;
-        white-space: nowrap;
-    }
-
-    .or-divider {
-        font-size: 0.78rem;
-        margin: 0.875rem 0 0.1rem;
-    }
-
-    .global-error-message {
-        font-size: 0.85rem;
-        padding: 0.75rem;
-    }
-}
+.google-btn:hover:not(:disabled) { box-shadow: 0 3px 10px rgba(0,0,0,.15); border-color: rgba(0,0,0,.25); transform: translateY(-1px); }
+.google-btn:active:not(:disabled) { transform: translateY(0); box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+.google-btn:disabled { opacity: .65; cursor: not-allowed; transform: none; }

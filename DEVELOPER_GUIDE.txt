@@ -489,14 +489,24 @@ B. Complete Route Matrix:
     - Features: Global cross-entity search results spanning Books, Question Papers, and Code Solutions; query parameter synchronization; in-page PDF preview modal; inline code viewer.
 
 11. Login (src/pages/Login.jsx):
-    - Features: Tabbed authentication portal:
-      * User Portal: Email/password login and One-Click Google Sign-In button.
-      * Admin Portal: Email/password login with strict backend role verification (/api/check-admin).
+    - Features: Interactive 3D book-flip authentication portal styled with cloth cover, edge-leaf depth, and running heads:
+      * User Portal: Chapter landing featuring side-by-side "USER LOGIN" and "REGISTER" CTA buttons; opens email/password login and One-Click Google Sign-In with 3D leaf-flip animation. Once flipped, action buttons are automatically removed from the chapter page.
+      * Register Portal: Chapter landing; clicking "REGISTER" flips the left leaf over to reveal the "Register" chapter on the left page (with action buttons removed) and the registration textboxes (RegisterBox) on the right page, complete with email, password, confirm password, OTP verification (/send-otp, /api/verify-otp), and seamless switching between Login and Register.
+      * Admin Portal: Chapter landing with "ADMIN LOGIN" CTA; reveals vertically centered email/password login with strict backend role verification (/api/check-admin). Once flipped, action buttons are automatically removed from the chapter page. The base right page is exclusively dedicated to the Admin Portal, eliminating duplicate DOM inputs.
+      * Forgot Password Portal: Interactive right-to-left 3D page flip transition (.lb-leaf--forgot) triggered by clicking "Forgot Password?" from either User Login or Admin Login. As the right page turns over to the left (0deg to -180deg), it reveals Chapter "Forgot Password" on the left page (folio 4) with account recovery overview and displays the Forgot Password form (ForgotPasswordBox, folio 5) on the right page for entering email, OTP code verification, and new password creation. The redundant "Back to contents" button is omitted from the right form page, keeping it solely on the left Chapter page. Clicking "Back to Login" (styled with a blue underline) smoothly flips the leaf back from left to right (1200ms) to restore the login form. Clicking "Back to contents" from the Forgot Password page preserves `forgotState` (`closing-to-cover`) throughout the 1200ms closing duration, flipping smoothly and directly from Forgot Password to the Contents cover without intermediate portal flashes for both user and admin roles.
+      * Transition Architecture:
+        - Route Persistence: `/login` and `/register` share the same `<Login>` component instance in React Router, with `window.history.replaceState` preserving active 3D transforms across in-book navigation without unmounting.
+        - Mid-Flip State Preservation: The `back()` and `backToContentsFromForgot()` functions maintain active `leftPortal` and `forgotState` (`closing-to-cover`) across the 1200ms flip duration (resetting quietly at 1250ms), eliminating visual pops, form flashes, or intermediate portal swaps mid-flip.
+        - Right-to-Left Forgot Password Turn: `.lb-leaf--forgot` uses `transform-origin: left center` with z-index 45 to flip seamlessly over the spine to -180deg, landing Chapter Forgot Password on the left page and revealing ForgotPasswordBox on the right page. On `lb-leaf--right .lb-face--back`, the Chapter Forgot Password view is strictly guarded by `forgotRole === 'admin' && forgotState === 'closing-to-cover'`; when clicking "Forgot Password?" (`forgotState === 'open'`), the back face maintains Chapter Admin underneath so the left page does not prematurely swap at t=0 before `.lb-leaf--forgot` turns over. During closing to cover in Admin mode, `.lb-leaf--closing-cover-admin` sets `display: none !important` and `lb-face--front` suppresses `LoginBox` when `forgotState === 'closing-to-cover'`, allowing `.lb-leaf--right.lb-leaf--closing-from-forgot` (z-index 60) to cleanly lift off Chapter Forgot Password and land on Chapter Admin covering ForgotPasswordBox on the right base page without any Admin login form flash. In User mode, `.lb-leaf--closing-cover-user` keeps the forgot leaf at -180deg while `.lb-leaf--left.lb-leaf--closing-from-forgot` (z-index 60) flips back to cover it.
+        - Soft Crossfade: In-book switching between User Login and Register utilizes `lbContentFadeIn` (240ms) with explicit component keys (`reg-box`, `user-box`, `chapter-reg`, `chapter-user`) for silky smooth transitions.
+      * Typography: Clean chapter header formatting ("CHAPTER" over title) without arbitrary chapter numbers (00, 01, 02).
+      * Theme Integration: Transparent shell exposing the global theme-responsive background with moving book SVGs (body::before / body::after).
+      * Responsive Layout: Full 3D dual-page book spread on desktop/tablet, automatically collapsing to a clean stacked view on mobile.
 
 12. Register (src/pages/Register.jsx):
-    - Features: 2-step registration flow:
-      * Step 1: User enters email and password; backend sends 6-digit OTP via Brevo API (/send-otp).
-      * Step 2: User enters OTP; frontend verifies via /api/verify-otp, creates Firebase Auth account and Firestore doc, and dispatches Welcome Email.
+    - Features: Integrated book spread registration:
+      * Renders <Login initialMode="register" /> to open directly into the 3D book registration view with Chapter Register on the left page and the registration form on the right page.
+      * 2-step registration flow: Step 1 verifies unique account and sends 6-digit OTP via Brevo API (/send-otp); Step 2 verifies OTP (/api/verify-otp), creates Firebase Auth user doc, and dispatches Welcome Email.
 
 13. ResetPassword (src/pages/ResetPassword.jsx):
     - Features: Glassmorphic password recovery interface supporting both Firebase OOB action codes and Brevo OTPs; live password strength checklist (at least 6 characters, passwords match) with green checkmark SVGs; password visibility eye toggles; theme-aware contrast across all 7 themes.

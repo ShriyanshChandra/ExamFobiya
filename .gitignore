@@ -25,7 +25,7 @@ yarn-error.log*
 backend/.env
 src/pages/old_pages
 backend/serviceAccountKey.json
-.agents/AGENTS.md
+agents/AGENTS.md
 
 firestore.rules
 experiment/
