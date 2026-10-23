@@ -39,11 +39,11 @@
     --book-subtle: color-mix(in srgb, var(--book-ink) 78%, transparent);
     --book-border: color-mix(in srgb, var(--book-ink) 30%, transparent);
     --book-rule: color-mix(in srgb, var(--book-blue) 10%, transparent);
-    --book-input: color-mix(in srgb, var(--book-paper) 88%, white);
+    --book-input: #f8fafc;
     --book-cover-shadow: color-mix(in srgb, var(--book-cover-base) 62%, transparent);
+    --book-page-gutter-shadow: color-mix(in srgb, var(--book-navy) 18%, transparent);
     --book-cover-spine: color-mix(in srgb, var(--book-cover-base) 60%, black);
-    --book-page-gutter-shadow: color-mix(in srgb, var(--book-navy) 32%, transparent);
-    --book-spine-core: color-mix(in srgb, var(--book-navy) 70%, black);
+    --book-spine-shadow: color-mix(in srgb, var(--book-navy) 24%, transparent);
 
     position: relative;
     isolation: isolate;
@@ -57,30 +57,38 @@
 /* Theme palettes: the pages retain comfortable reading contrast while their
    cover uses a distinctly darker shade from the same theme family. */
 [data-theme='dark'] .login-book {
-    --book-ink: #f8fafc;
-    --book-paper: #1e293b;
-    --book-blue: #8fb0ff;
-    --book-navy: #4b6cb7;
+    /* Keep the existing page paper; tune only the portal content on it. */
+    --book-ink: #17243f;
+    --book-paper: #d1d5db;
+    --book-blue: #3159b8;
+    --book-navy: #1f3a68;
     --book-gold: #ffd700;
-    --book-on-highlight: #0f172a;
+    --book-on-highlight: #ffffff;
+    --book-input: #ffffff;
     --book-cover-base: #0b1220;
     --book-cover-thread: #1e3a5f;
 }
 
+[data-theme='dark'] .lb-running-blue {
+    color: #123381;
+}
+
 [data-theme='midnight'] .login-book {
-    --book-ink: #e2e8f0;
-    --book-paper: #0a0a14;
-    --book-blue: #a5b4fc;
-    --book-navy: #4f46e5;
-    --book-gold: #67e8f9;
-    --book-on-highlight: #05050a;
+    /* Keep the existing page paper; use deep indigo portal elements for contrast. */
+    --book-ink: #17243f;
+    --book-paper: #d1d5db;
+    --book-blue: #4f46e5;
+    --book-navy: #312e81;
+    --book-gold: #0891b2;
+    --book-on-highlight: #ffffff;
+    --book-input: #ffffff;
     --book-cover-base: #020205;
     --book-cover-thread: #17173a;
 }
 
 [data-theme='vintage'] .login-book {
     --book-ink: #3e2723;
-    --book-paper: #f4ebd8;
+    --book-paper: #ffffff;
     --book-blue: #8d6e63;
     --book-navy: #5d4037;
     --book-gold: #c96b23;
@@ -90,7 +98,7 @@
 
 [data-theme='ocean'] .login-book {
     --book-ink: #134e4a;
-    --book-paper: #f0fdfa;
+    --book-paper: #ffffff;
     --book-blue: #0891b2;
     --book-navy: #155e75;
     --book-gold: #c7a72c;
@@ -100,7 +108,7 @@
 
 [data-theme='nord'] .login-book {
     --book-ink: #2e3440;
-    --book-paper: #eceff4;
+    --book-paper: #ffffff;
     --book-blue: #5e81ac;
     --book-navy: #3b4252;
     --book-gold: #4c8091;
@@ -109,14 +117,18 @@
 }
 
 [data-theme='sunset'] .login-book {
-    --book-ink: #fbe9e7;
-    --book-paper: #5c3a63;
+    --book-ink: #29172d;
+    --book-paper: #ffffff;
     --book-blue: #ff9b7c;
-    --book-navy: #8b3eb1;
+    --book-navy: #eec0b2;
     --book-gold: #feb47b;
-    --book-on-highlight: #29172d;
     --book-cover-base: #29172d;
     --book-cover-thread: #5c2b66;
+}
+
+/* Light mode: blend the centre slit into the dark cloth cover. */
+:is([data-theme='light'], :root:not([data-theme])) .login-book {
+    --book-cover-spine: var(--book-cover-base);
 }
 
 /* ── Cloth cover decoration ── */
@@ -510,9 +522,9 @@
     top: 0;
     z-index: 30;
     height: 100%;
-    width: 0.6cqw;
+    width: 0.32cqw;
     transform: translateX(-50%);
-    background: linear-gradient(to right, transparent, var(--book-spine-core), transparent);
+    background: linear-gradient(to right, transparent, var(--book-spine-shadow), transparent);
 }
 
 /* ════════════════════════════════════════════════
@@ -536,6 +548,15 @@
     box-shadow: none !important;
     border-radius: 0 !important;
     color: var(--book-ink) !important;
+}
+
+/* Dark mode's global .container rule must not turn any portal into a separate
+   dark panel. This covers login, register, and every forgot-password step. */
+[data-theme='dark'] .lb-page-face .login-card.container {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 
@@ -663,7 +684,7 @@
     text-transform: uppercase;
     transition: background .2s, transform .15s, box-shadow .1s;
 }
-.lb-page-body .login-btn:hover:not(:disabled)   { background: var(--book-blue); transform: translateY(-1px); }
+.lb-page-body .login-btn:hover:not(:disabled)   { background: var(--book-blue); color: var(--book-on-highlight); transform: translateY(-1px); }
 .lb-page-body .login-btn:active:not(:disabled)  { transform: translateY(1px); box-shadow: 0 1px 0 color-mix(in srgb, var(--book-navy) 80%, black); }
 .lb-page-body .login-btn:disabled               { opacity: .55; cursor: not-allowed; }
 
