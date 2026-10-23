@@ -25,11 +25,25 @@
 
 /* ── Book viewport ── */
 .login-book {
-    --book-ink:   #1b2433;
-    --book-paper: #fbfaf5;
-    --book-blue:  #2554a8;
-    --book-navy:  #1f3a68;
-    --book-gold:  #f2c230;
+    /* Light palette. Theme-specific palettes below keep every spread readable. */
+    --book-ink: #17243f;
+    --book-paper: #ffffff;
+    --book-blue: var(--primary-color);
+    --book-navy: #1e40af;
+    --book-gold: #c99500;
+    --book-on-strong: #ffffff;
+    --book-on-highlight: #ffffff;
+    --book-cover-base: #182848;
+    --book-cover-thread: #314d85;
+    --book-muted: color-mix(in srgb, var(--book-ink) 62%, transparent);
+    --book-subtle: color-mix(in srgb, var(--book-ink) 78%, transparent);
+    --book-border: color-mix(in srgb, var(--book-ink) 30%, transparent);
+    --book-rule: color-mix(in srgb, var(--book-blue) 10%, transparent);
+    --book-input: color-mix(in srgb, var(--book-paper) 88%, white);
+    --book-cover-shadow: color-mix(in srgb, var(--book-cover-base) 62%, transparent);
+    --book-cover-spine: color-mix(in srgb, var(--book-cover-base) 60%, black);
+    --book-page-gutter-shadow: color-mix(in srgb, var(--book-navy) 32%, transparent);
+    --book-spine-core: color-mix(in srgb, var(--book-navy) 70%, black);
 
     position: relative;
     isolation: isolate;
@@ -40,6 +54,71 @@
     font-family: var(--font-family, 'Quicksand', sans-serif);
 }
 
+/* Theme palettes: the pages retain comfortable reading contrast while their
+   cover uses a distinctly darker shade from the same theme family. */
+[data-theme='dark'] .login-book {
+    --book-ink: #f8fafc;
+    --book-paper: #1e293b;
+    --book-blue: #8fb0ff;
+    --book-navy: #4b6cb7;
+    --book-gold: #ffd700;
+    --book-on-highlight: #0f172a;
+    --book-cover-base: #0b1220;
+    --book-cover-thread: #1e3a5f;
+}
+
+[data-theme='midnight'] .login-book {
+    --book-ink: #e2e8f0;
+    --book-paper: #0a0a14;
+    --book-blue: #a5b4fc;
+    --book-navy: #4f46e5;
+    --book-gold: #67e8f9;
+    --book-on-highlight: #05050a;
+    --book-cover-base: #020205;
+    --book-cover-thread: #17173a;
+}
+
+[data-theme='vintage'] .login-book {
+    --book-ink: #3e2723;
+    --book-paper: #f4ebd8;
+    --book-blue: #8d6e63;
+    --book-navy: #5d4037;
+    --book-gold: #c96b23;
+    --book-cover-base: #2d1b18;
+    --book-cover-thread: #5d4037;
+}
+
+[data-theme='ocean'] .login-book {
+    --book-ink: #134e4a;
+    --book-paper: #f0fdfa;
+    --book-blue: #0891b2;
+    --book-navy: #155e75;
+    --book-gold: #c7a72c;
+    --book-cover-base: #082f49;
+    --book-cover-thread: #0e7490;
+}
+
+[data-theme='nord'] .login-book {
+    --book-ink: #2e3440;
+    --book-paper: #eceff4;
+    --book-blue: #5e81ac;
+    --book-navy: #3b4252;
+    --book-gold: #4c8091;
+    --book-cover-base: #202733;
+    --book-cover-thread: #4c566a;
+}
+
+[data-theme='sunset'] .login-book {
+    --book-ink: #fbe9e7;
+    --book-paper: #5c3a63;
+    --book-blue: #ff9b7c;
+    --book-navy: #8b3eb1;
+    --book-gold: #feb47b;
+    --book-on-highlight: #29172d;
+    --book-cover-base: #29172d;
+    --book-cover-thread: #5c2b66;
+}
+
 /* ── Cloth cover decoration ── */
 .lb-cloth-cover {
     position: absolute;
@@ -47,9 +126,9 @@
     z-index: -2;
     border-radius: 1cqw;
     background:
-        repeating-linear-gradient(45deg, #24457a 0 2px, #1f3a68 2px 4px),
-        linear-gradient(to right, transparent 47%, rgba(0,0,0,.3) 50%, transparent 53%);
-    box-shadow: 0 3cqw 6cqw rgba(0,0,0,.6);
+        repeating-linear-gradient(45deg, var(--book-cover-thread) 0 2px, var(--book-cover-base) 2px 4px),
+        linear-gradient(to right, transparent 47%, var(--book-cover-spine) 50%, transparent 53%);
+    box-shadow: 0 3cqw 6cqw var(--book-cover-shadow);
 }
 
 /* ── Page-block edge (stacked pages effect) ── */
@@ -58,7 +137,7 @@
     z-index: -1;
     inset: .5cqw -0.6cqw -0.6cqw;
     border-radius: 0.6cqw;
-    background: repeating-linear-gradient(to bottom, #fff 0 2px, #d5d9e0 2px 3px);
+    background: repeating-linear-gradient(to bottom, var(--book-paper) 0 2px, color-mix(in srgb, var(--book-ink) 18%, var(--book-paper)) 2px 3px);
 }
 
 /* ── Base pages (static, sit behind leaves) ── */
@@ -88,8 +167,8 @@
 /* Grid ruled lines */
 .lb-ruled {
     background-image:
-        linear-gradient(rgba(37,84,168,.07) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(37,84,168,.07) 1px, transparent 1px);
+        linear-gradient(var(--book-rule) 1px, transparent 1px),
+        linear-gradient(90deg, var(--book-rule) 1px, transparent 1px);
     background-size: 2cqw 2cqw;
 }
 
@@ -99,8 +178,8 @@
     inset: 0;
     pointer-events: none;
 }
-.lb-page-face--left  .lb-page-shadow { background: linear-gradient(to left,  rgba(20,35,60,.22), rgba(20,35,60,0) 12%); }
-.lb-page-face--right .lb-page-shadow { background: linear-gradient(to right, rgba(20,35,60,.22), rgba(20,35,60,0) 12%); }
+.lb-page-face--left  .lb-page-shadow { background: linear-gradient(to left, var(--book-page-gutter-shadow), transparent 12%); }
+.lb-page-face--right .lb-page-shadow { background: linear-gradient(to right, var(--book-page-gutter-shadow), transparent 12%); }
 
 /* Side colour tab */
 .lb-page-tab {
@@ -128,9 +207,9 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 1px solid rgba(27,36,51,.25);
+    border-bottom: 1px solid var(--book-border);
     padding-bottom: .8cqw;
-    color: rgba(27,36,51,.55);
+    color: var(--book-muted);
     font-size: clamp(.5rem, 1cqw, .8rem);
     font-weight: 700;
     letter-spacing: .18em;
@@ -177,7 +256,7 @@
 .lb-folio span {
     border-top: 2px solid var(--book-gold);
     padding-top: .5cqw;
-    color: rgba(27,36,51,.55);
+    color: var(--book-muted);
     font-size: 1.2cqw;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
@@ -195,7 +274,7 @@
 }
 .lb-chapter-label small {
     display: block;
-    color: rgba(27,36,51,.55);
+    color: var(--book-muted);
     font-size: clamp(.6rem, 1.25cqw, .9rem);
     font-weight: 700;
     letter-spacing: .24em;
@@ -211,14 +290,14 @@
 }
 .lb-chapter-sub {
     margin: 1.6cqw 0 1.8cqw;
-    color: rgba(27,36,51,.7);
+    color: var(--book-subtle);
     font-family: var(--font-family, 'Quicksand', sans-serif);
     font-size: clamp(.75rem, 1.7cqw, 1.25rem);
     font-style: italic;
 }
 .lb-chapter-objectives {
     border-left: 0.35cqw solid var(--book-gold);
-    background: rgba(37,84,168,.06);
+    background: color-mix(in srgb, var(--book-blue) 6%, transparent);
     padding: 1.3cqw 1.6cqw;
 }
 .lb-chapter-objectives strong {
@@ -235,7 +314,7 @@
     list-style: none;
     display: grid;
     gap: .5cqw;
-    color: rgba(27,36,51,.85);
+    color: color-mix(in srgb, var(--book-ink) 85%, transparent);
     font-size: clamp(.65rem, 1.45cqw, 1rem);
     line-height: 1.4;
 }
@@ -260,8 +339,8 @@
     border: 0;
     border-radius: 0.3cqw;
     background: var(--book-navy);
-    box-shadow: 0 0.35cqw 0 #0f1f3c;
-    color: var(--book-paper);
+    box-shadow: 0 0.35cqw 0 color-mix(in srgb, var(--book-navy) 80%, black);
+    color: var(--book-on-strong);
     cursor: pointer;
     font-size: clamp(.65rem, 1.4cqw, 1rem);
     font-weight: 700;
@@ -272,7 +351,7 @@
     line-height: normal;
     transition: transform .2s, background .2s, box-shadow .1s, color .2s, border-color .2s;
 }
-.lb-cta:hover    { transform: translateY(-1px); background: var(--book-blue); color: var(--book-paper); }
+.lb-cta:hover    { transform: translateY(-1px); background: var(--book-blue); color: var(--book-on-highlight); }
 .lb-cta:active   { transform: translateY(.3cqw); box-shadow: none; }
 .lb-cta:focus-visible { outline: 2px solid var(--book-blue); outline-offset: 4px; }
 
@@ -281,13 +360,13 @@
     background: transparent;
     color: var(--book-navy);
     border: 2px solid var(--book-navy);
-    box-shadow: 0 0.35cqw 0 rgba(31, 58, 104, 0.2);
+    box-shadow: 0 0.35cqw 0 color-mix(in srgb, var(--book-navy) 20%, transparent);
 }
 .lb-cta--register:hover {
     background: var(--book-navy);
-    color: var(--book-paper);
+    color: var(--book-on-strong);
     border-color: var(--book-navy);
-    box-shadow: 0 0.35cqw 0 #0f1f3c;
+    box-shadow: 0 0.35cqw 0 color-mix(in srgb, var(--book-navy) 80%, black);
 }
 
 .register-link-btn {
@@ -433,7 +512,7 @@
     height: 100%;
     width: 0.6cqw;
     transform: translateX(-50%);
-    background: linear-gradient(to right, transparent, rgba(10,20,40,.35), transparent);
+    background: linear-gradient(to right, transparent, var(--book-spine-core), transparent);
 }
 
 /* ════════════════════════════════════════════════
@@ -442,27 +521,21 @@
    book pages so form elements use paper/ink colors.
    ════════════════════════════════════════════════ */
 
-/* Force book color context — override global theme vars */
+/* Keep form controls within the active book palette. */
 .lb-page-face {
-    --text-color: #1b2433;
-    --input-bg: #ffffff;
-    --accent-color: #1f3a68;
-    --surface-text: #fbfaf5;
-    --primary-color: #2554a8;
-    --border-adaptive: rgba(27, 36, 51, 0.3);
-    color: #1b2433;
-    background-color: #fbfaf5;
+    color: var(--book-ink);
+    background-color: var(--book-paper);
 }
 
 /* Neutralize .container dark theme overrides from index.css — the book pages
-   always use a paper-white background regardless of the active site theme */
+   use the book palette rather than the surrounding container styling. */
 .lb-page-face .container,
 .lb-page-face .login-card {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
     border-radius: 0 !important;
-    color: #1b2433 !important;
+    color: var(--book-ink) !important;
 }
 
 
@@ -474,7 +547,7 @@
     border: 0;
     padding: .2rem 0;
     background: transparent;
-    color: rgba(27,36,51,.72);
+    color: var(--book-subtle);
     cursor: pointer;
     font-size: clamp(.6rem, 1.3cqw, .85rem);
     text-decoration: underline;
@@ -489,7 +562,7 @@
     align-self: flex-end;
     border-top: 2px solid var(--book-gold);
     padding-top: .3rem;
-    color: rgba(27,36,51,.58);
+    color: var(--book-muted);
     font-size: .85rem;
     font-weight: 700;
 }
@@ -497,10 +570,10 @@
     display: flex;
     justify-content: space-between;
     gap: 1rem;
-    border-bottom: 1px solid rgba(27,36,51,.25);
+    border-bottom: 1px solid var(--book-border);
     padding-bottom: .65rem;
     margin-bottom: .5rem;
-    color: rgba(27,36,51,.58);
+    color: var(--book-muted);
     font-size: clamp(.55rem, 1cqw, .8rem);
     font-weight: 700;
     letter-spacing: .16em;
@@ -539,7 +612,7 @@
 .lb-page-body .form-group label {
     display: block;
     margin-bottom: .3rem;
-    color: rgba(27,36,51,.72);
+    color: var(--book-subtle);
     font-size: clamp(.5rem, 1.1cqw, .78rem);
     font-weight: 700;
     letter-spacing: .1em;
@@ -549,9 +622,9 @@
 .lb-page-body .form-group input {
     width: 100%;
     padding: .65rem .75rem;
-    border: 1px solid rgba(27,36,51,.32);
+    border: 1px solid var(--book-border);
     border-radius: 4px;
-    background: #fff;
+    background: var(--book-input);
     color: var(--book-ink);
     font-size: clamp(.75rem, 1.6cqw, .95rem);
     outline: none;
@@ -559,9 +632,9 @@
 }
 .lb-page-body .form-group input:focus {
     border-color: var(--book-blue);
-    box-shadow: 0 0 0 .3cqw rgba(37,84,168,.2);
+    box-shadow: 0 0 0 .3cqw color-mix(in srgb, var(--book-blue) 20%, transparent);
 }
-.lb-page-body .form-group input::placeholder { color: rgba(27,36,51,.42); }
+.lb-page-body .form-group input::placeholder { color: color-mix(in srgb, var(--book-ink) 42%, transparent); }
 
 .lb-page-body .checkbox-group {
     display: flex;
@@ -569,10 +642,10 @@
     gap: .5rem;
     justify-content: flex-start;
     margin: .4rem 0;
-    color: rgba(27,36,51,.72);
+    color: var(--book-subtle);
     font-size: clamp(.6rem, 1.3cqw, .82rem);
 }
-.lb-page-body .checkbox-group label { color: rgba(27,36,51,.72) !important; }
+.lb-page-body .checkbox-group label { color: var(--book-subtle) !important; }
 
 .lb-page-body .login-btn {
     width: 100%;
@@ -581,8 +654,8 @@
     border: 0;
     border-radius: 4px;
     background: var(--book-navy);
-    box-shadow: 0 3px 0 #0f1f3c;
-    color: var(--book-paper);
+    box-shadow: 0 3px 0 color-mix(in srgb, var(--book-navy) 80%, black);
+    color: var(--book-on-strong);
     cursor: pointer;
     font-size: clamp(.65rem, 1.4cqw, .95rem);
     font-weight: 700;
@@ -591,7 +664,7 @@
     transition: background .2s, transform .15s, box-shadow .1s;
 }
 .lb-page-body .login-btn:hover:not(:disabled)   { background: var(--book-blue); transform: translateY(-1px); }
-.lb-page-body .login-btn:active:not(:disabled)  { transform: translateY(1px); box-shadow: 0 1px 0 #0f1f3c; }
+.lb-page-body .login-btn:active:not(:disabled)  { transform: translateY(1px); box-shadow: 0 1px 0 color-mix(in srgb, var(--book-navy) 80%, black); }
 .lb-page-body .login-btn:disabled               { opacity: .55; cursor: not-allowed; }
 
 .lb-page-body .forgot-pass-btn {
@@ -607,7 +680,7 @@
 
 .lb-page-body .toggle-auth,
 .lb-page-body .login-subtext {
-    color: rgba(27,36,51,.78);
+    color: color-mix(in srgb, var(--book-ink) 78%, transparent);
     font-size: clamp(.6rem, 1.35cqw, .85rem);
     margin-top: .6rem;
 }
@@ -620,7 +693,7 @@
 .back-to-login-btn {
     background: none;
     border: none;
-    color: rgba(27,36,51,.72);
+    color: var(--book-subtle);
     cursor: pointer;
     width: 100%;
     margin-top: .5rem;
@@ -647,7 +720,7 @@
     font-size: clamp(.6rem, 1.3cqw, .82rem);
 }
 .lb-page-body .resend-code-btn:disabled {
-    color: rgba(27,36,51,.4);
+    color: color-mix(in srgb, var(--book-ink) 40%, transparent);
     cursor: not-allowed;
 }
 
@@ -657,7 +730,7 @@
     align-items: center;
     gap: .6rem;
     margin: .7rem 0 .2rem;
-    color: rgba(27,36,51,.5);
+    color: color-mix(in srgb, var(--book-ink) 50%, transparent);
     font-size: clamp(.55rem, 1.2cqw, .78rem);
 }
 .lb-page-body .or-divider::before,
@@ -665,7 +738,7 @@
     content: '';
     flex: 1;
     height: 1px;
-    background: rgba(27,36,51,.22);
+    background: color-mix(in srgb, var(--book-ink) 22%, transparent);
 }
 
 /* Google button */
@@ -677,18 +750,18 @@
     width: 100%;
     margin-top: .5rem;
     padding: .6rem .75rem;
-    background: #fff;
-    color: #3c4043;
-    border: 1.5px solid rgba(0,0,0,.15);
+    background: var(--book-input);
+    color: var(--book-ink);
+    border: 1.5px solid var(--book-border);
     border-radius: 4px;
     font-size: clamp(.6rem, 1.35cqw, .85rem);
     font-weight: 600;
     cursor: pointer;
     transition: box-shadow .2s, transform .15s;
-    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    box-shadow: 0 1px 3px color-mix(in srgb, var(--book-ink) 8%, transparent);
 }
 .lb-page-body .google-btn:hover:not(:disabled) {
-    box-shadow: 0 3px 8px rgba(0,0,0,.14);
+    box-shadow: 0 3px 8px color-mix(in srgb, var(--book-ink) 14%, transparent);
     transform: translateY(-1px);
 }
 .lb-page-body .google-btn:disabled { opacity: .65; cursor: not-allowed; }
