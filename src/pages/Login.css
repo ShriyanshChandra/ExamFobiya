@@ -355,6 +355,62 @@
     padding: calc(var(--u) * 1) 0;
 }
 
+/* In non-desktop / stack view (tablets and phones), remove scroll from register, user login, and all bottom pages */
+.lb-page--stack-r .lb-page-inner {
+    padding: calc(var(--u) * 1.2) calc(var(--u) * 2.4) calc(var(--u) * 1.2);
+}
+
+.lb-page--stack-r .lb-page-body {
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: calc(var(--u) * 0.35) 0 calc(var(--u) * 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.lb-page--stack-r .lb-page-body::-webkit-scrollbar,
+.lb-page--stack-l .lb-page-body::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+.lb-page--stack-r .lb-form-container {
+    gap: calc(var(--u) * 0.45);
+    margin: auto auto;
+}
+
+.lb-page--stack-r .lb-form-head {
+    margin-bottom: calc(var(--u) * 0.2);
+}
+
+.lb-page--stack-r .lb-form-title {
+    font-size: calc(var(--u) * 2.2);
+    margin-top: calc(var(--u) * 0.15);
+}
+
+.lb-page--stack-r .lb-input-field {
+    padding: calc(var(--u) * 0.45) calc(var(--u) * 0.7);
+}
+
+.lb-page--stack-r .lb-cta {
+    padding: calc(var(--u) * 0.75) calc(var(--u) * var(--cp));
+}
+
+.lb-page--stack-r .lb-google-btn {
+    padding: calc(var(--u) * 0.5) calc(var(--u) * 0.8);
+}
+
+.lb-page--stack-r .lb-or-divider {
+    margin: calc(var(--u) * 0.2) 0;
+}
+
+.lb-page--stack-r .login-book-back {
+    margin: calc(var(--u) * 0.35) auto 0;
+    padding: calc(var(--u) * 0.15) 0;
+}
+
 .lb-page-body::-webkit-scrollbar {
     width: 4px;
 }
@@ -581,6 +637,15 @@
 .lb-cta--outline:hover {
     background: var(--book-navy);
     color: var(--book-on-strong);
+}
+
+.lb-cta--send-code,
+.lb-page--stack-r .lb-cta--send-code {
+    white-space: nowrap;
+    font-size: calc(var(--u) * 1.05 * var(--k));
+    letter-spacing: .08em;
+    padding-left: calc(var(--u) * 0.75);
+    padding-right: calc(var(--u) * 0.75);
 }
 
 /* ── Form Card & Controls ── */

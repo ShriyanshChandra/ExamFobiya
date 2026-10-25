@@ -125,9 +125,13 @@
   box-shadow: 0 3px 10px color-mix(in srgb, var(--accent-color) 40%, transparent);
 }
 
-@media screen and (max-width: 75rem) {
+@media screen and (max-width: 75rem), screen and (max-width: 1200px), (hover: none) and (pointer: coarse) {
   .topbar {
-    display: none;
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    height: 0 !important;
+    overflow: hidden !important;
   }
 }
 

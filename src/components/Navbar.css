@@ -12,9 +12,9 @@
   box-shadow: var(--shadow-sm);
 }
 
-@media screen and (max-width: 75rem) {
+@media screen and (max-width: 75rem), screen and (max-width: 1200px), (hover: none) and (pointer: coarse) {
   .navbar {
-    top: 0;
+    top: 0 !important;
   }
 }
 

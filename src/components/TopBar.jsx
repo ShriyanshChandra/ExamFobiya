@@ -49,11 +49,18 @@ const TopBar = () => {
   };
 
   useEffect(() => {
-    document.documentElement.style.setProperty("--topbar-h", TOPBAR_H);
+    const isMobileOrTablet = () => {
+      if (typeof window === "undefined") return false;
+      return window.innerWidth <= 1200 || window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+    };
 
-    const handleScroll = () => {
+    const updateTopbarHeight = () => {
+      if (isMobileOrTablet()) {
+        document.documentElement.style.setProperty("--topbar-h", "0px");
+        return;
+      }
+
       const currentY = window.scrollY;
-
       if (currentY < 10) {
         setVisible(true);
         document.documentElement.style.setProperty("--topbar-h", TOPBAR_H);
@@ -68,8 +75,22 @@ const TopBar = () => {
       lastScrollY.current = currentY;
     };
 
+    updateTopbarHeight();
+
+    const handleScroll = () => {
+      updateTopbarHeight();
+    };
+
+    const handleResize = () => {
+      updateTopbarHeight();
+    };
+
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleResize, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
   }, []);
 
   const handleLogout = async () => {

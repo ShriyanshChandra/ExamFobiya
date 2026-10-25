@@ -536,7 +536,7 @@ const ForgotPasswordBox = ({ role, checkAccountExists, onCancel, onSuccess }) =>
                             className="lb-input-field"
                         />
                     </div>
-                    <button type="submit" className="lb-cta" disabled={loading} style={{ width: '100%', marginTop: 'calc(var(--u) * 0.4)' }}>
+                    <button type="submit" className="lb-cta lb-cta--send-code" disabled={loading} style={{ width: '100%', marginTop: 'calc(var(--u) * 0.4)' }}>
                         {loading ? 'Sending...' : 'Send Verification Code'}
                     </button>
                     {onCancel && (
