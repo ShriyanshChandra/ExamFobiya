@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getApiUrl } from '../utils/api';
 import useSEO from '../utils/useSEO';
@@ -7,401 +7,373 @@ import { db } from '../firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import './Login.css';
 
-const LoginBox = ({ role, title, onAuth, onGoogleLogin, allowRegister = true, checkAccountExists, onSwitchToRegister, onForgotPassword }) => {
+const wideQ = '(min-width: 1001px)';
+const stackQ = '(max-width: 1000px) and (max-aspect-ratio: 1/1)';
+
+function useLayout() {
+    const read = () => {
+        if (typeof window === 'undefined') return 'wide';
+        if (window.innerWidth <= 768) return 'stack';
+        if (window.matchMedia(stackQ).matches) return 'stack';
+        if (window.matchMedia(wideQ).matches) return 'wide';
+        return 'mid';
+    };
+    const [layout, setLayout] = useState(read);
+    useEffect(() => {
+        const qs = [window.matchMedia(stackQ), window.matchMedia(wideQ)];
+        const on = () => setLayout(read());
+        window.addEventListener('resize', on);
+        qs.forEach((q) => q.addEventListener('change', on));
+        return () => {
+            window.removeEventListener('resize', on);
+            qs.forEach((q) => q.removeEventListener('change', on));
+        };
+    }, []);
+    return layout;
+}
+
+const unitFor = {
+    wide: 'calc(min(70vw, 105vh) / 100)',
+    mid: 'calc(min(94vw, 150vh) / 100)',
+    stack: 'calc(min(92vw / 54, (100dvh - 8rem) / 116))',
+};
+
+/* ─── Page Surface Component ─── */
+const Page = ({ side, folio, running, ruled = false, stack = false, children }) => {
+    const isLeft = side === 'l';
+    const surfaceClass = stack
+        ? (isLeft ? 'lb-page--stack-l' : 'lb-page--stack-r')
+        : (isLeft ? 'lb-page--wide-l' : 'lb-page--wide-r');
+
+    return (
+        <div className={`lb-page-face ${surfaceClass}${ruled ? ' lb-page--ruled' : ''}`}>
+            <div className="lb-page-inner">
+                <header className="lb-running-head">
+                    <span className="lb-running-blue">ExamFobiya</span>
+                    {running && <span>{running}</span>}
+                </header>
+                <div className="lb-page-body">
+                    {children}
+                </div>
+                <span className={`lb-folio${stack && isLeft ? ' lb-folio--stack-l' : ''}${isLeft ? ' lb-folio--left' : ''}`}>
+                    {folio}
+                </span>
+            </div>
+        </div>
+    );
+};
+
+/* ─── Book Ornament Divider ─── */
+const Ornament = () => (
+    <div className="lb-ornament" aria-hidden="true">
+        <span className="lb-ornament-line" />
+        <span className="lb-ornament-symbol">❦</span>
+        <span className="lb-ornament-line" />
+    </div>
+);
+
+/* ─── Chapter Content Component ─── */
+const ChapterContent = ({ eyebrow, title, sub, points, onLogin, onRegister, showActions = true, small = false }) => (
+    <div className="lb-chapter">
+        {eyebrow && <p className="lb-chapter-eyebrow">{eyebrow}</p>}
+        <h2 className={`lb-chapter-title${small ? ' lb-chapter-title--small' : ''}`}>
+            {title}
+        </h2>
+        <Ornament />
+        {sub && <p className="lb-chapter-sub">{sub}</p>}
+        {points && points.length > 0 && (
+            <div className="lb-chapter-objectives">
+                <strong>Your Study Space</strong>
+                <ul>
+                    {points.map((p) => <li key={p}>{p}</li>)}
+                </ul>
+            </div>
+        )}
+        {showActions && (
+            <div className="lb-chapter-actions">
+                {title === 'Register' ? (
+                    onLogin && (
+                        <button type="button" className="lb-cta" onClick={onLogin}>
+                            User login
+                        </button>
+                    )
+                ) : (
+                    <>
+                        {onLogin && (
+                            <button type="button" className="lb-cta" onClick={onLogin}>
+                                {title === 'User' ? 'User login' : 'Admin login'}
+                            </button>
+                        )}
+                        {title === 'User' && onRegister && (
+                            <button type="button" className="lb-cta lb-cta--outline" onClick={onRegister}>
+                                Register
+                            </button>
+                        )}
+                    </>
+                )}
+            </div>
+        )}
+    </div>
+);
+
+/* ─── Login Box Component ─── */
+const LoginBox = ({ role, title, onAuth, onGoogleLogin, allowRegister = true, onSwitchToRegister, onForgotPassword, onBack }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-
-    // Forgot Password State
-    const [step, setStep] = useState('login'); // 'login' | 'email' | 'otp' | 'new-password'
-    const [resetEmail, setResetEmail] = useState('');
-    const [enteredOtp, setEnteredOtp] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [googleLoading, setGoogleLoading] = useState(false);
     const [localError, setLocalError] = useState('');
-    const [successMsg, setSuccessMsg] = useState('');
-    const [resendTimer, setResendTimer] = useState(0);
 
-    useEffect(() => {
-        if (resendTimer <= 0) {
-            return undefined;
-        }
-
-        const timer = setInterval(() => {
-            setResendTimer((current) => {
-                if (current <= 1) {
-                    clearInterval(timer);
-                    return 0;
-                }
-                return current - 1;
-            });
-        }, 1000);
-
-        return () => clearInterval(timer);
-    }, [resendTimer]);
-
-    const formatResendTimer = (seconds) => {
-        const minutes = String(Math.floor(seconds / 60)).padStart(2, '0');
-        const remainingSeconds = String(seconds % 60).padStart(2, '0');
-        return `${minutes}:${remainingSeconds}`;
-    };
-
-    const sendResetOtp = async (userEmail) => {
-        const accountExists = await checkAccountExists(userEmail);
-
-        if (!accountExists) {
-            throw new Error('Account does not exist in the database. Please register first.');
-        }
-
-        if (role === 'admin') {
-            const checkResponse = await fetch(getApiUrl('/api/check-admin'), {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: userEmail })
-            });
-
-            if (!checkResponse.ok) {
-                const errorData = await checkResponse.json();
-                throw new Error(errorData.error || 'Account checking failed.');
-            }
-        }
-
-        const response = await fetch(getApiUrl('/send-otp'), {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: userEmail, purpose: 'reset-password' }),
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Failed to send OTP');
-        }
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onAuth(role, email, password, false);
-    };
-
-    const handleSendOtp = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setLocalError('');
-        setSuccessMsg('');
         setLoading(true);
         try {
-            await sendResetOtp(resetEmail);
-            setResendTimer(120);
-            setStep('otp');
+            await onAuth(role, email, password, false);
         } catch (err) {
-            console.error(err);
-            setLocalError(err.message || "Failed to send verification code.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleVerifyOtp = (e) => {
-        e.preventDefault();
-        setLocalError('');
-        if (enteredOtp.length !== 6) {
-            return setLocalError("Please enter a valid 6-digit OTP.");
-        }
-        setStep('new-password');
-    };
-
-    const handleResendOtp = async () => {
-        setLocalError('');
-        setSuccessMsg('');
-        setLoading(true);
-
-        try {
-            await sendResetOtp(resetEmail);
-            setResendTimer(120);
-        } catch (err) {
-            console.error(err);
-            setLocalError(err.message || "Failed to resend verification code.");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleResetPassword = async (e) => {
-        e.preventDefault();
-        setLocalError('');
-        setSuccessMsg('');
-        
-        if (newPassword !== confirmPassword) {
-            return setLocalError("Passwords do not match");
-        }
-        if (newPassword.length < 6) {
-            return setLocalError("Password should be at least 6 characters");
-        }
-
-        setLoading(true);
-        try {
-            const response = await fetch(getApiUrl('/api/reset-password'), {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: resetEmail, otp: enteredOtp, newPassword }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to reset password');
-            }
-
-            setSuccessMsg("Password reset successfully! You can now login.");
-            setStep('login');
-            setResetEmail('');
-            setEnteredOtp('');
-            setNewPassword('');
-            setConfirmPassword('');
-            setResendTimer(0);
-        } catch (err) {
-            console.error(err);
-            setLocalError(err.message || "Failed to reset password.");
+            setLocalError(err.message || 'Login failed. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
     return (
-        <div className="login-card container">
-            <h2>{step === 'login' ? title : "Forgot Password"}</h2>
-            
-            {localError && <div className="register-error-message" style={{color: 'red', marginBottom: '10px'}}>{localError}</div>}
-            {successMsg && <div className="success-message" style={{color: 'green', marginBottom: '10px'}}>{successMsg}</div>}
+        <form onSubmit={handleSubmit} className="lb-form-container">
+            <div className="lb-form-head">
+                <p className="lb-form-eyebrow">{role === 'admin' ? 'Keepers Desk' : 'Reader Sign-in'}</p>
+                <h3 className="lb-form-title">{title}</h3>
+            </div>
 
-            {step === 'login' && (
-                <>
-                    <form onSubmit={handleSubmit}>
-                        <div className="form-group">
-                            <label htmlFor={`login-email-${role}`}>Email:</label>
-                            <input
-                                id={`login-email-${role}`}
-                                name="email"
-                                autoComplete="username"
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="Enter email"
-                                required
-                            />
+            {localError && <div className="lb-error-msg" role="alert">{localError}</div>}
+
+            <div className="lb-input-group">
+                <label className="lb-input-label" htmlFor={`login-email-${role}`}>Email ID</label>
+                <input
+                    id={`login-email-${role}`}
+                    name="email"
+                    type="email"
+                    required
+                    autoComplete="username"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    className="lb-input-field"
+                />
+            </div>
+
+            <div className="lb-input-group">
+                <label className="lb-input-label" htmlFor={`login-password-${role}`}>Password</label>
+                <input
+                    id={`login-password-${role}`}
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    autoComplete="current-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    className="lb-input-field"
+                />
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <label className="lb-checkbox-group">
+                    <input
+                        type="checkbox"
+                        checked={showPassword}
+                        onChange={() => setShowPassword(!showPassword)}
+                    />
+                    <span>Show Password</span>
+                </label>
+                <button
+                    type="button"
+                    onClick={() => onForgotPassword(role)}
+                    className="lb-link-btn"
+                    disabled={loading || googleLoading}
+                >
+                    Forgot password?
+                </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 'calc(var(--u) * 0.4)' }}>
+                <button type="submit" className="lb-cta" disabled={loading || googleLoading} style={{ width: '100%' }}>
+                    {loading ? 'Signing in...' : 'Login'}
+                </button>
+
+                {role === 'user' && onGoogleLogin && (
+                    <>
+                        <div className="lb-or-divider" style={{ width: '100%' }}>
+                            <span>or</span>
                         </div>
-                        <div className="form-group">
-                            <label htmlFor={`login-password-${role}`}>Password:</label>
-                            <input
-                                id={`login-password-${role}`}
-                                name="password"
-                                autoComplete="current-password"
-                                type={showPassword ? "text" : "password"}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                placeholder="Enter password"
-                                required
-                            />
-                        </div>
-                        <div className="checkbox-group">
-                            <input
-                                type="checkbox"
-                                id={`show-pass-login-${role}`}
-                                name="showPassword"
-                                checked={showPassword}
-                                onChange={() => setShowPassword(!showPassword)}
-                            />
-                            <label htmlFor={`show-pass-login-${role}`}>Show Password</label>
-                        </div>
-                        <button type="submit" className="login-btn" disabled={loading || googleLoading}>
-                            {loading ? 'Signing in...' : 'Login'}
-                        </button>
-                    </form>
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '15px' }}>
                         <button
                             type="button"
-                            onClick={() => {
-                                if (onForgotPassword) {
-                                    onForgotPassword(role);
-                                } else {
-                                    setStep('email');
+                            className="lb-google-btn"
+                            disabled={loading || googleLoading}
+                            onClick={async () => {
+                                setLocalError('');
+                                setGoogleLoading(true);
+                                try {
+                                    await onGoogleLogin();
+                                } catch (err) {
+                                    setLocalError(err.message || 'Google sign-in failed.');
+                                } finally {
+                                    setGoogleLoading(false);
                                 }
                             }}
-                            className="forgot-pass-btn"
-                            disabled={loading || googleLoading}
                         >
-                            Forgot Password?
-                        </button>
-                    </div>
-
-                    {role === 'user' && onGoogleLogin && (
-                        <>
-                            <div className="or-divider">
-                                <span>or</span>
-                            </div>
-                            <button
-                                id="google-signin-btn"
-                                type="button"
-                                className="google-btn"
-                                onClick={async () => {
-                                    setLocalError('');
-                                    setGoogleLoading(true);
-                                    try {
-                                        await onGoogleLogin();
-                                    } catch (err) {
-                                        setLocalError(err.message || 'Google sign-in failed. Please try again.');
-                                    } finally {
-                                        setGoogleLoading(false);
-                                    }
-                                }}
-                                disabled={loading || googleLoading}
-                            >
-                                {googleLoading ? (
-                                    <span className="google-btn-spinner"></span>
-                                ) : (
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20" height="20" aria-hidden="true">
-                                        <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
-                                        <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
-                                        <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
-                                        <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
-                                    </svg>
-                                )}
-                                <span>{googleLoading ? 'Signing in...' : 'Continue with Google'}</span>
-                            </button>
-                        </>
-                    )}
-
-                    {allowRegister && (
-                        <p className="toggle-auth">
-                            Need an account?{' '}
-                            {onSwitchToRegister ? (
-                                <button type="button" onClick={onSwitchToRegister} className="register-link-btn">
-                                    Register
-                                </button>
+                            {googleLoading ? (
+                                <span className="google-btn-spinner" />
                             ) : (
-                                <Link to="/register" className="register-link">Register</Link>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="18" height="18" aria-hidden="true">
+                                    <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+                                    <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+                                    <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+                                    <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+                                </svg>
                             )}
-                        </p>
-                    )}
-                </>
-            )}
+                            <span>{googleLoading ? 'Signing in...' : 'Continue with Google'}</span>
+                        </button>
+                    </>
+                )}
 
-            {step === 'email' && (
-                <form onSubmit={handleSendOtp}>
-                    <p className="login-subtext">Enter your email address and we'll send you a verification code to reset your password.</p>
-                    <div className="form-group">
-                        <label htmlFor={`reset-email-${role}`}>Email:</label>
-                        <input
-                            id={`reset-email-${role}`}
-                            name="resetEmail"
-                            autoComplete="email"
-                            type="email"
-                            value={resetEmail}
-                            onChange={(e) => setResetEmail(e.target.value)}
-                            placeholder="Enter your email"
-                            required
-                        />
-                    </div>
-                    <button type="submit" className="login-btn" disabled={loading}>
-                        {loading ? 'Sending...' : 'Send Verification Code'}
-                    </button>
-                    <button type="button" onClick={() => { setStep('login'); setLocalError(''); }} className="login-secondary-btn">
-                        Cancel
-                    </button>
-                </form>
-            )}
-
-            {step === 'otp' && (
-                <form onSubmit={handleVerifyOtp}>
-                    <p className="login-subtext">We've sent a 6-digit code to <strong>{resetEmail}</strong>. Enter it below.</p>
-                    <div className="form-group">
-                        <label htmlFor={`reset-otp-${role}`}>OTP Code:</label>
-                        <input
-                            id={`reset-otp-${role}`}
-                            name="otp"
-                            autoComplete="one-time-code"
-                            type="text"
-                            value={enteredOtp}
-                            onChange={(e) => setEnteredOtp(e.target.value)}
-                            placeholder="123456"
-                            maxLength="6"
-                            required
-                        />
-                    </div>
-                    <button type="submit" className="login-btn">
-                        Verify Code
-                    </button>
-                    <p className="login-subtext" style={{ marginTop: '12px', marginBottom: '0', textAlign: 'center' }}>
-                        {resendTimer > 0
-                            ? `Resend available in ${formatResendTimer(resendTimer)}`
-                            : "Didn't receive the code?"}
+                {allowRegister && (
+                    <p style={{ marginTop: 'calc(var(--u) * 0.8)', fontSize: 'calc(var(--u) * 1.15 * var(--k))', color: 'var(--book-ink)' }}>
+                        Need an account?{' '}
+                        <button type="button" onClick={onSwitchToRegister} className="lb-link-btn" style={{ fontWeight: 600 }}>
+                            Register
+                        </button>
                     </p>
-                    <button
-                        type="button"
-                        onClick={handleResendOtp}
-                        disabled={loading || resendTimer > 0}
-                        className="resend-code-btn"
-                    >
-                        {loading && resendTimer === 0 ? 'Sending...' : 'Resend Code'}
-                    </button>
-                    <button type="button" onClick={() => { setStep('email'); setLocalError(''); }} className="login-secondary-btn">
-                        Back
-                    </button>
-                </form>
-            )}
+                )}
 
-            {step === 'new-password' && (
-                <form onSubmit={handleResetPassword}>
-                    <p className="login-subtext">Create a new password for your account.</p>
-                    <div className="form-group">
-                        <label htmlFor={`new-password-${role}`}>New Password:</label>
-                        <input
-                            id={`new-password-${role}`}
-                            name="newPassword"
-                            autoComplete="new-password"
-                            type={showPassword ? "text" : "password"}
-                            value={newPassword}
-                            onChange={(e) => setNewPassword(e.target.value)}
-                            placeholder="At least 6 characters"
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor={`confirm-password-${role}`}>Confirm Password:</label>
-                        <input
-                            id={`confirm-password-${role}`}
-                            name="confirmPassword"
-                            autoComplete="new-password"
-                            type={showPassword ? "text" : "password"}
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            placeholder="Confirm new password"
-                            required
-                        />
-                    </div>
-                    <div className="checkbox-group">
-                        <input
-                            type="checkbox"
-                            id={`show-pass-reset-${role}`}
-                            name="showPasswordReset"
-                            checked={showPassword}
-                            onChange={() => setShowPassword(!showPassword)}
-                        />
-                        <label htmlFor={`show-pass-reset-${role}`}>Show Password</label>
-                    </div>
-                    <button type="submit" className="login-btn" disabled={loading}>
-                        {loading ? 'Resetting...' : 'Reset Password'}
+                {onBack && (
+                    <button type="button" onClick={onBack} className="login-book-back">
+                        ← Back to cover
                     </button>
-                    <button type="button" onClick={() => { setStep('login'); setLocalError(''); setShowPassword(false); }} className="login-secondary-btn">
-                        Cancel
-                    </button>
-                </form>
-            )}
-        </div>
+                )}
+            </div>
+        </form>
     );
 };
 
-/* ─── Forgot Password Box inside the book ─── */
+/* ─── Registration Box Component ─── */
+const RegisterBox = ({ onSuccess, onSwitchToLogin, onBack, register }) => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+
+        if (password !== confirmPassword) {
+            return setError('Passwords do not match.');
+        }
+        if (password.length < 6) {
+            return setError('Password must be at least 6 characters.');
+        }
+
+        setLoading(true);
+        try {
+            const username = email.split('@')[0];
+            await register(email, password, 'user', username);
+            if (onSuccess) onSuccess();
+        } catch (err) {
+            setError(err.message || 'Registration failed.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <form onSubmit={handleSubmit} className="lb-form-container">
+            <div className="lb-form-head">
+                <p className="lb-form-eyebrow">New Reader</p>
+                <h3 className="lb-form-title">Create your account</h3>
+            </div>
+
+            {error && <div className="lb-error-msg" role="alert">{error}</div>}
+
+            <div className="lb-input-group">
+                <label className="lb-input-label" htmlFor="register-email">Email ID</label>
+                <input
+                    id="register-email"
+                    name="email"
+                    type="email"
+                    required
+                    autoComplete="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    className="lb-input-field"
+                />
+            </div>
+
+            <div className="lb-input-group">
+                <label className="lb-input-label" htmlFor="register-password">Password</label>
+                <input
+                    id="register-password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    autoComplete="new-password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Enter your password"
+                    className="lb-input-field"
+                />
+            </div>
+
+            <div className="lb-input-group">
+                <label className="lb-input-label" htmlFor="register-confirm">Confirm Password</label>
+                <input
+                    id="register-confirm"
+                    name="confirmPassword"
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    autoComplete="new-password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Repeat password"
+                    className="lb-input-field"
+                />
+            </div>
+
+            <label className="lb-checkbox-group">
+                <input
+                    type="checkbox"
+                    checked={showPassword}
+                    onChange={() => setShowPassword(!showPassword)}
+                />
+                <span>Show Password</span>
+            </label>
+
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 'calc(var(--u) * 0.4)' }}>
+                <button type="submit" className="lb-cta" disabled={loading} style={{ width: '100%' }}>
+                    {loading ? 'Registering...' : 'Register'}
+                </button>
+
+                <p style={{ marginTop: 'calc(var(--u) * 0.8)', fontSize: 'calc(var(--u) * 1.15 * var(--k))', color: 'var(--book-ink)' }}>
+                    Already have an account?{' '}
+                    <button type="button" onClick={onSwitchToLogin} className="lb-link-btn" style={{ fontWeight: 600 }}>
+                        Login
+                    </button>
+                </p>
+
+                {onBack && (
+                    <button type="button" onClick={onBack} className="login-book-back">
+                        ← Back to cover
+                    </button>
+                )}
+            </div>
+        </form>
+    );
+};
+
+/* ─── Forgot Password Box Component ─── */
 const ForgotPasswordBox = ({ role, checkAccountExists, onCancel, onSuccess }) => {
     const [step, setStep] = useState('email'); // 'email' | 'otp' | 'new-password'
     const [resetEmail, setResetEmail] = useState('');
@@ -437,14 +409,14 @@ const ForgotPasswordBox = ({ role, checkAccountExists, onCancel, onSuccess }) =>
     const sendResetOtp = async (userEmail) => {
         const accountExists = await checkAccountExists(userEmail);
         if (!accountExists) {
-            throw new Error('Account does not exist in the database. Please register first.');
+            throw new Error('Account does not exist. Please check your email or register.');
         }
 
         if (role === 'admin') {
             const checkResponse = await fetch(getApiUrl('/api/check-admin'), {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: userEmail })
+                body: JSON.stringify({ email: userEmail }),
             });
             if (!checkResponse.ok) {
                 const errorData = await checkResponse.json();
@@ -459,7 +431,7 @@ const ForgotPasswordBox = ({ role, checkAccountExists, onCancel, onSuccess }) =>
         });
         if (!response.ok) {
             const errorData = await response.json();
-            throw new Error(errorData.error || 'Failed to send OTP');
+            throw new Error(errorData.error || 'Failed to send verification code.');
         }
     };
 
@@ -473,7 +445,6 @@ const ForgotPasswordBox = ({ role, checkAccountExists, onCancel, onSuccess }) =>
             setResendTimer(120);
             setStep('otp');
         } catch (err) {
-            console.error(err);
             setLocalError(err.message || 'Failed to send verification code.');
         } finally {
             setLoading(false);
@@ -484,7 +455,7 @@ const ForgotPasswordBox = ({ role, checkAccountExists, onCancel, onSuccess }) =>
         e.preventDefault();
         setLocalError('');
         if (enteredOtp.length !== 6) {
-            return setLocalError('Please enter a valid 6-digit OTP.');
+            return setLocalError('Please enter a valid 6-digit OTP code.');
         }
         setStep('new-password');
     };
@@ -497,8 +468,7 @@ const ForgotPasswordBox = ({ role, checkAccountExists, onCancel, onSuccess }) =>
             await sendResetOtp(resetEmail);
             setResendTimer(120);
         } catch (err) {
-            console.error(err);
-            setLocalError(err.message || 'Failed to resend verification code.');
+            setLocalError(err.message || 'Failed to resend code.');
         } finally {
             setLoading(false);
         }
@@ -510,10 +480,10 @@ const ForgotPasswordBox = ({ role, checkAccountExists, onCancel, onSuccess }) =>
         setSuccessMsg('');
 
         if (newPassword !== confirmPassword) {
-            return setLocalError('Passwords do not match');
+            return setLocalError('Passwords do not match.');
         }
         if (newPassword.length < 6) {
-            return setLocalError('Password should be at least 6 characters');
+            return setLocalError('Password must be at least 6 characters.');
         }
 
         setLoading(true);
@@ -526,15 +496,12 @@ const ForgotPasswordBox = ({ role, checkAccountExists, onCancel, onSuccess }) =>
 
             if (!response.ok) {
                 const errorData = await response.json();
-                throw new Error(errorData.error || 'Failed to reset password');
+                throw new Error(errorData.error || 'Failed to reset password.');
             }
 
             setSuccessMsg('Password reset successfully! You can now login.');
-            if (onSuccess) {
-                onSuccess('Password reset successfully! You can now login.');
-            }
+            if (onSuccess) onSuccess();
         } catch (err) {
-            console.error(err);
             setLocalError(err.message || 'Failed to reset password.');
         } finally {
             setLoading(false);
@@ -542,124 +509,129 @@ const ForgotPasswordBox = ({ role, checkAccountExists, onCancel, onSuccess }) =>
     };
 
     return (
-        <div className="login-card container">
-            <h2>{step === 'new-password' ? 'Create New Password' : step === 'otp' ? 'Verify Code' : 'Forgot Password'}</h2>
+        <div className="lb-form-container">
+            <div className="lb-form-head">
+                <p className="lb-form-eyebrow">{role === 'admin' ? 'Keeper Security' : 'Account Recovery'}</p>
+                <h3 className="lb-form-title">
+                    {step === 'new-password' ? 'Create New Password' : step === 'otp' ? 'Verify Code' : 'Reset Password'}
+                </h3>
+            </div>
 
-            {localError && <div className="register-error-message" role="alert" style={{ color: 'red', marginBottom: '10px' }}>{localError}</div>}
-            {successMsg && <div className="success-message" role="status" style={{ color: 'green', marginBottom: '10px' }}>{successMsg}</div>}
+            {localError && <div className="lb-error-msg" role="alert">{localError}</div>}
+            {successMsg && <div className="lb-success-msg" role="status">{successMsg}</div>}
 
             {step === 'email' && (
-                <form onSubmit={handleSendOtp}>
-                    <p className="login-subtext">Enter your email address and we'll send you a verification code to reset your password.</p>
-                    <div className="form-group">
-                        <label htmlFor={`forgot-email-${role}`}>Email:</label>
+                <form onSubmit={handleSendOtp} style={{ display: 'flex', flexDirection: 'column', gap: 'calc(var(--u) * 0.85)' }}>
+                    <div className="lb-input-group">
+                        <label className="lb-input-label" htmlFor={`forgot-email-${role}`}>Enter your email</label>
                         <input
                             id={`forgot-email-${role}`}
                             name="resetEmail"
-                            autoComplete="email"
                             type="email"
+                            required
+                            autoComplete="email"
                             value={resetEmail}
                             onChange={(e) => setResetEmail(e.target.value)}
                             placeholder="Enter your email"
-                            required
+                            className="lb-input-field"
                         />
                     </div>
-                    <button type="submit" className="login-btn" disabled={loading}>
+                    <button type="submit" className="lb-cta" disabled={loading} style={{ width: '100%', marginTop: 'calc(var(--u) * 0.4)' }}>
                         {loading ? 'Sending...' : 'Send Verification Code'}
                     </button>
                     {onCancel && (
-                        <button type="button" onClick={onCancel} className="login-secondary-btn back-to-login-btn" style={{ marginTop: '10px', width: '100%' }}>
-                            Back to Login
+                        <button type="button" onClick={onCancel} className="login-book-back">
+                            ← Back to login
                         </button>
                     )}
                 </form>
             )}
 
             {step === 'otp' && (
-                <form onSubmit={handleVerifyOtp}>
-                    <p className="login-subtext">We've sent a 6-digit code to <strong>{resetEmail}</strong>. Enter it below.</p>
-                    <div className="form-group">
-                        <label htmlFor={`forgot-otp-${role}`}>OTP Code:</label>
+                <form onSubmit={handleVerifyOtp} style={{ display: 'flex', flexDirection: 'column', gap: 'calc(var(--u) * 0.85)' }}>
+                    <p style={{ fontSize: 'calc(var(--u) * 1.15 * var(--k))', color: 'var(--book-ink)', textAlign: 'center', margin: '0' }}>
+                        We sent a 6-digit code to <strong>{resetEmail}</strong>
+                    </p>
+                    <div className="lb-input-group">
+                        <label className="lb-input-label" htmlFor={`forgot-otp-${role}`}>OTP Code</label>
                         <input
                             id={`forgot-otp-${role}`}
                             name="otp"
-                            autoComplete="one-time-code"
                             type="text"
-                            value={enteredOtp}
-                            onChange={(e) => setEnteredOtp(e.target.value)}
-                            placeholder="123456"
                             maxLength="6"
                             required
+                            autoComplete="one-time-code"
+                            value={enteredOtp}
+                            onChange={(e) => setEnteredOtp(e.target.value)}
+                            placeholder="Enter your OTP"
+                            className="lb-input-field"
                         />
                     </div>
-                    <button type="submit" className="login-btn">
+                    <button type="submit" className="lb-cta" style={{ width: '100%', marginTop: 'calc(var(--u) * 0.4)' }}>
                         Verify Code
                     </button>
-                    <p className="login-subtext" style={{ marginTop: '12px', marginBottom: '0', textAlign: 'center' }}>
-                        {resendTimer > 0
-                            ? `Resend available in ${formatResendTimer(resendTimer)}`
-                            : "Didn't receive the code?"}
+                    <p style={{ textAlign: 'center', fontSize: 'calc(var(--u) * 1.05 * var(--k))', color: 'var(--book-muted)', margin: '0' }}>
+                        {resendTimer > 0 ? `Resend available in ${formatResendTimer(resendTimer)}` : "Didn't receive the code?"}
                     </p>
                     <button
                         type="button"
                         onClick={handleResendOtp}
                         disabled={loading || resendTimer > 0}
-                        className="resend-code-btn"
-                        style={{ marginTop: '8px', width: '100%' }}
+                        className="lb-link-btn"
+                        style={{ alignSelf: 'center' }}
                     >
                         {loading && resendTimer === 0 ? 'Sending...' : 'Resend Code'}
                     </button>
-                    <button type="button" onClick={() => { setStep('email'); setLocalError(''); }} className="login-secondary-btn" style={{ marginTop: '10px', width: '100%' }}>
-                        Back
+                    <button type="button" onClick={() => { setStep('email'); setLocalError(''); }} className="login-book-back">
+                        ← Back to email
                     </button>
                 </form>
             )}
 
             {step === 'new-password' && (
-                <form onSubmit={handleResetPassword}>
-                    <p className="login-subtext">Create a new password for your account.</p>
-                    <div className="form-group">
-                        <label htmlFor={`forgot-new-pass-${role}`}>New Password:</label>
+                <form onSubmit={handleResetPassword} style={{ display: 'flex', flexDirection: 'column', gap: 'calc(var(--u) * 0.85)' }}>
+                    <div className="lb-input-group">
+                        <label className="lb-input-label" htmlFor={`forgot-new-pass-${role}`}>New Password</label>
                         <input
                             id={`forgot-new-pass-${role}`}
                             name="newPassword"
-                            autoComplete="new-password"
                             type={showPassword ? 'text' : 'password'}
+                            required
+                            autoComplete="new-password"
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
-                            placeholder="At least 6 characters"
-                            required
+                            placeholder="Enter your password"
+                            className="lb-input-field"
                         />
                     </div>
-                    <div className="form-group">
-                        <label htmlFor={`forgot-confirm-pass-${role}`}>Confirm Password:</label>
+                    <div className="lb-input-group">
+                        <label className="lb-input-label" htmlFor={`forgot-confirm-pass-${role}`}>Confirm Password</label>
                         <input
                             id={`forgot-confirm-pass-${role}`}
                             name="confirmPassword"
-                            autoComplete="new-password"
                             type={showPassword ? 'text' : 'password'}
+                            required
+                            autoComplete="new-password"
                             value={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
-                            placeholder="Confirm new password"
-                            required
+                            placeholder="Repeat password"
+                            className="lb-input-field"
                         />
                     </div>
-                    <div className="checkbox-group">
+                    <label className="lb-checkbox-group">
                         <input
                             type="checkbox"
-                            id={`forgot-show-pass-${role}`}
-                            name="showPasswordReset"
                             checked={showPassword}
                             onChange={() => setShowPassword(!showPassword)}
                         />
-                        <label htmlFor={`forgot-show-pass-${role}`}>Show Password</label>
-                    </div>
-                    <button type="submit" className="login-btn" disabled={loading}>
+                        <span>Show Password</span>
+                    </label>
+                    <button type="submit" className="lb-cta" disabled={loading} style={{ width: '100%', marginTop: 'calc(var(--u) * 0.4)' }}>
                         {loading ? 'Resetting...' : 'Reset Password'}
                     </button>
                     {onCancel && (
-                        <button type="button" onClick={onCancel} className="login-secondary-btn back-to-login-btn" style={{ marginTop: '10px', width: '100%' }}>
-                            Back to Login
+                        <button type="button" onClick={onCancel} className="login-book-back">
+                            ← Back to login
                         </button>
                     )}
                 </form>
@@ -668,375 +640,65 @@ const ForgotPasswordBox = ({ role, checkAccountExists, onCancel, onSuccess }) =>
     );
 };
 
-/* ─── Registration Box inside the book ─── */
-const RegisterBox = ({ onSuccess, onSwitchToLogin, checkAccountExists, register }) => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
-    const [error, setError] = useState('');
-    const [loading, setLoading] = useState(false);
-
-    // 2FA / OTP State
-    const [step, setStep] = useState('form'); // 'form' | 'verify'
-    const [enteredOtp, setEnteredOtp] = useState('');
-    const [resendTimer, setResendTimer] = useState(0);
-
-    useEffect(() => {
-        if (resendTimer <= 0) return undefined;
-        const timer = setInterval(() => {
-            setResendTimer((cur) => {
-                if (cur <= 1) {
-                    clearInterval(timer);
-                    return 0;
-                }
-                return cur - 1;
-            });
-        }, 1000);
-        return () => clearInterval(timer);
-    }, [resendTimer]);
-
-    const formatResendTimer = (seconds) => {
-        const minutes = String(Math.floor(seconds / 60)).padStart(2, '0');
-        const remainingSeconds = String(seconds % 60).padStart(2, '0');
-        return `${minutes}:${remainingSeconds}`;
-    };
-
-    const sendOtpEmail = async (userEmail) => {
-        const response = await fetch(getApiUrl('/send-otp'), {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: userEmail, purpose: 'register' }),
-        });
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Failed to send OTP');
-        }
-    };
-
-    const handleSendOtp = async (e) => {
-        e.preventDefault();
-        setError('');
-
-        if (password !== confirmPassword) {
-            return setError('Passwords do not match');
-        }
-        if (password.length < 6) {
-            return setError('Password should be at least 6 characters');
-        }
-
-        setLoading(true);
-        try {
-            const accountExists = await checkAccountExists(email);
-            if (accountExists) {
-                throw new Error('Account already exists. Please login.');
-            }
-            await sendOtpEmail(email);
-            setResendTimer(120);
-            setStep('verify');
-        } catch (err) {
-            console.error(err);
-            setError(err.message || 'Failed to send verification code. Please try again.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleResendOtp = async () => {
-        setError('');
-        setLoading(true);
-        try {
-            await sendOtpEmail(email);
-            setResendTimer(120);
-        } catch (err) {
-            console.error(err);
-            setError('Failed to resend verification code. Please try again.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleVerifyAndRegister = async (e) => {
-        e.preventDefault();
-        setError('');
-        setLoading(true);
-
-        try {
-            if (enteredOtp.length !== 6) {
-                throw new Error('Please enter a valid 6-digit OTP.');
-            }
-
-            const verifyResponse = await fetch(getApiUrl('/api/verify-otp'), {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, otp: enteredOtp })
-            });
-
-            if (!verifyResponse.ok) {
-                const errorData = await verifyResponse.json();
-                throw new Error(errorData.error || 'Invalid OTP. Please check your email and try again.');
-            }
-
-            const username = email.split('@')[0];
-            await register(email, password, 'user', username);
-            if (onSuccess) {
-                onSuccess();
-            }
-        } catch (err) {
-            console.error(err);
-            setError(err.message.replace('Firebase: ', ''));
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    return (
-        <div className="login-card container">
-            <h2>{step === 'form' ? 'Create Account' : 'Verify Email'}</h2>
-
-            {error && <div className="error-message" role="alert">{error}</div>}
-
-            {step === 'form' ? (
-                <form onSubmit={handleSendOtp}>
-                    <div className="form-group">
-                        <label htmlFor="book-reg-email">Email:</label>
-                        <input
-                            id="book-reg-email"
-                            name="email"
-                            autoComplete="email"
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Enter email"
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="book-reg-pass">Password:</label>
-                        <input
-                            id="book-reg-pass"
-                            name="password"
-                            autoComplete="new-password"
-                            type={showPassword ? 'text' : 'password'}
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Create password"
-                            required
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="book-reg-confirm-pass">Confirm Password:</label>
-                        <input
-                            id="book-reg-confirm-pass"
-                            name="confirmPassword"
-                            autoComplete="new-password"
-                            type={showPassword ? 'text' : 'password'}
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
-                            placeholder="Confirm password"
-                            required
-                        />
-                    </div>
-
-                    <div className="checkbox-group">
-                        <input
-                            type="checkbox"
-                            id="book-reg-show-pass"
-                            name="showPassword"
-                            checked={showPassword}
-                            onChange={() => setShowPassword(!showPassword)}
-                        />
-                        <label htmlFor="book-reg-show-pass">Show Password</label>
-                    </div>
-
-                    <button type="submit" className="login-btn" disabled={loading}>
-                        {loading ? 'Sending Code...' : 'Send Verification Code'}
-                    </button>
-
-                    <p className="toggle-auth">
-                        Already have an account?{' '}
-                        <button type="button" onClick={onSwitchToLogin} className="register-link-btn">
-                            Login
-                        </button>
-                    </p>
-                </form>
-            ) : (
-                <form onSubmit={handleVerifyAndRegister}>
-                    <p className="login-subtext">
-                        We've sent a 6-digit code to <strong>{email}</strong>. Enter it below.
-                    </p>
-
-                    <div className="form-group">
-                        <label htmlFor="book-reg-otp">OTP Code:</label>
-                        <input
-                            id="book-reg-otp"
-                            name="otp"
-                            autoComplete="one-time-code"
-                            type="text"
-                            value={enteredOtp}
-                            onChange={(e) => setEnteredOtp(e.target.value)}
-                            placeholder="123456"
-                            maxLength="6"
-                            required
-                        />
-                    </div>
-
-                    <button type="submit" className="login-btn" disabled={loading}>
-                        {loading ? 'Verifying...' : 'Verify & Register'}
-                    </button>
-
-                    <p className="login-subtext" style={{ marginTop: '12px', marginBottom: '0', textAlign: 'center' }}>
-                        {resendTimer > 0
-                            ? `Resend available in ${formatResendTimer(resendTimer)}`
-                            : "Didn't receive the code?"}
-                    </p>
-
-                    <button
-                        type="button"
-                        onClick={handleResendOtp}
-                        disabled={loading || resendTimer > 0}
-                        className="resend-code-btn"
-                    >
-                        {loading && resendTimer === 0 ? 'Sending...' : 'Resend Code'}
-                    </button>
-
-                    <button
-                        type="button"
-                        onClick={() => {
-                            setStep('form');
-                            setError('');
-                            setEnteredOtp('');
-                            setResendTimer(0);
-                        }}
-                        className="login-secondary-btn"
-                    >
-                        Back to Sign Up
-                    </button>
-                </form>
-            )}
-        </div>
-    );
-};
-
-/* ─── Page face component ─── */
-const BookPage = ({ side, folio, running, ruled = false, children }) => {
-    const isLeft = side === 'l';
-    return (
-        <div className={`lb-page-face lb-page-face--${isLeft ? 'left' : 'right'}${ruled ? ' lb-ruled' : ''}`}>
-            <div className="lb-page-shadow" />
-            <div className="lb-page-tab" />
-            <div className="lb-page-inner">
-                <header className={`lb-running-head${isLeft ? '' : ' lb-running-head--right'}`}>
-                    <span className="lb-running-blue">ExamFobiya</span>
-                </header>
-                <div className="lb-page-body">
-                    {children}
-                </div>
-                <footer className={`lb-folio${isLeft ? ' lb-folio--left' : ''}`}>
-                    <span>{folio}</span>
-                </footer>
-            </div>
-        </div>
-    );
-};
-
-/* ─── Chapter landing content ─── */
-const ChapterContent = ({ title, sub, points, onLogin, onRegister, showActions = true }) => (
-    <div className="lb-chapter">
-        <div className="lb-chapter-title">
-            <div className="lb-chapter-label">
-                <small>Chapter</small>
-                <h2>{title}</h2>
-            </div>
-        </div>
-        <p className="lb-chapter-sub">{sub}</p>
-        <div className="lb-chapter-objectives">
-            <strong>YOUR STUDY SPACE</strong>
-            <ul>
-                {points.map((p) => <li key={p}>{p}</li>)}
-            </ul>
-        </div>
-        {showActions && (
-            <div className="lb-chapter-actions">
-                {title === 'Register' ? (
-                    onLogin && (
-                        <button type="button" className="lb-cta" onClick={onLogin}>
-                            User login
-                        </button>
-                    )
-                ) : (
-                    <>
-                        {onLogin && (
-                            <button type="button" className="lb-cta" onClick={onLogin}>
-                                {title === 'User' ? 'User login' : 'Admin login'}
-                            </button>
-                        )}
-                        {title === 'User' && onRegister && (
-                            <button type="button" className="lb-cta lb-cta--register" onClick={onRegister}>
-                                Register
-                            </button>
-                        )}
-                    </>
-                )}
-            </div>
-        )}
-    </div>
-);
-
+/* ─── Main Login Component ─── */
 const Login = ({ initialMode = 'cover' }) => {
     const location = useLocation();
+    const navigate = useNavigate();
+    const layout = useLayout();
+    const stack = layout === 'stack';
+
     const isRegisterRoute = location.pathname === '/register';
     const computedInitial = initialMode === 'register' || isRegisterRoute ? 'register' : 'cover';
 
     const [error, setError] = useState('');
     const [mode, setMode] = useState(computedInitial); // 'cover' | 'user' | 'register' | 'admin'
-    const [leftPortal, setLeftPortal] = useState(computedInitial === 'register' ? 'register' : 'user');
     const [topLeaf, setTopLeaf] = useState(computedInitial === 'admin' ? 'admin' : 'user');
+    const [view, setView] = useState(computedInitial === 'register' ? 'register' : 'login');
+    const [forgot, setForgot] = useState(false);
     const [forgotRole, setForgotRole] = useState('user'); // 'user' | 'admin'
-    const [forgotState, setForgotState] = useState('closed'); // 'closed' | 'open' | 'closing'
-    const resetTimerRef = useRef(null);
-    const forgotTimerRef = useRef(null);
+
     const { login, register, checkAccountExists, loginWithGoogle } = useAuth();
-    const navigate = useNavigate();
+
+    const back = () => {
+        setForgot(false);
+        setMode('cover');
+        window.history.replaceState(null, '', '/login');
+        setTimeout(() => {
+            setView('login');
+        }, 1200);
+    };
 
     useEffect(() => {
         if (location.pathname === '/register') {
-            if (resetTimerRef.current) {
-                clearTimeout(resetTimerRef.current);
-                resetTimerRef.current = null;
-            }
-            if (forgotState !== 'closed') {
-                setForgotState('closed');
-            }
-            setMode('register');
-            setLeftPortal('register');
+            setForgot(false);
+            setMode('user');
+            setView('register');
             setTopLeaf('user');
-        } else if (location.pathname === '/login' && mode === 'register') {
-            back();
+        } else if (location.pathname === '/login') {
+            if (view === 'register' || location.state?.resetCover) {
+                back();
+            }
         }
-    }, [location.pathname]);
+    }, [location.pathname, location.state]);
 
     useEffect(() => {
-        return () => {
-            if (resetTimerRef.current) {
-                clearTimeout(resetTimerRef.current);
-            }
-            if (forgotTimerRef.current) {
-                clearTimeout(forgotTimerRef.current);
+        const handleResetCover = () => {
+            if (mode !== 'cover' || forgot) {
+                back();
             }
         };
-    }, []);
+        window.addEventListener('examfobiya:reset-login-cover', handleResetCover);
+        return () => window.removeEventListener('examfobiya:reset-login-cover', handleResetCover);
+    }, [mode, forgot]);
 
     useSEO({
-        title: mode === 'register'
+        title: view === 'register'
             ? 'Create Your Free Account for Exam Prep'
             : 'Log In to Access Your Study Materials',
-        description: mode === 'register'
+        description: view === 'register'
             ? 'Create a free ExamFobiya account to save your favorite books and question papers for easy access.'
             : 'Sign in to your ExamFobiya account to save books, questions, and access personalized features.',
-        path: mode === 'register' ? '/register' : '/login'
+        path: view === 'register' ? '/register' : '/login',
     });
 
     const handleAuth = async (role, email, password, isRegistering) => {
@@ -1054,12 +716,12 @@ const Login = ({ initialMode = 'cover' }) => {
                 const userCred = await login(email, password);
                 let targetRole = role;
                 try {
-                    const userDoc = await getDoc(doc(db, "users", userCred.user.uid));
+                    const userDoc = await getDoc(doc(db, 'users', userCred.user.uid));
                     if (userDoc.exists() && userDoc.data()?.role) {
                         targetRole = userDoc.data().role;
                     }
                 } catch (e) {
-                    console.error("Error fetching user role on login:", e);
+                    console.error('Error fetching user role on login:', e);
                 }
 
                 if (targetRole === 'admin') {
@@ -1071,6 +733,7 @@ const Login = ({ initialMode = 'cover' }) => {
         } catch (err) {
             console.error(err);
             setError(err.message.replace('Firebase: ', ''));
+            throw err;
         }
     };
 
@@ -1081,343 +744,285 @@ const Login = ({ initialMode = 'cover' }) => {
             navigate('/');
         } catch (err) {
             setError(err.message);
+            throw err;
         }
     };
 
     const open = (portal) => {
-        if (resetTimerRef.current) {
-            clearTimeout(resetTimerRef.current);
-            resetTimerRef.current = null;
-        }
-        if (forgotTimerRef.current) {
-            clearTimeout(forgotTimerRef.current);
-            forgotTimerRef.current = null;
-        }
-        setForgotState('closed');
-
-        setTopLeaf(portal === 'admin' ? 'admin' : 'user');
-        if (portal === 'register' || portal === 'user') {
-            setLeftPortal(portal);
-        }
+        setForgot(false);
+        setTopLeaf(portal);
         setMode(portal);
         setError('');
         if (portal === 'register') {
+            setView('register');
+            setMode('user');
             window.history.replaceState(null, '', '/register');
         } else if (portal === 'user') {
+            setView('login');
             window.history.replaceState(null, '', '/login');
         }
     };
 
-    const back = () => {
-        if (resetTimerRef.current) {
-            clearTimeout(resetTimerRef.current);
+    const openUser = (portalView) => {
+        setView(portalView);
+        setTopLeaf('user');
+        setMode('user');
+        setForgot(false);
+        setError('');
+        if (portalView === 'register') {
+            window.history.replaceState(null, '', '/register');
+        } else {
+            window.history.replaceState(null, '', '/login');
         }
-        if (forgotTimerRef.current) {
-            clearTimeout(forgotTimerRef.current);
-        }
-
-        setMode('cover');
-        window.history.replaceState(null, '', '/login');
-        // Preserve active leftPortal and forgotState throughout the 1200ms page-flip animation
-        // so no abrupt content swap occurs mid-flip. Reset quietly once fully closed.
-        resetTimerRef.current = setTimeout(() => {
-            setLeftPortal('user');
-            setForgotState('closed');
-            resetTimerRef.current = null;
-        }, 1250);
     };
 
-    const openForgotPassword = (role) => {
-        if (forgotTimerRef.current) {
-            clearTimeout(forgotTimerRef.current);
-            forgotTimerRef.current = null;
-        }
+
+    const startForgot = (role) => {
         setForgotRole(role);
-        setForgotState('open');
+        setForgot(true);
     };
 
-    const closeForgotPassword = () => {
-        if (forgotTimerRef.current) {
-            clearTimeout(forgotTimerRef.current);
-        }
-        setForgotState('closing');
-        forgotTimerRef.current = setTimeout(() => {
-            setForgotState('closed');
-            forgotTimerRef.current = null;
-        }, 1250);
-    };
+    const flipEase = 'cubic-bezier(0.65, 0, 0.25, 1)';
+    const vis = `visibility 0s linear ${forgot ? '0s' : '1.2s'}`;
+    const persp = `perspective(calc(var(--u) * ${stack ? 220 : 180}))`;
 
-    const backToContentsFromForgot = () => {
-        if (forgotTimerRef.current) {
-            clearTimeout(forgotTimerRef.current);
-        }
-        if (resetTimerRef.current) {
-            clearTimeout(resetTimerRef.current);
-        }
-        setForgotState('closing-to-cover');
-        setMode('cover');
-        window.history.replaceState(null, '', '/login');
-        forgotTimerRef.current = setTimeout(() => {
-            setForgotState('closed');
-            setLeftPortal('user');
-            forgotTimerRef.current = null;
-        }, 1250);
-    };
+    const turnLeft = (on) =>
+        `${stack ? `translateY(calc(var(--u) * ${on ? 1.8 : 0})) ` : ''}${persp} ${
+            stack ? `rotateX(${on ? -180 : 0}deg)` : `rotateY(${on ? 180 : 0}deg)`
+        }`;
 
-    const isLeftLeafOpen = mode === 'user' || mode === 'register';
-    const isRightLeafOpen = mode === 'admin';
-    const isLeftLeafTop = topLeaf === 'user' || isLeftLeafOpen;
-    const isRightLeafTop = topLeaf === 'admin' || isRightLeafOpen;
+    const turnRight = (on) =>
+        `${stack ? `translateY(calc(var(--u) * ${on ? -1.8 : 0})) ` : ''}${persp} ${
+            stack ? `rotateX(${on ? 180 : 0}deg)` : `rotateY(${on ? -180 : 0}deg)`
+        }`;
 
-    const registerPoints = [
-        'Create your free learner account',
-        'Save study materials and question papers',
-        'Personalize your learning space'
-    ];
+    const turnForgot = (on) =>
+        `${stack ? `translateY(calc(var(--u) * ${on ? -1.8 : 0})) ` : ''}${persp} ${
+            stack ? `rotateX(${on ? 180 : 0}deg)` : `rotateY(${on ? -180 : 0}deg)`
+        }`;
+
+    const baseL = stack ? 'lb-base--stack-l' : 'lb-base--wide-l';
+    const baseR = stack ? 'lb-base--stack-r' : 'lb-base--wide-r';
+    const leafL = stack ? 'lb-leaf--stack-l' : 'lb-leaf--wide-l';
+    const leafR = stack ? 'lb-leaf--stack-r' : 'lb-leaf--wide-r';
+    const backFace = stack ? 'lb-face--back-stack' : 'lb-face--back-wide';
+
     const userPoints = ['Save books and question papers', 'Explore study material', 'Pick up where you left off'];
+    const registerPoints = ['Create your free learner account', 'Save study materials and papers', 'Personalize your learning space'];
     const adminPoints = ['Publish and update course books', 'Manage learners and inventory', 'Review the learning library'];
-    const forgotPoints = [
-        'Enter your registered email address',
-        'Verify identity with a 6-digit OTP',
-        'Set a new secure password'
-    ];
+    const forgotPoints = ['Enter your registered email address', 'Verify identity with 6-digit OTP', 'Set a new secure password'];
+
+    const vars = {
+        '--u': unitFor[layout],
+        '--k': stack ? 1.4 : 1,
+        '--fw': stack ? 44 : 28,
+        '--nw': stack ? 44 : 26,
+        '--cp': stack ? 2.8 : 4,
+        width: `calc(var(--u) * ${stack ? 54 : 100})`,
+        height: `calc(var(--u) * ${stack ? 116 : 66.667})`,
+    };
+
+    const isUserOpen = mode === 'user';
+    const isAdminOpen = mode === 'admin';
 
     return (
         <div className="login-container login-book-shell">
             <h1 className="sr-only">Log In to ExamFobiya</h1>
             {error && <div className="global-error-message login-book-error" role="alert">{error}</div>}
 
-            <section className="login-book" aria-label="Choose a sign-in portal">
-                {/* Decorative cloth cover */}
+            <section className="login-book" aria-label="Choose a sign-in portal" style={vars}>
+                {/* Decorative outer leather cover */}
                 <div className="lb-cloth-cover" aria-hidden="true" />
+                <div className="lb-cloth-border" aria-hidden="true" />
                 {/* Page block edge */}
                 <div className="lb-pages-edge" aria-hidden="true" />
 
-                {/* ── Base pages (sit underneath the leaves) ── */}
-                <div className="lb-base-pages">
-                    <div className="lb-base-page lb-base-page--left">
-                        <BookPage side="l" folio={2} running={leftPortal === 'register' ? 'Registration' : 'Learner portal'}>
-                            <div className={`lb-base-left-content${forgotState !== 'closed' ? ' lb-mobile-hide' : ''}`}>
-                                {leftPortal === 'register' ? (
-                                    <ChapterContent
-                                        key="chapter-reg"
-                                        title="Register"
-                                        sub="The learner portal for students and readers."
-                                        points={registerPoints}
-                                        showActions={false}
-                                    />
-                                ) : (
-                                    <ChapterContent
-                                        key="chapter-user"
-                                        title="User"
-                                        sub="The learner portal for students and readers."
-                                        points={userPoints}
-                                        onLogin={() => open('user')}
-                                        onRegister={() => open('register')}
-                                        showActions={false}
-                                    />
-                                )}
-                            </div>
-                            {forgotState !== 'closed' && (
-                                <div className="lb-mobile-only-forgot">
-                                    <ChapterContent
-                                        key="forgot-ch"
-                                        title="Forgot Password"
-                                        sub="Account recovery and security desk."
-                                        points={forgotPoints}
-                                        showActions={false}
-                                    />
-                                    <button className="login-book-back" type="button" onClick={backToContentsFromForgot}>Back to contents</button>
-                                </div>
-                            )}
-                        </BookPage>
-                    </div>
-                    <div className="lb-base-page lb-base-page--right">
-                        <BookPage
-                            side="r"
-                            folio={forgotRole === 'admin' && forgotState !== 'closed' ? 5 : 3}
-                            running={forgotRole === 'admin' && forgotState !== 'closed' ? 'Account recovery' : 'Instructor desk'}
-                            ruled
-                        >
-                            <div
-                                className={`lb-base-form-fade${mode === 'admin' || (forgotRole === 'admin' && forgotState !== 'closed') ? ' lb-base-form-fade--visible' : ''}`}
-                                inert={mode !== 'admin' && forgotState === 'closed' ? '' : undefined}
-                            >
-                                {forgotRole === 'admin' && forgotState !== 'closed' ? (
-                                    <ForgotPasswordBox
-                                        role="admin"
-                                        checkAccountExists={checkAccountExists}
-                                        onCancel={closeForgotPassword}
-                                        onSuccess={() => closeForgotPassword()}
-                                    />
-                                ) : (
-                                    <LoginBox
-                                        role="admin"
-                                        title="Admin Portal"
-                                        onAuth={handleAuth}
-                                        allowRegister={false}
-                                        checkAccountExists={checkAccountExists}
-                                        onForgotPassword={() => openForgotPassword('admin')}
-                                    />
-                                )}
-                                {!(forgotRole === 'admin' && forgotState !== 'closed') && (
-                                    <button className="login-book-back" type="button" onClick={back}>
-                                        Back to contents
-                                    </button>
-                                )}
-                            </div>
-                        </BookPage>
-                    </div>
+                {/* Center gap background for stack notepad */}
+                {stack && <div className="lb-binding--stack-bg" aria-hidden="true" />}
+
+                {/* ── Base Pages (sit behind the leaves) ── */}
+                <div className={`lb-base ${baseL}`}>
+                    <Page side="l" folio={1} stack={stack} running={view === 'register' ? 'Registration' : 'Learner portal'}>
+                        <ChapterContent
+                            eyebrow={view === 'register' ? 'Chapter · New readers' : 'Chapter · Readers'}
+                            title={view === 'register' ? 'Register' : 'User'}
+                            sub={view === 'register' ? 'Join the reading room and start your shelf.' : 'Browse, borrow and collect the study materials you love.'}
+                            points={view === 'register' ? registerPoints : userPoints}
+                            showActions={false}
+                        />
+                    </Page>
                 </div>
 
-                {/* ── Left leaf (User / Register portal) — rotates right-to-left to open ── */}
+                <div className={`lb-base ${baseR}`}>
+                    <Page side="r" folio={6} ruled stack={stack} running="Instructor desk">
+                        <div
+                            inert={!isAdminOpen}
+                            className={`lb-base-form-fade${isAdminOpen ? ' lb-base-form-fade--visible' : ''}`}
+                        >
+                            <LoginBox
+                                role="admin"
+                                title="Admin Portal"
+                                onAuth={handleAuth}
+                                allowRegister={false}
+                                onForgotPassword={() => startForgot('admin')}
+                                onBack={back}
+                            />
+                        </div>
+                    </Page>
+                </div>
+
+                {/* ── Left / Top Leaf (User / Register Portal) ── */}
                 <div
-                    className={`lb-leaf lb-leaf--left${isLeftLeafOpen ? ' lb-leaf--open' : ''}${isLeftLeafTop ? ' lb-leaf--top' : ''}${forgotState === 'closing-to-cover' && forgotRole === 'user' ? ' lb-leaf--closing-from-forgot' : ''}`}
+                    className={`lb-leaf ${leafL}`}
+                    style={{
+                        transform: turnLeft(isUserOpen),
+                        zIndex: topLeaf === 'user' ? 20 : 10,
+                    }}
                 >
-                    <div className="lb-face lb-face--front" inert={isLeftLeafOpen ? '' : undefined}>
-                        <BookPage side="l" folio={1} running="Contents">
+                    <div className="lb-face" inert={isUserOpen}>
+                        <Page side="l" folio={3} stack={stack} running="Contents">
                             <ChapterContent
+                                eyebrow="Chapter · Readers"
                                 title="User"
-                                sub="The learner portal for students and readers."
+                                sub="Browse, borrow and collect the study materials you love."
                                 points={userPoints}
-                                onLogin={() => open('user')}
-                                onRegister={() => open('register')}
+                                onLogin={() => openUser('login')}
+                                onRegister={() => openUser('register')}
                                 showActions={true}
                             />
-                        </BookPage>
+                        </Page>
                     </div>
-                    <div className="lb-face lb-face--back" inert={!isLeftLeafOpen ? '' : undefined}>
-                        <BookPage
-                            side="r"
-                            folio={forgotRole === 'user' && forgotState !== 'closed' ? 5 : 3}
-                            running={forgotRole === 'user' && forgotState !== 'closed' ? 'Account recovery' : (leftPortal === 'register' ? 'Registration' : 'Learner portal')}
-                            ruled
-                        >
-                            {forgotRole === 'user' && forgotState !== 'closed' ? (
-                                <ForgotPasswordBox
-                                    role="user"
-                                    checkAccountExists={checkAccountExists}
-                                    onCancel={closeForgotPassword}
-                                    onSuccess={() => closeForgotPassword()}
-                                />
-                            ) : leftPortal === 'register' ? (
+                    <div className={`lb-face ${backFace}`} inert={!isUserOpen}>
+                        <Page side="r" folio={2} ruled stack={stack} running={view === 'register' ? 'Registration' : 'Learner portal'}>
+                            {view === 'register' ? (
                                 <RegisterBox
-                                    key="reg-box"
                                     onSuccess={() => navigate('/')}
-                                    onSwitchToLogin={() => open('user')}
-                                    checkAccountExists={checkAccountExists}
+                                    onSwitchToLogin={() => openUser('login')}
+                                    onBack={back}
                                     register={register}
                                 />
                             ) : (
                                 <LoginBox
-                                    key="user-box"
                                     role="user"
                                     title="User Portal"
                                     onAuth={handleAuth}
                                     onGoogleLogin={handleGoogleLogin}
-                                    allowRegister
-                                    checkAccountExists={checkAccountExists}
-                                    onSwitchToRegister={() => open('register')}
-                                    onForgotPassword={() => openForgotPassword('user')}
+                                    allowRegister={true}
+                                    onSwitchToRegister={() => openUser('register')}
+                                    onForgotPassword={() => startForgot('user')}
+                                    onBack={back}
                                 />
                             )}
-                            {!(forgotRole === 'user' && forgotState !== 'closed') && (
-                                <button className="login-book-back" type="button" onClick={back}>
-                                    Back to contents
-                                </button>
-                            )}
-                        </BookPage>
+                        </Page>
                     </div>
                 </div>
 
-                {/* ── Right leaf (Admin portal) — rotates left-to-right to open ── */}
+                {/* ── Right / Bottom Leaf (Admin Portal) ── */}
                 <div
-                    className={`lb-leaf lb-leaf--right${isRightLeafOpen ? ' lb-leaf--open' : ''}${isRightLeafTop && !isLeftLeafOpen ? ' lb-leaf--top' : ''}${forgotState === 'closing-to-cover' && forgotRole === 'admin' ? ' lb-leaf--closing-from-forgot' : ''}`}
+                    className={`lb-leaf ${leafR}`}
+                    style={{
+                        transform: turnRight(isAdminOpen),
+                        zIndex: topLeaf === 'admin' ? 20 : 10,
+                    }}
                 >
-                    <div className="lb-face lb-face--front" inert={isRightLeafOpen || isLeftLeafOpen ? '' : undefined}>
-                        <BookPage side="r" folio={2} running="Contents">
+                    <div className="lb-face" inert={isAdminOpen}>
+                        <Page side="r" folio={4} stack={stack} running="Contents">
                             <ChapterContent
+                                eyebrow="Chapter · Keepers"
                                 title="Admin"
-                                sub="The instructor desk for managing the library."
+                                sub="Tend the shelves, the learners and the study library."
                                 points={adminPoints}
                                 onLogin={() => open('admin')}
                                 showActions={true}
                             />
-                        </BookPage>
+                        </Page>
                     </div>
-                    <div className="lb-face lb-face--back">
-                        {forgotRole === 'admin' && forgotState === 'closing-to-cover' ? (
-                            <BookPage side="l" folio={4} running="Forgot password">
-                                <ChapterContent
-                                    title="Forgot Password"
-                                    sub="Account recovery and security desk."
-                                    points={forgotPoints}
-                                    showActions={false}
-                                />
-                                <button className="login-book-back" type="button" onClick={backToContentsFromForgot}>
-                                    Back to contents
-                                </button>
-                            </BookPage>
-                        ) : (
-                            <BookPage side="l" folio={2} running="Instructor desk">
-                                <ChapterContent
-                                    title="Admin"
-                                    sub="The instructor desk for managing the library."
-                                    points={adminPoints}
-                                    showActions={false}
-                                />
-                            </BookPage>
-                        )}
-                    </div>
-                </div>
-
-                {/* ── Forgot Password leaf (flips right-to-left) ── */}
-                <div
-                    className={`lb-leaf lb-leaf--forgot${
-                        forgotState === 'open'
-                            ? ' lb-leaf--open'
-                            : forgotState === 'closing'
-                            ? ' lb-leaf--closing'
-                            : forgotState === 'closing-to-cover'
-                            ? (forgotRole === 'user' ? ' lb-leaf--closing-cover-user' : ' lb-leaf--closing-cover-admin')
-                            : ''
-                    }`}
-                    inert={forgotState === 'closed' ? '' : undefined}
-                >
-                    <div className="lb-face lb-face--front" inert={forgotState !== 'closed' ? '' : undefined}>
-                        <BookPage side="r" folio={3} running={forgotRole === 'admin' ? 'Instructor desk' : 'Learner portal'} ruled>
-                            {forgotState !== 'closing-to-cover' && (
-                                <>
-                                    <LoginBox
-                                        role={forgotRole}
-                                        title={forgotRole === 'admin' ? 'Admin Portal' : 'User Portal'}
-                                        onAuth={handleAuth}
-                                        onGoogleLogin={forgotRole === 'user' ? handleGoogleLogin : undefined}
-                                        allowRegister={forgotRole === 'user'}
-                                        checkAccountExists={checkAccountExists}
-                                        onSwitchToRegister={() => open('register')}
-                                        onForgotPassword={() => openForgotPassword(forgotRole)}
-                                    />
-                                    <button className="login-book-back" type="button" onClick={back}>Back to contents</button>
-                                </>
-                            )}
-                        </BookPage>
-                    </div>
-                    <div className="lb-face lb-face--back" inert={forgotState !== 'open' ? '' : undefined}>
-                        <BookPage side="l" folio={4} running="Forgot password">
+                    <div className={`lb-face ${backFace}`}>
+                        <Page side="l" folio={5} stack={stack} running="Instructor desk">
                             <ChapterContent
-                                title="Forgot Password"
-                                sub="Account recovery and security desk."
-                                points={forgotPoints}
+                                eyebrow="Chapter · Keepers"
+                                title="Admin"
+                                sub="Tend the shelves, the learners and the study library."
+                                points={adminPoints}
                                 showActions={false}
                             />
-                            <button className="login-book-back" type="button" onClick={backToContentsFromForgot}>Back to contents</button>
-                        </BookPage>
+                        </Page>
                     </div>
                 </div>
 
-                {/* Spine */}
-                <div className="lb-spine" aria-hidden="true" />
+                {/* ── Forgot Password Under-layer (Revealed when turning forgot leaf) ── */}
+                <div
+                    className={`lb-base ${baseR}`}
+                    style={{
+                        visibility: forgot ? 'visible' : 'hidden',
+                        transition: vis,
+                        zIndex: 25,
+                    }}
+                >
+                    <Page side="r" folio={8} ruled stack={stack} running="Account recovery">
+                        <div
+                            inert={!forgot}
+                            className={`lb-base-form-fade${forgot ? ' lb-base-form-fade--visible' : ''}`}
+                        >
+                            <ForgotPasswordBox
+                                role={forgotRole}
+                                checkAccountExists={checkAccountExists}
+                                onCancel={() => setForgot(false)}
+                                onSuccess={() => setForgot(false)}
+                            />
+                        </div>
+                    </Page>
+                </div>
+
+                {/* ── Forgot Password Leaf ── */}
+                <div
+                    className={`lb-leaf ${leafR}`}
+                    style={{
+                        transform: turnForgot(forgot),
+                        visibility: forgot ? 'visible' : 'hidden',
+                        transition: `transform 1200ms ${flipEase}, ${vis}`,
+                        zIndex: 30,
+                    }}
+                >
+                    <div className="lb-face" inert={true}>
+                        <Page side="r" folio={forgotRole === 'admin' ? 6 : 2} ruled stack={stack} running="Recovery portal">
+                            <div style={{ pointerEvents: 'none', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', margin: 'auto 0' }}>
+                                <LoginBox
+                                    role={forgotRole}
+                                    title={forgotRole === 'admin' ? 'Admin Portal' : 'User Portal'}
+                                    onAuth={() => {}}
+                                    onForgotPassword={() => {}}
+                                />
+                            </div>
+                        </Page>
+                    </div>
+                    <div className={`lb-face ${backFace}`} inert={true}>
+                        <Page side="l" folio={7} stack={stack} running="Lost key">
+                            <ChapterContent
+                                eyebrow="Lost your key?"
+                                title="Forgot Password?"
+                                sub="It happens to the best of learners. Verify your identity to set a new password."
+                                points={forgotPoints}
+                                showActions={false}
+                                small={true}
+                            />
+                        </Page>
+                    </div>
+                </div>
+
+                {/* ── Middle Binding: Center Crease in Wide / 8 Spiral Rings in Stack ── */}
+                {stack ? (
+                    <>
+                        <div className="lb-binding--stack-shadow" aria-hidden="true" />
+                        <div className="lb-binding--stack-rings" aria-hidden="true">
+                            {Array.from({ length: 8 }).map((_, i) => (
+                                <span key={i} className="lb-spiral-ring" />
+                            ))}
+                        </div>
+                    </>
+                ) : (
+                    <div className="lb-binding--wide" aria-hidden="true" />
+                )}
             </section>
         </div>
     );

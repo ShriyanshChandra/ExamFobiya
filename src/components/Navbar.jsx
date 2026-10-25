@@ -209,7 +209,18 @@ const Navbar = ({ setSearchQuery }) => {
             </>
           ) : (
             <li className="mobile-only-nav mobile-only-login">
-              <Link to="/login" onClick={() => setIsOpen(false)}>Login</Link>
+              <Link
+                to="/login"
+                state={{ resetCover: Date.now() }}
+                onClick={() => {
+                  setIsOpen(false);
+                  if (location.pathname === '/login' || location.pathname === '/register') {
+                    window.dispatchEvent(new CustomEvent('examfobiya:reset-login-cover'));
+                  }
+                }}
+              >
+                Login
+              </Link>
             </li>
           )}
         </ul>

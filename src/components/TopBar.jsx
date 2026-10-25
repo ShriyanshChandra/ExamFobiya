@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import "./TopBar.css";
 
@@ -34,8 +34,19 @@ const SOCIAL_LINKS = [
 const TopBar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [visible, setVisible] = useState(true);
   const lastScrollY = useRef(0);
+
+  const handleTopBarLoginClick = (e) => {
+    if (location.pathname === '/login' || location.pathname === '/register') {
+      e.preventDefault();
+      window.dispatchEvent(new CustomEvent('examfobiya:reset-login-cover'));
+      if (location.pathname === '/register') {
+        navigate('/login', { replace: true, state: { resetCover: Date.now() } });
+      }
+    }
+  };
 
   useEffect(() => {
     document.documentElement.style.setProperty("--topbar-h", TOPBAR_H);
@@ -163,7 +174,14 @@ const TopBar = () => {
         ) : (
           <>
             <Link to="/register" className="topbar-btn topbar-btn-register">Register</Link>
-            <Link to="/login" className="topbar-btn topbar-btn-login">Login</Link>
+            <Link
+              to="/login"
+              state={{ resetCover: Date.now() }}
+              onClick={handleTopBarLoginClick}
+              className="topbar-btn topbar-btn-login"
+            >
+              Login
+            </Link>
           </>
         )}
       </div>
