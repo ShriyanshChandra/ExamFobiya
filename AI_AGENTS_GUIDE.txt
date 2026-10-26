@@ -449,7 +449,8 @@ C. Maintenance Guard Flow:
     - Props:
       * onSearch (function, optional): Search submit handler
       * searchQuery (string, optional): Current search input value
-    - Elements: Brand logo, search input, nav links (Books, Questions, Programming Solutions, About Us), Theme Switcher Dropdown (7 themes with active tick indicator), mobile drawer toggle, desktop user dropdown.
+    - Elements: Brand logo, search input, nav links (Books, Questions, Programming Solutions, About Us, Dashboard), Theme Switcher Dropdown (7 themes with active tick indicator), mobile drawer toggle, desktop user dropdown.
+    - Behavior: Desktop nav links feature textWaveRipple keyframe effect on public routes (animation: none on /admin Dashboard); uses stationary .nav-menu li hover anchors, vertical padding buffers, and pointer-events: none on animated ::after underlines to prevent cursor flickering between default and pointer on hover boundaries.
 
 11. NetworkStatusNotification:
     - File: src/components/NetworkStatusNotification.jsx

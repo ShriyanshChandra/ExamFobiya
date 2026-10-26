@@ -329,10 +329,18 @@
 
 /* ===== DESKTOP NAVBAR LINKS: AUTOMATIC 7-SECOND TEXT WAVE RIPPLE ===== */
 @media screen and (min-width: 48.0625rem) {
+  .nav-menu li {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+
   .nav-menu li a {
     position: relative;
     display: inline-block;
     color: white;
+    padding: 0.25rem 0.15rem;
     --wave-delay: 0s;
     animation: textWaveRipple 7s var(--wave-delay) cubic-bezier(0.37, 0, 0.63, 1) infinite;
     transition: color 0.25s ease, transform 0.25s ease;
@@ -362,6 +370,7 @@
     animation: none;
   }
 
+  .nav-menu li:hover a,
   .nav-menu li a:hover {
     color: var(--accent-color);
     transform: translateY(-2px);
@@ -374,20 +383,23 @@
   position: absolute;
   width: 0;
   height: 0.125rem;
-  bottom: -0.25rem;
+  bottom: 0;
   left: var(--hover-x, 50%);
   transform: translateX(-50%);
   background-color: var(--accent-color);
   transition: width 0.35s cubic-bezier(0.25, 1, 0.5, 1), left 0.35s cubic-bezier(0.25, 1, 0.5, 1);
   border-radius: 2px;
+  pointer-events: none;
 }
 
+.nav-menu li:hover a::after,
 .nav-menu li a:hover::after,
 .dropdown span:hover::after {
   width: 100%;
   left: 50%;
 }
 
+.nav-menu li:hover a,
 .nav-menu li a:hover,
 .dropdown span:hover {
   color: var(--accent-color);
@@ -828,6 +840,8 @@
   color: rgba(255, 255, 255, 0.5);
   cursor: default;
   font-size: 1.1rem;
+  pointer-events: none;
+  user-select: none;
 }
 
 @media screen and (max-width: 75rem) {

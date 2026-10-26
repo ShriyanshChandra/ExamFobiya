@@ -411,7 +411,8 @@ B. Complete Route Matrix:
 10. Navbar:
     - File: src/components/Navbar.jsx
     - Props: { onSearch, searchQuery }
-    - Elements: Brand logo, search input, nav links (Books, Questions, Programming Solutions, About Us), Theme Switcher Dropdown (7 themes with active tick indicator), mobile drawer toggle, desktop user dropdown.
+    - Elements: Brand logo, search input, nav links (Books, Questions, Programming Solutions, About Us, Dashboard), Theme Switcher Dropdown (7 themes with active tick indicator), mobile drawer toggle, desktop user dropdown.
+    - Behavior: Desktop-only top navigation links with 7-second textWaveRipple animation on public links (suppressed on /admin Dashboard); links use stationary .nav-menu li hover triggers, vertical padding buffers, and pointer-events: none on ::after underline to prevent rapid mouseenter/mouseleave hover boundary flickering.
 
 11. NetworkStatusNotification:
     - File: src/components/NetworkStatusNotification.jsx
