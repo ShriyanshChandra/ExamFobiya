@@ -374,7 +374,7 @@ const RegisterBox = ({ onSuccess, onSwitchToLogin, onBack, register }) => {
 };
 
 /* ─── Forgot Password Box Component ─── */
-const ForgotPasswordBox = ({ role, checkAccountExists, onCancel, onSuccess }) => {
+const ForgotPasswordBox = ({ role, onCancel, onSuccess }) => {
     const [step, setStep] = useState('email'); // 'email' | 'otp' | 'new-password'
     const [resetEmail, setResetEmail] = useState('');
     const [enteredOtp, setEnteredOtp] = useState('');
@@ -407,23 +407,6 @@ const ForgotPasswordBox = ({ role, checkAccountExists, onCancel, onSuccess }) =>
     };
 
     const sendResetOtp = async (userEmail) => {
-        const accountExists = await checkAccountExists(userEmail);
-        if (!accountExists) {
-            throw new Error('Account does not exist. Please check your email or register.');
-        }
-
-        if (role === 'admin') {
-            const checkResponse = await fetch(getApiUrl('/api/check-admin'), {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: userEmail }),
-            });
-            if (!checkResponse.ok) {
-                const errorData = await checkResponse.json();
-                throw new Error(errorData.error || 'Account checking failed.');
-            }
-        }
-
         const response = await fetch(getApiUrl('/send-otp'), {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -657,7 +640,7 @@ const Login = ({ initialMode = 'cover' }) => {
     const [forgot, setForgot] = useState(false);
     const [forgotRole, setForgotRole] = useState('user'); // 'user' | 'admin'
 
-    const { login, register, checkAccountExists, loginWithGoogle } = useAuth();
+    const { login, register, loginWithGoogle } = useAuth();
 
     const back = () => {
         setForgot(false);
@@ -707,11 +690,7 @@ const Login = ({ initialMode = 'cover' }) => {
             if (isRegistering) {
                 const username = email.split('@')[0];
                 await register(email, password, role, username);
-                if (role === 'admin') {
-                    navigate('/admin');
-                } else {
-                    navigate('/');
-                }
+                navigate('/');
             } else {
                 const userCred = await login(email, password);
                 let targetRole = role;
@@ -966,7 +945,6 @@ const Login = ({ initialMode = 'cover' }) => {
                         >
                             <ForgotPasswordBox
                                 role={forgotRole}
-                                checkAccountExists={checkAccountExists}
                                 onCancel={() => setForgot(false)}
                                 onSuccess={() => setForgot(false)}
                             />

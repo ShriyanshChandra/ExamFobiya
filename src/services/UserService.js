@@ -73,9 +73,10 @@ export const sendWelcomeEmail = async (email, username = '') => {
     if (!normalizedEmail) return;
 
     try {
+        const headers = await getAuthHeaders();
         const response = await fetch(getApiUrl('/api/send-welcome-email'), {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', ...headers },
             body: JSON.stringify({
                 email: normalizedEmail,
                 username: username || normalizedEmail.split('@')[0]

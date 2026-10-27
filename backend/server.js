@@ -1,6 +1,9 @@
 require('dotenv').config(); // MUST BE FIRST - Load env before other modules
 const express = require('express');
 const cors = require('cors');
+const crypto = require('crypto');
+const helmet = require('helmet');
+const { rateLimit } = require('express-rate-limit');
 const fs = require('fs');
 const path = require('path');
 const { initializeApp, cert, getApps } = require('firebase-admin/app');
@@ -40,12 +43,69 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const HOST = process.env.HOST || (process.env.NODE_ENV === 'production' ? '0.0.0.0' : '127.0.0.1');
 
+if (process.env.NODE_ENV === 'production') {
+    app.set('trust proxy', 1);
+}
+
 // Middleware
-app.use(cors());
-app.use(express.json());
+const allowedOrigins = new Set(
+    (process.env.CORS_ORIGINS || process.env.APP_URL || '')
+        .split(',')
+        .map(origin => origin.trim().replace(/\/$/, ''))
+        .filter(Boolean)
+);
+
+if (process.env.NODE_ENV !== 'production') {
+    allowedOrigins.add('http://localhost:5173');
+    allowedOrigins.add('http://127.0.0.1:5173');
+}
+
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+app.use(cors({
+    origin(origin, callback) {
+        if (!origin || allowedOrigins.has(origin)) {
+            return callback(null, true);
+        }
+        return callback(new Error('Origin not allowed by CORS policy'));
+    },
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Authorization', 'Content-Type']
+}));
+app.use(express.json({ limit: '100kb' }));
+app.use(rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 300,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false
+}));
+
+const sensitiveActionLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 5,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    message: { error: 'Too many requests. Please try again later.' }
+});
 
 // Authentication middleware for admin routes
 // Verifies Firebase ID token and checks admin role in Firestore
+const verifyUserToken = async (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'Unauthorized: No authentication token provided.' });
+    }
+
+    const idToken = authHeader.split('Bearer ')[1];
+    try {
+        const decodedToken = await getAuth().verifyIdToken(idToken);
+        req.authUser = decodedToken;
+        next();
+    } catch (error) {
+        console.error('Authentication verification failed:', error.message);
+        return res.status(401).json({ error: 'Unauthorized: Invalid or expired token.' });
+    }
+};
+
 const verifyAdminToken = async (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -148,7 +208,7 @@ app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'ok' });
 });
 
-app.post('/send-otp', async (req, res) => {
+app.post('/send-otp', sensitiveActionLimiter, async (req, res) => {
     const normalizedEmail = req.body?.email?.trim().toLowerCase();
     const purpose = req.body?.purpose || 'generic';
 
@@ -159,23 +219,27 @@ app.post('/send-otp', async (req, res) => {
     try {
         const accountStatus = await findUserByEmail(normalizedEmail);
 
-        if (purpose === 'register' && accountStatus.exists) {
-            return res.status(409).json({ error: 'Account already exists. Please login.' });
-        }
-
-        if (purpose === 'reset-password' && !accountStatus.exists) {
-            return res.status(404).json({ error: 'Account does not exist in the database. Please register first.' });
+        if ((purpose === 'register' && accountStatus.exists) || (purpose === 'reset-password' && !accountStatus.exists)) {
+            return res.status(200).json({ message: 'If the request is valid, a verification code will be sent shortly.' });
         }
 
         console.log("Attempting to send email via Brevo API...");
 
-        // Generate secure 6 digit OTP
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const otpDocRef = getFirestore().collection('otps').doc(normalizedEmail);
+        const existingOtp = await otpDocRef.get();
+        if (existingOtp.exists && Date.now() - (existingOtp.data().requestedAt || 0) < 60 * 1000) {
+            return res.status(429).json({ error: 'Please wait before requesting another verification code.' });
+        }
+
+        // Generate a cryptographically secure 6 digit OTP.
+        const otp = crypto.randomInt(100000, 1000000).toString();
 
         // Save OTP to Firestore (expires in 10 minutes)
-        await getFirestore().collection('otps').doc(normalizedEmail).set({
+        await otpDocRef.set({
             code: otp,
-            expiresAt: Date.now() + 10 * 60 * 1000
+            expiresAt: Date.now() + 10 * 60 * 1000,
+            requestedAt: Date.now(),
+            attempts: 0
         });
 
         // Context: Using Brevo API v3 over HTTPs to avoid SMTP port/auth issues
@@ -299,8 +363,8 @@ ExamFobiya Team`,
 });
 
 // Check Admin Role Endpoint
-app.post('/api/check-admin', async (req, res) => {
-    const { email } = req.body;
+app.post('/api/check-admin', verifyUserToken, sensitiveActionLimiter, async (req, res) => {
+    const email = req.authUser.email;
     if (!email) return res.status(400).json({ error: 'Email required' });
 
     try {
@@ -323,8 +387,8 @@ app.post('/api/check-admin', async (req, res) => {
     }
 });
 
-app.post('/api/check-account-exists', async (req, res) => {
-    const normalizedEmail = req.body?.email?.trim().toLowerCase();
+app.post('/api/check-account-exists', verifyUserToken, sensitiveActionLimiter, async (req, res) => {
+    const normalizedEmail = req.authUser.email?.trim().toLowerCase();
 
     if (!normalizedEmail) {
         return res.status(400).json({ error: 'Email is required' });
@@ -333,11 +397,7 @@ app.post('/api/check-account-exists', async (req, res) => {
     try {
         const accountStatus = await findUserByEmail(normalizedEmail);
 
-        if (!accountStatus.exists) {
-            return res.status(404).json({ exists: false, error: 'Account does not exist in the database. Please register first.' });
-        }
-
-        return res.status(200).json({ exists: true });
+        return res.status(200).json({ exists: accountStatus.exists });
     } catch (error) {
         console.error('Error checking account existence:', error);
         return res.status(500).json({ error: 'Failed to verify account.' });
@@ -345,7 +405,7 @@ app.post('/api/check-account-exists', async (req, res) => {
 });
 
 // OTP Verification Endpoint (For Registration Flow)
-app.post('/api/verify-otp', async (req, res) => {
+app.post('/api/verify-otp', sensitiveActionLimiter, async (req, res) => {
     const normalizedEmail = req.body?.email?.trim().toLowerCase();
     const { otp } = req.body;
 
@@ -361,7 +421,12 @@ app.post('/api/verify-otp', async (req, res) => {
         }
 
         const otpData = otpDoc.data();
+        if ((otpData.attempts || 0) >= 5) {
+            await otpDocRef.delete();
+            return res.status(400).json({ error: 'Verification code is invalid or expired.' });
+        }
         if (otpData.code !== otp) {
+            await otpDocRef.update({ attempts: (otpData.attempts || 0) + 1 });
             return res.status(400).json({ error: 'Invalid OTP code.' });
         }
 
@@ -381,12 +446,16 @@ app.post('/api/verify-otp', async (req, res) => {
 });
 
 // Password Reset Endpoint
-app.post('/api/reset-password', async (req, res) => {
+app.post('/api/reset-password', sensitiveActionLimiter, async (req, res) => {
     const normalizedEmail = req.body?.email?.trim().toLowerCase();
     const { otp, newPassword } = req.body;
 
     if (!normalizedEmail || !otp || !newPassword) {
         return res.status(400).json({ error: 'Email, OTP, and new password are required' });
+    }
+
+    if (typeof newPassword !== 'string' || newPassword.length < 6 || newPassword.length > 1024) {
+        return res.status(400).json({ error: 'Password must be between 6 and 1024 characters.' });
     }
 
     try {
@@ -398,7 +467,12 @@ app.post('/api/reset-password', async (req, res) => {
         }
 
         const otpData = otpDoc.data();
+        if ((otpData.attempts || 0) >= 5) {
+            await otpDocRef.delete();
+            return res.status(400).json({ error: 'Verification code is invalid or expired.' });
+        }
         if (otpData.code !== otp) {
+            await otpDocRef.update({ attempts: (otpData.attempts || 0) + 1 });
             return res.status(400).json({ error: 'Invalid OTP code.' });
         }
 
@@ -670,7 +744,7 @@ app.get('/api/admin/api-keys-status', verifyAdminToken, async (req, res) => {
 });
 
 // AI Question Parsing Route
-app.post('/api/ai/parse-questions', aiController.parseQuestions);
+app.post('/api/ai/parse-questions', verifyAdminToken, sensitiveActionLimiter, aiController.parseQuestions);
 
 // Programming solution duplicate check (admin-only because solution content is submitted here)
 app.post('/api/ai/check-similar-programming-solutions', verifyAdminToken, aiController.checkSimilarProgrammingSolutions);
@@ -959,18 +1033,22 @@ const handleSendPasswordReset = async (req, res) => {
     }
 };
 
-app.post('/api/auth/send-password-reset', handleSendPasswordReset);
-app.post('/api/admin/send-password-reset', handleSendPasswordReset);
+app.post('/api/auth/send-password-reset', verifyAdminToken, sensitiveActionLimiter, handleSendPasswordReset);
+app.post('/api/admin/send-password-reset', verifyAdminToken, sensitiveActionLimiter, handleSendPasswordReset);
 
 // ── Welcome Email Endpoint (with Deduplication Guard) ─────────────────────────
 const recentWelcomeEmailLocks = new Map();
 
-app.post('/api/send-welcome-email', async (req, res) => {
+app.post('/api/send-welcome-email', verifyUserToken, sensitiveActionLimiter, async (req, res) => {
     const { email, username } = req.body;
     const normalizedEmail = email?.trim().toLowerCase();
 
     if (!normalizedEmail) {
         return res.status(400).json({ error: 'Email is required' });
+    }
+
+    if (req.authUser.email?.toLowerCase() !== normalizedEmail) {
+        return res.status(403).json({ error: 'You may only request a welcome email for your own account.' });
     }
 
     const cleanUsername = (username || normalizedEmail.split('@')[0]).trim();
@@ -1195,7 +1273,7 @@ app.post('/api/send-welcome-email', async (req, res) => {
 });
 
 // ── Role Change Notification Endpoint ─────────────────────────────────────────
-app.post('/api/admin/notify-role-change', async (req, res) => {
+app.post('/api/admin/notify-role-change', verifyAdminToken, sensitiveActionLimiter, async (req, res) => {
     const { email, username, newRole } = req.body;
     const normalizedEmail = email?.trim().toLowerCase();
 
@@ -1427,10 +1505,15 @@ app.post('/api/admin/notify-role-change', async (req, res) => {
 const INDEXNOW_KEY = process.env.INDEXNOW_KEY || 'c3b77bf259f243af99818667d9215013';
 const INDEXNOW_HOST = 'www.examfobiya.com';
 
-app.post('/api/indexnow/notify', async (req, res) => {
+app.post('/api/indexnow/notify', verifyAdminToken, sensitiveActionLimiter, async (req, res) => {
     const { urls } = req.body;
     if (!urls || !Array.isArray(urls) || urls.length === 0) {
         return res.status(400).json({ error: 'urls array is required' });
+    }
+
+    const approvedUrlPrefix = `https://${INDEXNOW_HOST}/`;
+    if (urls.some(url => typeof url !== 'string' || !url.startsWith(approvedUrlPrefix))) {
+        return res.status(400).json({ error: 'Only canonical site URLs may be submitted.' });
     }
 
     try {

@@ -1,4 +1,5 @@
 import { getApiUrl } from '../utils/api';
+import { auth } from '../firebase';
 
 const SITE_URL = 'https://www.examfobiya.com';
 
@@ -14,9 +15,11 @@ export const notifyIndexNow = async (paths) => {
     const urlList = paths.map(p => `${SITE_URL}${p.startsWith('/') ? p : `/${p}`}`);
 
     try {
+        const token = await auth.currentUser?.getIdToken();
+        if (!token) return;
         await fetch(getApiUrl('/api/indexnow/notify'), {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
             body: JSON.stringify({ urls: urlList })
         });
     } catch (err) {

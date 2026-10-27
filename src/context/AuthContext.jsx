@@ -49,25 +49,26 @@ export const AuthProvider = ({ children }) => {
 
     const checkAccountExists = async (email) => {
         const normalizedEmail = email.trim().toLowerCase();
+        const currentUser = auth.currentUser;
+        if (!currentUser || currentUser.email?.toLowerCase() !== normalizedEmail) {
+            throw new Error('Not authorized to verify this account.');
+        }
+        const token = await currentUser.getIdToken();
         const response = await fetch(getApiUrl('/api/check-account-exists'), {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: normalizedEmail })
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
         });
-
-        if (response.status === 404) {
-            return false;
-        }
 
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
             throw new Error(errorData.error || 'Failed to verify account.');
         }
 
-        return true;
+        const result = await response.json();
+        return result.exists === true;
     };
 
-    const register = async (email, password, role, username) => {
+    const register = async (email, password, _role, username) => {
         const normalizedEmail = email.trim().toLowerCase();
         let result;
 
@@ -81,10 +82,11 @@ export const AuthProvider = ({ children }) => {
             throw error;
         }
 
-        // Create user document with role
+        // Public registration always creates a standard user. Administrator access
+        // must be granted through an existing administrator's workflow.
         await setDoc(doc(db, "users", result.user.uid), {
             email: normalizedEmail,
-            role,
+            role: 'user',
             username,
             createdAt: new Date()
         });

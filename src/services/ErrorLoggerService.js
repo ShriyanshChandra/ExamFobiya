@@ -23,6 +23,9 @@ const isLocalhostUrl = (urlStr) => {
  */
 export const logErrorToFirebase = async (errorPayload) => {
     try {
+        if (!auth.currentUser) {
+            return;
+        }
         const {
             message = 'Unknown Error',
             stack = '',
@@ -63,8 +66,8 @@ export const logErrorToFirebase = async (errorPayload) => {
             type,
             url: String(currentUrl).slice(0, 500),
             userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
-            userId: auth.currentUser?.uid || 'anonymous',
-            userEmail: auth.currentUser?.email || 'anonymous',
+            userId: auth.currentUser.uid,
+            userEmail: auth.currentUser.email || '',
             resolved: false,
             date: formattedDate,
             timestamp: serverTimestamp(),
