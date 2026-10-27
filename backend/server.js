@@ -48,12 +48,18 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Middleware
-const allowedOrigins = new Set(
-    (process.env.CORS_ORIGINS || process.env.APP_URL || '')
-        .split(',')
-        .map(origin => origin.trim().replace(/\/$/, ''))
-        .filter(Boolean)
-);
+const configuredOrigins = (process.env.CORS_ORIGINS || process.env.APP_URL || '')
+    .split(',')
+    .map(origin => origin.trim().replace(/\/$/, ''))
+    .filter(Boolean);
+const allowedOrigins = new Set([
+    // Canonical production site plus Firebase Hosting's project domains.
+    'https://www.examfobiya.com',
+    'https://examfobiya.com',
+    'https://examfobiya-ae233.web.app',
+    'https://examfobiya-ae233.firebaseapp.com',
+    ...configuredOrigins
+]);
 
 if (process.env.NODE_ENV !== 'production') {
     allowedOrigins.add('http://localhost:5173');
