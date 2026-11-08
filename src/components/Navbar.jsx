@@ -4,6 +4,13 @@ import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import "./Navbar.css";
 
+// Diwali lamps distribution along bottom navbar edge (offset from logo area)
+const DIWALI_LAMPS = [
+  { left: '26%' }, { left: '36%' }, { left: '46%' },
+  { left: '56%' }, { left: '66%' }, { left: '76%' },
+  { left: '86%' }, { left: '95%' },
+];
+
 const NAVBAR_COLLAPSE_BREAKPOINT = 1200;
 
 const Navbar = ({ setSearchQuery }) => {
@@ -125,12 +132,74 @@ const Navbar = ({ setSearchQuery }) => {
   };
 
   return (
-    <nav className="navbar">
+    <nav className="navbar diwali-navbar">
+      {/* Diwali hanging lamp string garland */}
+      <div className="diwali-lamp-string" aria-hidden="true">
+        <svg className="diwali-string-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 48" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="navDiyaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#f59e0b" />
+              <stop offset="100%" stopColor="#b45309" />
+            </linearGradient>
+          </defs>
+          <path d="M0,8 Q60,32 120,8 Q180,32 240,8 Q300,32 360,8 Q420,32 480,8 Q540,32 600,8 Q660,32 720,8 Q780,32 840,8 Q900,32 960,8 Q1020,32 1080,8 Q1140,32 1200,8" stroke="#f59e0b" strokeWidth="1.5" fill="none" strokeDasharray="4 2" opacity="0.7"/>
+        </svg>
+        {DIWALI_LAMPS.map((lamp, i) => (
+          <div
+            key={i}
+            className={`diwali-lamp diwali-lamp-${i % 5}`}
+            style={{ left: lamp.left }}
+          >
+            <svg width="18" height="26" viewBox="0 0 18 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+              {/* Flame */}
+              <ellipse cx="9" cy="4" rx="2.5" ry="3.5" fill="#fff7a0" opacity="0.9" className="diwali-flame"/>
+              <ellipse cx="9" cy="5" rx="1.5" ry="2" fill="#ff9800"/>
+              {/* Diya body */}
+              <path d="M3,14 Q2,10 9,10 Q16,10 15,14 Q14,19 9,20 Q4,19 3,14Z" fill="url(#navDiyaGrad)" />
+              <path d="M3,14 Q9,16 15,14" stroke="#c2410c" strokeWidth="0.8" fill="none"/>
+              {/* Spout */}
+              <path d="M14,13 Q17,12 16,15 Q15,16 14,14Z" fill="#d97706"/>
+            </svg>
+          </div>
+        ))}
+      </div>
       <div className="navbar-container">
-        {/* Logo */}
-        <Link to="/" className="logo-link" onClick={() => setIsOpen(false)}>
-          <span className="brand-name">ExamFobiya</span>
-        </Link>
+        {/* Logo with Hanging Diwali Banner */}
+        <div className="navbar-brand-wrapper">
+          <Link to="/" className="logo-link" onClick={() => setIsOpen(false)}>
+            <span className="brand-name">ExamFobiya</span>
+          </Link>
+
+          {/* Hanging "Happy Diwali" Banner */}
+          <div className="diwali-hanging-banner" aria-label="Happy Diwali">
+            {/* Hanging strings */}
+            <svg className="diwali-banner-strings" viewBox="0 0 100 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <line x1="20" y1="0" x2="20" y2="12" stroke="#f59e0b" strokeWidth="1.2" strokeDasharray="2 1.2" />
+              <circle cx="20" cy="1" r="1.5" fill="#fde047" />
+              <circle cx="20" cy="11" r="1.5" fill="#f59e0b" />
+              <line x1="80" y1="0" x2="80" y2="12" stroke="#f59e0b" strokeWidth="1.2" strokeDasharray="2 1.2" />
+              <circle cx="80" cy="1" r="1.5" fill="#fde047" />
+              <circle cx="80" cy="11" r="1.5" fill="#f59e0b" />
+            </svg>
+
+            {/* Hanging Placard Signboard */}
+            <div className="diwali-banner-plaque">
+              <svg width="11" height="14" viewBox="0 0 16 20" fill="none" className="diwali-plaque-diya" aria-hidden="true">
+                <ellipse cx="8" cy="4" rx="2.5" ry="3.5" fill="#fff7a0" />
+                <ellipse cx="8" cy="5" rx="1.5" ry="2" fill="#ff9800" />
+                <path d="M2,12 Q1,9 8,9 Q15,9 14,12 Q13,16 8,17 Q3,16 2,12Z" fill="#d97706" />
+                <path d="M2,12 Q8,14 14,12" stroke="#b45309" strokeWidth="0.8" fill="none" />
+              </svg>
+              <span className="diwali-plaque-text">Happy Diwali</span>
+              <svg width="11" height="14" viewBox="0 0 16 20" fill="none" className="diwali-plaque-diya" aria-hidden="true">
+                <ellipse cx="8" cy="4" rx="2.5" ry="3.5" fill="#fff7a0" />
+                <ellipse cx="8" cy="5" rx="1.5" ry="2" fill="#ff9800" />
+                <path d="M2,12 Q1,9 8,9 Q15,9 14,12 Q13,16 8,17 Q3,16 2,12Z" fill="#d97706" />
+                <path d="M2,12 Q8,14 14,12" stroke="#b45309" strokeWidth="0.8" fill="none" />
+              </svg>
+            </div>
+          </div>
+        </div>
 
         {/* Hamburger Icon */}
         <button

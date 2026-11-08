@@ -411,7 +411,7 @@ B. Complete Route Matrix:
 10. Navbar:
     - File: src/components/Navbar.jsx
     - Props: { onSearch, searchQuery }
-    - Elements: Brand logo, search input, nav links (Books, Questions, Programming Solutions, About Us, Dashboard), Theme Switcher Dropdown (7 themes with active tick indicator), mobile drawer toggle, desktop user dropdown.
+    - Elements: Brand logo with hanging "Happy Diwali" banner suspended by decorative strings, search input, nav links (Books, Questions, Programming Solutions, About Us, Dashboard), Theme Switcher Dropdown (7 themes with active tick indicator), mobile drawer toggle, desktop user dropdown, and seasonal Diwali festive theme (flowing royal crimson-to-gold gradient background, hanging SVG diya lamp garland along bottom border with flame flicker animations).
     - Behavior: Desktop-only top navigation links with 7-second textWaveRipple animation on public links (suppressed on /admin Dashboard); links use stationary .nav-menu li hover triggers, vertical padding buffers, and pointer-events: none on ::after underline to prevent rapid mouseenter/mouseleave hover boundary flickering.
 
 11. NetworkStatusNotification:
@@ -448,7 +448,7 @@ B. Complete Route Matrix:
 8. PAGES DIRECTORY & COMPREHENSIVE WORKFLOW SPECIFICATIONS
 ================================================================================
 1. Home (src/pages/Home.jsx):
-   - Features: Split hero section with quick search, course category cards (BCA, DCA, PGDCA), 3 alternating continuous marquee shelves:
+   - Features: Split hero section with quick search, festive Diwali celebration banner (positioned directly above New Arrivals with width: 95% max-width: 100rem matching all homepage containers, flanking animated SVG diyas with flame flicker and rotating rangoli motifs, top toran garland, and golden shimmer heading), course category cards (BCA, DCA, PGDCA), 3 alternating continuous marquee shelves:
      * Shelf 1: New Arrivals (Left-to-Right auto-scroll)
      * Shelf 2: Best Sellers (Right-to-Left auto-scroll)
      * Shelf 3: Course Spotlight (Left-to-Right auto-scroll with capsule course tabs)
