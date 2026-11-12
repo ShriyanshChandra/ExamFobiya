@@ -1123,7 +1123,7 @@ Phase 7: App.jsx Root Assembly & Routing
 2. Wrap index.jsx with HelmetProvider and React 19 createRoot.
 
 Phase 8: Express Backend API Server
-1. Create backend/server.js initializing Firebase Admin SDK, CORS, and Express routes.
+1. Create backend/server.js initializing Firebase Admin SDK, CORS (with private RFC-1918 LAN and localhost origin support), and Express routes.
 2. Implement Brevo REST API v3 HTTPS email dispatcher for OTP, Reset, Welcome, and Role Change emails (zero emojis).
 3. Implement backend/routes/ai.js with Google Gemini 3.7 Question Parsing and Semantic Duplicate Detection.
 4. Implement keepalive health check crons and IndexNow proxy endpoints.
@@ -1165,4 +1165,11 @@ Phase 9: Verification & Validation
    Whenever any backend route, Firestore collection, environment variable, or frontend feature
    is created or modified, both DEVELOPER_GUIDE.txt and AI_AGENTS_GUIDE.txt must be updated
    in the same turn.
+
+8. 120 FPS High Refresh Rate & Compositor Invariants:
+   Every animation, transition, and scroll listener must satisfy the 8.33ms frame budget for 120Hz displays.
+   All scroll and resize event listeners must be { passive: true } and RAF-throttled.
+   Always use content-visibility: auto and CSS containment on repetitive list items to skip off-screen layout and paint.
+   Never animate width/height or left/top for continuous visual effects; use translate3d and scale transforms.
+   Never mutate root CSS variables on raw scroll ticks without dirty-checking against the current value.
 ================================================================================

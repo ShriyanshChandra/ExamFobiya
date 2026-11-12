@@ -41,7 +41,7 @@ const aiController = require('./routes/ai');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const HOST = process.env.HOST || (process.env.NODE_ENV === 'production' ? '0.0.0.0' : '127.0.0.1');
+const HOST = process.env.HOST || '0.0.0.0';
 
 if (process.env.NODE_ENV === 'production') {
     app.set('trust proxy', 1);
@@ -61,7 +61,29 @@ const allowedOrigins = new Set([
     ...configuredOrigins
 ]);
 
+// Helper to identify private LAN or localhost origins (for local multi-device testing)
+const isLocalOrPrivateNetworkOrigin = (urlStr) => {
+    try {
+        const { hostname } = new URL(urlStr);
+        return (
+            hostname === 'localhost' ||
+            hostname === '127.0.0.1' ||
+            hostname === '::1' ||
+            hostname.endsWith('.local') ||
+            /^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname) ||
+            /^192\.168\.\d{1,3}\.\d{1,3}$/.test(hostname) ||
+            /^172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}$/.test(hostname)
+        );
+    } catch {
+        return false;
+    }
+};
+
 if (process.env.NODE_ENV !== 'production') {
+    allowedOrigins.add('http://localhost:3000');
+    allowedOrigins.add('http://127.0.0.1:3000');
+    allowedOrigins.add('http://localhost:4173');
+    allowedOrigins.add('http://127.0.0.1:4173');
     allowedOrigins.add('http://localhost:5173');
     allowedOrigins.add('http://127.0.0.1:5173');
 }
@@ -69,10 +91,10 @@ if (process.env.NODE_ENV !== 'production') {
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(cors({
     origin(origin, callback) {
-        if (!origin || allowedOrigins.has(origin)) {
+        if (!origin || allowedOrigins.has(origin) || isLocalOrPrivateNetworkOrigin(origin)) {
             return callback(null, true);
         }
-        return callback(new Error('Origin not allowed by CORS policy'));
+        return callback(null, false);
     },
     methods: ['GET', 'POST'],
     allowedHeaders: ['Authorization', 'Content-Type']

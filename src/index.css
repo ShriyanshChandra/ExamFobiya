@@ -23,6 +23,12 @@
   src: url('/fonts/HennyPenny-Regular.ttf') format('truetype');
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 body {
   margin: 0;
   font-family: var(--font-family, 'Quicksand', sans-serif);
@@ -31,10 +37,12 @@ body {
   background-color: var(--background-color);
   color: var(--text-color);
   font-weight: 400;
+  -webkit-overflow-scrolling: touch;
 }
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 code {

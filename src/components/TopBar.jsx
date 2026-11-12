@@ -54,22 +54,29 @@ const TopBar = () => {
       return window.innerWidth <= 1200 || window.matchMedia("(hover: none) and (pointer: coarse)").matches;
     };
 
+    let ticking = false;
+    const applyTopbarHeight = (targetHeight) => {
+      if (document.documentElement.style.getPropertyValue("--topbar-h") !== targetHeight) {
+        document.documentElement.style.setProperty("--topbar-h", targetHeight);
+      }
+    };
+
     const updateTopbarHeight = () => {
       if (isMobileOrTablet()) {
-        document.documentElement.style.setProperty("--topbar-h", "0px");
+        applyTopbarHeight("0px");
         return;
       }
 
       const currentY = window.scrollY;
       if (currentY < 10) {
-        setVisible(true);
-        document.documentElement.style.setProperty("--topbar-h", TOPBAR_H);
+        setVisible((prev) => (!prev ? true : prev));
+        applyTopbarHeight(TOPBAR_H);
       } else if (currentY > lastScrollY.current) {
-        setVisible(false);
-        document.documentElement.style.setProperty("--topbar-h", "0px");
+        setVisible((prev) => (prev ? false : prev));
+        applyTopbarHeight("0px");
       } else if (currentY < lastScrollY.current) {
-        setVisible(true);
-        document.documentElement.style.setProperty("--topbar-h", TOPBAR_H);
+        setVisible((prev) => (!prev ? true : prev));
+        applyTopbarHeight(TOPBAR_H);
       }
 
       lastScrollY.current = currentY;
@@ -77,19 +84,21 @@ const TopBar = () => {
 
     updateTopbarHeight();
 
-    const handleScroll = () => {
-      updateTopbarHeight();
+    const requestTick = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateTopbarHeight();
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
-    const handleResize = () => {
-      updateTopbarHeight();
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", handleResize, { passive: true });
+    window.addEventListener("scroll", requestTick, { passive: true });
+    window.addEventListener("resize", requestTick, { passive: true });
     return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("scroll", requestTick);
+      window.removeEventListener("resize", requestTick);
     };
   }, []);
 

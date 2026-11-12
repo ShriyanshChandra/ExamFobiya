@@ -5,11 +5,15 @@ const BackToTop = () => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      if (window.scrollY > 300) {
-        setVisible(true);
-      } else {
-        setVisible(false);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const shouldBeVisible = window.scrollY > 300;
+          setVisible((prev) => (prev !== shouldBeVisible ? shouldBeVisible : prev));
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 

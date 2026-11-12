@@ -1,11 +1,11 @@
-/* ─── Shimmer Sweep Keyframe ─── */
+/* ─── Shimmer Sweep Keyframe (GPU Accelerated) ─── */
 @keyframes shimmer-sweep {
     0% {
-        left: -75%;
+        transform: translate3d(-100%, 0, 0);
     }
 
     100% {
-        left: 125%;
+        transform: translate3d(200%, 0, 0);
     }
 }
 
@@ -53,25 +53,34 @@
     overflow: hidden;
     position: relative;
     padding: 0;
+    contain: layout paint;
+    transform: translateZ(0);
+    will-change: transform;
 }
 
-/* ─── Balanced Water Drop Ripple Wave ─── */
+.book-card:not(.is-marquee) {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 420px;
+}
+
+/* ─── Balanced Water Drop Ripple Wave (GPU Composited) ─── */
 .book-card::after {
     content: '';
     position: absolute;
     top: var(--card-mouse-y, 50%);
     left: var(--card-mouse-x, 50%);
-    width: 0;
-    height: 0;
+    width: 750px;
+    height: 750px;
     border-radius: 50%;
     border: 2px solid color-mix(in srgb, var(--primary-color) 65%, white);
     box-shadow: 0 0 18px color-mix(in srgb, var(--primary-color) 50%, transparent),
                 inset 0 0 18px color-mix(in srgb, var(--primary-color) 30%, transparent);
     filter: blur(5px);
-    transform: translate(-50%, -50%);
+    transform: translate3d(-50%, -50%, 0) scale(0);
     pointer-events: none;
     opacity: 0;
     z-index: 3;
+    will-change: transform, opacity;
 }
 
 .book-card:hover::after {
@@ -80,19 +89,15 @@
 
 @keyframes waterRippleWave {
     0% {
-        width: 0px;
-        height: 0px;
+        transform: translate3d(-50%, -50%, 0) scale(0);
         opacity: 0.75;
-        border-width: 3px;
     }
     40% {
         opacity: 0.45;
     }
     100% {
-        width: 750px;
-        height: 750px;
+        transform: translate3d(-50%, -50%, 0) scale(1);
         opacity: 0;
-        border-width: 1px;
     }
 }
 
