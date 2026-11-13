@@ -26,10 +26,17 @@ const Navbar = ({ setSearchQuery }) => {
   };
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      if (showMobileSearch) setShowMobileSearch(false);
+      if (showMobileSearch && !ticking) {
+        window.requestAnimationFrame(() => {
+          setShowMobileSearch(false);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [showMobileSearch]);
 
@@ -71,7 +78,7 @@ const Navbar = ({ setSearchQuery }) => {
         setIsOpen(false);
       }
     };
-    window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", handleResize, { passive: true });
     return () => window.removeEventListener("resize", handleResize);
   }, [isOpen]);
 

@@ -422,6 +422,7 @@ body:not(.dark-mode) .semester-chip:not(.active):hover {
   grid-template-columns: repeat(auto-fill, minmax(14.375rem, 1fr));
   gap: 1.5rem;
   align-items: stretch;
+  contain: layout;
 }
 
 .books-empty-state {

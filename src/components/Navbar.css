@@ -10,6 +10,10 @@
   padding: 0.25rem 0;
   transition: border-color 0.3s ease, top 0.3s ease;
   box-shadow: var(--shadow-sm);
+  transform: translateZ(0);
+  will-change: top;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 @media screen and (max-width: 75rem), screen and (max-width: 1200px), (hover: none) and (pointer: coarse) {

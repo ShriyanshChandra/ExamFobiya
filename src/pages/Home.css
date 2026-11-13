@@ -33,6 +33,10 @@
   filter: blur(100px);
   opacity: 0.8;
   animation: float 25s infinite ease-in-out alternate;
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  contain: paint;
+  pointer-events: none;
 }
 
 .orb-1 {
@@ -59,7 +63,7 @@
   background: rgba(100, 150, 255, 0.5);
   top: 30%;
   left: 30%;
-  transform: translate(-50%, -50%);
+  transform: translate3d(-50%, -50%, 0);
   animation-delay: -10s;
 }
 
@@ -74,13 +78,15 @@
 
 @keyframes float {
   0% {
-    transform: translate(0, 0) scale(1);
+    transform: translate3d(0, 0, 0) scale(1);
   }
+
   50% {
-    transform: translate(50px, 30px) scale(1.1);
+    transform: translate3d(50px, 30px, 0) scale(1.1);
   }
+
   100% {
-    transform: translate(-30px, 60px) scale(0.9);
+    transform: translate3d(-30px, 60px, 0) scale(0.9);
   }
 }
 
@@ -99,14 +105,17 @@
   top: -10%;
   animation: fall linear infinite;
   will-change: transform;
+  transform: translate3d(0, 0, 0);
+  contain: layout paint;
 }
 
 @keyframes fall {
   0% {
-    transform: translateY(-10vh) rotate(var(--start-rot, 0deg));
+    transform: translate3d(0, -10vh, 0) rotate(var(--start-rot, 0deg));
   }
+
   100% {
-    transform: translateY(115vh) rotate(var(--end-rot, 360deg));
+    transform: translate3d(0, 115vh, 0) rotate(var(--end-rot, 360deg));
   }
 }
 
@@ -1001,6 +1010,10 @@
   padding: 0.5rem 0;
   scroll-snap-type: none;
   cursor: grab;
+  contain: layout paint;
+  will-change: scroll-position;
+  transform: translateZ(0);
+  -webkit-overflow-scrolling: touch;
   /* Inherit border-radius / background from .home-book-shelf when combined */
 }
 

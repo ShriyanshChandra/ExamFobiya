@@ -67,18 +67,18 @@ const BookCard = ({ book, index, canEdit, onRemove, onEdit, onSaveClick, isMarqu
     return (
         <>
             <motion.div
-                className="book-card"
+                className={`book-card ${isMarquee ? 'is-marquee' : ''}`}
                 role="button"
                 tabIndex={isDuplicate ? -1 : 0}
                 aria-hidden={isDuplicate ? true : undefined}
                 onClick={openDetails}
                 onKeyDown={handleCardKeyDown}
                 onMouseEnter={handleCardMouseEnter}
-                initial={isMarquee ? false : { opacity: 0, scale: 0.7, filter: 'blur(6px)' }}
-                animate={isMarquee ? { opacity: 1, scale: 1, filter: 'blur(0px)' } : undefined}
-                whileInView={isMarquee ? undefined : { opacity: 1, scale: 1, filter: 'blur(0px)' }}
-                transition={isMarquee ? undefined : { duration: 0.45, delay: Math.min(index * 0.04, 0.5), ease: [0.25, 1, 0.5, 1] }}
-                viewport={isMarquee ? undefined : { once: true }}
+                initial={isMarquee ? false : { opacity: 0, scale: 0.92 }}
+                animate={isMarquee ? { opacity: 1, scale: 1 } : undefined}
+                whileInView={isMarquee ? undefined : { opacity: 1, scale: 1 }}
+                transition={isMarquee ? undefined : { duration: 0.35, delay: Math.min(index * 0.03, 0.3), ease: [0.25, 1, 0.5, 1] }}
+                viewport={isMarquee ? undefined : { once: true, margin: "60px" }}
             >
                 {hasProgrammingSolution && (
                     <button

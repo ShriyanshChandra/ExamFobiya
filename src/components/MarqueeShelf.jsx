@@ -41,9 +41,12 @@ const MarqueeShelf = ({ books, direction = 'ltr', ariaLabel, className = '' }) =
 
     const tick = (timestamp) => {
       if (!isHoveredRef.current && !isTouchingRef.current && !isDraggingRef.current) {
-        const dt = lastTimestampRef.current
-          ? Math.min((timestamp - lastTimestampRef.current) / 1000, 0.05)
-          : 0.016;
+        if (!lastTimestampRef.current) {
+          lastTimestampRef.current = timestamp;
+          rafRef.current = requestAnimationFrame(tick);
+          return;
+        }
+        const dt = Math.min((timestamp - lastTimestampRef.current) / 1000, 0.05);
         lastTimestampRef.current = timestamp;
         const step = SCROLL_SPEED * dt;
         const half = el.scrollWidth / 2;
