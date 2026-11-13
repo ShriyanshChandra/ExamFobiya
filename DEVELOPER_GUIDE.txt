@@ -411,7 +411,7 @@ B. Complete Route Matrix:
 10. Navbar:
     - File: src/components/Navbar.jsx
     - Props: { onSearch, searchQuery }
-    - Elements: Brand logo with hanging "Happy Diwali" banner suspended by decorative strings, search input, nav links (Books, Questions, Programming Solutions, About Us, Dashboard), Theme Switcher Dropdown (7 themes with active tick indicator), mobile drawer toggle, desktop user dropdown, and seasonal Diwali festive theme (flowing royal crimson-to-gold gradient background, hanging SVG diya lamp garland along bottom border with flame flicker animations).
+    - Elements: Brand logo, search input, nav links (Books, Questions, Programming Solutions, About Us, Dashboard), Theme Switcher Dropdown (7 themes with active tick indicator), mobile drawer toggle, desktop user dropdown.
     - Behavior: Desktop-only top navigation links with 7-second textWaveRipple animation on public links (suppressed on /admin Dashboard); links use stationary .nav-menu li hover triggers, vertical padding buffers, and pointer-events: none on ::after underline to prevent rapid mouseenter/mouseleave hover boundary flickering.
 
 11. NetworkStatusNotification:
@@ -448,7 +448,7 @@ B. Complete Route Matrix:
 8. PAGES DIRECTORY & COMPREHENSIVE WORKFLOW SPECIFICATIONS
 ================================================================================
 1. Home (src/pages/Home.jsx):
-   - Features: Split hero section with quick search, festive Diwali celebration banner (positioned directly above New Arrivals with width: 95% max-width: 100rem matching all homepage containers, flanking animated SVG diyas with flame flicker and rotating rangoli motifs, top toran garland, and golden shimmer heading), course category cards (BCA, DCA, PGDCA), 3 alternating continuous marquee shelves:
+   - Features: Split hero section with quick search, course category cards (BCA, DCA, PGDCA), 3 alternating continuous marquee shelves:
      * Shelf 1: New Arrivals (Left-to-Right auto-scroll)
      * Shelf 2: Best Sellers (Right-to-Left auto-scroll)
      * Shelf 3: Course Spotlight (Left-to-Right auto-scroll with capsule course tabs)
@@ -545,7 +545,7 @@ A. Core Modules:
 B. Server Initialization Sequence:
    1. dotenv.config() loads backend/.env.
    2. Firebase Admin SDK initializes via FIREBASE_SERVICE_ACCOUNT env var or serviceAccountKey.json file.
-   3. Express application created with CORS (supporting production domains, Firebase hosting, localhost:3000/4173/5173, and private RFC-1918 LAN IP ranges 10.x, 192.168.x, 172.16-31.x for multi-device network testing) and JSON body parser.
+   3. Express application created with CORS and JSON body parser.
    4. AI router attached at /api/ai.
    5. Server listens on process.env.PORT (5000) and HOST.
    6. checkAndRunKeepAlivePings() triggers startup heartbeat check and schedules 24-hour interval.
@@ -1095,12 +1095,4 @@ Theme Contrast & Accessibility Mandates:
 6. CONTINUOUS DOCUMENTATION SYNCHRONIZATION:
    Whenever changes are made to code, functionality, endpoints, services, or environment
    variables, immediately update both DEVELOPER_GUIDE.txt and AI_AGENTS_GUIDE.txt.
-
-7. 120 FPS HIGH REFRESH RATE & COMPOSITOR RENDERING STANDARDS:
-   To ensure smooth 120 FPS rendering across high refresh rate displays (ProMotion, 120Hz/144Hz monitors, mobile):
-   - Scroll and resize event listeners must always use { passive: true } and be throttled via window.requestAnimationFrame.
-   - Never mutate CSS custom properties on document.documentElement or root during high-frequency events (scroll, wheel, mousemove) without checking whether the value actually changed.
-   - Animations must be GPU-composited using transform (translate3d, translateZ(0)) and opacity. Never animate layout dimensions (width, height, top, left, margin, padding) continuously or use stepped animations that artificially clamp framerates (e.g. steps(1800) in App.css was replaced with linear).
-   - Long lists and card collections (.book-card, .pdf-result-card-row, .solution-result-card, .users-table tbody tr) must utilize CSS content-visibility: auto with appropriate contain-intrinsic-size and contain: layout paint to skip offscreen rendering work and maintain the 8.33ms per-frame budget.
-   - Floating and blurred elements (.glow-orb, .falling-book) must isolate blur rasterization using will-change: transform; transform: translate3d(0, 0, 0); and contain: paint.
 ================================================================================

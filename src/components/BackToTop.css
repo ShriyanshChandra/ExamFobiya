@@ -16,8 +16,7 @@
   z-index: 999;
   opacity: 0;
   visibility: hidden;
-  will-change: transform, opacity;
-  transform: translate3d(0, 12px, 0) scale(0.9);
+  transform: translateY(12px) scale(0.9);
   transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease, background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   outline: none;
 }
@@ -25,11 +24,11 @@
 .back-to-top-btn.visible {
   opacity: 1;
   visibility: visible;
-  transform: translate3d(0, 0, 0) scale(1);
+  transform: translateY(0) scale(1);
 }
 
 .back-to-top-btn:hover {
-  transform: translate3d(0, -4px, 0) scale(1.05);
+  transform: translateY(-4px) scale(1.05);
   background: var(--accent-color, #ffd700);
   color: var(--surface-text, #111827);
   border-color: var(--accent-color, #ffd700);
@@ -37,7 +36,7 @@
 }
 
 .back-to-top-btn:active {
-  transform: translate3d(0, 0, 0) scale(0.95);
+  transform: translateY(0) scale(0.95);
 }
 
 .back-to-top-btn:focus-visible {

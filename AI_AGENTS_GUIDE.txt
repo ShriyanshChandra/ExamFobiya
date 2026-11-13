@@ -449,7 +449,7 @@ C. Maintenance Guard Flow:
     - Props:
       * onSearch (function, optional): Search submit handler
       * searchQuery (string, optional): Current search input value
-    - Elements: Brand logo with hanging "Happy Diwali" banner suspended by decorative strings, search input, nav links (Books, Questions, Programming Solutions, About Us, Dashboard), Theme Switcher Dropdown (7 themes with active tick indicator), mobile drawer toggle, desktop user dropdown, and seasonal Diwali festive theme (flowing royal crimson-to-gold gradient background, hanging SVG diya lamp garland along bottom border with flame flicker animations).
+    - Elements: Brand logo, search input, nav links (Books, Questions, Programming Solutions, About Us, Dashboard), Theme Switcher Dropdown (7 themes with active tick indicator), mobile drawer toggle, desktop user dropdown.
     - Behavior: Desktop nav links feature textWaveRipple keyframe effect on public routes (animation: none on /admin Dashboard); uses stationary .nav-menu li hover anchors, vertical padding buffers, and pointer-events: none on animated ::after underlines to prevent cursor flickering between default and pointer on hover boundaries.
 
 11. NetworkStatusNotification:
@@ -492,7 +492,7 @@ C. Maintenance Guard Flow:
 7. PAGES DIRECTORY & COMPREHENSIVE WORKFLOW SPECIFICATIONS
 ================================================================================
 1. Home (src/pages/Home.jsx):
-   - Features: Split hero section with quick search, festive Diwali celebration banner (positioned directly above New Arrivals with width: 95% max-width: 100rem matching all homepage containers, flanking animated SVG diyas with flame flicker and rotating rangoli motifs, top toran garland, and golden shimmer heading), course category cards (BCA, DCA, PGDCA), 3 alternating continuous marquee shelves:
+   - Features: Split hero section with quick search, course category cards (BCA, DCA, PGDCA), 3 alternating continuous marquee shelves:
      * Shelf 1: New Arrivals (Left-to-Right auto-scroll)
      * Shelf 2: Best Sellers (Right-to-Left auto-scroll)
      * Shelf 3: Course Spotlight (Left-to-Right auto-scroll with capsule course tabs)
@@ -1123,7 +1123,7 @@ Phase 7: App.jsx Root Assembly & Routing
 2. Wrap index.jsx with HelmetProvider and React 19 createRoot.
 
 Phase 8: Express Backend API Server
-1. Create backend/server.js initializing Firebase Admin SDK, CORS (with private RFC-1918 LAN and localhost origin support), and Express routes.
+1. Create backend/server.js initializing Firebase Admin SDK, CORS, and Express routes.
 2. Implement Brevo REST API v3 HTTPS email dispatcher for OTP, Reset, Welcome, and Role Change emails (zero emojis).
 3. Implement backend/routes/ai.js with Google Gemini 3.7 Question Parsing and Semantic Duplicate Detection.
 4. Implement keepalive health check crons and IndexNow proxy endpoints.
@@ -1165,11 +1165,4 @@ Phase 9: Verification & Validation
    Whenever any backend route, Firestore collection, environment variable, or frontend feature
    is created or modified, both DEVELOPER_GUIDE.txt and AI_AGENTS_GUIDE.txt must be updated
    in the same turn.
-
-8. 120 FPS High Refresh Rate & Compositor Invariants:
-   Every animation, transition, and scroll listener must satisfy the 8.33ms frame budget for 120Hz displays.
-   All scroll and resize event listeners must be { passive: true } and RAF-throttled.
-   Always use content-visibility: auto and CSS containment on repetitive list items to skip off-screen layout and paint.
-   Never animate width/height or left/top for continuous visual effects; use translate3d and scale transforms.
-   Never mutate root CSS variables on raw scroll ticks without dirty-checking against the current value.
 ================================================================================

@@ -1711,11 +1711,6 @@ body.dark-mode .detail-value {
     transform: rotate(180deg);
 }
 
-.users-table tbody tr {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 52px;
-}
-
 .users-table td {
     padding: 0.875rem 1.125rem;
     border-bottom: 1px solid rgba(241, 245, 249, 0.8);
@@ -2734,7 +2729,6 @@ body.dark-mode .system-kicker {
         padding: 1.25rem 1.15rem;
         border-bottom: 1px solid var(--border-adaptive, rgba(226, 232, 240, 0.8));
         position: relative;
-        contain-intrinsic-size: auto 160px;
     }
 
     .users-table tr:last-child {
