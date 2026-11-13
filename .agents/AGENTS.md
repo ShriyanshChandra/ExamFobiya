@@ -10,6 +10,7 @@ Always use CSS variables from themes.css instead of hardcoding colors.
 -->
 
 <RULE>
+Prioritize code reuse as a high priority rule: always search for, evaluate, and leverage existing components, utilities, hooks, styles, services, and backend helper functions before writing new or duplicate implementations.
 Never use DOM until specified.
 Never use emojis until specified.
 Before updating project code, check for recent user-side errors logged in Firebase ('client_errors' collection / ErrorLoggerService) to address existing runtime issues first.
